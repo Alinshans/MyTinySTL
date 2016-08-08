@@ -4,6 +4,7 @@
 struct __true_type {};
 struct __false_type {};
 
+//萃取迭代器特性，对所有 C++ 标量型别提供特化版本
 template <class type>
 struct __type_traits {
 	typedef __true_type this_dummy_member_must_be_first;
