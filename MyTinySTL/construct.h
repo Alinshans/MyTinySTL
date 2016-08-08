@@ -4,9 +4,12 @@
 #include <new>
 
 #include "type_traits.h"
+#include "iterator.h"
 
+//两个全局函数： construct()用于构造 和 destroy()用于析构
 namespace MyTinySTL {
 	
+	/********************** construct *********************/
 	template <class T1>
 	inline void construct(T1 *p) {
 		new ((void*)p) T1();
@@ -17,6 +20,7 @@ namespace MyTinySTL {
 		new ((void*)p) T1(value);
 	}
 
+	/*********************** destroy **********************/
 	template <class T>
 	inline void destroy(T * pointer) {
 		pointer->~T()
@@ -24,15 +28,14 @@ namespace MyTinySTL {
 
 	template <class ForwardIterator>
 	inline void destroy(ForwardIterator first, ForwardIterator last) {
-		_destroy(first, last, value_type(first));
+		__destroy(first, last, value_type(first));
 	}
 
-	template <class ForwardIterator, class T>
-	inline void _destroy(ForwardIterator first, ForwardIterator last, T*) {
+	template <class ForwardIterator>
+	inline void __destroy(ForwardIterator first, ForwardIterator last, T*) {
 		typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
-		__destroy_aux(first, last, trivial_destructor());
+		return __destroy_aux(first, last, trivial_destructor());
 	}
-
 	template <class ForwardIterator>
 	inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type) {
 		for (; first != last; ++first)
