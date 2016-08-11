@@ -75,4 +75,3 @@ namespace MyTinySTL {
 	}
 }
 #endif // !ALLOCATOR_H
-
