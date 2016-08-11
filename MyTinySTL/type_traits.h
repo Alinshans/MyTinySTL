@@ -7,6 +7,7 @@ struct __false_type {};
 //萃取迭代器特性，对所有 C++ 标量型别提供特化版本
 template <class type>
 struct __type_traits {
+
 	typedef __true_type this_dummy_member_must_be_first;
 	// this __type_traits template is special.
 
@@ -114,7 +115,7 @@ template<>	struct __type_traits<long double> {
 };
 
 //针对原生指针设计 __type_traits 偏特化版本
-template<T>	
+template<class T>	
 struct __type_traits<T*> {
 	typedef __true_type    has_trivial_default_constructor;
 	typedef __true_type    has_trivial_copy_constructor;
