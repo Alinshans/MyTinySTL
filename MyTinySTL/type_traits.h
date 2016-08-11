@@ -124,4 +124,3 @@ struct __type_traits<T*> {
 	typedef __true_type    is_POD_type;
 };
 #endif // !TYPE_TRAITS_H
-
