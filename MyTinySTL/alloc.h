@@ -1,8 +1,16 @@
 #ifndef ALLOC_H
 #define ALLOC_H
 
+#ifndef USE_CSTDLIB
+#define USE_CSTDLIB
 #include <cstdlib>	//for malloc/free
+#endif // !USE_CSTDLIB
+
+#ifndef USE_IOSTREAM
+#define USE_IOSTREAM
 #include <iostream>	//for cerr
+#endif // !USE_IOSTREAM
+
 namespace MyTinySTL {
 
 #if !defined(_THROW_BAD_ALLOC)
