@@ -1,7 +1,10 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
+#ifndef USE_CSTDDEF
+#define USE_CSTDDEF
 #include <cstddef>	//for ptrdiff_t
+#endif // !USE_CSTDDEF
 
 namespace MyTinySTL {
 
@@ -113,7 +116,7 @@ namespace MyTinySTL {
 	//这个函数决定某个迭代器的 distance type
 	template <class Iterator>
 	inline typename iterator_traits<Iterator>::difference_type*
-		difference_type(const Iterator&) {
+		distance_type(const Iterator&) {
 		return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
 	}
 
