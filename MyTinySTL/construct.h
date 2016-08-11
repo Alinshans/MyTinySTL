@@ -1,7 +1,10 @@
 #ifndef CONSTRUCT_H
 #define CONSTRUCT_H
 
+#ifndef USE_NEW
+#define	USE_NEW
 #include <new>
+#endif // !USE_NEW
 
 #include "type_traits.h"
 #include "iterator.h"
@@ -31,11 +34,12 @@ namespace MyTinySTL {
 		__destroy(first, last, value_type(first));
 	}
 
-	template <class ForwardIterator>
+	template <class ForwardIterator, class T>
 	inline void __destroy(ForwardIterator first, ForwardIterator last, T*) {
 		typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
 		return __destroy_aux(first, last, trivial_destructor());
 	}
+
 	template <class ForwardIterator>
 	inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type) {
 		for (; first != last; ++first)
