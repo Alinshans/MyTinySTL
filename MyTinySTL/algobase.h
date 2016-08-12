@@ -172,6 +172,35 @@ namespace MyTinySTL {
 		return result;
 	}
 	
+	/***************************************************************/
+	// copy_n
+
+	//把 [first, first + n)区间上的元素复制到 [result, result + n)上
+	//返回一个 pair 分别指向复制结束的尾部
+	template <class InputIterator, class Size, class OutputIterator>
+	inline pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
+		OutputIterator result) {
+		return __copy_n(first, n, result, iterator_traits(first));
+	}
+
+	// __copy_n 的 input_iterator_tag 版本
+	template <class InputIterator, class Size, class OutputIterator>
+	inline pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
+		OutputIterator result, input_iterator_tag) {
+		for (; n > 0; --n, ++first, ++result) {
+			*result = *first;
+		}
+		return pair<InputIterator, OutputIterator>(first, result);
+	}
+
+	// __copy_n 的 random_access_iterator_tag 版本
+	template <class InputIterator, class Size, class OutputIterator>
+	inline pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
+		OutputIterator result, random_access_iterator_tag) {
+		InputIterator last = first + n;
+		return pair<InputIterator, OutputIterator>(last, copy(first, last, result));
+	}
+	
 	/************************************************************/
 	// equal and mismatch
 	
