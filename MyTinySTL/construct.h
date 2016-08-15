@@ -57,4 +57,3 @@ namespace MyTinySTL {
 	inline void destroy(wchar_t*, wchar_t*) {}
 }
 #endif // !CONSTRUCT_H
-
