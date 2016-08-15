@@ -128,4 +128,3 @@ namespace MyTinySTL {
 	}
 }
 #endif // !ITERATOR_H
-
