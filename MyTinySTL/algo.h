@@ -407,14 +407,14 @@ namespace MyTinySTL {
 				else if (pred(*first))	++first;	//头指针所指元素符合 pred 为 true 的情况
 				else break;
 			}
-			--last;									//尾指针回溯1
+			--last;		//尾指针回溯1
 			while (true) {
 				if (first == last)	return first;
 				else if (!pred(*last))	--last;		//尾指针所指元素符合 pred 为 false 的情况
 				else break;
 			}
-			iter_swap(first, last);					//交换头尾迭代器
-			++first;								//头指针前进1，准备下一轮循环
+			iter_swap(first, last);				//交换头尾迭代器
+			++first;	//头指针前进1，准备下一轮循环
 		}
 	}
 
@@ -585,15 +585,15 @@ namespace MyTinySTL {
 	void __rotate(ForwardIterator first, ForwardIterator middle, ForwardIterator last,
 		Distance*, forward_iterator_tag) {
 		for (ForwardIterator i = middle; ;) {
-			iter_swap(first, i);	//前段后段元素互相
+			iter_swap(first, i);			//前段后段元素互换
 			++first;
 			++i;
 			if (first == middle) {			//前半段结束
 				if (i == last)	return;		//后半段也结束，交换完成
-				middle = i;					//调整，对新的前后段进行交换
+				middle = i;			//调整，对新的前后段进行交换
 			}
 			else if (i == last) {			//后半段结束
-				i = middle;					//调整，对新的前后段进行交换
+				i = middle;			//调整，对新的前后段进行交换
 			}
 		}
 	}
@@ -644,7 +644,7 @@ namespace MyTinySTL {
 			ptr1 = ptr2;
 			if (last - ptr2 > shift)	//下次偏移未到达尾端
 				ptr2 += shift;
-			else						//下次偏移超出尾端
+			else				//下次偏移超出尾端
 				ptr2 = first + (shift - (last - ptr2));
 		}
 		*ptr1 = value;	//把 value 移到最后一个元素移到的位置
@@ -687,13 +687,13 @@ namespace MyTinySTL {
 				++current1;
 				++current2;
 			}
-			else {				//元素不相等
+			else {		//元素不相等
 				if (d1 == d2)	//如果两个序列等长，则序列二不可能成为序列一子序列
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;		//重新开始比对
-					--d1;					//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;	//重新开始比对
+					--d1;			//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -728,8 +728,8 @@ namespace MyTinySTL {
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;		//重新开始比对
-					--d1;					//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;	//重新开始比对
+					--d1;			//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -748,8 +748,8 @@ namespace MyTinySTL {
 		else {
 			first = find(first, last, value);	//先找出第一个 value 出现的位置
 			while (first != last) {
-				Count m = n - 1;	//还需要查找 n - 1 次
-				ForwardIterator i = first;		//从上次出现点开始找
+				Count m = n - 1;		//还需要查找 n - 1 次
+				ForwardIterator i = first;	//从上次出现点开始找
 				++i;
 				while (i != last && n != 0 && *i == value) {
 					++i;
@@ -775,8 +775,8 @@ namespace MyTinySTL {
 				++first;
 			}	
 			while (first != last) {
-				Count m = n - 1;	//还需要查找 n - 1 次
-				ForwardIterator i = first;		//从上次出现点开始找
+				Count m = n - 1;		//还需要查找 n - 1 次
+				ForwardIterator i = first;	//从上次出现点开始找
 				++i;
 				while (i != last && n != 0 && comp(*i, value)) {
 					++i;
@@ -850,7 +850,7 @@ namespace MyTinySTL {
 	// 重载版本使用仿函数 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
 	ForwardIterator unique(ForwardIterator first, ForwardIterator last, Compared comp) {
-		first = adjacent_find(first, last, comp);		//利用 adjacent_find 找到相邻重复元素的起点
+		first = adjacent_find(first, last, comp);	//利用 adjacent_find 找到相邻重复元素的起点
 		return unique_copy(first, last, first, comp);
 	}
 
