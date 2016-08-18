@@ -7,8 +7,10 @@
 //使用array或vector作为底部容器，用array或vector表示heap
 namespace MyTinySTL {
 
-	/***************************** push_heap *********************************/
-	//该函数接受两个迭代器，表示一个heap底部容器的头尾，并且新元素已经插入到底部容器的最尾端，调整 heap
+	/*********************************************************************************/
+	// push_heap
+	// 该函数接受两个迭代器，表示一个heap底部容器的头尾，并且新元素已经插入到底部容器的最尾端，调整 heap
+	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void push_heap(RandomAccessIterator first, RandomAccessIterator last) {
 		//新元素应该已置于底部容器的最尾端
@@ -35,8 +37,38 @@ namespace MyTinySTL {
 		*(first + holeIndex) = value;	//最后令洞值等于新值，调整完毕
 	}
 
-	/****************************** pop_heap *********************************/
-	//该函数接受两个迭代器，表示heap底部容器的首尾，将 heap 的根节点取出放到容器尾部，调整 heap
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	inline void push_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compared comp) {
+		//新元素应该已置于底部容器的最尾端
+		__push_heap(first, last, comp, distance_type(first), value_type(first));
+	}
+
+	template <class RandomAccessIterator, class Compared, class Distance, class T>
+	inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compared comp, Distance*, T*) {
+		__push_heap_aux(first, Distance((last - first) - 1), Distance(0), 
+			T(*(last - 1)), comp);
+	}
+
+	template <class RandomAccessIterator, class Distance, class T, class Compared>
+	void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
+		Distance topIndex, T value, Compared comp) {
+		Distance parent = (holeIndex - 1) / 2;	//父节点与根节点的距离
+		while (holeIndex > topIndex && comp(*(first + parent), value)) {
+			//未到达根节点且满足 comp 为 true 的情况
+			*(first + holeIndex) = *(first + parent);	//洞值为父节点的值
+			holeIndex = parent;	//调整洞号，上升至父节点
+			parent = (holeIndex - 1) / 2;	//新洞号的父节点
+		}
+		*(first + holeIndex) = value;	//最后令洞值等于新值，调整完毕
+	}
+
+	/*********************************************************************************/
+	// pop_heap
+	// 该函数接受两个迭代器，表示heap底部容器的首尾，将 heap 的根节点取出放到容器尾部，调整 heap
+	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last) {
 		__pop_heap(first, last, value_type(first));
@@ -78,8 +110,52 @@ namespace MyTinySTL {
 		__push_heap_aux(first, holeIndex, topIndex, value);
 	}
 
-	/***************************** sort_heap *********************************/
-	//该函数接受两个迭代器，表示 heap 底部容器的首尾，不断执行 pop_heap 操作，直到首尾最多相差1
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compared comp) {
+		__pop_heap(first, last, comp, value_type(first));
+	}
+
+	template <class RandomAccessIterator, class Compared, class T>
+	inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compared comp, T*) {
+		__pop_heap_aux(first, last - 1, last - 1, T(*(last - 1)),
+			distance_type(first), comp);
+	}
+
+	template <class RandomAccessIterator, class T, class Distance, class Compared>
+	inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
+		RandomAccessIterator result, T value, Distance*, Compared comp) {
+		*result = *first;	//先将尾指设置成首值，即尾指为欲求结果
+		__adjust_heap(first, Distance(0), Distance(last - first), value, comp);
+	}
+
+	template <class RandomAccessIterator, class T, class Distance, class Compared>
+	void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
+		Distance len, T value, Compared comp) {
+		//先进行下溯(percolate down)过程
+		Distance topIndex = holeIndex;
+		Distance rchild = 2 * holeIndex + 2;	//洞节点的右子节点
+		while (rchild < len) {
+			if (comp(*(first + rchild), *(first + rchild - 1)))	rchild--;
+			*(first + holeIndex) = *(first + rchild);
+			holeIndex = rchild;
+			rchild = 2 * (rchild + 1);	//找到新的右子节点
+		}
+		if (rchild == len) {
+			//没有右子节点
+			*(first + holeIndex) = *(first + (rchild - 1));
+			holeIndex = rchild - 1;
+		}
+		//再执行一次上溯(percolate up)过程
+		__push_heap_aux(first, holeIndex, topIndex, value, comp);
+	}
+
+	/*********************************************************************************/
+	// sort_heap
+	// 该函数接受两个迭代器，表示 heap 底部容器的首尾，不断执行 pop_heap 操作，直到首尾最多相差1
+	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	void sort_heap(RandomAccessIterator first, RandomAccessIterator last) {
 		//每执行一次 pop_heap，最大的元素都被放到尾部，直到容器最多只有一个元素，完成排序
@@ -88,8 +164,20 @@ namespace MyTinySTL {
 		}
 	}
 
-	/***************************** make_heap *********************************/
-	//该函数接受两个迭代器，表示 heap 底部容器的首尾，把容器内的数据转化为 heap
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	void sort_heap(RandomAccessIterator first, RandomAccessIterator last, 
+		Compared comp) {
+		//每执行一次 pop_heap，最大的元素都被放到尾部，直到容器最多只有一个元素，完成排序
+		while (last - first > 1) {
+			pop_heap(first, last--, comp);
+		}
+	}
+
+	/*********************************************************************************/
+	// make_heap
+	// 该函数接受两个迭代器，表示 heap 底部容器的首尾，把容器内的数据转化为 heap
+	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void make_heap(RandomAccessIterator first, RandomAccessIterator last) {
 		__make_heap(first, last, value_type(first), distance_type(first));;
@@ -104,6 +192,27 @@ namespace MyTinySTL {
 		while (true) {
 			//重排以 holeIndex 为首的子树
 			__adjust_heap(first, holeIndex, len, T(*(first + holeIndex)));
+			if (holeIndex == 0)	return;	//走完根节点
+			holeIndex--;	//向前移一个节点
+		}
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	inline void make_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compared comp) {
+		__make_heap(first, last, comp, value_type(first), distance_type(first));;
+	}
+
+	template <class RandomAccessIterator, class T, class Distance, class Compared>
+	void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
+		T*, Distance*, Compared comp) {
+		if (last - first < 2)	return;	//长度为0或1时不需要重排
+		Distance len = last - first;
+		Distance holeIndex = (len - 2) / 2;	//第一个需要重排的子树头部节点
+		while (true) {
+			//重排以 holeIndex 为首的子树
+			__adjust_heap(first, holeIndex, len, T(*(first + holeIndex)), comp);
 			if (holeIndex == 0)	return;	//走完根节点
 			holeIndex--;	//向前移一个节点
 		}
