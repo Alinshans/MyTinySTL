@@ -4,6 +4,7 @@
 #include "iterator.h"
 #include "reverse_iterator.h"
 #include "algobase.h"
+#include "heap_algo.h"
 
 //包含其他算法
 namespace MyTinySTL {
@@ -35,6 +36,25 @@ namespace MyTinySTL {
 			first = next;
 		}
 		return last;	//未找到
+	}
+
+	/*********************************************************************************/
+	// binary_search
+	// 二分查找，如果在[first, last)内有等同于 value 的元素，返回 true，否则返回 false
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class ForwardIterator, class T>
+	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
+		ForwardIterator i = lower_bound(first, last, value);
+		return i != last && !(value < *i);
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class ForwardIterator, class T, class Compared>
+	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value,
+		Compared comp) {
+		ForwardIterator i = lower_bound(first, last, value);
+		return i != last && !comp(value, *i);
 	}
 
 	/*********************************************************************************/
@@ -297,6 +317,111 @@ namespace MyTinySTL {
 	}
 
 	/*********************************************************************************/
+	// lower_bound
+	// 在[first, last)中查找第一个不小于 value 的元素的位置
+	// 返回一个 iterator，它指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的第一个位置。
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class ForwardIterator, class T>
+	inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last,
+		const T& value) {
+		//根据迭代器的不同采用不同操作
+		return __lower_bound(first, last, value,
+			distance_type(first), iterator_category(fitst));
+	}
+
+	// __lower_bound 的 forward iterator 版本
+	template <class ForwardIterator, class T, class Distance>
+	ForwardIterator __lower_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Distance*, forward_iterator_tag) {
+		Distance len = distance(first, last);	//求区间长度
+		Distance half;
+		ForwardIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first;
+			advance(middle, half);	//令 middle 指向中间位置
+			if (*middle < value) {	//如果中间位置元素值小于 value
+				first = middle;
+				++first;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+			else
+				len = half;	//修正 len，查找前半段
+		}
+		return first;
+	}
+
+	// __lower_bound 的 random access iterator 版本
+	template <class RandomAccessIterator, class T, class Distance>
+	RandomAccessIterator __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
+		const T& value, Distance*, random_access_iterator_tag) {
+		Distance len = last - first;
+		Distance half;
+		RandomAccessIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first + half;	//令 middle 指向中间位置
+			if (*middle < value) {	//如果中间位置元素值小于 value
+				first = middle + 1;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+			else
+				len = half;	//修正 len，查找前半段
+		}
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class ForwardIterator, class T, class Compared>
+	inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Compared comp) {
+		//根据迭代器的不同采用不同操作
+		return __lower_bound(first, last, value, comp,
+			distance_type(first), iterator_category(fitst));
+	}
+
+	// __lower_bound 的 forward iterator 版本
+	template <class ForwardIterator, class T, class Distance, class Compared>
+	ForwardIterator __lower_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Compared comp, Distance*, forward_iterator_tag) {
+		Distance len = distance(first, last);	//求区间长度
+		Distance half;
+		ForwardIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first;
+			advance(middle, half);	//令 middle 指向中间位置
+			if (comp(*middle, value)) {	
+				first = middle;
+				++first;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+			else
+				len = half;	//修正 len，查找前半段
+		}
+		return first;
+	}
+
+	// __lower_bound 的 random access iterator 版本
+	template <class RandomAccessIterator, class T, class Distance, class Compared>
+	RandomAccessIterator __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
+		const T& value, Compared comp, Distance*, random_access_iterator_tag) {
+		Distance len = last - first;
+		Distance half;
+		RandomAccessIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first + half;	//令 middle 指向中间位置
+			if (comp(*middle, value)) {
+				first = middle + 1;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+			else
+				len = half;	//修正 len，查找前半段
+		}
+	}
+
+	/*********************************************************************************/
 	// max_element
 	// 返回一个 iterator，指向序列中最大的元素
 	// 重载版本使用仿函数 comp 代替比较操作
@@ -340,7 +465,7 @@ namespace MyTinySTL {
 
 	// 重载版本使用仿函数 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
-	ForwardIterator max_elememt(ForwardIterator first, ForwardIterator last,
+	ForwardIterator min_elememt(ForwardIterator first, ForwardIterator last,
 		Compared comp) {
 		if (first == last)	return first;
 		ForwardIterator result = first;
@@ -394,6 +519,171 @@ namespace MyTinySTL {
 	}
 
 	/*********************************************************************************/
+	// next_permutation
+	// 取得[first, last)所标示序列的下一个排列组合，如果没有下一个排序组合，返回 false，否则返回 true
+	// 默认版本根据 less-than 操作符做字典顺序的排序
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class BidirectionalIterator>
+	bool next_permutation(BidirectionalIterator first, BidirectionalIterator last) {
+		if (first == last)	return false;
+		BidirectionalIterator i = first;
+		++i;
+		if (i = last)	return false;
+		i = last;	//i 指向尾端
+		--i;
+		for (;;) {
+			BidirectionalIterator ii = i;
+			--i;
+			if (*i < *ii) {	//如果前一个元素小于后一个元素
+				BidirectionalIterator j = last;	//令 j 指向尾端
+				while (!(*i < *--j));	//从尾端开始查找第一个比 *i 大的元素
+				iter_swap(i, j);	//交换i，j
+				reverse(ii, last);	//将 ii 之后的所有元素反转
+				return true;
+			}
+			if (i == first) {	//进行至最前面
+				reverse(first, last);	//全部反转
+				return false;
+			}
+		}
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class BidirectionalIterator, class Compared>
+	bool next_permutation(BidirectionalIterator first, BidirectionalIterator last,
+		Compared comp) {
+		if (first == last)	return false;
+		BidirectionalIterator i = first;
+		++i;
+		if (i = last)	return false;
+		i = last;	//i 指向尾端
+		--i;
+		for (;;) {
+			BidirectionalIterator ii = i;
+			--i;
+			if (comp(*i, *ii)) {	//如果令 comp(*i, *ii)为 true
+				BidirectionalIterator j = last;	//令 j 指向尾端
+				while (!comp(*i, *--j));	//从尾端开始查找第一个令 comp(*i, *j)为 true 的元素
+				iter_swap(i, j);	//交换i，j
+				reverse(ii, last);	//将 ii 之后的所有元素反转
+				return true;
+			}
+			if (i == first) {	//进行至最前面
+				reverse(first, last);	//全部反转
+				return false;
+			}
+		}
+	}
+
+	/*********************************************************************************/
+	// partial_sort
+	// 对整个序列做部分排序，保证较小的 N 个元素以递增顺序置于[first, first + N)中
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class RandomAccessIterator>
+	inline void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
+		RandomAccessIterator last) {
+		__partial_sort(first, middle, last, value_type(first));
+	}
+
+	template <class RandomAccessIterator, class T>
+	void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
+		RandomAccessIterator last, T*) {
+		make_heap(first, middle);
+		for (RandomAccessIterator i = middle; i < last; ++i) {
+			if (*i < *first)	// max-heap 第一个元素最大
+				__pop_heap_aux(first, middle, i, T(*i), distance_type(first));
+		}
+		sort_heap(first, middle);	//排序
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	inline void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
+		RandomAccessIterator last, Compared comp) {
+		__partial_sort(first, middle, last, comp, value_type(first));
+	}
+
+	template <class RandomAccessIterator, class Compared, class T>
+	void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
+		RandomAccessIterator last, Compared comp, T*) {
+		make_heap(first, middle, comp);
+		for (RandomAccessIterator i = middle; i < last; ++i) {
+			if (comp(*i, *first))	
+				__pop_heap_aux(first, middle, i, T(*i), distance_type(first), comp);
+		}
+		sort_heap(first, middle, comp);	//排序
+	}
+
+	/*********************************************************************************/
+	// partial_sort_copy
+	// 行为与 partial_sort 类似，不同的是把排序结果复制到 result 容器中
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class InputIterator, class RandomAccessIterator>
+	inline RandomAccessIterator partial_sort_copy(InputIterator first,
+		InputIterator last, RandomAccessIterator result_first,
+		RandomAccessIterator result_last) {
+		return __partial_sort_copy(first, last, result_first, result_last,
+			distance_type(result_first), value_type(first));
+	}
+
+	template <class InputIterator, class RandomAccessIterator, class Distance, class T>
+	RandomAccessIterator __partial_sort_copy(InputIterator first, InputIterator last,
+		RandomAccessIterator result_first, RandomAccessIterator result_last,
+		Distance*, T*) {
+		if (result_first == result_last)	return result_last;
+		RandomAccessIterator result_iter = result_first;
+		while (first != last && result_iter != result_last) {	//复制区间
+			*result_iter = *first;
+			++result_iter;
+			++first;
+		}
+		make_heap(result_first, result_iter);
+		while (first != last) {
+			if (*first < *result_first)
+				__adjust_heap(result_first, Distance(0),
+					Distance(result_iter - result_first), T(*first));
+			++first;
+		}
+		sort_heap(result_first, result_iter);
+		return result_iter;
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class InputIterator, class RandomAccessIterator, class Compared>
+	inline RandomAccessIterator partial_sort_copy(InputIterator first,
+		InputIterator last, RandomAccessIterator result_first,
+		RandomAccessIterator result_last, Compared comp) {
+		return __partial_sort_copy(first, last, result_first, result_last, comp,
+			distance_type(result_first), value_type(first));
+	}
+
+	template <class InputIterator, class RandomAccessIterator, 
+		class Compared, class Distance, class T>
+	RandomAccessIterator __partial_sort_copy(InputIterator first, InputIterator last,
+		RandomAccessIterator result_first, RandomAccessIterator result_last,
+		Compared comp, Distance*, T*) {
+		if (result_first == result_last)	return result_last;
+		RandomAccessIterator result_iter = result_first;
+		while (first != last && result_iter != result_last) {	//复制区间
+			*result_iter = *first;
+			++result_iter;
+			++first;
+		}
+		make_heap(result_first, result_iter, comp);
+		while (first != last) {
+			if (comp(*first, *result_first))
+				__adjust_heap(result_first, Distance(0),
+					Distance(result_iter - result_first), T(*first), comp);
+			++first;
+		}
+		sort_heap(result_first, result_iter, comp);
+		return result_iter;
+	}
+
+	/*********************************************************************************/
 	// partition
 	// 对区间内的元素重排，被一元条件运算判定为 true 的元素会放到区间的前段
 	// 该函数不保证元素的原始相对位置
@@ -404,17 +694,74 @@ namespace MyTinySTL {
 		while (true) {
 			while (true) {
 				if (first == last)	return first;
-				else if (pred(*first))	++first;	//头指针所指元素符合 pred 为 true 的情况
+				else if (pred(*first))	++first;//头指针所指元素符合 pred 为 true 的情况
 				else break;
 			}
 			--last;		//尾指针回溯1
 			while (true) {
 				if (first == last)	return first;
-				else if (!pred(*last))	--last;		//尾指针所指元素符合 pred 为 false 的情况
+				else if (!pred(*last))	--last;	//尾指针所指元素符合 pred 为 false 的情况
 				else break;
 			}
-			iter_swap(first, last);				//交换头尾迭代器
+			iter_swap(first, last);	//交换头尾迭代器
 			++first;	//头指针前进1，准备下一轮循环
+		}
+	}
+
+	/*********************************************************************************/
+	// prev_permutation
+	// 取得[first, last)所标示序列的上一个排列组合，如果没有上一个排序组合，返回 false，否则返回 true
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class BidirectionalIterator>
+	bool prev_permutation(BidirectionalIterator first, BidirectionalIterator last) {
+		if (first == last)	return false;
+		BidirectionalIterator i = first;
+		++i;
+		if (i = last)	return false;
+		i = last;	//i 指向尾端
+		--i;
+		for (;;) {
+			BidirectionalIterator ii = i;
+			--i;
+			if (*ii < *i) {	//如果前一个元素大于后一个元素
+				BidirectionalIterator j = last;	//令 j 指向尾端
+				while (!(*--j < *i));	//从尾端开始查找第一个比 *i 小的元素
+				iter_swap(i, j);	//交换i，j
+				reverse(ii, last);	//将 ii 之后的所有元素反转
+				return true;
+			}
+			if (i == first) {	//进行至最前面
+				reverse(first, last);	//全部反转
+				return false;
+			}
+		}
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class BidirectionalIterator, class Compared>
+	bool prev_permutation(BidirectionalIterator first, BidirectionalIterator last,
+		Compared comp) {
+		if (first == last)	return false;
+		BidirectionalIterator i = first;
+		++i;
+		if (i = last)	return false;
+		i = last;	//i 指向尾端
+		--i;
+		for (;;) {
+			BidirectionalIterator ii = i;
+			--i;
+			if (comp(*ii, *i)) {	//如果令 comp(*ii, *i)为 true
+				BidirectionalIterator j = last;	//令 j 指向尾端
+				while (!comp(*--j, *i));	//从尾端开始查找第一个令 comp(*j, *i)为 true 的元素
+				iter_swap(i, j);	//交换i，j
+				reverse(ii, last);	//将 ii 之后的所有元素反转
+				return true;
+			}
+			if (i == first) {	//进行至最前面
+				reverse(first, last);	//全部反转
+				return false;
+			}
 		}
 	}
 
@@ -585,15 +932,15 @@ namespace MyTinySTL {
 	void __rotate(ForwardIterator first, ForwardIterator middle, ForwardIterator last,
 		Distance*, forward_iterator_tag) {
 		for (ForwardIterator i = middle; ;) {
-			iter_swap(first, i);			//前段后段元素互换
+			iter_swap(first, i);	//前段后段元素互换
 			++first;
 			++i;
 			if (first == middle) {			//前半段结束
 				if (i == last)	return;		//后半段也结束，交换完成
-				middle = i;			//调整，对新的前后段进行交换
+				middle = i;					//调整，对新的前后段进行交换
 			}
 			else if (i == last) {			//后半段结束
-				i = middle;			//调整，对新的前后段进行交换
+				i = middle;					//调整，对新的前后段进行交换
 			}
 		}
 	}
@@ -644,7 +991,7 @@ namespace MyTinySTL {
 			ptr1 = ptr2;
 			if (last - ptr2 > shift)	//下次偏移未到达尾端
 				ptr2 += shift;
-			else				//下次偏移超出尾端
+			else						//下次偏移超出尾端
 				ptr2 = first + (shift - (last - ptr2));
 		}
 		*ptr1 = value;	//把 value 移到最后一个元素移到的位置
@@ -687,13 +1034,13 @@ namespace MyTinySTL {
 				++current1;
 				++current2;
 			}
-			else {		//元素不相等
+			else {				//元素不相等
 				if (d1 == d2)	//如果两个序列等长，则序列二不可能成为序列一子序列
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;	//重新开始比对
-					--d1;			//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;		//重新开始比对
+					--d1;					//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -728,8 +1075,8 @@ namespace MyTinySTL {
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;	//重新开始比对
-					--d1;			//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;		//重新开始比对
+					--d1;					//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -748,8 +1095,8 @@ namespace MyTinySTL {
 		else {
 			first = find(first, last, value);	//先找出第一个 value 出现的位置
 			while (first != last) {
-				Count m = n - 1;		//还需要查找 n - 1 次
-				ForwardIterator i = first;	//从上次出现点开始找
+				Count m = n - 1;	//还需要查找 n - 1 次
+				ForwardIterator i = first;		//从上次出现点开始找
 				++i;
 				while (i != last && n != 0 && *i == value) {
 					++i;
@@ -775,8 +1122,8 @@ namespace MyTinySTL {
 				++first;
 			}	
 			while (first != last) {
-				Count m = n - 1;		//还需要查找 n - 1 次
-				ForwardIterator i = first;	//从上次出现点开始找
+				Count m = n - 1;	//还需要查找 n - 1 次
+				ForwardIterator i = first;		//从上次出现点开始找
 				++i;
 				while (i != last && n != 0 && comp(*i, value)) {
 					++i;
@@ -850,7 +1197,7 @@ namespace MyTinySTL {
 	// 重载版本使用仿函数 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
 	ForwardIterator unique(ForwardIterator first, ForwardIterator last, Compared comp) {
-		first = adjacent_find(first, last, comp);	//利用 adjacent_find 找到相邻重复元素的起点
+		first = adjacent_find(first, last, comp);		//利用 adjacent_find 找到相邻重复元素的起点
 		return unique_copy(first, last, first, comp);
 	}
 
@@ -942,6 +1289,111 @@ namespace MyTinySTL {
 			}
 		}
 		return ++result;
+	}
+
+	/*********************************************************************************/
+	// upper_bound
+	// 在[first, last)中查找最后一个不小于 value 的元素的位置
+	// 返回一个 iterator，它指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的最后一个位置。
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class ForwardIterator, class T>
+	inline ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last,
+		const T& value) {
+		//根据迭代器的不同采用不同操作
+		return __upper_bound(first, last, value,
+			distance_type(first), iterator_category(fitst));
+	}
+
+	// __upper_bound 的 forward iterator 版本
+	template <class ForwardIterator, class T, class Distance>
+	ForwardIterator __upper_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Distance*, forward_iterator_tag) {
+		Distance len = distance(first, last);	//求区间长度
+		Distance half;
+		ForwardIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first;
+			advance(middle, half);	//令 middle 指向中间位置
+			if (value < *middle)	//如果中间位置元素值大于指定值
+				len = half;	//修正 len，查找前半段
+			else {
+				first = middle;
+				++first;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+		}
+		return first;
+	}
+
+	// __upper_bound 的 random access iterator 版本
+	template <class RandomAccessIterator, class T, class Distance>
+	RandomAccessIterator __upper_bound(RandomAccessIterator first, RandomAccessIterator last,
+		const T& value, Distance*, random_access_iterator_tag) {
+		Distance len = last - first;
+		Distance half;
+		RandomAccessIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first + half;	//令 middle 指向中间位置
+			if (value < *middle)	//如果中间位置元素值大于指定值
+				len = half;	//修正 len，查找前半段
+			else {
+				first = middle + 1;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+		}
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class ForwardIterator, class T, class Compared>
+	inline ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Compared comp) {
+		//根据迭代器的不同采用不同操作
+		return __upper_bound(first, last, value, comp,
+			distance_type(first), iterator_category(fitst));
+	}
+
+	// __upper_bound 的 forward iterator 版本
+	template <class ForwardIterator, class T, class Distance, class Compared>
+	ForwardIterator __upper_bound(ForwardIterator first, ForwardIterator last,
+		const T& value, Compared comp, Distance*, forward_iterator_tag) {
+		Distance len = distance(first, last);	//求区间长度
+		Distance half;
+		ForwardIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first;
+			advance(middle, half);	//令 middle 指向中间位置
+			if (comp(value, *middle))	
+				len = half;	//修正 len，查找前半段
+			else {
+				first = middle;
+				++first;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+		}
+		return first;
+	}
+
+	// __upper_bound 的 random access iterator 版本
+	template <class RandomAccessIterator, class T, class Distance, class Compared>
+	RandomAccessIterator __upper_bound(RandomAccessIterator first, RandomAccessIterator last,
+		const T& value, Compared comp, Distance*, random_access_iterator_tag) {
+		Distance len = last - first;
+		Distance half;
+		RandomAccessIterator middle;
+		while (len > 0) {
+			half = len >> 1;	//除以2
+			middle = first + half;	//令 middle 指向中间位置
+			if (comp(value, *middle))
+				len = half;	//修正 len，查找前半段
+			else {
+				first = middle + 1;	//令 first 指向 middle 的下一个位置
+				len = len - half - 1;	//修正 len，查找后半段
+			}
+		}
 	}
 }
 #endif // !ALGO_H
