@@ -13,10 +13,10 @@
 //基本算法
 namespace MyTinySTL {
 
-	/************************************************************/
-	//copy
-    
-	//把 [first, last)区间内的元素复制到 [result, result + (last - first))内
+	/*********************************************************************************/
+	// copy
+	// 把 [first, last)区间内的元素复制到 [result, result + (last - first))内
+	/*********************************************************************************/
 	//完全泛化版本
 	template <class InputIterator, class OutputIterator>
 	inline OutputIterator copy(InputIterator first, InputIterator last,
@@ -106,10 +106,10 @@ namespace MyTinySTL {
 		return __copy_d(first, last, result, (ptrdiff_t*)0);
 	}
 
-	/************************************************************/
-	//copy_backward
-
-	//将 [first, last)区间内的元素复制到 [result - (last - first), result)内
+	/*********************************************************************************/
+	// copy_backward
+	// 将 [first, last)区间内的元素复制到 [result - (last - first), result)内
+	/*********************************************************************************/
 	template <class BidirectionalIterator1, class BidirectionalIterator2>
 	inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
 		BidirectionalIterator1 last, BidirectionalIterator2 result) {
@@ -171,12 +171,12 @@ namespace MyTinySTL {
 		}
 		return result;
 	}
-	
-	/***************************************************************/
-	// copy_n
 
-	//把 [first, first + n)区间上的元素复制到 [result, result + n)上
-	//返回一个 pair 分别指向复制结束的尾部
+	/*********************************************************************************/
+	// copy_n
+	// 把 [first, first + n)区间上的元素复制到 [result, result + n)上
+	// 返回一个 pair 分别指向复制结束的尾部
+	/*********************************************************************************/
 	template <class InputIterator, class Size, class OutputIterator>
 	inline pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
 		OutputIterator result) {
@@ -201,11 +201,11 @@ namespace MyTinySTL {
 		return pair<InputIterator, OutputIterator>(last, copy(first, last, result));
 	}
 	
-	/************************************************************/
-	// equal and mismatch
-	
-	//比较第一序列在 [first, last)区间上的元素值是否和第二序列相等
-	//第二序列元素若比第一序列元素少，返回 false
+	/*********************************************************************************/
+	// equal
+	// 比较第一序列在 [first, last)区间上的元素值是否和第二序列相等
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	inline bool equal(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last) {
@@ -216,7 +216,7 @@ namespace MyTinySTL {
 		return true;	//全部相等，返回true
 	}
 
-	//自定义仿函数comp作为比较依据
+	// 重载版本使用仿函数 comp 代替比较操作
 	template <class InputIterator1, class InputIterator2, class Compared>
 	inline bool equal(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last, Compared comp) {
@@ -227,33 +227,10 @@ namespace MyTinySTL {
 		return true;	//全部相等，返回true
 	}
 
-	//平行比较两个序列，找到第一处失配的点，返回一对迭代器，分别指向两个序列中失配的点
-	//第二序列比第一序列多出来的元素忽略不计，但如果第二序列元素比第一序列元素小，会发生不可预期的行为
-	template <class InputIterator1, class InputIterator2>
-	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
-		InputIterator1 last1, InputIterator2 first2) {
-		while (first1 != last1 && *first1 == *first2) {
-			++first1;
-			++first2;
-		}
-		return pair<InputIterator1, InputIterator2>(first1, first2);
-	}
-
-	//自定义仿函数comp作为比较依据
-	template <class InputIterator1, class InputIterator2, class Compred>
-		pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
-			InputIterator1 last1, InputIterator2 first2, Compred comp) {
-		while (first1 != last1 && comp(*first1, *first2)) {
-			++first1;
-			++first2;
-		}
-		return pair<InputIterator1, InputIterator2>(first1, first2);
-	}
-
-	/**************************************************************/
-	// fill and fill_n
-
-	//为 [first, last)区间内的所有元素填充新值
+	/*********************************************************************************/
+	// fill
+	// 为 [first, last)区间内的所有元素填充新值
+	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	void fill(ForwardIterator first, ForwardIterator last, const T& value) {
 		for (; first != last; ++first) {
@@ -261,17 +238,7 @@ namespace MyTinySTL {
 		}
 	}
 
-	//从 first 位置开始填充 n 个新值
-	template <class OutputIterator, class Size, class T>
-	OutputIterator fill_n(OutputIterator first, Size n, const T& value) {
-		for (; n > 0; --n, ++first) {
-			*first = value;
-		}
-		return first;
-	}
-
 	//为 char* 类型提供特化版本
-	
 	inline void fill(unsigned char* first, unsigned char* last, const unsigned char& c) {
 		unsigned char tmp = c;
 		memset(first, tmp, last - first);
@@ -287,6 +254,19 @@ namespace MyTinySTL {
 		memset(first, static_cast<unsigned char>(tmp), last - first);
 	}
 
+	/*********************************************************************************/
+	// fill_n
+	// 从 first 位置开始填充 n 个新值
+	/*********************************************************************************/
+	template <class OutputIterator, class Size, class T>
+	OutputIterator fill_n(OutputIterator first, Size n, const T& value) {
+		for (; n > 0; --n, ++first) {
+			*first = value;
+		}
+		return first;
+	}
+
+	//为 char* 类型提供特化版本
 	template <class Size>
 	inline unsigned char* fill_n(unsigned char* first, Size n, const unsigned char& c) {
 		fill(first, first + n, c);
@@ -305,10 +285,10 @@ namespace MyTinySTL {
 		return first + n;
 	}
 
-	/***************************************************************/
-	// iter_swap and swap
-
-	//将两个 ForwardIterator 所指对象对调
+	/*********************************************************************************/
+	// iter_swap
+	// 将两个 ForwardIterator 所指对象对调
+	/*********************************************************************************/
 	template <class ForwardIterator1, class ForwardIterator2>
 	inline void iter_swap(ForwardIterator1 a, ForwardIterator2 b) {
 		typename iterator_traits<ForwardIterator1>::value_type tmp = *a;
@@ -316,22 +296,15 @@ namespace MyTinySTL {
 		*b = tmp;
 	}
 
-	//交换两个对象的值
-	template <class T>
-	inline void swap(T& a, T& b) {
-		T tmp = a;
-		a = b;
-		b = tmp;
-	}
-
-	/***************************************************************/
-	//lexicographical_compare
-
-	//以字典序排列对两个序列进行比较，当在某个位置发现第一组不相等元素时，有下列几种情况：
-	//(1)如果第一序列的元素较小，返回 true ，否则返回 false
-	//(2)如果到达 last1 而尚未到达 last2 返回 true
-	//(3)如果到达 last2 而尚未到达 last1 返回 false
-	//(4)如果同时到达 last1 和 last2 返回 false
+	/*********************************************************************************/
+	// lexicographical_compare
+	// 以字典序排列对两个序列进行比较，当在某个位置发现第一组不相等元素时，有下列几种情况：
+	// (1)如果第一序列的元素较小，返回 true ，否则返回 false
+	// (2)如果到达 last1 而尚未到达 last2 返回 true
+	// (3)如果到达 last2 而尚未到达 last1 返回 false
+	// (4)如果同时到达 last1 和 last2 返回 false
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last2) {
@@ -345,7 +318,7 @@ namespace MyTinySTL {
 		return first1 == last1 && first2 != last2;	//只有情况(2)才返回 true
 	}
 
-	//自定义仿函数comp作为比较，取代 < 操作符
+	// 重载版本使用仿函数 comp 代替比较操作
 	template <class InputIterator1, class InputIterator2, class Compred>
 	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last2, Compred comp) {
@@ -370,32 +343,73 @@ namespace MyTinySTL {
 		return result != 0 ? result < 0 : len1 < len2;
 	}
 
-	/***************************************************************/
-	// max and min
-
-	//取二者中的较大值
+	/*********************************************************************************/
+	// max
+	// 取二者中的较大值
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
 	template <class T>
 	inline const T& max(const T& a, const T& b) {
 		return a < b ? b : a;
 	}
 
-	//使用仿函数comp判断大小
+	// 重载版本使用仿函数 comp 代替比较操作
 	template <class T, class Compare>
 	inline const T& max(const T& a, const T& b, Compare comp) {
 		return comp(a, b) ? b : a;
 	}
 
-	//取二者中的较小值
+	/*********************************************************************************/
+	// min 
+	// 取二者中的较小值
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
 	template <class T>
 	inline const T& min(const T& a, const T& b) {
 		return a < b ? a : b;
 	}
 
-	//使用仿函数comp判断大小
+	// 重载版本使用仿函数 comp 代替比较操作
 	template <class T, class Compare>
 	inline const T& min(const T& a, const T& b, Compare comp) {
 		return comp(a, b) ? a : b;
 	}
+	
+	/*********************************************************************************/
+	// mismatch
+	// 平行比较两个序列，找到第一处失配的点，返回一对迭代器，分别指向两个序列中失配的点
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class InputIterator1, class InputIterator2>
+	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+		InputIterator1 last1, InputIterator2 first2) {
+		while (first1 != last1 && *first1 == *first2) {
+			++first1;
+			++first2;
+		}
+		return pair<InputIterator1, InputIterator2>(first1, first2);
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class InputIterator1, class InputIterator2, class Compred>
+		pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+			InputIterator1 last1, InputIterator2 first2, Compred comp) {
+		while (first1 != last1 && comp(*first1, *first2)) {
+			++first1;
+			++first2;
+		}
+		return pair<InputIterator1, InputIterator2>(first1, first2);
+	}
+
+	/*********************************************************************************/
+	// swap
+	// 交换两个对象的值
+	/*********************************************************************************/
+	template <class T>
+	inline void swap(T& a, T& b) {
+		T tmp = a;
+		a = b;
+		b = tmp;
+	}
 }
 #endif // !ALGOBASE_H
-
