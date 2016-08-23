@@ -222,7 +222,7 @@ namespace MyTinySTL {
 		InputIterator2 first2, InputIterator2 last, Compared comp) {
 		for (; first1 != last1; ++first1, ++first2) {
 			if (!first2)	return false;	//序列2没有元素了
-			if (!comp(*first1, *first2)	return false;	
+			if (!comp(*first1, *first2))	return false;	
 		}
 		return true;	//全部相等，返回true
 	}
@@ -297,6 +297,38 @@ namespace MyTinySTL {
 	}
 
 	/*********************************************************************************/
+	// max
+	// 取二者中的较大值
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class T>
+	inline const T& max(const T& a, const T& b) {
+		return a < b ? b : a;
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class T, class Compare>
+	inline const T& max(const T& a, const T& b, Compare comp) {
+		return comp(a, b) ? b : a;
+	}
+	
+	/*********************************************************************************/
+	// min 
+	// 取二者中的较小值
+	// 重载版本使用仿函数 comp 代替比较操作
+	/*********************************************************************************/
+	template <class T>
+	inline const T& min(const T& a, const T& b) {
+		return b < a ? b : a;
+	}
+
+	// 重载版本使用仿函数 comp 代替比较操作
+	template <class T, class Compare>
+	inline const T& min(const T& a, const T& b, Compare comp) {
+		return comp(b, a) ? b : a;
+	}
+
+	/*********************************************************************************/
 	// lexicographical_compare
 	// 以字典序排列对两个序列进行比较，当在某个位置发现第一组不相等元素时，有下列几种情况：
 	// (1)如果第一序列的元素较小，返回 true ，否则返回 false
@@ -341,38 +373,6 @@ namespace MyTinySTL {
 		const int result = memcmp(first1, first2, min(len1, len2));
 		//若相等，则较长的比较大
 		return result != 0 ? result < 0 : len1 < len2;
-	}
-
-	/*********************************************************************************/
-	// max
-	// 取二者中的较大值
-	// 重载版本使用仿函数 comp 代替比较操作
-	/*********************************************************************************/
-	template <class T>
-	inline const T& max(const T& a, const T& b) {
-		return a < b ? b : a;
-	}
-
-	// 重载版本使用仿函数 comp 代替比较操作
-	template <class T, class Compare>
-	inline const T& max(const T& a, const T& b, Compare comp) {
-		return comp(a, b) ? b : a;
-	}
-
-	/*********************************************************************************/
-	// min 
-	// 取二者中的较小值
-	// 重载版本使用仿函数 comp 代替比较操作
-	/*********************************************************************************/
-	template <class T>
-	inline const T& min(const T& a, const T& b) {
-		return a < b ? a : b;
-	}
-
-	// 重载版本使用仿函数 comp 代替比较操作
-	template <class T, class Compare>
-	inline const T& min(const T& a, const T& b, Compare comp) {
-		return comp(a, b) ? a : b;
 	}
 	
 	/*********************************************************************************/
