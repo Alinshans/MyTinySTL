@@ -1314,7 +1314,7 @@ namespace MyTinySTL {
 			distance_type(first2));
 	}
 
-	template <class ForwardIterator1, class ForwardIterator2, class Compared
+	template <class ForwardIterator1, class ForwardIterator2, class Compared,
 		class Distance1, class Distance2>
 		ForwardIterator1 __search(ForwardIterator1 first1, ForwardIterator1 last1,
 			ForwardIterator2 first2, ForwardIterator2 last2, Compared comp,
@@ -1532,16 +1532,6 @@ namespace MyTinySTL {
 			__final_insertion_sort(first, last, comp);
 		}
 	}
-
-	// 用于控制分割恶化的情况
-	template <class Size>
-	inline Size __lg(Size n) {	//找出使得 2^k <= n 时，k 的最大值
-		Size k;
-		for (k = 0; n > 1; n >>= 1)	++k;
-		return k;
-	}
-
-	const int __SECTIONSIZE = 16;	//小型区间的大小
 
 	// 内省式排序，先进行quick sort，当分割行为有恶化倾向时，改用 heap sort
 	template <class RandomAccessIterator, class T, class Size, class Compared>
