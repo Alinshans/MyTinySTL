@@ -26,7 +26,7 @@ namespace MyTinySTL {
 	/*********************** destroy **********************/
 	template <class T>
 	inline void destroy(T * pointer) {
-		pointer->~T()
+		pointer->~T();
 	}
 
 	template <class ForwardIterator>
@@ -57,3 +57,4 @@ namespace MyTinySTL {
 	inline void destroy(wchar_t*, wchar_t*) {}
 }
 #endif // !CONSTRUCT_H
+
