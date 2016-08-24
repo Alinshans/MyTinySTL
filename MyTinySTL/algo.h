@@ -1451,9 +1451,9 @@ namespace MyTinySTL {
 		while (true) {
 			while (*first < pivot)	++first;	//从左边找第一个大于 pivot 的元素
 			--last;
-			while (*pivot < *last)	--last;	//从右边找第一个小于 pivot 的元素
+			while (pivot < *last)	--last;	//从右边找第一个小于 pivot 的元素
 			if (!(first < last))	return first;	//交错，循环结束
-			iterator(first, last);	//交换两个位置
+			iter_swap(first, last);	//交换两个位置
 			++first;
 		}
 	}
@@ -1495,7 +1495,7 @@ namespace MyTinySTL {
 
 	// 辅助函数 __unguarded_linear_insert
 	template <class RandomAccessIterator, class T>
-	void __unguarded_linear_insert(RandomAccessIterator last, T vlaue) {
+	void __unguarded_linear_insert(RandomAccessIterator last, T value) {
 		RandomAccessIterator next = last;
 		--next;
 		while (value < *next) {	//从尾部开始寻找第一个可插入位置
