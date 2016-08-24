@@ -33,7 +33,7 @@ namespace MyTinySTL {
 
 	template <class T>
 	T* allocator<T>::allocate() {
-		return static_cast<T*>(alloc::allocate(sizeof(T));
+		return static_cast<T*>(alloc::allocate(sizeof(T)));
 	}
 
 	template <class T>
@@ -56,22 +56,23 @@ namespace MyTinySTL {
 
 	template <class T>
 	void allocator<T>::construct(T* ptr) {
-		MyTinySTL::construct(ptr);
+		construct(ptr);
 	}
 
 	template <class T>
 	void allocator<T>::construct(T* ptr, const T& x) {
-		MyTinySTL::construct(ptr, x);
+		construct(ptr, x);
 	}
 
 	template <class T>
 	void allocator<T>::destroy(T* ptr) {
-		MyTinySTL::destroy(ptr);
+		destroy(ptr);
 	}
 
 	template <class T>
 	void allocator<T>::destroy(T* first, T* last) {
-		MyTinySTL::destroy(first, last);
+		destroy(first, last);
 	}
 }
 #endif // !ALLOCATOR_H
+
