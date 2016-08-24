@@ -197,7 +197,7 @@ struct __type_traits<T*> {
 };
 
 //判断是否为 int 类型
-template <class T>
+template <class Type>
 struct __is_integer {
 	typedef __false_type	is_integer;
 };
