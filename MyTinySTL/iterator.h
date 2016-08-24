@@ -126,17 +126,17 @@ namespace MyTinySTL {
 		value_type(const Iterator&) {
 		return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 	}
-	
+
 	// distance 函数：迭代器的距离
 	template <class InputIterator>
-	inline iterator_traits<InputIterator>::difference_type
+	inline typename iterator_traits<InputIterator>::difference_type
 		distance(InputIterator first, InputIterator last) {
 		typedef typename iterator_traits<InputIterator>::iterator_category category;
 		return __distance(first, last, category());
 	}
 
 	template <class InputIterator>
-	inline iterator_traits<InputIterator>::difference_type
+	inline typename iterator_traits<InputIterator>::difference_type
 		__distance(InputIterator first, InputIterator last, input_iterator_tag) {
 		iterator_traits<InputIterator>::difference_type n = 0;
 		while (first != last) {
@@ -147,7 +147,7 @@ namespace MyTinySTL {
 	}
 
 	template <class RandomAccessIterator>
-	inline iterator_traits<RandomAccessIterator>::difference_type
+	inline typename iterator_traits<RandomAccessIterator>::difference_type
 		__distance(RandomAccessIterator first, RandomAccessIterator last,
 			random_access_iterator_tag) {
 		return last - first;
@@ -178,3 +178,4 @@ namespace MyTinySTL {
 	}
 }
 #endif // !ITERATOR_H
+
