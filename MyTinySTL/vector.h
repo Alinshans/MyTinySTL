@@ -98,11 +98,8 @@ namespace MyTinySTL {
 		void vector_construct(InputIterator first, InputIterator last, __false_type);
 		void destroy_and_deallocate();
 		void allocate_and_fill(size_type n, const T& value);
-		iterator allocate_and_copy(iterator first, iterator last);
+		void allocate_and_copy(iterator first, iterator last);
 		void insert_aux(iterator position, const T& x);
-
-	public:
-		
 	};
 
 	/********************************************************************************/
@@ -111,7 +108,7 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	template <class InputIterator>
 	vector<T, Alloc>::vector(InputIterator first, InputIterator last) {
-		typename __is_integer<InputIterator>::is_integer integer;
+		typedef typename __is_integer<InputIterator>::is_integer integer;
 		vector_construct(first, last, integer());
 	}
 
@@ -131,7 +128,7 @@ namespace MyTinySTL {
 	// 复制构造函数
 	template <class T, class Alloc>
 	vector<T, Alloc>::vector(const vector<T, Alloc>& x) {
-			allocate_and_copy(x.begin(), x.end());
+		allocate_and_copy(x.begin(), x.end());
 	}
 
 	template <class T, class Alloc>
@@ -309,8 +306,7 @@ namespace MyTinySTL {
 
 	// allocate_and_copy 函数
 	template <class T, class Alloc>
-	typename vector<T, Alloc>::iterator
-		vector<T, Alloc>::allocate_and_copy(iterator first, iterator last) {
+	void vector<T, Alloc>::allocate_and_copy(iterator first, iterator last) {
 		difference_type n = last - first;
 		start = data_allocator::allocate(n);
 		finish = uninitialized_copy(first, last, start);
@@ -347,7 +343,7 @@ namespace MyTinySTL {
 				throw;
 			}
 			// 析构释放原 vector
-			destroy_and_deallocate;
+			destroy_and_deallocate();
 			// 调整迭代器，指向新的 vector
 			start = new_start;
 			finish = new_finish;
