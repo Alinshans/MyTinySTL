@@ -113,7 +113,7 @@ namespace MyTinySTL {
 	template <class BidirectionalIterator1, class BidirectionalIterator2>
 	inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
 		BidirectionalIterator1 last, BidirectionalIterator2 result) {
-		typename __type_traits<typename iterator_traits<BidirectionalIterator2>::value_type>
+		typedef typename __type_traits<typename iterator_traits<BidirectionalIterator2>::value_type>
 			::has_trivial_assignment_operator	trivial;
 		return __copy_backward_dispatch<BidirectionalIterator1, BidirectionalIterator2,
 			trivial()>::copy(first, last, result);
@@ -156,7 +156,7 @@ namespace MyTinySTL {
 		BidirectionalIterator1 last, BidirectionalIterator2 result,
 		bidirectional_iterator_tag, Distance*) {
 		while (first != last) {
-			*--result = *--first;
+			*--result = *--last;
 		}
 		return result;
 	}
@@ -167,7 +167,7 @@ namespace MyTinySTL {
 		BidirectionalIterator1 last, BidirectionalIterator2 result,
 		random_access_iterator_tag, Distance*) {
 		for (Distance n = last - first; n > 0; --n) {
-			*--result = *--first;
+			*--result = *--last;
 		}
 		return result;
 	}
