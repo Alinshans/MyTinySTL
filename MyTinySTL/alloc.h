@@ -170,12 +170,16 @@ namespace MyTinySTL {
 		result = (obj*)c;	//这一块返回给调用者
 		*my_free_list = nex_obj = (obj*)(c + n);
 		//将新增节点串联起来
-		for (int i = 1; i < nobj - 1; i++) {
+		for (int i = 1; ; i++) {
 			cur_obj = nex_obj;
 			nex_obj = (obj*)((char*)nex_obj + n);
-			cur_obj->free_list_link = nex_obj;
+			if (nobj - 1 == i) {
+				cur_obj->free_list_link = 0;
+				break;
+			}
+			else 
+				cur_obj->free_list_link = nex_obj;
 		}
-		cur_obj->free_list_link = 0;
 		return result;
 	}
 
