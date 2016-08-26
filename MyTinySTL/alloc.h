@@ -32,7 +32,7 @@ namespace MyTinySTL {
 			return result;
 		}
 
-		static void deallocate(void *p, size_t n) {
+		static void deallocate(void *p, size_t) {
 			free(p);
 		}
 
@@ -44,11 +44,10 @@ namespace MyTinySTL {
 		}
 	};
 
-	void(*_alloc::__oom_handler)() = 0;
+	void (*_alloc::__oom_handler)() = 0;
 	void * _alloc::oom_malloc(size_t n) {
-		void(*my_malloc_handler)();
+		void (*my_malloc_handler)();
 		void * result;
-
 		for (;;) {	//不断尝试释放、配置、再释放、再配置……
 			my_malloc_handler = __oom_handler;
 			if (my_malloc_handler == 0) { _THROW_BAD_ALLOC; }
@@ -76,7 +75,7 @@ namespace MyTinySTL {
 	private:
 		//free-list 的节点结构
 		union obj {
-			union obj * free_list_link;	//指向下一个节点
+			union obj * next_block;	//指向下一个区块
 			char data[1];	//指向本块内存，data表示本块内存的首地址
 		};
 
@@ -85,7 +84,7 @@ namespace MyTinySTL {
 		static obj * volatile free_list[_NFREELISTS];
 		//根据区块大小，选择第 n 号 free_list 。 
 		static size_t FREELIST_INDEX(size_t bytes) {
-			return ((bytes + _ALIGN - 1) / (_ALIGN - 1));
+			return ((bytes + _ALIGN - 1) / _ALIGN - 1);
 		}
 		//为free_list重新填充空间，返回一个大小为 n 的对象，可能加入大小为 n 的其它区块到free_list
 		static void* refill(size_t n);
@@ -106,7 +105,7 @@ namespace MyTinySTL {
 	char* alloc::start_free = 0;
 	char* alloc::end_free = 0;
 	size_t alloc::heap_size = 0;
-	alloc::obj * volatile alloc::free_list[_NFREELISTS] =
+	alloc::obj * volatile alloc::free_list[alloc::_NFREELISTS] =
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 	//空间配置函数 ， n > 0
@@ -125,23 +124,23 @@ namespace MyTinySTL {
 			return r;
 		}
 
-		*my_free_list = result->free_list_link;
+		*my_free_list = result->next_block;
 		return result;
 	}
 
 	//空间释放函数 , p 不能为 0
 	void alloc::deallocate(void *p, size_t n) {
-		obj *q = (obj *)p;
-		obj * volatile * my_free_list;
-
 		//大于128 bytes 就调用 _alloc::deallocate
-		if (n > (size_t)_NFREELISTS) {
+		if (n > (size_t)_MAX_BYTES) {
 			_alloc::deallocate(p, n);
 			return;
 		}
 
+		obj *q = (obj *)p;
+		obj * volatile * my_free_list;
+
 		my_free_list = free_list + FREELIST_INDEX(n);
-		q->free_list_link = *my_free_list;
+		q->next_block = *my_free_list;
 		*my_free_list = q;
 	}
 
@@ -174,11 +173,11 @@ namespace MyTinySTL {
 			cur_obj = nex_obj;
 			nex_obj = (obj*)((char*)nex_obj + n);
 			if (nobj - 1 == i) {
-				cur_obj->free_list_link = 0;
+				cur_obj->next_block = 0;
 				break;
 			}
 			else 
-				cur_obj->free_list_link = nex_obj;
+				cur_obj->next_block = nex_obj;
 		}
 		return result;
 	}
@@ -186,7 +185,6 @@ namespace MyTinySTL {
 	//从内存池中取空间给free_list使用
 	char* alloc::chunk_alloc(size_t size, int &nobj) {
 		char * result;
-
 		size_t need_bytes = size * nobj;	//需要分配的大小
 		size_t pool_bytes = end_free - start_free;	//内存池剩余大小
 
@@ -200,7 +198,7 @@ namespace MyTinySTL {
 		//内存池剩余大小不能完全满足需求量，但至少可以分配一个或一个以上的区块
 		else if (pool_bytes >= size) {
 			nobj = pool_bytes / size;	//调整返回的区块数
-			need_bytes = size * nobj;
+			need_bytes = size * nobj;	//调整分配的大小
 			result = start_free;
 			start_free += need_bytes;
 			return result;
@@ -212,11 +210,11 @@ namespace MyTinySTL {
 			if (pool_bytes > 0) {
 				obj * volatile * my_free_list = free_list + FREELIST_INDEX(pool_bytes);
 				//把内存池的残余空间纳入free_list
-				((obj*)start_free)->free_list_link = *my_free_list;
+				((obj*)start_free)->next_block = *my_free_list;
 				*my_free_list = (obj*)start_free;
 			}
 
-			//申请大小为2 * 需求量 + 附加量
+			//申请大小为2 * 需求量 + 附加量的heap空间
 			//附加量随着配置次数的增多而增大
 			size_t bytes_to_get = 2 * need_bytes + ROUND_UP(heap_size >> 4);
 			start_free = (char*)malloc(bytes_to_get);
@@ -229,7 +227,7 @@ namespace MyTinySTL {
 					p = *my_free_list;
 					if (p != 0) {
 						//free_list有未用区块，调整free_list，释放区块
-						*my_free_list = p->free_list_link;
+						*my_free_list = p->next_block;
 						start_free = (char*)p;
 						end_free = start_free + i;
 						//递归调用自己，为了修正nobj
