@@ -56,22 +56,22 @@ namespace MyTinySTL {
 
 	template <class T>
 	void allocator<T>::construct(T* ptr) {
-		construct(ptr);
+		MyTinySTL::construct(ptr);
 	}
 
 	template <class T>
 	void allocator<T>::construct(T* ptr, const T& x) {
-		construct(ptr, x);
+		MyTinySTL::construct(ptr, x);
 	}
 
 	template <class T>
 	void allocator<T>::destroy(T* ptr) {
-		destroy(ptr);
+		MyTinySTL::destroy(ptr);
 	}
 
 	template <class T>
 	void allocator<T>::destroy(T* first, T* last) {
-		destroy(first, last);
+		MyTinySTL::destroy(first, last);
 	}
 }
 #endif // !ALLOCATOR_H
