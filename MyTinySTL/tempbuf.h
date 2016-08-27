@@ -1,6 +1,19 @@
 #ifndef TEMPBUF_H
 #define TEMPBUF_H
 
+#ifndef USE_CSTDLIB
+#define USE_CSTDLIB
+#include <cstdlib>
+#endif // !USE_CSTDLIB
+
+#ifndef USE_CSTDDEF
+#define USE_CSTDDEF
+#include <cstddef>	
+#endif // !USE_CSTDDEF
+
+#include "type_traits.h"
+#include "uninitialized.h"
+
 namespace MyTinySTL {
 
 	template <class T>
