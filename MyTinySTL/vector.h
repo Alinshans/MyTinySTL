@@ -28,8 +28,8 @@ namespace MyTinySTL {
 		typedef Alloc	data_allocator;	//vector 的空间配置器
 
 	protected:
-		iterator start;				//表示目前使用空间的头
-		iterator finish;			//表示目前使用空间的尾
+		iterator start;			//表示目前使用空间的头
+		iterator finish;		//表示目前使用空间的尾
 		iterator end_of_storage;	//表示目前可用空间的尾
 
 	public:
@@ -93,6 +93,7 @@ namespace MyTinySTL {
 		void insert(iterator position, size_type n, const T& x);
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last);
+		void reverse() { MyTinySTL::reverse(begin(), end()); }
 		void swap(vector<T, Alloc>& x);
 
 		// 配置器相关操作
@@ -132,7 +133,7 @@ namespace MyTinySTL {
 			forward_iterator_tag);
 	};
 
-	/********************************************************************************/
+	/***************************************************************************************************/
 
 	// 构造函数
 	template <class T, class Alloc>
@@ -260,16 +261,6 @@ namespace MyTinySTL {
 		return first;
 	}
 
-	// 与另一个 vector 交换
-	template <class T, class Alloc>
-	void vector<T, Alloc>::swap(vector<T, Alloc>& x) {
-		if (*this != x) {
-			MyTinySTL::swap(start, x.start);
-			MyTinySTL::swap(finish, x.finish);
-			MyTinySTL::swap(end_of_storage, x.end_of_storage);
-		}
-	}
-
 	// 在 position 位置插入元素									 
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
@@ -310,6 +301,16 @@ namespace MyTinySTL {
 		InputIterator first, InputIterator last) {
 		typedef typename __is_integer<InputIterator>::is_integer integer;
 		insert_dispatch(position, first, last, integer());
+	}
+
+	// 与另一个 vector 交换
+	template <class T, class Alloc>
+	void vector<T, Alloc>::swap(vector<T, Alloc>& x) {
+		if (*this != x) {
+			MyTinySTL::swap(start, x.start);
+			MyTinySTL::swap(finish, x.finish);
+			MyTinySTL::swap(end_of_storage, x.end_of_storage);
+		}
 	}
 
 	// destroy_and_deallocate 函数
@@ -375,10 +376,10 @@ namespace MyTinySTL {
 		for (; first != last && cur != end(); ++first, ++cur) {
 			*cur = *first;
 		}
-		if (first == last)
-			earse(cur, end());
+		if (first == last)	//如果[first, last)区间内的元素复制完成
+			earse(cur, end());	//删除多余的元素
 		else
-			insert(end(), first, last);
+			insert(end(), first, last);	//否则插入区间剩余元素
 	}
 
 	template <class T, class Alloc>
@@ -386,20 +387,20 @@ namespace MyTinySTL {
 	void vector<T, Alloc>::assign_aux(ForwardIterator first, ForwardIterator last,
 		forward_iterator_tag) {
 		distance_type len = distance(first, last);
-		if (len > capacity()) {
-			destroy_and_deallocate();
-			allocate_and_copy(first, last);
+		if (len > capacity()) {	//如果区间长度大于容器容量
+			destroy_and_deallocate();	//销毁原来的容器
+			allocate_and_copy(first, last);	//重新分配空间并复制区间
 		}
-		else if (size() >= len) {
-			iterator new_finish = copy(first, last, start);
-			destroy(new_finish, finish);
-			finish = new_finish;
+		else if (size() >= len) {	//如果容器大小大于等于区间长度
+			iterator new_finish = copy(first, last, start);	//复制区间到起始处
+			destroy(new_finish, finish);	//销毁多余的元素
+			finish = new_finish;	//调整 finish 水位
 		}
-		else {
+		else {	//如果区间长度大于容器大小并且小于容器容量
 			ForwardIterator mid = first;
-			advance(mid, size());
-			copy(first, mid, start);
-			finish = uninitialized_copy(mid, last, finish);
+			advance(mid, size()); //以容器大小把区间分为前后段
+			copy(first, mid, start);	//先复制前一段区间
+			finish = uninitialized_copy(mid, last, finish); //再复制后一段区间
 		}
 	}
 
@@ -514,7 +515,7 @@ namespace MyTinySTL {
 	template <class InputIterator>
 	void vector<T, Alloc>::range_insert(iterator position, InputIterator first,
 		InputIterator last, input_iterator_tag) {
-		for (; first != last; ++first) {
+		for (; first != last; ++first) {	//一个一个元素插入
 			position = insert(position, *first);
 			++position;
 		}
@@ -526,26 +527,29 @@ namespace MyTinySTL {
 		ForwardIterator last, forward_iterator_tag) {
 		if (first != last) {
 			size_type n = distance(first, last);
-			if (size_type(end_of_storage - finish) >= n) {
-				const size_type after_elems = finish - position;
+			if (size_type(end_of_storage - finish) >= n) { //如果剩余可用大小大于插入元素个数
+				const size_type after_elems = finish - position; //position 后面的元素个数
 				iterator old_finish = finish;
-				if (after_elems > n) {
-					uninitialized_copy(finish - n, finish, finish);
+				if (after_elems > n) {	//如果 position 后面的元素个数大于插入元素个数
+					//先把最后 n 个元素复制到 finish 为起始的位置
+					uninitialized_copy(finish - n, finish, finish);	
 					finish += n;
+					//原剩余元素接着后移
 					copy_backward(position, old_finish - n, old_finish);
-					copy(first, last, position);
+					copy(first, last, position); //将要插入的元素复制到 position 处
 				}
-				else {
+				else {	//如果 position 后面的元素个数小于等于插入元素个数
 					ForwardIterator mid = first;
-					advance(mid, after_elems);
-					uninitialized_copy(mid, last, finish);
-					finish += n - after_elems;
-					uninitialized_copy(position, old_finish, finish);
-					finish += after_elems;
-					copy(first, mid, position);
+					advance(mid, after_elems);	//以 after_elems 把要插入的区间分为前后段
+					uninitialized_copy(mid, last, finish);	//把后段复制到 finish 为起始的位置
+					finish += n - after_elems;	//调整 finish 水位
+					//原元素复制到 finish 为起始的位置
+					uninitialized_copy(position, old_finish, finish);	
+					finish += after_elems;	//调整 finish 水位
+					copy(first, mid, position); //复制前半段到 position 位置
 				}
 			}
-			else {
+			else {	//如果剩余可用大小小于插入元素个数
 				//新长度：旧长度的两倍，旧长度+新增元素个数，取较大值
 				const size_type old_size = size();
 				const size_type len = old_size + max(old_size, n);
@@ -553,8 +557,11 @@ namespace MyTinySTL {
 				iterator new_start = data_allocator::allocate(len);
 				iterator new_finish = new_start;
 				try {
+					//原 vector 的前半段复制到新的 vector 空间
 					new_finish = uninitialized_copy(start, position, new_start);
+					//把插入区间复制到新 vector 空间尾端
 					new_finish = uninitialized_copy(first, last, new_finish);
+					//原 vector 的后半段复制到新的 vector 空间尾端
 					new_finish = uninitialized_copy(position, finish, new_finish);
 				}
 				catch (...) {
