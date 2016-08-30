@@ -301,7 +301,9 @@ namespace MyTinySTL {
 	typename list<T, Alloc>::iterator
 		list<T, Alloc>::erase(iterator first, iterator last) {
 		while (first != last) {
-			erase(first++);
+			iterator cur = first;
+			++first;
+			erase(cur);
 		}
 		return last;
 	}
@@ -558,6 +560,52 @@ namespace MyTinySTL {
 			(link_type)last.node->prev = (link_type)first.node->prev;
 			(link_type)first.node->prev = tmp;
 		}
+	}
+
+	// 重载操作符
+	template <class T, class Alloc>
+	inline bool operator==(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		typedef typename list<T, Alloc>::const_iterator const_iterator;
+		const_iterator first1 = x.begin();
+		const_iterator first2 = y.begin();
+		const_iterator last1 = x.end();
+		const_iterator last2 = y.end();
+		while (first1 != last1 && first2 != last2 && *first1 == *first2) {
+			++first1;
+			++first2;
+		}
+		return first1 == last1 && first2 == last2;
+	}
+
+	template <class T, class Alloc>
+	inline bool operator<(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		return MyTinySTL::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+	template <class T, class Alloc>
+	inline bool operator!=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		return !(x == y);
+	}
+
+	template <class T, class Alloc>
+	inline bool operator>(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		return y < x;
+	}
+
+	template <class T, class Alloc>
+	inline bool operator<=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		return !(y < x);
+	}
+
+	template <class T, class Alloc>
+	inline bool operator>=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		return !(x < y);
+	}
+
+	// 重载 MyTinySTL 的 swap
+	template <class T, class Alloc>
+	inline void swap(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+		x.swap(y);
 	}
 }
 #endif // !LIST_H
