@@ -68,7 +68,7 @@ namespace MyTinySTL {
 	};
 
 	// list:链表
-	template <class T, class Alloc = allocator<__list_node<T>>>
+	template <class T, class Alloc = alloc>
 	class list {
 	public:
 		// list 的嵌套型别定义
@@ -80,13 +80,14 @@ namespace MyTinySTL {
 		typedef const value_type&	const_reference;
 		typedef size_t	size_type;
 		typedef ptrdiff_t	difference_type;
+
 		typedef __list_iterator<T, T&, T*>	iterator;
 		typedef __list_iterator<T, const T&, const T*>	const_iterator;
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef reverse_iterator<iterator>	reverse_iterator;
 
 	public:
-		typedef Alloc	data_allocate;	// list 的空间配置器
+		typedef allocator<__list_node<T>, Alloc>	data_allocate;	// list 的空间配置器
 
 	public:
 		typedef	__list_node<T>*	link_type;	// list 的节点类型
