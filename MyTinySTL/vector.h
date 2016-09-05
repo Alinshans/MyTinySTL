@@ -7,7 +7,7 @@
 
 namespace MyTinySTL {
 
-	template <class T, class Alloc = allocator<T>>
+	template <class T, class Alloc = alloc>
 	class vector {
 	public:
 		// vector 的嵌套型别定义
@@ -17,15 +17,16 @@ namespace MyTinySTL {
 		typedef const value_type*	const_pointer;
 		typedef value_type&			reference;
 		typedef const value_type&	const_reference;
+		typedef size_t				size_type;
+		typedef ptrdiff_t			difference_type;
+
 		typedef value_type*			iterator;
 		typedef const value_type*	const_iterator;		
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef reverse_iterator<iterator>	reverse_iterator;	
-		typedef size_t				size_type;
-		typedef ptrdiff_t			difference_type;
 
 	public:
-		typedef Alloc	data_allocator;	//vector 的空间配置器
+		typedef allocator<T, Alloc>	data_allocator;	//vector 的空间配置器
 
 	protected:
 		iterator start;				//表示目前使用空间的头
@@ -74,7 +75,9 @@ namespace MyTinySTL {
 		reference at(size_type n) { return (*this)[n]; }
 		const_reference at(size_type n)	const { return (*this)[n]; }
 		reference front() { return *begin(); }
+		const_reference front() const { return *bgein(); }
 		reference back() { return *(end() - 1); }
+		const_reference back() const { return *(end() - 1); }
 
 		// 调整容器相关操作
 		void assign(size_type n, const T& value) { __fill_assign(n, value); }
