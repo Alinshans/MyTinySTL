@@ -143,6 +143,103 @@ namespace MyTinySTL {
 		}
 	};
 
+	// deque:双端队列
+	template <class T, class Alloc = alloc, size_t BufSiz = 0>
+	class deque {
+	public:
+		// deque 的嵌套型别定义
+		typedef T	value_type;
+		typedef Alloc	allocate_type;
+		typedef	value_type*	pointer;
+		typedef const value_type*	const_pointer;
+		typedef value_type&	reference;
+		typedef	const value_type&	const_reference;
+		typedef size_t	size_type;
+		typedef ptrdiff_t	difference_type;
+
+		typedef __deque_iterator<T, T&, T*, BufSiz>	iterator;
+		typedef __deque_iterator<T, const T&, const T*, BufSiz>	const_iterator;
+		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef reverse_iterator<iterator>	reverse_iterator;
+
+	public:
+		typedef	allocator<T, Alloc>	data_allocator;	//元素的配置器
+		typedef allocator<T*, Alloc>	map_allocator;	//缓冲区的配置器
+
+	protected:
+		typedef pointer*	map_pointer;
+		iterator start;		//指向第一个节点
+		iterator finish;	//指向最后一个结点
+		map_pointer map;	//指向一块 map 区域，map 中的每个元素都是一个指针，指向一个缓冲区
+		size_type map_size;	//map 内指针的数目
+
+	public:
+		// 构造函数
+		deque() {}
+		deque(size_type n, const T& value) {}
+		explicit deque(size_type n) {}
+		template <InputIterator>
+		deque(InputIterator first, InputIterator last);
+
+		// 复制构造函数
+		deque(const deque& x);
+
+		// 赋值操作符
+		deque& operator=(const deque& x);
+
+		// 析构函数
+		~deque();
+
+	public:
+		// 迭代器相关操作
+		iterator begin() { return start; }
+		const_iterator begin() const { return start; }
+		iterator end() { return finish; }
+		const_iterator end() const { return finish; }
+		reverse_iterator rbegin() { return reverse_iterator(end()); }
+		const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+		reverse_iterator rend() { return reverse_iterator(begin()); }
+		const_reverse_iterator rend() const { return reverse_iterator(begin()); }
+
+		// 容量相关操作
+		bool empty() { return begin() == end(); }
+		size_type size() const { return finish - start; }
+		size_type max_size() const { return size_type(-1); }
+
+		// 访问元素相关操作
+		reference front() { return *begin(); }
+		const_reference front() const { return *begin(); }
+		reference back() { return *(end() - 1); }
+		const_reference back() const { return *(end() - 1); }
+		reference operator[](size_type n) { return start[difference_type(n)]; }
+		const_reference operator[](size_type n) const { return start[difference_type(n)]; }
+		reference at(size_type n) { return (*this)[n]; }
+		const_reference at(size_type n) const { return (*this)[n]; }
+
+		// 调整容器相关操作
+		void assign(size_type n, const T& value);
+		void assign(size_type n);
+		template <class InputIterator>
+		void assign(InputIterator first, InputIterator last);
+		iterator insert(iterator position, const T& x);
+		iterator insert(iterator position) { return insert(position, T()); }
+		void insert(iterator position, size_type n, const T& x);
+		template <class InputIterator>
+		void insert(iterator position, InputIterator first, InputIterator last);
+		iterator erase(iterator position);
+		iterator erase(iterator first, iterator last);
+		iterator clear();
+		void push_back(const T& x);
+		void push_front(const T& x);
+		void pop_back();
+		void pop_front();
+		void resize(size_type n, const T& x);
+		void resize(size_type n) { resize(n, T()); }
+		void swap(const deque& x);
+
+		// 配置器相关操作
+		allocate_type get_allocate() { return allocate_type(); }
+	};
 }
 #endif // !DEQUE_H
 
