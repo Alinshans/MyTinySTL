@@ -148,9 +148,7 @@ namespace MyTinySTL {
 		iterator erase(iterator first, iterator last);
 		void clear();
 		void push_front(const T& x) { insert(begin(), x); }
-		void push_front() { insert(begin()); }
 		void push_back(const T& x) { insert(end(), x); }
-		void push_back() { insert(end()); }
 		void pop_front() { erase(begin()); }
 		void pop_back() { iterator tmp = end(); erase(--tmp); }
 		void resize(size_type new_size, const T& x);
