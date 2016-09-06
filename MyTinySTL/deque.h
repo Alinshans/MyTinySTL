@@ -31,7 +31,7 @@ namespace MyTinySTL {
 		T*	cur;	//指向缓冲区当前元素
 		T*	first;	//指向缓冲区的头
 		T*	last;	//指向缓冲区的尾
-		map_pointer node;	
+		map_pointer node;	//控制中心
 
 		// 构造函数
 		__deque_iterator() :cur(0), first(0), last(0), node(0) {}
@@ -162,6 +162,8 @@ namespace MyTinySTL {
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef reverse_iterator<iterator>	reverse_iterator;
 
+		static size_t buffer_size() { return __deque_buf_size(BufSiz, sizeof(T)); }
+
 	public:
 		typedef	allocator<T, Alloc>	data_allocator;	//元素的配置器
 		typedef allocator<T*, Alloc>	map_allocator;	//缓冲区的配置器
@@ -172,13 +174,14 @@ namespace MyTinySTL {
 		iterator finish;	//指向最后一个结点
 		map_pointer map;	//指向一块 map 区域，map 中的每个元素都是一个指针，指向一个缓冲区
 		size_type map_size;	//map 内指针的数目
+		enum { __initial_map_size = 8 };	//map 的初始化大小
 
 	public:
 		// 构造函数
-		deque() {}
-		deque(size_type n, const T& value) {}
-		explicit deque(size_type n) {}
-		template <InputIterator>
+		deque() { __fill_initialize(size_type(), T()); }
+		deque(size_type n, const T& value) { __fill_initialize(n, value); }
+		explicit deque(size_type n) { __fill_initialize(n, T()); }
+		template <class InputIterator>
 		deque(InputIterator first, InputIterator last);
 
 		// 复制构造函数
@@ -217,8 +220,8 @@ namespace MyTinySTL {
 		const_reference at(size_type n) const { return (*this)[n]; }
 
 		// 调整容器相关操作
-		void assign(size_type n, const T& value);
-		void assign(size_type n);
+		void assign(size_type n, const T& value) { __fill_assign(n, value); }
+		void assign(size_type n) { __fill_assign(n, T()); }
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last);
 		iterator insert(iterator position, const T& x);
@@ -233,13 +236,419 @@ namespace MyTinySTL {
 		void push_front(const T& x);
 		void pop_back();
 		void pop_front();
-		void resize(size_type n, const T& x);
-		void resize(size_type n) { resize(n, T()); }
+		void resize(size_type new_size, const T& x);
+		void resize(size_type new_size) { resize(new_size, T()); }
 		void swap(const deque& x);
 
 		// 配置器相关操作
 		allocate_type get_allocate() { return allocate_type(); }
+
+	protected:
+		// 内部成员函数
+		void __create_node(map_pointer nstart, map_pointer nfinish);
+		void __destroy_node(map_pointer nstart, map_pointer nfinish);
+		void __map_initialize(size_t nelem);
+		void __fill_initialize(size_type n, const T& value);
+		template <class InputIterator>
+		void __range_initialize(InputIterator first, InputIterator last,)
+		template <class Integer>
+		void __initizlize_dispatch(Integer n, Integer value, __true_type);
+		template <class InputIterator>
+		void __initizlize_dispatch(InputIterator first, InputIterator last, __false_type);
+		void __fill_assign(size_type n, const T& value);
+		template <class Integer>
+		void __assign_dispatch(Integer n, Integer value, __true_type);
+		template <class InputIterator>
+		void __assign_dispatch(InputIterator first, InputIterator last, __false_type);
+		template <class InputIterator>
+		void __assign_aux(InputIterator first, InputIterator last, input_iterator_tag);
+		template <class ForwardIterator>
+		void __assign_aux(ForwardIterator first, ForwardIterator last, forward_iterator_tag);
+		void __fill_insert(iterator position, size_type n, const T& x);
+		template <class Integer>
+		void __insert_dispatch(iterator, Integer, Integer, __true_type);
+		template <class InputIterator>
+		void __insert_dispatch(iterator, InputIterator, InputIterator, __false_type);
+		void __push_back_aux(const T& x);
+		void __push_front_aux(const T& x);
+		void __pop_back_aux();
+		void __pop_front_aux();
 	};
+
+	// 构造函数
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	deque<T, Alloc, BufSiz>::deque(InputIterator first, InputIterator last) {
+		typedef typename __is_integer<InputIterator>::is_integer integer;
+		__initialize_dispatch(first, last, integer());
+	}
+
+	// 复制构造函数
+	template <class T, class Alloc, size_t BufSiz>
+	deque<T, Alloc, BufSiz>::deque(const deque<T, Alloc, BufSiz>& x) {
+		__map_initialize(x.size());
+		MyTinySTL::uninitialized_copy(x.begin(), x.end(), start);
+	}
+
+	// 赋值操作符operator=
+	template <class T, class Alloc, size_t BufSiz>
+	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(const deque& x) {
+		size_type len = size();
+		if (*this != x) {
+			if (len >= x.size())
+				erase(MyTinySTL::copy(x.begin(), x.end(), start), finish);
+			else {
+				const_iterator mid = x.begin() + difference_type(len);
+				copy(x.begin(), mid, start);
+				insert(finish, mid, x.end());
+			}
+		}
+		return *this;
+	}
+
+	// 析构函数
+	template <class T, class Alloc, size_t BufSiz>
+	deque<T, Alloc, BufSiz>::~deque() {
+		data_allocator::destroy(start, finish);
+		data_allocator::deallocate(start, finish - start);
+	}
+
+	// 初始化容器
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::assign(InputIterator first, InputIterator last) {
+		typedef typename __is_integer<InputIterator>::is_integer integer;
+		__assign_dispatch(first, last, integer());
+	}
+
+	// 在 position 位置插入元素
+	template <class T, class Alloc, size_t BufSiz>
+	typename deque<T, Alloc, BufSiz>::iterator
+		deque<T, Alloc, BufSiz>::insert(iterator position, const T& x) {
+		if (position.cur == start.cur) {	//如果 position 位于头部
+			push_front(x);
+			return start;
+		}
+		else if (position.cur == finish.cur) {	//如果 position 位于尾部
+			push_back(x);
+			iterator tmp = finish;
+			--tmp;
+			return tmp;
+		}
+		else
+			return __insert_aux(position, x);
+	}
+
+	// 在 position 位置插入 n 个元素
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::insert(iterator position, size_type n, const T& x) {
+		__fill_insert(position, n, x);
+	}
+
+	// 在 position 位置插入[first, last)内的元素
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::insert(iterator position, InputIterator first,
+		InputIterator last) {
+		typedef typename __is_integer<InputIterator>::is_integer integer;
+		__insert_dispatch(position, first, last, integer());
+	}
+
+	// 删除 position 位置的元素
+	template <class T, class Alloc, size_t BufSiz>
+	typename deque<T, Alloc, BufSiz>::iterator
+		deque<T, Alloc, BufSiz>::erase(iterator position) {
+		iterator next = position;
+		++next;
+		difference_type index = position - start;	//清除点之前的元素个数
+		if (index < (size() >> 1)) {	//清除点之前的元素比较少
+			MyTinySTL::copy_backward(start, position, next);
+			pop_front();
+		}
+		else {	//清除点之后的元素比较少
+			MyTinySTL::copy(next, finish, position);
+			pop_back();
+		}
+		return start + index;
+	}
+
+	// 删除[first, last)上的元素
+	template <class T, class Alloc, size_t BufSiz>
+	typename deque<T, Alloc, BufSiz>::iterator
+		deque<T, Alloc, BufSiz>::erase(iterator first, iterator last) {
+		if (first == start && last == finish) {
+			clear();
+			return finish;
+		}
+		else {
+			difference_type n = last - first;	//清除区间长度
+			difference_type elem_before = first - start;	//清除区间之前的元素个数
+			if (elem_before < (size() - n) / 2) {	//清除区间前的元素较少
+				MyTinySTL::copy_backward(start, first, last);
+				iterator new_start = start + n;	//新起点
+				data_allocator::destroy(start, new_start);	//析构多余元素
+				//释放缓冲区
+				for (map_pointer cur = start.node; cur < new_start.node; ++cur)
+					data_allocator::deallocate(*cur, buffer_size());
+				start = new_start;
+			}
+			else {	//清除区间后的元素较少
+				MyTinySTL::copy(last, finish, first);
+				iterator new_finish = finish - n;	//新结尾
+				data_allocator::destroy(new_finish, finish);	//析构多余元素
+				//释放缓冲区
+				for (map_pointer cur = new_finish.node + 1; cur <= finish.node; ++cur)
+					data_allocator::deallocate(*cur, buffer_size());
+				finish = new_finish;
+			}
+			return start + elem_before;
+		}
+	}
+
+	// 清空容器
+	template <class T, class Alloc, size_t BufSiz>
+	typename deque<T, Alloc, BufSiz>::iterator
+		deque<T, Alloc, BufSiz>::clear() {
+		// clear() 会保留至少一个缓冲区
+		for (map_pointer cur = start.node + 1; cur < finish.node; ++cur) {
+			data_allocator::destroy(*cur, *cur + buffer_size());
+			data_allocator::deallocate(*cur, buffer_size());
+		}
+		if (start.node != finish.node) {	//有两个以上的缓冲区
+			data_allocator::destroy(start.cur, start.last);
+			data_allocator::destroy(finish.first, finish.cur);
+			// 释放尾部的缓冲区，保留头部
+			data_allocator::deallocate(finish.first, buffer_size());
+		}
+		else {	//只有一个缓冲区
+			data_allocator::destroy(start.cur, finish.cur);
+			// 保留唯一的缓冲区
+		}
+		finish = start;
+	}
+
+	// 在尾部插入元素
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::push_back(const T& x) {
+		if (finish.cur != finish.last - 1) {
+			data_allocator::construct(finish.cur, x);
+			++finish.cur;
+		}
+		else
+			__push_back_aux(x);
+	}
+
+	// 在头部插入元素
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::push_front(const T& x) {
+		if (start.cur != start.first) {
+			data_allocator::construct(start.cur, x);
+			--start.cur;
+		}
+		else
+			__push_front_aux(x);
+	}
+
+	// 弹出尾部元素
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::pop_back() {
+		if (finish.cur != finish.first) {
+			--finish.cur;
+			data_allocator::destroy(finish.cur);
+		}
+		else
+			__pop_back_aux();
+	}
+
+	// 弹出头部元素
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::pop_front() {
+		if (start.cur != start.last - 1) {
+			data_allocator::destroy(start.cur);
+			++start.cur;
+		}
+		else
+			__pop_front_aux();
+	}
+
+	// 重置容器大小
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::resize(size_type new_size, const T& x) {
+		const size_type len = size();
+		if (new_size < len)
+			erase(start + new_size, finish);
+		else
+			insert(finish, len - new_size, x);
+	}
+
+	// 交换两个 deque 容器
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::swap(const deque& x) {
+		MyTinySTL::swap(start, x.start);
+		MyTinySTL::swap(finish, x.finish);
+		MyTinySTL::swap(map, x.map);
+		MyTinySTL::swap(map_size, x.map_size);
+	}
+	// __create_node 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__create_node(map_pointer nstart, map_pointer nfinish) {
+		map_pointer cur;
+		try {
+			for (cur = nstart; cur < nfinish; ++cur)
+				*cur = data_allocator::allocate(__deque_buf_size(BufSiz, sizeof(T)));
+		}
+		catch (...) {
+			__destroy_node(nstart, nfinish);
+		}
+	}
+
+	// __destroy_node 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__destroy_node(map_pointer nstart, map_pointer nfinish) {
+		for (map_pointer n = nstart; n < nfinish; ++n) {
+			data_allocator::deallocate(*n, __deque_buf_size(BufSiz, sizeof(T)));
+		}
+	}
+
+	// __map_initialize 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__map_initialize(size_t nElem) {
+		size_type nNode = nElem / buffer_size() + 1;	//需要分配的缓冲区个数
+		map_size = MyTinySTL::max(__initial_map_size, nNode + 2);
+		map = map_allocator::allocate(map_size);
+		// 让 nstart 和 nfinish 都指向 map 最中央的区域，方便向头尾扩充
+		map_pointer nstart = map + (map_size - nNode) / 2;
+		map_pointer nfinish = nstart + nNode - 1;
+		try {
+			__create_node(nstart, nfinish);
+		}
+		catch (...) {
+			map_allocator::deallocate(map, map_size);
+			map = 0;
+			map_size = 0;
+		}
+		start.set_node(nstart);
+		finish.set_node(nfinish);
+		start.cur = start.first;
+		finish.cur = finish.first + nElem%buffer_size();
+	}
+
+	// __fill_initialize 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__fill_initialize(size_type n, const T& value) {
+		__map_initialize(n);
+		map_pointer = cur;
+		try {
+			for (cur = start.node; cur < finish.node; ++cur)
+				MyTinySTL::uninitialized_fill(*cur, *cur + buffer_size(), value);
+			MyTinySTL::uninitialized_fill(finish.first, finish.cur, value);
+		}
+		catch (...) {
+			data_allocator::destroy(start, iterator(*cur, cur));
+		}
+	}
+
+	// __initizlize_dispatch 函数
+	template <class T, class Alloc, size_t BufSiz>
+	template <class Integer>
+	void deque<T, Alloc, BufSiz>::__initizlize_dispatch(Integer n, Integer value,
+		__true_type) {
+		__fill_initialize(n, value);
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::__initizlize_dispatch(InputIterator first,
+		InputIterator last, __false_type) {
+		__range_initialize(first, last, iterator_category(first));
+	}
+
+	// __fill_assign 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__fill_assign(size_type n, const T& value) {
+
+	}
+	// __assign_dispatch 函数
+	template <class T, class Alloc, size_t BufSiz>
+	template <class Integer>
+	void deque<T, Alloc, BufSiz>::__assign_dispatch(Integer n, Integer value, __true_type) {
+		__fill_assign((size_type)n, (value_type)value);
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::__assign_dispatch(InputIterator first,
+		InputIterator last, __false_type) {
+		__assign_aux(first, last, iterator_category(first));
+	}
+
+	// __assign_aux 函数
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::__assign_aux(InputIterator first, InputIterator last,
+		input_iterator_tag) {
+
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	template <class ForwardIterator>
+	void deque<T, Alloc, BufSiz>::__assign_aux(ForwardIterator first, ForwardIterator last,
+		forward_iterator_tag) {
+		size_type len = distance(first, last);
+		if (len > size()) {
+			ForwardIterator mid = first;
+			advance(mid, size());
+			MyTinySTL::copy(first, mid, start);
+			insert(finish, mid, last);
+		}
+		else
+			erase(MyTinySTL::copy(first, last, start), finish);
+	}
+
+	// __fill_insert 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__fill_insert(iterator position, size_type n, const T& x) {
+
+	}
+
+	// __insert_dispatch 函数
+	template <class T, class Alloc, size_t BufSiz>
+	template <class Integer>
+	void deque<T, Alloc, BufSiz>::__insert_dispatch(iterator position,
+		Integer n, Integer x, __true_type) {
+		__fill_insert(position, n, x);
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	template <class InputIterator>
+	void deque<T, Alloc, BufSiz>::__insert_dispatch(iterator position,
+		InputIterator first, InputIterator last, __false_type) {
+
+	}
+
+	// __push_back_aux 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__push_back_aux(const T& x) {
+
+	}
+
+	// __push_front_aux 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__push_front_aux(const T& x) {
+
+	}
+
+	// __pop_back_aux 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__pop_back_aux() {
+
+	}
+
+	// __pop_front_aux 函数
+	template <class T, class Alloc, size_t BufSiz>
+	void deque<T, Alloc, BufSiz>::__pop_front_aux() {
+
+	}
 }
 #endif // !DEQUE_H
 
