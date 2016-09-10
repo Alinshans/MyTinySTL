@@ -23,6 +23,7 @@ namespace MyTinySTL {
 		typedef Ptr	pointer;
 		typedef Ref	reference;
 		typedef size_t	size_type;
+		typedef ptrdiff_t	difference_type;
 		typedef T** map_pointer;
 
 		typedef __deque_iterator self;
@@ -64,7 +65,7 @@ namespace MyTinySTL {
 			return *this;
 		}
 
-		self& operator++(int) {
+		self operator++(int) {
 			self tmp = *this;
 			++*this;
 			return tmp;
@@ -79,7 +80,7 @@ namespace MyTinySTL {
 			return *this;
 		}
 
-		self& operator--(int) {
+		self operator--(int) {
 			self tmp = *this;
 			--*this;
 			return tmp;
@@ -95,21 +96,21 @@ namespace MyTinySTL {
 					offset > 0 ? offset / difference_type(buffer_size()) 
 					: -difference_type((-offset - 1) / buffer_size()) - 1;
 				set_node(node + node_offset);
-				cur = first + (offset - node_offset*difference_type(buffer_size()));
+				cur = first + (offset - node_offset * difference_type(buffer_size()));
 			}
 			return *this;
 		}
 
-		self& operator+(difference_type n) const {
+		self operator+(difference_type n) const {
 			self tmp = *this;
 			return tmp += n;
 		}
 
-		self& operator-=(difference_type n) const {
+		self& operator-=(difference_type n) {
 			return *this += -n;
 		}
 
-		self& operator-(difference_type n) const {
+		self operator-(difference_type n) const {
 			self tmp = *this;
 			return tmp -= n;
 		}
@@ -178,7 +179,7 @@ namespace MyTinySTL {
 
 	public:
 		// 构造函数
-		deque() { __fill_initialize(size_type(), T()); }
+		deque() { __fill_initialize(0, 0); }
 		deque(size_type n, const T& value) { __fill_initialize(n, value); }
 		explicit deque(size_type n) { __fill_initialize(n, T()); }
 		template <class InputIterator>
@@ -238,7 +239,7 @@ namespace MyTinySTL {
 		void pop_front();
 		void resize(size_type new_size, const T& x);
 		void resize(size_type new_size) { resize(new_size, T()); }
-		void swap(const deque& x);
+		void swap(deque& x);
 
 		// 配置器相关操作
 		allocate_type get_allocate() { return allocate_type(); }
@@ -312,13 +313,13 @@ namespace MyTinySTL {
 	// 赋值操作符operator=
 	template <class T, class Alloc, size_t BufSiz>
 	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(const deque& x) {
-		size_type len = size();
-		if (*this != x) {
+		const size_type len = size();
+		if (this != &x) {
 			if (len >= x.size())
 				erase(MyTinySTL::copy(x.begin(), x.end(), start), finish);
 			else {
 				const_iterator mid = x.begin() + difference_type(len);
-				copy(x.begin(), mid, start);
+				MyTinySTL::copy(x.begin(), mid, start);
 				insert(finish, mid, x.end());
 			}
 		}
@@ -346,11 +347,11 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	typename deque<T, Alloc, BufSiz>::iterator
 		deque<T, Alloc, BufSiz>::insert(iterator position, const T& x) {
-		if (position.cur == start.cur) {	//如果 position 位于头部
+		if (position.cur == start.cur) {	//如果在头部插入
 			push_front(x);
 			return start;
 		}
-		else if (position.cur == finish.cur) {	//如果 position 位于尾部
+		else if (position.cur == finish.cur) {	//如果在尾部插入
 			push_back(x);
 			iterator tmp = finish;
 			--tmp;
@@ -407,7 +408,7 @@ namespace MyTinySTL {
 			if (elem_before < (size() - n) / 2) {	//清除区间前的元素较少
 				MyTinySTL::copy_backward(start, first, last);
 				iterator new_start = start + n;	//新起点
-				data_allocator::destroy(start, new_start);	//析构多余元素
+				MyTinySTL::destroy(start, new_start);	//析构多余元素
 				//释放缓冲区
 				for (map_pointer cur = start.node; cur < new_start.node; ++cur)
 					data_allocator::deallocate(*cur, buffer_size());
@@ -416,7 +417,7 @@ namespace MyTinySTL {
 			else {	//清除区间后的元素较少
 				MyTinySTL::copy(last, finish, first);
 				iterator new_finish = finish - n;	//新结尾
-				data_allocator::destroy(new_finish, finish);	//析构多余元素
+				MyTinySTL::destroy(new_finish, finish);	//析构多余元素
 				//释放缓冲区
 				for (map_pointer cur = new_finish.node + 1; cur <= finish.node; ++cur)
 					data_allocator::deallocate(*cur, buffer_size());
@@ -462,7 +463,7 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	void deque<T, Alloc, BufSiz>::push_front(const T& x) {
 		if (start.cur != start.first) {
-			data_allocator::construct(start.cur, x);
+			data_allocator::construct(start.cur - 1, x);
 			--start.cur;
 		}
 		else
@@ -498,12 +499,12 @@ namespace MyTinySTL {
 		if (new_size < len)
 			erase(start + new_size, finish);
 		else
-			insert(finish, len - new_size, x);
+			insert(finish, new_size - len, x);
 	}
 
 	// 交换两个 deque 容器
 	template <class T, class Alloc, size_t BufSiz>
-	void deque<T, Alloc, BufSiz>::swap(const deque& x) {
+	void deque<T, Alloc, BufSiz>::swap(deque& x) {
 		MyTinySTL::swap(start, x.start);
 		MyTinySTL::swap(finish, x.finish);
 		MyTinySTL::swap(map, x.map);
@@ -702,7 +703,7 @@ namespace MyTinySTL {
 			iterator back2 = back1;
 			--back2;
 			position = start + index;
-			MyTinySTL::copy_backward(pos, back2, back1);
+			MyTinySTL::copy_backward(position, back2, back1);
 		}
 		*position = x_copy;
 		return position;
@@ -891,7 +892,7 @@ namespace MyTinySTL {
 		else if (position.cur == finish.cur) {	//在尾部插入
 			iterator new_finish = __reserve_elements_at_back(n);
 			try {
-				MyTinySTL::uninitialized_copy(first, last, new_finish);
+				MyTinySTL::uninitialized_copy(first, last, finish);
 				finish = new_finish;
 			}
 			catch (...) {
@@ -906,8 +907,8 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	void deque<T, Alloc, BufSiz>::__push_back_aux(const T& x) {
 		value_type x_copy = x;
-		__reserve_map_at_back();
-		*(finish.node + 1) = data_allocator::allocate(__deque_buf_size(sizeof(T)));
+		__reserve_map_at_back(1);
+		*(finish.node + 1) = data_allocator::allocate(buffer_size());
 		try {
 			data_allocator::construct(finish.cur, x_copy);
 			finish.set_node(finish.node + 1);
@@ -922,8 +923,8 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	void deque<T, Alloc, BufSiz>::__push_front_aux(const T& x) {
 		value_type x_copy = x;
-		__reserve_map_at_front();
-		*(start.node - 1) = data_allocator::allocate(__deque_buf_size(sizeof(T)));
+		__reserve_map_at_front(1);
+		*(start.node - 1) = data_allocator::allocate(buffer_size());
 		try {
 			start.set_node(start.node - 1);
 			start.cur = start.last - 1;
@@ -957,17 +958,18 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	typename deque<T, Alloc, BufSiz>::iterator
 		deque<T, Alloc, BufSiz>::__reserve_elements_at_back(size_type n) {
-		if (n > (size_type)(finish.last - finish.cur - 1)) {
-			size_type new_node = (n + buffer_size() - 1) / buffer_size();	//申请缓冲区的个数
+		size_type left = finish.last - finish.cur - 1;
+		if (n > left) {
+			size_type new_node = (n - left + buffer_size() - 1) / buffer_size();	
 			__reserve_map_at_back(new_node);
 			size_type i;
 			try {
-				for (i = 1; i < new_node; ++i)
-					*(finish.node + i) = data_allocator::allocate(__deque_buf_size(sizeof(T)));
+				for (i = 1; i <= new_node; ++i)
+					*(finish.node + i) = data_allocator::allocate(buffer_size());
 			}
 			catch (...) {
 				for (size_type j = 1; j < i; ++j)
-					data_allocator::deallocate(finish.node + j);
+					map_allocator::deallocate(finish.node + j);
 			}
 		}
 		return finish + difference_type(n);
@@ -977,19 +979,21 @@ namespace MyTinySTL {
 	template <class T, class Alloc, size_t BufSiz>
 	typename deque<T, Alloc, BufSiz>::iterator
 		deque<T, Alloc, BufSiz>::__reserve_elements_at_front(size_type n) {
-		if (n > (size_type)(start.cur - start.last)) {
-			size_type new_node = (n + buffer_size() - 1) / buffer_size();	//申请缓冲区的个数
+		size_type left = start.cur - start.first;
+		if (n > left) {
+			size_type new_node = (n - left + buffer_size() - 1) / buffer_size();	
 			__reserve_map_at_front(new_node);
 			size_type i;
 			try {
-				for (i = 1; i < new_node; ++i)
-					*(start.node - i) = data_allocator::allocate(__deque_buf_size(sizeof(T)));
+				for (i = 1; i <= new_node; ++i)
+					*(start.node - i) = data_allocator::allocate(buffer_size());
 			}
 			catch (...) {
 				for (size_type j = 1; j < i; ++j)
-					data_allocator::deallocate(start.node - j);
+					map_allocator::deallocate(start.node - j);
 			}
 		}
+		return start - difference_type(n);
 	}
 
 	// __reserve_map_at_back 函数
@@ -1034,6 +1038,44 @@ namespace MyTinySTL {
 		// 调整新的 start 和 finish
 		start.set_node(new_start);
 		finish.set_node(new_start + old_nodes_num - 1);
+	}
+
+	// 重载比较操作符
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator==(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return x.size() == y.size() && 
+			MyTinySTL::equal(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator<(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return MyTinySTL::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator!=(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return !(x == y);
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator>(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return y < x;
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator<=(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return !(y < x);
+	}
+
+	template <class T, class Alloc, size_t BufSiz>
+	inline bool operator>=(const deque<T, Alloc, BufSiz>& x, const deque<T, Alloc, BufSiz>& y) {
+		return !(x < y);
+	}
+
+	// 重载 MyTinySTL 的 swap
+	template <class T, class Alloc, size_t BufSiz>
+	inline void swap(deque<T, Alloc, BufSiz>& x, deque<T, Alloc, BufSiz>& y) {
+		x.swap(y);
 	}
 }
 #endif // !DEQUE_H
