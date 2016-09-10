@@ -51,7 +51,7 @@ namespace MyTinySTL {
 			node = node->next;
 			return *this;
 		}
-		self& operator++(int) {
+		self operator++(int) {
 			self tmp = *this;
 			++*this;
 			return tmp;
@@ -60,7 +60,7 @@ namespace MyTinySTL {
 			node = node->prev;
 			return *this;
 		}
-		self& operator--(int) {
+		self operator--(int) {
 			self tmp = *this;
 			--*this;
 			return tmp;
@@ -221,12 +221,12 @@ namespace MyTinySTL {
 	// 赋值操作符
 	template <class T, class Alloc>
 	list<T, Alloc>& list<T, Alloc>::operator=(const list<T, Alloc>& x) {
-		if (*this != x) {
+		if (this != &x) {
 			iterator first1 = begin();
 			iterator last1 = end();
 			const_iterator first2 = x.begin();
 			const_iterator last2 = x.end();
-			while (first1 != las1 && first2 != last2)
+			while (first1 != last1 && first2 != last2)
 				*first1++ = *first2++;
 			if (first2 == last2)
 				erase(first1, last1);
@@ -561,7 +561,7 @@ namespace MyTinySTL {
 		}
 	}
 
-	// 重载操作符
+	// 重载比较操作符
 	template <class T, class Alloc>
 	inline bool operator==(const list<T, Alloc>& x, const list<T, Alloc>& y) {
 		typedef typename list<T, Alloc>::const_iterator const_iterator;
@@ -603,7 +603,7 @@ namespace MyTinySTL {
 
 	// 重载 MyTinySTL 的 swap
 	template <class T, class Alloc>
-	inline void swap(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+	inline void swap(list<T, Alloc>& x, list<T, Alloc>& y) {
 		x.swap(y);
 	}
 }
