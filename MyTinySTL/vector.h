@@ -163,7 +163,7 @@ namespace MyTinySTL {
 	// 赋值操作符 operator=
 	template <class T, class Alloc>
 	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& x) {
-		if (&x != this) {
+		if (this != &x) {
 			const size_type xlen = x.size();
 			if (xlen > capacity()) {	//如果要赋值的 vector 大小超过原 vector 容量大小
 				__destroy_and_deallocate();
