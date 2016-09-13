@@ -210,7 +210,6 @@ namespace MyTinySTL {
 	inline bool equal(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last) {
 		for (; first1 != last1; ++first1, ++first2) {
-			if (!first2)	return false;	//序列2没有元素了
 			if (*first1 != *first2)	return false;
 		}
 		return true;	//全部相等，返回true
@@ -221,7 +220,6 @@ namespace MyTinySTL {
 	inline bool equal(InputIterator1 first1, InputIterator1 last1,
 		InputIterator2 first2, InputIterator2 last, Compared comp) {
 		for (; first1 != last1; ++first1, ++first2) {
-			if (!first2)	return false;	//序列2没有元素了
 			if (!comp(*first1, *first2))	return false;	
 		}
 		return true;	//全部相等，返回true
