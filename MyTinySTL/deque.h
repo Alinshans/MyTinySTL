@@ -206,7 +206,7 @@ namespace MyTinySTL {
 		const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 
 		// 容量相关操作
-		bool empty() { return begin() == end(); }
+		bool empty() const { return begin() == end(); }
 		size_type size() const { return finish - start; }
 		size_type max_size() const { return size_type(-1); }
 
