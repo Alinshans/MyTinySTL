@@ -42,12 +42,12 @@ namespace MyTinySTL {
 	inline void push_heap(RandomAccessIterator first, RandomAccessIterator last,
 		Compared comp) {
 		//新元素应该已置于底部容器的最尾端
-		__push_heap(first, last, comp, distance_type(first), value_type(first));
+		__push_heap(first, last, distance_type(first), value_type(first), comp);
 	}
 
 	template <class RandomAccessIterator, class Compared, class Distance, class T>
 	inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compared comp, Distance*, T*) {
+		 Distance*, T*, Compared comp) {
 		__push_heap_aux(first, Distance((last - first) - 1), Distance(0), 
 			T(*(last - 1)), comp);
 	}
@@ -114,12 +114,12 @@ namespace MyTinySTL {
 	template <class RandomAccessIterator, class Compared>
 	inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
 		Compared comp) {
-		__pop_heap(first, last, comp, value_type(first));
+		__pop_heap(first, last, value_type(first), comp);
 	}
 
 	template <class RandomAccessIterator, class Compared, class T>
 	inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compared comp, T*) {
+		T*, Compared comp) {
 		__pop_heap_aux(first, last - 1, last - 1, T(*(last - 1)),
 			distance_type(first), comp);
 	}
@@ -166,9 +166,7 @@ namespace MyTinySTL {
 
 	// 重载版本使用仿函数 comp 代替比较操作
 	template <class RandomAccessIterator, class Compared>
-	void sort_heap(RandomAccessIterator first, RandomAccessIterator last, 
-		Compared comp) {
-		//每执行一次 pop_heap，最大的元素都被放到尾部，直到容器最多只有一个元素，完成排序
+	void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
 		while (last - first > 1) {
 			pop_heap(first, last--, comp);
 		}
@@ -201,7 +199,7 @@ namespace MyTinySTL {
 	template <class RandomAccessIterator, class Compared>
 	inline void make_heap(RandomAccessIterator first, RandomAccessIterator last,
 		Compared comp) {
-		__make_heap(first, last, comp, value_type(first), distance_type(first));;
+		__make_heap(first, last, value_type(first), distance_type(first), comp);;
 	}
 
 	template <class RandomAccessIterator, class T, class Distance, class Compared>
