@@ -3,6 +3,7 @@
 
 #include "algobase.h"
 #include "allocator.h"
+#include "functional.h"
 #include "tempbuf.h"
 #include "uninitialized.h"
 
