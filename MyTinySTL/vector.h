@@ -11,26 +11,26 @@ namespace MyTinySTL {
 	class vector {
 	public:
 		// vector 的嵌套型别定义
-		typedef T					value_type;
-		typedef Alloc				allocate_type;
-		typedef value_type*			pointer;
+		typedef T			value_type;
+		typedef Alloc			allocate_type;
+		typedef value_type*		pointer;
 		typedef const value_type*	const_pointer;
-		typedef value_type&			reference;
+		typedef value_type&		reference;
 		typedef const value_type&	const_reference;
-		typedef size_t				size_type;
-		typedef ptrdiff_t			difference_type;
+		typedef size_t			size_type;
+		typedef ptrdiff_t		difference_type;
 
-		typedef value_type*			iterator;
-		typedef const value_type*	const_iterator;		
+		typedef value_type*				iterator;
+		typedef const value_type*			const_iterator;		
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef reverse_iterator<iterator>	reverse_iterator;	
+		typedef reverse_iterator<iterator>		reverse_iterator;	
 
 	public:
 		typedef allocator<T, Alloc>	data_allocator;	//vector 的空间配置器
 
 	protected:
-		iterator start;				//表示目前使用空间的头
-		iterator finish;			//表示目前使用空间的尾
+		iterator start;			//表示目前使用空间的头
+		iterator finish;		//表示目前使用空间的尾
 		iterator end_of_storage;	//表示目前可用空间的尾
 
 	public:
@@ -75,7 +75,7 @@ namespace MyTinySTL {
 		reference at(size_type n) { return (*this)[n]; }
 		const_reference at(size_type n)	const { return (*this)[n]; }
 		reference front() { return *begin(); }
-		const_reference front() const { return *bgein(); }
+		const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
 		const_reference back() const { return *(end() - 1); }
 
@@ -588,7 +588,8 @@ namespace MyTinySTL {
 	// 重载比较操作符
 	template <class T, class Alloc>
 	inline bool operator==(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return x.size() == y.size() && equal(x.begin(), x.end(), y.begin(), y.end());
+		return x.size() == y.size() && 
+			MyTinySTL::equal(x.begin(), x.end(), y.begin(), y.end());
 	}
 
 	template <class T, class Alloc>
