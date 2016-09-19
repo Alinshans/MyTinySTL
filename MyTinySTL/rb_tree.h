@@ -686,4 +686,3 @@ namespace MyTinySTL {
 	}
 }
 #endif // !RB_TREE_H
-
