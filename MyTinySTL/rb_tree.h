@@ -162,7 +162,7 @@ namespace MyTinySTL {
 	//-------------------------------------------------------------------------------
 	//				╭─╮							╭─╮
 	//				│x│							│y│
-	//			    ╰─╯							╰─╯
+	//		       	╰─╯							╰─╯
 	//				╱ ╲							╱ ╲
 	//			╭─╮	    ╭─╮					╭─╮		╭─╮
 	//			│y│	 	│c│			=>		│a│		│x│
@@ -469,23 +469,23 @@ namespace MyTinySTL {
 		void erase(iterator position);
 		size_type erase(const key_type& x);
 		void erase(iterator first, iterator last);
-		void erase(const key_type* first, const key_type* last);
 		void clear();
-		void swap(rb_tree& x, rb_tree& y);
+		void swap(rb_tree& y);
 
 		// 容器相关操作
-		iterator find(const key_type& x);
-		size_type count(const key_type& x) const;
-		iterator lower_bound(const key_type& x);
-		iterator upper_bound(const key_type& x);
-		pair<iterator, iterator> equal_range(const key_type& x);
+		iterator find(const key_type& k);
+		size_type count(const key_type& k) const;
+		iterator lower_bound(const key_type& k);
+		iterator upper_bound(const key_type& k);
+		inline pair<iterator, iterator> equal_range(const key_type& k);
 		Compare key_comp() const { return key_compare; }
 
 	protected:
+		// 内部成员函数
 		void __initialize();
-		link_type __copy(link_type x, link_type y);
-		iterator __insert(base_ptr x, base_ptr y, const value_type& value);
-		
+		link_type __copy(link_type x, link_type p);
+		iterator __insert(base_ptr _x, base_ptr _y, const value_type& value);
+		void __erase(link_type x);
 	};
 
 	/**********************************************************************************/
@@ -684,5 +684,243 @@ namespace MyTinySTL {
 		for (; first != last; ++first)
 			insert_unique(*first);
 	}
+
+	// 删除 position 位置的节点
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(iterator position) {
+		link_type y = (link_type)__rb_tree_rebalance_for_erase(position.node,
+			header->parent, header->left, header->right);
+		__destroy_node(y);
+		--node_count;
+	}
+
+	// 删除与 x 键值相等的元素，返回删除的个数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(const key_type& x) {
+		pair<iterator, iterator> p = equal_range(x);	//找出与x键值相等的区间
+		size_type n = distance(p.first, p.second);	//区间长度
+		erase(p.first, p.second);
+		return n;
+	}
+
+	// 删除[first, last)区间内的元素
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+		erase(iterator first, iterator last) {
+		if (first == begin() && last == end())
+			clear();
+		else
+			while (first != last)	erase(first++);
+	}
+
+	// 清空 RB-tree
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::clear() {
+		if (node_count != 0) {
+			__erase(root());
+			leftmost() = header;
+			root() = 0;
+			rightmost() = header;
+			node_count = 0;
+		}
+	}
+
+	// 交换 RB-tree
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::swap(rb_tree& y) {
+		MyTinySTL::swap(header, y.header);
+		MyTinySTL::swap(node_count, y.node_count);
+		MyTinySTL::swap(key_compare, y.key_compare);
+	}
+
+	// 查找键值为 k 的节点，返回其迭代器
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const key_type& k) {
+		link_type y = header;	// 最后一个不小于 k 的节点
+		link_type x = root();
+		while (x != 0) {
+			if (!key_compare(key(x), k))	// k 小于等于 x键值，向左走
+				y = x, x = left(x);
+			else	// k 大于 x键值，向右走
+				x = right(x);
+		}
+		iterator j = iterator(y);
+		return (j == end() || key_compare(k, key(j.node))) ? end() : j;
+	}
+
+	// 查找键值为 k 的节点出现的次数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) const {
+		pair<iterator, iterator> p = equal_range(k);
+		size_type n = distance(p.first, p.second);
+		return n;
+	}
+
+	// 键值不小于 k 的第一个位置
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const key_type& k) {
+		link_type y = header;
+		link_type x = root();
+		while (x != 0) {
+			if (!key_compare(key(x), k)	// k <= x
+				y = x, x = left(x);
+			else
+				x = right(x);
+		}
+		return iterator(y);
+	}
+
+	// 键值不小于 k 的最后一个位置
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const key_type& k) {
+		link_type y = header;
+		link_type x = root();
+		while (x != 0) {
+			if (key_compare(k, key(x))	// k < x
+				y = x, x = left(x);
+			else
+				x = right(x);
+		}
+		return iterator(y);
+	}
+
+	// 查找与键值 k 相等的区间，返回一个 pair
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
+		typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const key_type& k) {
+		return pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+	}
+
+	// __initialize 函数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__initialize() {
+		header = __get_node();	//产生一个结点，另header指向它
+		color(header) = __rb_tree_red;	//另header为红，区分 root
+		root() = 0;
+		leftmost() = header;
+		rightmost() = header;
+	}
+
+	// __copy 函数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type 
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__copy(link_type x, link_type p) {
+		link_type top = __clone_node(x);
+		top->parent = p;
+		try {
+			if (x->right)
+				top->right = __copy(right(x), top);
+			p = top;
+			x = left(x);
+			while (x != 0) {
+				link_type y = __clone_node(x);
+				p->left = y;
+				y->parent = p;
+				if (x->right)
+					y->right = __copy(right(x), y);
+				p = y;
+				x = left(x);
+			}
+		}
+		catch (...) {
+			__erase(top);
+		}
+	}
+
+	// __insert 函数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+		__insert(base_ptr _x, base_ptr _y, const value_type& value) {
+		// _x 为新值插入点，_y 为插入点的父节点，value 为新值
+		link_type x = (link_type)_x;
+		link_type y = (link_type)_y;
+		link_type z;
+		if (y == header || x != 0 || key_compare(KeyOfValue()(v), key(y))) {
+			z = __create_node(v);
+			left(y) = z;	//使当 y 为 header 时，leftmost() = z
+			if (y == header) {
+				root() = z;
+				rightmost() = z;
+			}
+			else if (y == leftmost())	// 如果y为最左节点
+				leftmost() = z;	//维护 leftmost(),使其永远指向最左节点
+		}
+		else {
+			z = __create_node(v);
+			right(y) = z;	//另新节点成为插入点父节点的右子节点
+			if (y == rightmost())
+				rightmost() = z;	//维护 rightmost(),使其永远指向最右节点
+		}
+		parent(z) = y;	//设置新节点的父节点
+		left(z) = 0;	//设置新节点的左子节点
+		right(z) = 0;	//设置新节点的右子节点
+		__rb_tree_rebalance(z, header->parent);
+		++node_count;
+		return iterator(z);
+	}
+
+	// __erase 函数
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__erase(link_type x) {
+		while (x != 0) {
+			__erase(right(x));
+			link_type y = left(x);
+			__destroy_node(x);
+			x = y;
+		}
+	}
+
+	// 重载比较操作符
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return x.size() == y.size() &&
+			MyTinySTL::equal(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator<(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return MyTinySTL::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator!=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return !(x == y);
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator>(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return y < x;
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator<=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return !(y < x);
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline bool operator>=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		return !(x < y);
+	}
+
+	// 重载 MyTinySTL 的 swap
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline void swap(rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x,
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y) {
+		x.swap(y);
+	}
 }
 #endif // !RB_TREE_H
+
