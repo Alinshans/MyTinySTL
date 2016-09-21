@@ -18,7 +18,7 @@ namespace MyTinySTL {
 		typedef typename Sequence::reference	reference;
 		typedef typename Sequence::const_reference	const_reference;
 
-	protected:
+	private:
 		Sequence c;	//底层容器
 
 	public:
@@ -90,7 +90,7 @@ namespace MyTinySTL {
 		typedef typename Sequence::reference	reference;
 		typedef typename Sequence::const_reference	const_reference;
 
-	protected:
+	private:
 		Sequence c;	//底层容器
 		Compare comp;	//元素比较大小的标准
 
