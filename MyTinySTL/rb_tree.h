@@ -96,7 +96,7 @@ namespace MyTinySTL {
 		typedef Ptr	pointer;
 		typedef __rb_tree_iterator<T, T&, T*>	iterator;
 		typedef __rb_tree_iterator<T, const T&, const T*>	const_iterator;
-		typedef __rb_tree_iterator<T, Red, Ptr>	self;
+		typedef __rb_tree_iterator<T, Ref, Ptr>	self;
 		typedef __rb_tree_node<T>*	link_type;
 
 		// 构造函数
@@ -105,7 +105,7 @@ namespace MyTinySTL {
 		__rb_tree_iterator(const iterator& x) { node = x.node; }
 
 		// 重载操作符
-		reference operator*() const { return (link_type)node->value; }
+		reference operator*() const { return ((link_type)node)->value; }
 		pointer operator->() const { return &(operator*()); }
 		self& operator++() {
 			incremet();
@@ -126,6 +126,14 @@ namespace MyTinySTL {
 			return tmp;
 		}
 	};
+
+	inline bool operator==(const __rb_tree_iterator_base& x, __rb_tree_iterator_base& y) {
+		return x.node == y.node;
+	}
+
+	inline bool operator!=(const __rb_tree_iterator_base& x, __rb_tree_iterator_base& y) {
+		return !(x == y);
+	}
 
 	// 调整 RB-tree，旋转与改变颜色
 
@@ -162,7 +170,7 @@ namespace MyTinySTL {
 	//-------------------------------------------------------------------------------
 	//				╭─╮							╭─╮
 	//				│x│							│y│
-	//		       	╰─╯							╰─╯
+	//			    ╰─╯							╰─╯
 	//				╱ ╲							╱ ╲
 	//			╭─╮	    ╭─╮					╭─╮		╭─╮
 	//			│y│	 	│c│			=>		│a│		│x│
@@ -240,66 +248,70 @@ namespace MyTinySTL {
 		__rb_tree_node_base* y = z;
 		__rb_tree_node_base* x = 0;
 		__rb_tree_node_base* x_parent = 0;
-		if (y->left == 0)	//左子节点为 NULL
+
+		// 寻找可以代替的节点
+		if (y->left == 0)	//被删节点的左子节点为 NULL
 			x = y->right;
 		else {
-			if (y->right == 0)	//右子节点为 NULL
+			if (y->right == 0)	//被删节点的右子节点为 NULL
 				x = y->left;
-			else {
+			else {	//被删节点的左右节点都不为 NULL
 				y = y->right;
-				while (y->left != 0)
+				while (y->left != 0)	//从被删节点的右子节点一直向左走，找到要替代的节点
 					y = y->left;
 				x = y->right;
 			}
 		}
 
+		// 调整代替节点的节点关系
 		if (y != z) {	// y 变换了
-			z->left->parent = y;
-			y->left = z->left;
+			z->left->parent = y;	//用y替代被删节点
+			y->left = z->left;	//设置新的左子节点
 			if (y != z->right) {
 				x_parent = y->parent;
-				if (x)	x->parent = y->parent;
+				if (x)	x->parent = y->parent;	//调整替代节点的右子节点的父子关系
 				y->parent->left = x;
-				y->right = z->right;
+				y->right = z->right;	//设置新的右子节点
 				z->right->parent = y;
 			}
 			else
 				x_parent = y;
-			if (root == z)
-				root = y;
-			else if (z->parent->left == z)
-				z->parent->left = y;
-			else
-				z->parent->right = y;
+			if (root == z)	//如果被删节点为根节点
+				root = y;	//另替代节点为根节点
+			else if (z->parent->left == z)	//调整替代节点的父子关系
+				z->parent->left = y;	
+			else	
+				z->parent->right = y;	
 			y->parent = z->parent;
 			MyTinySTL::swap(y->color, z->color);
-			y = z;
+			y = z;	//另 y 指向要删除的节点
 		}
-		else {	// y == z
-			x->parent = y->parent;
+		else {	// y == z，x 为替代节点
+			x_parent = y->parent;	
 			if (x)	x->parent = y->parent;
-			if (root == z)
+			if (root == z)	//如果被删节点为根节点
 				root = x;
-			else
+			else	//调整替代节点的父子关系
 				if (z->parent->left == z)
 					z->parent->left = x;
 				else
 					z->parent->right = x;
-			if (leftmost == z)
+			if (leftmost == z)	//被删节点为 min 节点，调整最小值
 				if (z->right == 0)
 					leftmost = z->parent;
 				else
 					leftmost = __rb_tree_node_base::minimum(x);
-			if (rightmost == z)
+			if (rightmost == z)	//被删节点为 max 节点，调整最大值
 				if (z->left == 0)
 					rightmost = z->parent;
 				else
 					rightmost = __rb_tree_node_base::maximum(x);
 		}
 
-		if (y->color != __rb_tree_red) {
-			while(x!=root && (x==0 || x->color==__rb_tree_black))
-				if (x == x_parent->left) {
+		// 调整节点颜色
+		if (y->color != __rb_tree_red) {	//如果被删节点颜色为黑
+			while(x != root && (x == 0 || x->color == __rb_tree_black))
+				if (x == x_parent->left) {	//如果替代节点是左子节点
 					__rb_tree_node_base* w = x_parent->right;
 					if (w->color == __rb_tree_red) {
 						w->color = __rb_tree_black;
@@ -327,7 +339,7 @@ namespace MyTinySTL {
 						break;
 					}
 				}
-				else {
+				else {	//替代节点为右子节点
 					__rb_tree_node_base* w = x_parent->left;
 					if (w->color == __rb_tree_red) {
 						w->color = __rb_tree_black;
@@ -390,7 +402,7 @@ namespace MyTinySTL {
 		typedef allocator<rb_tree_node, Alloc>	rb_tree_node_allocator;	//空间配置器
 		allocator_type get_allocator() const { return allocator_type(); }
 
-	protected:
+	private:
 		// RB-tree 用以下三个数据表现
 		size_type node_count;	//树的节点数目
 		link_type header;	//一个特殊节点(与root节点互为对方的父节点)
@@ -423,7 +435,7 @@ namespace MyTinySTL {
 		static link_type& right(base_ptr x) { return (link_type&)(x->right); }
 		static link_type& parent(base_ptr x) { return (link_type&)(x->parent); }
 		static reference value(base_ptr x) { return ((link_type)x)->value; }
-		static const key_type key(base_ptr x) { return KeyOfValue()(value(link_type(x)); }
+		static const key_type key(base_ptr x) { return KeyOfValue()(value(link_type(x))); }
 		static color_type& color(base_ptr x) { return (color_type&)(link_type(x)->color); }
 
 		// 求极大值和极小值
@@ -474,7 +486,7 @@ namespace MyTinySTL {
 
 		// 容器相关操作
 		iterator find(const key_type& k);
-		size_type count(const key_type& k) const;
+		size_type count(const key_type& k);
 		iterator lower_bound(const key_type& k);
 		iterator upper_bound(const key_type& k);
 		inline pair<iterator, iterator> equal_range(const key_type& k);
@@ -570,7 +582,7 @@ namespace MyTinySTL {
 			y = x;
 			x = key_compare(KeyOfValue()(value), key(x)) ? left(x) : right(x);	//小于向左走
 		}
-		return __insert(x, y, v);
+		return __insert(x, y, value);
 	}
 
 	// 从 position 位置开始插入新值，节点允许重复
@@ -586,7 +598,7 @@ namespace MyTinySTL {
 				return insert_equal(value);	//寻找合适的插入点
 		}
 		else if (position.node == header) {	//位于 end() 处
-			if (!key_compare(KeyOfValue()(value), key(rightmost()))
+			if (!key_compare(KeyOfValue()(value), key(rightmost())))
 				// 新值键值大于等于 max 节点键值
 				return __insert(0, rightmost(), value);
 			else
@@ -599,7 +611,7 @@ namespace MyTinySTL {
 				&& !key_compare(key(position.node), KeyOfValue()(value))) {
 				// before <= value <= position
 				if (right(before.node) == 0)	//如果 before 节点的右子节点为 NULL
-					return __insert(0, before.node, v);
+					return __insert(0, before.node, value);
 				else
 					return __insert(position.node, position.node, value);
 			}
@@ -637,8 +649,8 @@ namespace MyTinySTL {
 				return pair<iterator, bool>(__insert(x, y, value), true);
 			else
 				--j;
-		if (key_compare(key(j.node)), KeyOfValue()(value))	//新节点没有重复
-			return pair<iterator, bool>(__insert(x, y, v), true);
+		if (key_compare(key(j.node), KeyOfValue()(value)))	//新节点没有重复
+			return pair<iterator, bool>(__insert(x, y, value), true);
 		//进行至此，表示新节点与现有节点键值重复
 		return pair<iterator, bool>(j, false);
 	}
@@ -696,7 +708,7 @@ namespace MyTinySTL {
 
 	// 删除与 x 键值相等的元素，返回删除的个数
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
 		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(const key_type& x) {
 		pair<iterator, iterator> p = equal_range(x);	//找出与x键值相等的区间
 		size_type n = distance(p.first, p.second);	//区间长度
@@ -752,8 +764,8 @@ namespace MyTinySTL {
 
 	// 查找键值为 k 的节点出现的次数
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
-		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) const {
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) {
 		pair<iterator, iterator> p = equal_range(k);
 		size_type n = distance(p.first, p.second);
 		return n;
@@ -766,7 +778,7 @@ namespace MyTinySTL {
 		link_type y = header;
 		link_type x = root();
 		while (x != 0) {
-			if (!key_compare(key(x), k)	// k <= x
+			if (!key_compare(key(x), k))	// k <= x
 				y = x, x = left(x);
 			else
 				x = right(x);
@@ -781,7 +793,7 @@ namespace MyTinySTL {
 		link_type y = header;
 		link_type x = root();
 		while (x != 0) {
-			if (key_compare(k, key(x))	// k < x
+			if (key_compare(k, key(x)))	// k < x
 				y = x, x = left(x);
 			else
 				x = right(x);
@@ -842,8 +854,8 @@ namespace MyTinySTL {
 		link_type x = (link_type)_x;
 		link_type y = (link_type)_y;
 		link_type z;
-		if (y == header || x != 0 || key_compare(KeyOfValue()(v), key(y))) {
-			z = __create_node(v);
+		if (y == header || x != 0 || key_compare(KeyOfValue()(value), key(y))) {
+			z = __create_node(value);
 			left(y) = z;	//使当 y 为 header 时，leftmost() = z
 			if (y == header) {
 				root() = z;
@@ -853,7 +865,7 @@ namespace MyTinySTL {
 				leftmost() = z;	//维护 leftmost(),使其永远指向最左节点
 		}
 		else {
-			z = __create_node(v);
+			z = __create_node(value);
 			right(y) = z;	//另新节点成为插入点父节点的右子节点
 			if (y == rightmost())
 				rightmost() = z;	//维护 rightmost(),使其永远指向最右节点
