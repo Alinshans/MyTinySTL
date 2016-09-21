@@ -11,26 +11,26 @@ namespace MyTinySTL {
 	class vector {
 	public:
 		// vector 的嵌套型别定义
-		typedef T			value_type;
-		typedef Alloc			allocate_type;
-		typedef value_type*		pointer;
+		typedef T					value_type;
+		typedef Alloc				allocate_type;
+		typedef value_type*			pointer;
 		typedef const value_type*	const_pointer;
-		typedef value_type&		reference;
+		typedef value_type&			reference;
 		typedef const value_type&	const_reference;
-		typedef size_t			size_type;
-		typedef ptrdiff_t		difference_type;
+		typedef size_t				size_type;
+		typedef ptrdiff_t			difference_type;
 
-		typedef value_type*				iterator;
-		typedef const value_type*			const_iterator;		
+		typedef value_type*			iterator;
+		typedef const value_type*	const_iterator;		
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef reverse_iterator<iterator>		reverse_iterator;	
+		typedef reverse_iterator<iterator>	reverse_iterator;	
 
 	public:
 		typedef allocator<T, Alloc>	data_allocator;	//vector 的空间配置器
 
-	protected:
-		iterator start;			//表示目前使用空间的头
-		iterator finish;		//表示目前使用空间的尾
+	private:
+		iterator start;				//表示目前使用空间的头
+		iterator finish;			//表示目前使用空间的尾
 		iterator end_of_storage;	//表示目前可用空间的尾
 
 	public:
