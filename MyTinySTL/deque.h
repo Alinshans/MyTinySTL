@@ -169,7 +169,7 @@ namespace MyTinySTL {
 		typedef	allocator<T, Alloc>	data_allocator;	//元素的配置器
 		typedef allocator<T*, Alloc>	map_allocator;	//缓冲区的配置器
 
-	protected:
+	private:
 		typedef pointer*	map_pointer;
 		iterator start;		//指向第一个节点
 		iterator finish;	//指向最后一个结点
