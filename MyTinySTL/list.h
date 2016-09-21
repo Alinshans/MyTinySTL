@@ -86,13 +86,12 @@ namespace MyTinySTL {
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef reverse_iterator<iterator>	reverse_iterator;
 
+		typedef	__list_node<T>*	link_type;	// list 的节点类型
+
 	public:
 		typedef allocator<__list_node<T>, Alloc>	data_allocate;	// list 的空间配置器
 
-	public:
-		typedef	__list_node<T>*	link_type;	// list 的节点类型
-
-	protected:
+	private:
 		link_type node;	// 指向尾端的一个空白节点
 
 	public:
