@@ -69,7 +69,7 @@ namespace MyTinySTL {
 		OutputIterator result, input_iterator_tag) {
 		// 判断迭代器是否相等决定循环，速度慢
 		for (; first != last; ++first, ++result) {
-			*result = *first
+			*result = *first;
 		}
 		return result;
 	}
