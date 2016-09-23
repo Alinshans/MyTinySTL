@@ -138,11 +138,11 @@ namespace MyTinySTL {
 	// 调整 RB-tree，旋转与改变颜色
 
 	//-------------------------------------------------------------------------------
-	//		            x				    y
+	//		       	    x				    y
 	//			   / \				   / \
-	//			  a    y		=>        x   c
-	//			      / \			 / \
-	//			     b	 c			a   b
+	//			  a   y		=>		  x   c
+	//			     / \			 / \
+	//			    b	c			a   b
 	//-------------------------------------------------------------------------------
 	// 左旋，参数一为左旋点，参数二为根节点
 	inline void __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root) {
@@ -361,7 +361,8 @@ namespace MyTinySTL {
 	}
 
 	// RB-tree 的定义
-	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc = alloc>
+	template <class Key, class Value, class KeyOfValue,
+		class Compare = MyTinySTL::less<int>, class Alloc = alloc>
 	class rb_tree {
 	protected:
 		// RB-tree 型别设定
@@ -387,6 +388,7 @@ namespace MyTinySTL {
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef reverse_iterator<iterator>	reverse_iterator;
 
+	public:
 		typedef allocator<rb_tree_node, Alloc>	rb_tree_node_allocator;	//空间配置器
 		allocator_type get_allocator() const { return allocator_type(); }
 
@@ -474,6 +476,7 @@ namespace MyTinySTL {
 
 		// 容器相关操作
 		iterator find(const key_type& k);
+		const_iterator find(const key_type& k) const;
 		size_type count(const key_type& k);
 		iterator lower_bound(const key_type& k);
 		iterator upper_bound(const key_type& k);
@@ -747,6 +750,21 @@ namespace MyTinySTL {
 				x = right(x);
 		}
 		iterator j = iterator(y);
+		return (j == end() || key_compare(k, key(j.node))) ? end() : j;
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const key_type& k) const {
+		link_type y = header;	// 最后一个不小于 k 的节点
+		link_type x = root();
+		while (x != 0) {
+			if (!key_compare(key(x), k))	// k 小于等于 x键值，向左走
+				y = x, x = left(x);
+			else	// k 大于 x键值，向右走
+				x = right(x);
+		}
+		const_iterator j = const_iterator(y);
 		return (j == end() || key_compare(k, key(j.node))) ? end() : j;
 	}
 
