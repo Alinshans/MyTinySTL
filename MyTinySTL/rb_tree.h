@@ -138,7 +138,7 @@ namespace MyTinySTL {
 	// 调整 RB-tree，旋转与改变颜色
 
 	//-------------------------------------------------------------------------------
-	//		       	    x				    y
+	//			    x				    y
 	//			   / \				   / \
 	//			  a   y		=>		  x   c
 	//			     / \			 / \
@@ -165,7 +165,7 @@ namespace MyTinySTL {
 	//			    x				    y
 	//			   / \				   / \
 	//			  y   c		=>		  a   x
-	//			 / \				     / \
+	//			 / \			             / \
 	//			a   b				    b	c
 	//-------------------------------------------------------------------------------
 	// 右旋，参数一为右旋点，参数二为根节点
@@ -361,8 +361,8 @@ namespace MyTinySTL {
 	}
 
 	// RB-tree 的定义
-	template <class Key, class Value, class KeyOfValue,
-		class Compare = MyTinySTL::less<int>, class Alloc = alloc>
+	template <class Key, class Value, class KeyOfValue = Key,
+		class Compare = MyTinySTL::less<Key>, class Alloc = alloc>
 	class rb_tree {
 	protected:
 		// RB-tree 型别设定
