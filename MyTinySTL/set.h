@@ -6,7 +6,7 @@
 namespace MyTinySTL {
 
 	// set:键值与实值相同，键值不允许重复，以 RB-tree 作为底层机制
-	template <class Key, class Compare = MyTinySTL::less<int>, class Alloc = alloc>
+	template <class Key, class Compare = MyTinySTL::less<Key>, class Alloc = alloc>
 	class set {
 	public:
 		typedef Key	key_type;
@@ -36,14 +36,14 @@ namespace MyTinySTL {
 		typedef typename rep_type::difference_type	difference_type;
 
 	public:
-		// 构造、复制、析构函数
+		// 构造、复制函数
 		set() :t() {}
 		template <class InputIterator>
 		set(InputIterator first, InputIterator last) : t() { t.insert_unique(first, last); }
 		set(const set& x) :t(x.t) {}
 		set& operator=(const set& x) { t = x.t; return *this; }
 
-		// 相关接口
+		// 相关接口操作
 		key_compare key_comp() const { return t.key_comp(); }
 		value_compare value_comp() const { return t.key_comp(); }
 		allocate_type get_allocator() const { return t.get_allocator(); }
@@ -56,7 +56,8 @@ namespace MyTinySTL {
 		size_type size() const { return t.size(); }
 		size_type max_size() const { return t.max_size(); }
 		
-		// 插入删除
+		// 插入删除操作
+		// 插入操作使用的是 RB-tree 的 insert_unique
 		pair<iterator, bool> insert(const value_type& x) {
 			pair<typename rep_type::iterator, bool> p = t.insert_unique(x);
 			return pair<iterator, bool>(p.first, p.second);
@@ -97,6 +98,16 @@ namespace MyTinySTL {
 
 	// 重载操作符
 	template <class Key, class Compare, class Alloc>
+	inline bool operator==(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y) {
+		return x == y;
+	}
+
+	template <class Key, class Compare, class Alloc>
+	inline bool operator<(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y) {
+		return x < y;
+	}
+
+	template <class Key, class Compare, class Alloc>
 	inline bool operator!=(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y) {
 		return !(x == y);
 	}
@@ -118,14 +129,14 @@ namespace MyTinySTL {
 
 	// 重载 MyTinySTL 的 swap
 	template <class Key, class Compare, class Alloc>
-	void swap(const set<Key, Compare, Alloc>& x, const set<Key, Compare, Alloc>& y) {
+	void swap(set<Key, Compare, Alloc>& x, set<Key, Compare, Alloc>& y) {
 		x.swap(y);
 	}
 
 	/***********************************************************************************/
 
-	// multiset:键值允许重复，除了插入调用的是 insert_equal，其它与 set 均相同
-	template <class Key, class Compare = MyTinySTL::less<int>, class Alloc = alloc>
+	// multiset:允许键值重复的 set
+	template <class Key, class Compare = MyTinySTL::less<Key>, class Alloc = alloc>
 	class multiset {
 	public:
 		typedef Key	key_type;
@@ -176,6 +187,7 @@ namespace MyTinySTL {
 		size_type max_size() const { return t.max_size(); }
 
 		// 插入删除
+		// 插入操作使用的是 RB-tree 的 insert_equal
 		pair<iterator, bool> insert(const value_type& x) {
 			pair<typename rep_type::iterator, bool> p = t.insert_equal(x);
 			return pair<iterator, bool>(p.first, p.second);
@@ -241,7 +253,7 @@ namespace MyTinySTL {
 
 	// 重载 MyTinySTL 的 swap
 	template <class Key, class Compare, class Alloc>
-	void swap(const multiset<Key, Compare, Alloc>& x, const multiset<Key, Compare, Alloc>& y) {
+	void swap(multiset<Key, Compare, Alloc>& x, multiset<Key, Compare, Alloc>& y) {
 		x.swap(y);
 	}
 }
