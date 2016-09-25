@@ -5,6 +5,7 @@
 #include "iterator.h"
 #include "reverse_iterator.h"
 #include "memory.h"
+#include "functional.h"
 #include "pair.h"
 
 namespace MyTinySTL {
