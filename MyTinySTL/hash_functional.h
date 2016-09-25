@@ -4,8 +4,9 @@
 #include <cstddef>
 
 namespace MyTinySTL {
+	// hash function : 计算元素位置的函数
 
-	// 对于大部分，hash 什么都不做
+	// 对于大部分，hash function 什么都不做
 	template <class Key>
 	struct hash {};
 
