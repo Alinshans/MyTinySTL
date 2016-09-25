@@ -52,7 +52,7 @@ namespace MyTinySTL {
 		hashtable* ht;	//保持与容器的连结
 
 		// 构造函数
-		__hashtable_iterator(node* n, hashtable tab) :cur(n), ht(tab) {}
+		__hashtable_iterator(node* n, hashtable* tab) :cur(n), ht(tab) {}
 		__hashtable_iterator() {}
 
 		// 重载操作符
@@ -162,7 +162,8 @@ namespace MyTinySTL {
 
 	// hashtable 模板类定义
 	template <class Val, class Key, class HashFcn,
-		class ExtractKey, class EqualKey, class Alloc = alloc>
+		class ExtractKey = MyTinySTL::identity<Key>, 
+		class EqualKey = MyTinySTL::equal_to<Key>, class Alloc = alloc>
 	class hashtable {
 	public:
 		// hashtable 型别定义
@@ -211,7 +212,8 @@ namespace MyTinySTL {
 
 	public:
 		// 构造，复制，析构函数
-		hashtable(size_type n, const HashFcn& hf, const EqualKey& eql,
+		hashtable(size_type n, const HashFcn& hf = HashFcn(), 
+			const EqualKey& eql = EqualKey(),
 			const ExtractKey ext = ExtractKey())
 			:hash(hf), equals(eql), get_key(ext), element_nums(0) {
 			__initialize_buckets(n);
@@ -302,8 +304,6 @@ namespace MyTinySTL {
 		void __erase_bucket(const size_type n, node* last);
 		void __copy_from(const hashtable& ht);
 
-	public:
-		friend bool operator==(const hashtable& lhs, const hashtable& rhs);
 	};
 
 	/********************************************************************************/
@@ -392,7 +392,7 @@ namespace MyTinySTL {
 		tmp->next = first;
 		buckets[n] = tmp;	//让新节点成为链表的第一个节点
 		++element_nums;
-		return iterator(tmp, this);
+		return iterator(tmp, this);	
 	}
 
 	// insert_unique 的 input_iterator_tag 版本
@@ -705,7 +705,7 @@ namespace MyTinySTL {
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
 		__initialize_buckets(size_type n) {
 		const size_type n_buckets = __next_size(n);
-		buckets.resize(n_buckets);
+		buckets.reserve(n_buckets);
 		buckets.insert(buckets.end(), n_buckets, (node*)0);
 		element_nums = 0;
 	}
@@ -747,7 +747,7 @@ namespace MyTinySTL {
 		node* n = __get_node();
 		n->next = 0;
 		try {
-			node_allocator::construct(&n->value, value);
+			MyTinySTL::construct(&n->value, value);
 			return n;
 		}
 		catch (...) {
@@ -758,7 +758,7 @@ namespace MyTinySTL {
 	// __delete_node 函数
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::__delete_node(node* n) {
-		node_allocator::destroy(&n->value);
+		MyTinySTL::destroy(&n->value);
 		__put_node(n);
 	}
 
