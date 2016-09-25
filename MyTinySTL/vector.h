@@ -96,6 +96,7 @@ namespace MyTinySTL {
 		void insert(iterator position, InputIterator first, InputIterator last);
 		void resize(size_type new_size, const T& x);
 		void resize(size_type new_size) { return resize(new_size, T()); }
+		void reserve(size_type n);
 		void reverse() { MyTinySTL::reverse(begin(), end()); }
 		void swap(vector& x);
 
@@ -291,6 +292,20 @@ namespace MyTinySTL {
 			earse(begin() + new_size, end());
 		else
 			insert(end(), new_size - size(), x);
+	}
+
+	// 重新配置大小
+	template <class T, class Alloc>
+	void vector<T, Alloc>::reserve(size_type n) {
+		if (capacity() < n) {
+			const size_type old_size = size();
+			iterator tmp = data_allocator::allocate(n);
+			MyTinySTL::uninitialized_copy(start, finish, tmp);
+			__destroy_and_deallocate();
+			start = tmp;
+			finish = tmp + old_size;
+			end_of_storage = start + n;
+		}
 	}
 
 	// 与另一个 vector 交换
