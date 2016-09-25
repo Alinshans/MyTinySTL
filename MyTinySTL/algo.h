@@ -107,7 +107,7 @@ namespace MyTinySTL {
 		return __equal_range(first, last, value, distance_type(first),
 			iterator_category(first));
 	}
-
+	
 	// __equal_range 的 forward iterator 版本
 	template <class ForwardIterator, class T, class Distance>
 	pair<ForwardIterator, ForwardIterator>
@@ -470,7 +470,7 @@ namespace MyTinySTL {
 		const T& value) {
 		//根据迭代器的不同采用不同操作
 		return __lower_bound(first, last, value,
-			distance_type(first), iterator_category(fitst));
+			distance_type(first), iterator_category(first));
 	}
 
 	// __lower_bound 的 forward iterator 版本
@@ -512,6 +512,7 @@ namespace MyTinySTL {
 			else
 				len = half;	//修正 len，查找前半段
 		}
+		return first;
 	}
 
 	// 重载版本使用仿函数 comp 代替比较操作
@@ -562,6 +563,7 @@ namespace MyTinySTL {
 			else
 				len = half;	//修正 len，查找前半段
 		}
+		return first;
 	}
 
 	/*********************************************************************************/
