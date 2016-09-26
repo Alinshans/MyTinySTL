@@ -76,9 +76,9 @@ namespace MyTinySTL {
 		const node* old = cur;	//原来的节点
 		cur = cur->next;
 		if (!cur) {	//如果 cur 为 NULL，跳到下一个 bucket 的起始处
-			size_type bucket = ht->__bkt_num(old->value);	//找到下一个 bucket 的位置
-			while (!cur && ++bucket < ht->buckets.size())
-				cur = ht->buckets[bucket];
+			size_type bucket = ht->get_index(old->value);	//找到下一个 bucket 的位置
+			while (!cur && ++bucket < ht->get_buckets().size())
+				cur = ht->get_buckets()[bucket];
 		}
 		return *this;
 	}
@@ -134,9 +134,9 @@ namespace MyTinySTL {
 		const node* old = cur;	//原来的节点
 		cur = cur->next;
 		if (!cur) {	//如果 cur 为 NULL，跳到下一个 bucket 的起始处
-			size_type bucket = ht->__bkt_num(old->value);	//找到下一个 bucket 的位置
-			while (!cur && ++bucket < ht->buckets.size())
-				cur = ht->buckets[bucket];
+			size_type bucket = ht->get_index(old->value);	//找到下一个 bucket 的位置
+			while (!cur && ++bucket < ht->get_buckets().size())
+				cur = ht->get_buckets()[bucket];
 		}
 		return *this;
 	}
@@ -207,8 +207,11 @@ namespace MyTinySTL {
 		hasher hash;
 		key_equal equals;
 		ExtractKey get_key;
-		vector<node*, Alloc>	buckets;	//以 vector 完成
 		size_type element_nums;
+		vector<node*, Alloc>	buckets;	//以 vector 完成
+
+	public:
+		vector<node*, Alloc>& get_buckets() { return buckets; }
 
 	public:
 		// 构造，复制，析构函数
@@ -285,7 +288,8 @@ namespace MyTinySTL {
 		iterator find(const key_type& k);
 		const_iterator find(const key_type& k) const;
 		size_type count(const key_type& k) const;
-		
+		size_type get_index(const value_type& value) { return __bkt_num(value); }
+
 		pair<iterator, iterator> equal_range(const key_type& k);
 		pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 		void swap(hashtable& rhs);
@@ -303,7 +307,6 @@ namespace MyTinySTL {
 		void __erase_bucket(const size_type n, node* first, node* last);
 		void __erase_bucket(const size_type n, node* last);
 		void __copy_from(const hashtable& ht);
-
 	};
 
 	/********************************************************************************/
