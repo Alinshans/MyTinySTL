@@ -103,8 +103,8 @@ namespace MyTinySTL {
 		typedef size_t	size_type;
 		typedef ptrdiff_t	difference_type;
 
-		node* cur;	//迭代器目前所指节点
-		hashtable* ht;	//保持与容器的连结
+		const node* cur;	//迭代器目前所指节点
+		const hashtable* ht;	//保持与容器的连结
 
 		// 构造函数
 		__hashtable_const_iterator(const node* n, const hashtable* tab)
@@ -184,7 +184,7 @@ namespace MyTinySTL {
 
 	private:
 		typedef __hashtable_node<Val>	node;	// hashtable 的节点
-
+		typedef vector<node*, Alloc>	bucket_type;
 	public:
 		// hashtable 的迭代器型别
 		typedef __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>
@@ -208,10 +208,11 @@ namespace MyTinySTL {
 		key_equal equals;
 		ExtractKey get_key;
 		size_type element_nums;
-		vector<node*, Alloc>	buckets;	//以 vector 完成
+		bucket_type buckets;	//以 vector 完成
 
 	public:
-		vector<node*, Alloc>& get_buckets() { return buckets; }
+		bucket_type& get_buckets() { return buckets; }
+		const bucket_type& get_buckets() const { return buckets; }
 
 	public:
 		// 构造，复制，析构函数
@@ -234,8 +235,8 @@ namespace MyTinySTL {
 		// 迭代器相关操作
 		iterator begin();
 		const_iterator begin() const;
-		iterator end() { return iterator(0, this); }
-		const_iterator end() const { return iterator(0, this); }
+		iterator end() { return iterator((node*)0, this); }
+		const_iterator end() const { return const_iterator((node*)0, this); }
 
 		// 容量相关操作
 		bool empty() const { return size() == 0; }
@@ -288,7 +289,7 @@ namespace MyTinySTL {
 		iterator find(const key_type& k);
 		const_iterator find(const key_type& k) const;
 		size_type count(const key_type& k) const;
-		size_type get_index(const value_type& value) { return __bkt_num(value); }
+		size_type get_index(const value_type& value) const { return __bkt_num(value); }
 
 		pair<iterator, iterator> equal_range(const key_type& k);
 		pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
