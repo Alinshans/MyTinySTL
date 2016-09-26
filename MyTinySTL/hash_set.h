@@ -208,7 +208,7 @@ namespace MyTinySTL {
 
 			// 插入删除操作
 			// 使用 insert_equal，键值允许重复 
-			pair<iterator, bool> insert(const value_type& value) {
+			iterator insert(const value_type& value) {
 				pair<typename rep_type::iterator, bool> p = ht.insert_equal(value);
 				return pair<iterator, bool>(p.first, p.second);
 			}
@@ -216,7 +216,7 @@ namespace MyTinySTL {
 			void insert(InputIterator first, InputIterator last) {
 				ht.insert_equal(first, last);
 			}
-			pair<iterator, bool> insert_noresize(const value_type& value) {
+			iterator insert_noresize(const value_type& value) {
 				pair<typename rep_type::iterator, bool> p = ht.insert_equal_noresize(value);
 				return pair<iterator, bool>(p.first, p.second);
 			}
