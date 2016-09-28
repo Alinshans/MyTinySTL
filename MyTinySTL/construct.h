@@ -61,3 +61,4 @@ namespace MyTinySTL {
 	template <> inline void destroy(wchar_t*, wchar_t*) {}
 }
 #endif // !MYTINYSTL_CONSTRUCT_H_
+
