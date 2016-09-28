@@ -119,3 +119,4 @@ namespace MyTinySTL {
 	}
 }
 #endif // !MYTINYSTL_UNINITIALIZED_H_
+
