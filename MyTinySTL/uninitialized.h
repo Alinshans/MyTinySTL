@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_UNINITIALIZED_H_
 #define MYTINYSTL_UNINITIALIZED_H_
 
-// 这个头文件包含三个全局函数 uninitialized_copy(), uninitialized_fill(), uninitialized_fill_n()
+// 这个头文件包含三个全局函数 uninitialized_copy, uninitialized_fill, uninitialized_fill_n
 // 用于未初始化时的 copy, fill, fill_n
 // 分别与高层算法函数中的 copy, fill, fill_n 对应
 
