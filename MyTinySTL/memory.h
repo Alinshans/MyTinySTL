@@ -1,31 +1,35 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef MYTINYSTL_MEMORY_H_
+#define MYTINYSTL_MEMORY_H_
+
+// 这个头文件包含一些基本算法、内存的构造析构与分配释放、临时缓冲区的头文件，以及一个模板类 auto_ptr
 
 #include "algobase.h"
 #include "allocator.h"
+#include "construct.h"
 #include "tempbuf.h"
 #include "uninitialized.h"
 
 namespace MyTinySTL {
 	
+	// 模板类: auto_ptr
+	// 一个小型的智能指针
 	template <class T>
 	class auto_ptr {
-
-	private:
-		T* m_ptr;
-
 	public:
 		typedef T	elem_type;
 
-		// 构造函数
+	private:
+		T* m_ptr;	//指针
+
+	public:
+		// 构造、复制、析构函数
 		explicit auto_ptr(T* p = 0) :m_ptr(p) {}
 		auto_ptr(auto_ptr& x) :m_ptr(x.release()) {}
 		template <class T1>
 		auto_ptr(auto_ptr<T1>& x) : m_ptr(x.release()) {}
 
-		// 赋值操作符
 		auto_ptr& operator=(auto_ptr& x) {
-			if (&x != this) {
+			if (this != &x) {
 				delete m_ptr;
 				m_ptr = x.release();
 			}
@@ -34,42 +38,33 @@ namespace MyTinySTL {
 
 		template <class T1>
 		auto_ptr& operator=(auto_ptr<T1>& x) {
-			if (x.get() != this->get()) {
+			if (this->get() != x.get()) {
 				delete m_ptr;
 				m_ptr = x.release();
 			}
 			return *this;
 		}
 
-		// 析构函数
-		~auto_ptr() { delete m_ptr; }
+		~auto_ptr() { delete m_ptr; }	
 
 	public:
-		T& operator*() const {
-			return *m_ptr;
-		}
+		// 重载 operator* 和 operator->
+		T& operator*() const { return *m_ptr; }
+		T* operator->() const { return m_ptr; }
 
-		T* operator->() const {
-			return m_ptr;
-		}
-
-		T* get() const {
-			return m_ptr;
-		}
-
+		T* get() const { return m_ptr; }
 		T* release() {
 			T* tmp = m_ptr;
-			m_ptr = 0;
+			m_ptr = nullptr;
 			return tmp;
 		}
-
 		void reset(T* p = 0) {
-			if (p != m_ptr) {
+			if (m_ptr != p) {
 				delete m_ptr;
 				m_ptr = p;
 			}
 		}
 	};
 }
-#endif // !MEMORY_H
+#endif // !MYTINYSTL_MEMORY_H_
 
