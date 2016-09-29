@@ -23,7 +23,7 @@ namespace MyTinySTL {
 
 	public:
 		// 构造、复制、析构函数
-		explicit auto_ptr(T* p = 0) :m_ptr(p) {}
+		explicit auto_ptr(T* p = nullptr) :m_ptr(p) {}
 		auto_ptr(auto_ptr& x) :m_ptr(x.release()) {}
 		template <class T1>
 		auto_ptr(auto_ptr<T1>& x) : m_ptr(x.release()) {}
@@ -58,7 +58,7 @@ namespace MyTinySTL {
 			m_ptr = nullptr;
 			return tmp;
 		}
-		void reset(T* p = 0) {
+		void reset(T* p = nullptr) {
 			if (m_ptr != p) {
 				delete m_ptr;
 				m_ptr = p;
