@@ -10,4 +10,3 @@
 #include "set_algo.h"
 
 #endif // !MYTINYSTL_ALGORITHM_H_
-
