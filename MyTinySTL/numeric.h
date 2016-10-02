@@ -1,10 +1,11 @@
-#ifndef NUMERIC_H
-#define NUMERIC_H
+#ifndef MYTINYSTL_NUMERIC_H_
+#define MYTINYSTL_NUMERIC_H_
+
+// 这个头文件包含了 MyTinySTL 的数值算法
 
 #include "iterator.h"
 
-//包含数值算法
-namespace MyTinySTL {
+namespace mystl {
 	
 	/*********************************************************************************/
 	// accumulate                                 
@@ -19,10 +20,11 @@ namespace MyTinySTL {
 		return init;
 	}
 
+	// 版本2
 	template <class InputIterator, class T, class BinaryOperation>
-	T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation bo) {
+	T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation binary_op) {
 		for (; first != last; ++first) {
-			init = bo(init, *first);
+			init = binary_op(init, *first);
 		}
 		return init;
 	}
@@ -37,26 +39,25 @@ namespace MyTinySTL {
 		OutputIterator result) {
 		if (first == last)	return;
 		*result = *first;	//记录第一个元素
-		typedef typename iterator_traits<InputIterator>::value_type ty;
-		ty value = *first;
+		auto value = *first;
 		while (++first != last) {
-			ty tmp = *first;
+			auto tmp = *first;
 			*++result = tmp - value;
 			value = tmp;
 		}
 		return ++result;
 	}
 
+	// 版本2
 	template <class InputIterator, class OutputIterator, class BinaryOperation>
 	OutputIterator adjacent_difference(InputIterator first, InputIterator last,
-		OutputIterator result, BinaryOperation bo) {
+		OutputIterator result, BinaryOperation binary_op) {
 		if (first == last)	return;
 		*result = *first;	//记录第一个元素
-		typedef typename iterator_traits<InputIterator>::value_type ty;
-		ty value = *first;
+		auto value = *first;
 		while (++first != last) {
-			ty tmp = *first;
-			*++result = bo(tmp, value);
+			auto tmp = *first;
+			*++result = binary_op(tmp, value);
 			value = tmp;
 		}
 		return ++result;
@@ -76,12 +77,13 @@ namespace MyTinySTL {
 		return init;
 	}
 
+	// 版本2
 	template <class InputIterator1, class InputIterator2, class T,
 		class BinaryOperation1, class BinaryOperation2>
 	T inner_product(InputIterator1 first1, InputIterator1 last1,InputIterator2 first2,
-		InputIterator2 last2, T init, BinaryOperation1 bo1, BinaryOperation2 bo2) {
+		InputIterator2 last2, T init, BinaryOperation1 binary_op1, BinaryOperation2 binary_op2) {
 		for (; first1 != last1; ++first1, ++first2) {
-			init = bo1(init, bo2(*first1, *first2));
+			init = binary_op1(init, binary_op2(*first1, *first2));
 		}
 		return init;
 	}
@@ -96,8 +98,7 @@ namespace MyTinySTL {
 		OutputIterator result) {
 		if (first == last)	return;
 		*result = *first;	//记录第一个元素
-		typedef typename iterator_traits<InputIterator>::value_type ty;
-		ty value = *first;
+		auto value = *first;
 		while (++first != last) {
 			value = value + *first;
 			*++result = value;
@@ -105,19 +106,19 @@ namespace MyTinySTL {
 		return ++result;
 	}
 
+	// 版本2
 	template <class InputIterator, class OutputIterator, class BinaryOperation>
 	OutputIterator partial_sum(InputIterator first, InputIterator last,
-		OutputIterator result, BinaryOperation bo) {
+		OutputIterator result, BinaryOperation binary_op) {
 		if (first == last)	return;
 		*result = *first;	//记录第一个元素
-		typedef typename iterator_traits<InputIterator>::value_type ty;
-		ty value = *first;
+		auto value = *first;
 		while (++first != last) {
-			value = bo(value, *first);
+			value = binary_op(value, *first);
 			*++result = value;
 		}
 		return ++result;
 	}
 }
-#endif // !NUMERIC_H
+#endif // !MYTINYSTL_NUMERIC_H_
 
