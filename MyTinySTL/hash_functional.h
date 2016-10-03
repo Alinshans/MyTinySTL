@@ -1,21 +1,22 @@
-#ifndef HASH_FUNCTIONAL_H
-#define HASH_FUNCTIONAL_H
+#ifndef MYTINYSTL_HASH_FUNCTIONAL_H_
+#define MYTINYSTL_HASH_FUNCTIONAL_H_
+
+// 这个头文件包含了应用于 hash 的函数对象，用于计算元素位置
 
 #include <cstddef>
 
-namespace MyTinySTL {
-	// hash function : 计算元素位置的函数
+namespace mystl {
 
-	// 对于大部分，hash function 什么都不做
+	// 对于大部分类型，hash function 什么都不做
 	template <class Key>
 	struct hash {};
 
-	// 针对 const char * 设计的函数
+	// 针对 char* 和 const char* 设计的函数
 	inline size_t __hash_string(const char* s) {
 		unsigned long h = 0;
 		for (; *s; ++s)
-			h = 5 * h + *s;
-		return size_t(h);
+			h = 3 * h + *s;
+		return static_cast<size_t>(h);
 	}
 
 	template<> struct hash<char*> {
@@ -26,7 +27,7 @@ namespace MyTinySTL {
 		size_t operator()(const char* s) const { return __hash_string(s); }
 	};
 
-	// 针对 char，int，long等整数型别，只是返回原值
+	// 针对 char，int，long 等整数型别，只是返回原值
 
 	template <> struct hash<char> {
 		size_t operator()(char x) const { return x; }
@@ -64,5 +65,4 @@ namespace MyTinySTL {
 		size_t operator()(unsigned long x) const { return x; }
 	};
 }
-#endif // !HASH_FUNCTIONAL_H
-
+#endif // !MYTINYSTL_HASH_FUNCTIONAL_H_
