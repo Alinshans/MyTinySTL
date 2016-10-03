@@ -1,9 +1,11 @@
 #ifndef MYTINYSTL_ITERATOR_H_
 #define MYTINYSTL_ITERATOR_H_
 
+// 这个头文件包含了一些模板结构体与非成员函数，用于基本的迭代器设计
+
 #include <cstddef>	//for ptrdiff_t
 
-namespace MyTinySTL {
+namespace mystl {
 
 	// 五种迭代器类型
 	struct input_iterator_tag {};
@@ -62,7 +64,7 @@ namespace MyTinySTL {
 		typedef T&							reference;
 	};
 
-	// iterator
+	// 迭代器模板 : iterator
 	template <class Category, class T, class Distance = ptrdiff_t , 
 		class Pointer = T*, class Reference = T&>
 	struct iterator {
@@ -182,5 +184,5 @@ namespace MyTinySTL {
 
 #include "reverse_iterator.h"	// 包含 reverse_iterator
 
-#endif // !ITERATOR_H
+#endif // !MYTINYSTL_ITERATOR_H_
 
