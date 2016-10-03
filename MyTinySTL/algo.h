@@ -15,7 +15,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// adjacent_find
 	// 找出第一对相邻的重复元素，如果找回返回一个迭代器，指向这对元素的第一个元素
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator>
 	ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last) {
@@ -44,7 +43,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// binary_search
 	// 二分查找，如果在[first, last)内有等同于 value 的元素，返回 true，否则返回 false
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
@@ -91,7 +89,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// equal_range
 	// 查找[first,last)区间中与 value 相等的元素所形成的区间，返回一对迭代器指向区间首尾
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	inline pair<ForwardIterator, ForwardIterator>
@@ -233,7 +230,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// find_end
 	// 在[first1, last1)区间中查找[first2, last2)最后一次出现的地方，若不存在返回last1
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator1, class ForwardIterator2>
 	inline ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
@@ -343,7 +339,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// find_first_of
 	// 在[first1, last1)中查找[first2, last2)中的某些元素，返回指向第一次出现的元素的迭代器
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator, class ForwardIterator>
 	InputIterator find_first_of(InputIterator first1, InputIterator last1,
@@ -420,7 +415,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// includes
 	// 判断序列二 S2 是否被包含(<=)于序列一 S1，S1 和 S2 都必须是有序集合
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	bool includes(InputIterator1 first1, InputIterator1 last1,
@@ -455,7 +449,6 @@ namespace mystl {
 	// lower_bound
 	// 在[first, last)中查找第一个不小于 value 的元素的位置
 	// 返回一个迭代器，指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的第一个位置。
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last,
@@ -559,7 +552,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// max_element
 	// 返回一个迭代器，指向序列中最大的元素
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator>
 	ForwardIterator max_elememt(ForwardIterator first, ForwardIterator last) {
@@ -586,7 +578,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// median
 	// 找出三个值的中间值
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class T>
 	inline const T& median(const T& left, const T& mid, const T& right) {
@@ -626,7 +617,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// merge
 	// 将两个经过排序的集合 S1 和 S2 合并起来置于另一段空间，返回一个迭代器指向最后一个元素的下一位置
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2, class OutputIterator>
 	OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
@@ -668,7 +658,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// min_element
 	// 返回一个迭代器，指向序列中最小的元素
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator>
 	ForwardIterator min_elememt(ForwardIterator first, ForwardIterator last) {
@@ -695,8 +684,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// next_permutation
 	// 取得[first, last)所标示序列的下一个排列组合，如果没有下一个排序组合，返回 false，否则返回 true
-	// 默认版本根据 operator< 做字典顺序的排序
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class BidirectionalIterator>
 	bool next_permutation(BidirectionalIterator first, BidirectionalIterator last) {
@@ -753,7 +740,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// nth_element
 	// 对序列重排，使得所有小于第 n 个元素的元素出现在它的前面，大于它的出现在它的后面
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void nth_element(RandomAccessIterator first, RandomAccessIterator nth,
@@ -799,7 +785,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// partial_sort
 	// 对整个序列做部分排序，保证较小的 N 个元素以递增顺序置于[first, first + N)中
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
@@ -839,7 +824,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// partial_sort_copy
 	// 行为与 partial_sort 类似，不同的是把排序结果复制到 result 容器中
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator, class RandomAccessIterator>
 	inline RandomAccessIterator partial_sort_copy(InputIterator first,
@@ -931,7 +915,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// prev_permutation
 	// 取得[first, last)所标示序列的上一个排列组合，如果没有上一个排序组合，返回 false，否则返回 true
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class BidirectionalIterator>
 	bool prev_permutation(BidirectionalIterator first, BidirectionalIterator last) {
@@ -1259,7 +1242,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// search
 	// 在[first1, last1)中查找[first2, last2)的首次出现点
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator1, class ForwardIterator2>
 	inline ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
@@ -1334,7 +1316,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// search_n
 	// 在[first, last)中查找连续 n 个 value 所形成的子序列，返回一个迭代器指向该子序列的起始处
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator, class Size, class T>
 	ForwardIterator search_n(ForwardIterator first, ForwardIterator last,
@@ -1394,7 +1375,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// sort
 	// 将[first, last)内的元素以递增的方式排序
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class RandomAccessIterator>
 	inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
@@ -1664,7 +1644,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// unique
 	// 移除[first, last)内重复的元素，序列必须有序，和 remove 类似，它也不能真正的删除重复元素
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator>
 	ForwardIterator unique(ForwardIterator first, ForwardIterator last) {
@@ -1682,7 +1661,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// unique_copy
 	// 从[first, last)中将元素复制到 result 上，序列必须有序，如果有重复的元素，只会复制一次
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator, class OutputIterator>
 	inline OutputIterator unique_copy(InputIterator first, InputIterator last,
@@ -1730,7 +1708,6 @@ namespace mystl {
 	inline OutputIterator unique_copy(InputIterator first, InputIterator last,
 		OutputIterator result, Compared comp) {
 		if (first == last)	return result;
-		//根据不同的 iterator 采用不同操作
 		return __unique_copy(first, last, result, comp, iterator_category(result));
 	}
 
@@ -1772,7 +1749,6 @@ namespace mystl {
 	// upper_bound
 	// 在[first, last)中查找最后一个不小于 value 的元素的位置
 	// 返回一个迭代器，它指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的最后一个位置。
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	inline ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last,
