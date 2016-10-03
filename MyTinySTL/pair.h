@@ -1,9 +1,9 @@
 #ifndef MYTINYSTL_PAIR_H_
 #define MYTINYSTL_PAIR_H_
 
-// 这个头文件包含一个模板结构体 pair，代表一种数据类型
+// 这个头文件包含一个结构体模板 pair，代表一种数据类型
 
-namespace MyTinySTL {
+namespace mystl {
 
 	// 结构体模板 : pair
 	// 有两个模板参数，参数1是第一种数据类型，参数2是第二种数据类型
