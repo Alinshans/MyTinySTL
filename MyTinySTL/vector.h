@@ -1,63 +1,66 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef MYTINYSTL_VECTOR_H_
+#define MYTINYSTL_VECTOR_H_
+
+// 这个头文件包含一个模板类 vector
+// vector 是一个能存放任意数据类型的动态数组，是一个具有较全面操作与算法的容器
 
 #include "iterator.h"
-#include "reverse_iterator.h"
 #include "memory.h"
 
-namespace MyTinySTL {
+namespace mystl {
 
+	// 模板类: vector
+	// 接受两个参数，参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc
+	// 使用方法与 STL vector 类似
 	template <class T, class Alloc = alloc>
 	class vector {
 	public:
 		// vector 的嵌套型别定义
-		typedef T					value_type;
-		typedef Alloc				allocate_type;
-		typedef value_type*			pointer;
+		typedef T			value_type;
+		typedef Alloc			allocator_type;
+		typedef value_type*		pointer;
 		typedef const value_type*	const_pointer;
-		typedef value_type&			reference;
+		typedef value_type&		reference;
 		typedef const value_type&	const_reference;
-		typedef size_t				size_type;
-		typedef ptrdiff_t			difference_type;
+		typedef size_t			size_type;
+		typedef ptrdiff_t		difference_type;
 
-		typedef value_type*			iterator;
+		typedef value_type*		iterator;
 		typedef const value_type*	const_iterator;		
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef reverse_iterator<iterator>	reverse_iterator;	
+		typedef reverse_iterator<iterator>		reverse_iterator;	
 
 	public:
 		typedef allocator<T, Alloc>	data_allocator;	//vector 的空间配置器
+		allocator_type get_allocator() { return allocator_type(); }
 
 	private:
-		iterator start;				//表示目前使用空间的头
-		iterator finish;			//表示目前使用空间的尾
-		iterator end_of_storage;	//表示目前可用空间的尾
+		iterator start_;		//表示目前使用空间的头
+		iterator finish_;		//表示目前使用空间的尾
+		iterator end_of_storage_;	//表示目前可用空间的尾
 
 	public:
-		// 构造函数
-		vector() :start(0), finish(0), end_of_storage(0) {}
+		// 构造、复制、析构函数
+		vector() :start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
 		explicit vector(size_type n) { __allocate_and_fill(n, T()); }
 		vector(size_type n, const T& value) { __allocate_and_fill(n, value); }
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last);
 
-		// 复制构造函数
-		vector(const vector& x);
-		vector(vector&& x);
+		vector(const vector& rhs);
+		vector(vector&& rhs);
 
-		// 赋值操作符 operator=
-		vector& operator=(const vector& x);
-		vector& operator=(vector&& x);
+		vector& operator=(const vector& rhs);
+		vector& operator=(vector&& rhs);
 
-		// 析构函数
 		~vector() { __destroy_and_deallocate(); }
 
 	public:
 		// 迭代器相关操作
-		iterator begin() { return start; }
-		const_iterator begin() const { return start; }
-		iterator end() { return finish; }
-		const_iterator end() const { return finish; }
+		iterator begin() { return start_; }
+		const_iterator begin() const { return start_; }
+		iterator end() { return finish_; }
+		const_iterator end() const { return finish_; }
 		reverse_iterator rbegin() { return reverse_iterator(end()); }
 		const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
 		reverse_iterator rend() { return reverse_iterator(begin()); }
@@ -65,10 +68,13 @@ namespace MyTinySTL {
 
 		// 容量相关操作
 		bool empty() const { return begin() == end(); }
-		size_type size() const { return size_type(end() - begin()); }
-		size_type max_size() const { return size_type(-1) / sizeof(T); }
-		size_type capacity() const { return size_type(end_of_storage - begin()); }
-		
+		size_type size() const { return static_cast<size_type>(end() - begin()); }
+		size_type max_size() const { return static_cast<size_type>(-1) / sizeof(T); }
+		size_type capacity() const { return static_cast<size_type>(end_of_storage_ - begin()); }
+		void resize(size_type new_size, const T& x);
+		void resize(size_type new_size) { return resize(new_size, T()); }
+		void reserve(size_type n);
+
 		// 访问元素相关操作
 		reference operator[](size_type n) { return *(begin() + n); }
 		const_reference operator[](size_type n) const { return *(begin() + n); }
@@ -79,7 +85,7 @@ namespace MyTinySTL {
 		reference back() { return *(end() - 1); }
 		const_reference back() const { return *(end() - 1); }
 
-		// 调整容器相关操作
+		// 修改容器相关操作
 		void assign(size_type n, const T& value) { __fill_assign(n, value); }
 		void assign(size_type n) { __fill_assign(n, T()); }
 		template <class InputIterator>
@@ -94,17 +100,11 @@ namespace MyTinySTL {
 		void insert(iterator position, size_type n, const T& x);
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last);
-		void resize(size_type new_size, const T& x);
-		void resize(size_type new_size) { return resize(new_size, T()); }
-		void reserve(size_type n);
-		void reverse() { MyTinySTL::reverse(begin(), end()); }
-		void swap(vector& x);
+		void reverse() { mystl::reverse(begin(), end()); }
+		void swap(vector& rhs);
 
-		// 配置器相关操作
-		allocate_type get_allocator() { return allocate_type(); }
-
-	protected:
-		// 内部成员函数
+	private:
+		// vector 的成员函数
 		template <class Integer>
 		void __vector_construct(Integer n, Integer value, __true_type);
 		template <class InputIterator>
@@ -137,79 +137,102 @@ namespace MyTinySTL {
 			forward_iterator_tag);
 	};
 
-	/********************************************************************************/
+	/******************************************************************************************/
 
 	// 构造函数
 	template <class T, class Alloc>
 	template <class InputIterator>
 	vector<T, Alloc>::vector(InputIterator first, InputIterator last) {
-		typedef typename __is_integer<InputIterator>::is_integer integer;
-		__vector_construct(first, last, integer());
+		typedef typename __is_integer<InputIterator>::is_integer Integer;
+		__vector_construct(first, last, Integer());
 	}
 
 	// 复制构造函数
 	template <class T, class Alloc>
-	vector<T, Alloc>::vector(const vector<T, Alloc>& x) {
-		__allocate_and_copy(x.start, x.finish);
+	vector<T, Alloc>::vector(const vector<T, Alloc>& rhs) {
+		__allocate_and_copy(rhs.start_, rhs.finish_);
 	}
 
 	template <class T, class Alloc>
-	vector<T, Alloc>::vector(vector<T, Alloc>&& x) {
-		start = x.start;
-		finish = x.finish;
-		end_of_storage = x.end_of_storage;
-		x.start = x.finish = x.end_of_storage = 0;
+	vector<T, Alloc>::vector(vector<T, Alloc>&& rhs) {
+		start_ = rhs.start_;
+		finish_ = rhs.finish_;
+		end_of_storage_ = rhs.end_of_storage_;
+		rhs.start_ = rhs.finish_ = rhs.end_of_storage_ = nullptr;
 	}
 	
 	// 赋值操作符 operator=
 	template <class T, class Alloc>
-	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& x) {
-		if (this != &x) {
-			const size_type xlen = x.size();
+	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& rhs) {
+		if (this != &rhs) {
+			const size_type xlen = rhs.size();
 			if (xlen > capacity()) {	//如果要赋值的 vector 大小超过原 vector 容量大小
 				__destroy_and_deallocate();
-				__allocate_and_copy(x.begin(), x.end());
+				__allocate_and_copy(rhs.begin(), rhs.end());
 			}
 			else if (size() >= xlen) {	//如果原 vector 大小大于等于要赋值的 vector 大小
-				iterator i = MyTinySTL::copy(x.begin(), x.end(), begin());
-				data_allocator::destroy(i, finish);
-				finish = start + xlen;
+				iterator i = mystl::copy(rhs.begin(), rhs.end(), begin());
+				mystl::destroy(i, finish_);
+				finish_ = start_ + xlen;
 			}
 			else { //原 vector 大小小于要赋值的 vector 大小
-				MyTinySTL::copy(x.begin(), x.begin() + size(), start);
-				MyTinySTL::uninitialized_copy(x.begin() + size(), x.end(), finish);
-				end_of_storage = finish = start + xlen;
+				mystl::copy(rhs.begin(), rhs.begin() + size(), start_);
+				mystl::uninitialized_copy(rhs.begin() + size(), rhs.end(), finish_);
+				end_of_storage_ = finish_ = start_ + xlen;
 			}
 		}
 		return *this;
 	}
 
 	template <class T, class Alloc>
-	vector<T, Alloc>& vector<T, Alloc>::operator=(vector<T, Alloc>&& x) {
-		if (*this != x) {
+	vector<T, Alloc>& vector<T, Alloc>::operator=(vector<T, Alloc>&& rhs) {
+		if (*this != rhs) {
 			__destroy_and_deallocate();
-			start = x.start;
-			finish = x.finish;
-			end_of_storage = x.end_of_storage;
-			x.start = x.finish = x.end_of_storage = 0;
+			start_ = rhs.start_;
+			finish_ = rhs.finish_;
+			end_of_storage_ = rhs.end_of_storage_;
+			rhs.start_ = rhs.finish_ = rhs.end_of_storage_ = nullptr;
 		}
 		return *this;
 	}
 	
+	// 重置容器大小
+	template <class T, class Alloc>
+	void vector<T, Alloc>::resize(size_type new_size, const T& x) {
+		if (new_size < size())
+			earse(begin() + new_size, end());
+		else
+			insert(end(), new_size - size(), x);
+	}
+
+	// 重新配置大小
+	template <class T, class Alloc>
+	void vector<T, Alloc>::reserve(size_type n) {
+		if (capacity() < n) {
+			const auto old_size = size();
+			auto tmp = data_allocator::allocate(n);
+			mystl::uninitialized_copy(start_, finish_, tmp);
+			__destroy_and_deallocate();
+			start_ = tmp;
+			finish_ = tmp + old_size;
+			end_of_storage_ = start_ + n;
+		}
+	}
+
 	// 初始化容器
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
-		typedef typename __is_integer<InputIterator>::is_integer integer;
-		__assign_dispatch(first, last, integer());
+		typedef typename __is_integer<InputIterator>::is_integer Integer;
+		__assign_dispatch(first, last, Integer());
 	}
 
 	// 在容器尾端插入元素
 	template <class T, class Alloc>
 	void vector<T, Alloc>::push_back(const T& x) {
-		if (finish != end_of_storage) {
-			data_allocator::construct(finish, x);
-			++finish;
+		if (finish_ != end_of_storage_) {
+			mystl::construct(finish_, x);
+			++finish_;
 		}
 		else
 			__insert_aux(end(), x);
@@ -218,8 +241,8 @@ namespace MyTinySTL {
 	// 删除最后一个元素
 	template <class T, class Alloc>
 	void vector<T, Alloc>::pop_back() {
-		--finish;
-		data_allocator::destroy(finish);
+		--finish_;
+		mystl::destroy(finish_);
 	}
 
 	// 删除 position 位置上的元素
@@ -227,9 +250,9 @@ namespace MyTinySTL {
 	typename vector<T, Alloc>::iterator
 		vector<T, Alloc>::earse(iterator position) {
 		if (position + 1 != end())
-			MyTinySTL::copy(position + 1, finish, position);	//后面的元素往前移
-		--finish;
-		data_allocator::destroy(finish);
+			mystl::copy(position + 1, finish_, position);	//后面的元素往前移
+		--finish_;
+		mystl::destroy(finish_);
 		return position;	//返回被删除的下一个元素
 	}
 
@@ -237,9 +260,9 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
 		vector<T, Alloc>::earse(iterator first, iterator last) {
-		iterator i = MyTinySTL::copy(last, finish, first);	//把last之后的元素复制到first为起始的空间
-		data_allocator::destroy(i, finish);	//销毁不要的元素
-		finish = finish - (last - first);	//调整水位
+		auto i = mystl::copy(last, finish_, first);	//把last之后的元素复制到first为起始的空间
+		mystl::destroy(i, finish_);	//销毁不要的元素
+		finish_ = finish_ - (last - first);	//调整水位
 		return first;
 	}
 
@@ -247,10 +270,10 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
 		vector<T, Alloc>::insert(iterator position, const T& x) {
-		size_type n = position - begin();
-		if (finish != end_of_storage && position == end()) {
-			data_allocator::construct(finish, x);
-			++finish;
+		auto n = position - begin();
+		if (finish_ != end_of_storage_ && position == end()) {
+			mystl::construct(finish_, x);
+			++finish_;
 		}
 		else
 			__insert_aux(position, x);
@@ -260,10 +283,10 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
 		vector<T, Alloc>::insert(iterator position) {
-		size_type n = position - begin();
-		if (finish != end_of_storage && position == end()) {
-			data_allocator::construct(finish);
-			++finish;
+		auto n = position - begin();
+		if (finish_ != end_of_storage_ && position == end()) {
+			mystl::construct(finish_);
+			++finish_;
 		}
 		else
 			__insert_aux(position, T());
@@ -281,40 +304,17 @@ namespace MyTinySTL {
 	template <class InputIterator>
 	void vector<T, Alloc>::insert(iterator position,
 		InputIterator first, InputIterator last) {
-		typedef typename __is_integer<InputIterator>::is_integer integer;
-		__insert_dispatch(position, first, last, integer());
-	}
-
-	// 重置容器大小
-	template <class T, class Alloc>
-	void vector<T, Alloc>::resize(size_type new_size, const T& x) {
-		if (new_size < size())
-			earse(begin() + new_size, end());
-		else
-			insert(end(), new_size - size(), x);
-	}
-
-	// 重新配置大小
-	template <class T, class Alloc>
-	void vector<T, Alloc>::reserve(size_type n) {
-		if (capacity() < n) {
-			const size_type old_size = size();
-			iterator tmp = data_allocator::allocate(n);
-			MyTinySTL::uninitialized_copy(start, finish, tmp);
-			__destroy_and_deallocate();
-			start = tmp;
-			finish = tmp + old_size;
-			end_of_storage = start + n;
-		}
+		typedef typename __is_integer<InputIterator>::is_integer Integer;
+		__insert_dispatch(position, first, last, Integer());
 	}
 
 	// 与另一个 vector 交换
 	template <class T, class Alloc>
-	void vector<T, Alloc>::swap(vector<T, Alloc>& x) {
-		if (*this != x) {
-			MyTinySTL::swap(start, x.start);
-			MyTinySTL::swap(finish, x.finish);
-			MyTinySTL::swap(end_of_storage, x.end_of_storage);
+	void vector<T, Alloc>::swap(vector<T, Alloc>& rhs) {
+		if (this != &rhs) {
+			mystl::swap(start_, rhs.start_);
+			mystl::swap(finish_, rhs.finish_);
+			mystl::swap(end_of_storage_, rhs.end_of_storage_);
 		}
 	}
 
@@ -335,16 +335,16 @@ namespace MyTinySTL {
 	// __destroy_and_deallocate 函数
 	template <class T, class Alloc>
 	void vector<T, Alloc>::__destroy_and_deallocate() {
-		data_allocator::destroy(start, finish);
-		data_allocator::deallocate(start, end_of_storage - start);
+		mystl::destroy(start_, finish_);
+		data_allocator::deallocate(start_, end_of_storage_ - start_);
 	}
 
 	// __allocate_and_fill 函数
 	template <class T, class Alloc>
 	void vector<T, Alloc>::__allocate_and_fill(size_type n, const T& value) {
-		start = data_allocator::allocate(n);
-		finish = MyTinySTL::uninitialized_fill_n(start, n, value);
-		end_of_storage = finish;
+		start_ = data_allocator::allocate(n);
+		finish_ = mystl::uninitialized_fill_n(start_, n, value);
+		end_of_storage_ = finish_;
 	}
 
 	// __allocate_and_copy 函数
@@ -352,9 +352,9 @@ namespace MyTinySTL {
 	template <class InputIterator>
 	void vector<T, Alloc>::__allocate_and_copy(InputIterator first, InputIterator last) {
 		difference_type n = last - first;
-		start = data_allocator::allocate(n);
-		finish = MyTinySTL::uninitialized_copy(first, last, start);
-		end_of_storage = finish;
+		start_ = data_allocator::allocate(n);
+		finish_ = mystl::uninitialized_copy(first, last, start_);
+		end_of_storage_ = finish_;
 	}
 	
 	// __fill_assign 函数
@@ -365,25 +365,25 @@ namespace MyTinySTL {
 			tmp.swap(*this);
 		}
 		else if (n > size()) {
-			MyTinySTL::fill(begin(), end(), value);
-			finish = MyTinySTL::uninitialized_fill_n(finish, n - size(), value);
+			mystl::fill(begin(), end(), value);
+			finish_ = mystl::uninitialized_fill_n(finish_, n - size(), value);
 		}
 		else
-			earse(MyTinySTL::fill_n(start, n, value), finish);
+			earse(mystl::fill_n(start_, n, value), finish_);
 	}
 	
 	// __assign_dispatch 函数
 	template <class T, class Alloc>
 	template <class Integer>
 	void vector<T, Alloc>::__assign_dispatch(Integer n, Integer value, __true_type) {
-		__fill_assign((size_type)n, (T)value);
+		__fill_assign(static_cast<size_type>(n), static_cast<T>(value));
 	}
 
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void vector<T, Alloc>::__assign_dispatch(InputIterator first, InputIterator last,
 		__false_type) {
-		__assign_aux(first, last, MyTinySTL::iterator_category(first));
+		__assign_aux(first, last, iterator_category(first));
 	}
 
 	// __assign_aux 函数
@@ -391,7 +391,7 @@ namespace MyTinySTL {
 	template <class InputIterator>
 	void vector<T, Alloc>::__assign_aux(InputIterator first, InputIterator last,
 		input_iterator_tag) {
-		iterator cur = begin();
+		auto cur = begin();
 		for (; first != last && cur != end(); ++first, ++cur) {
 			*cur = *first;
 		}
@@ -405,61 +405,58 @@ namespace MyTinySTL {
 	template <class ForwardIterator>
 	void vector<T, Alloc>::__assign_aux(ForwardIterator first, ForwardIterator last,
 		forward_iterator_tag) {
-		size_type len = distance(first, last);
+		auto len = distance(first, last);
 		if (len > capacity()) {	//如果区间长度大于容器容量
 			__destroy_and_deallocate();	//销毁原来的容器
 			__allocate_and_copy(first, last);	//重新分配空间并复制区间
 		}
 		else if (size() >= len) {	//如果容器大小大于等于区间长度
-			iterator new_finish = MyTinySTL::copy(first, last, start);	//复制区间到起始处
-			data_allocator::destroy(new_finish, finish);	//销毁多余的元素
-			finish = new_finish;	//调整 finish 水位
+			auto new_finish = mystl::copy(first, last, start_);	//复制区间到起始处
+			mystl::destroy(new_finish, finish_);	//销毁多余的元素
+			finish_ = new_finish;	//调整 finish_ 水位
 		}
 		else {	//如果区间长度大于容器大小并且小于容器容量
-			ForwardIterator mid = first;
+			auto mid = first;
 			advance(mid, size()); //以容器大小把区间分为前后段
-			MyTinySTL::copy(first, mid, start);	//先复制前一段区间
-			finish = MyTinySTL::uninitialized_copy(mid, last, finish); //再复制后一段区间
+			mystl::copy(first, mid, start_);	//先复制前一段区间
+			finish_ = mystl::uninitialized_copy(mid, last, finish_); //再复制后一段区间
 		}
 	}
 
 	// __insert_aux 函数
 	template <class T, class Alloc>
 	void vector<T, Alloc>::__insert_aux(iterator position, const T& x) {
-		if (finish != end_of_storage) {	//如果还有备用空间
-			// 在备用空间构造一个以vector最后一个元素为初值的元素
-			data_allocator::construct(finish, *(finish - 1));	
-			++finish;	//调整水位
-			MyTinySTL::copy_backward(position, finish - 2, finish - 1);	//后移一位
-			T x_copy = x;
-			*position = x_copy;
+		if (finish_ != end_of_storage_) {	//如果还有备用空间
+			// 在备用空间构造一个以 vector 最后一个元素为初值的元素
+			mystl::construct(finish_, *(finish_ - 1));
+			++finish_;	//调整水位
+			mystl::copy_backward(position, finish_ - 2, finish_ - 1);	//后移一位
+			auto x_copy = x;
+			*position = x_copy;	//将 position 位置元素修改为新值
 		}
 		else {
-			const size_type old_size = size();
-			// 如果原大小为0，则配置 1 个元素大小
-			// 如果原大小不为0，则配置两倍原来的大小
-			const size_type len = old_size != 0 ? 2 * old_size : 1;
-			iterator new_start = data_allocator::allocate(len);
-			iterator new_finish = new_start;
+			const auto old_size = size();
+			// 如果原大小为 0，则配置 1 个元素大小，否则配置两倍原来的大小
+			const auto len = old_size == 0 ? 1 : 2 * old_size;
+			auto new_start = data_allocator::allocate(len);
+			auto new_finish = new_start;
 			try {
 				// 将原 vector 数据拷贝到新的 vector
-				new_finish = MyTinySTL::uninitialized_copy(start, position, new_start);
-				data_allocator::construct(new_finish, x);	//插入新元素
+				new_finish = mystl::uninitialized_copy(start_, position, new_start);
+				mystl::construct(new_finish, x);	//插入新元素
 				++new_finish;	//调整水位
 				// 将剩余元素拷贝到新的 vector
-				new_finish = MyTinySTL::uninitialized_copy(position, finish, new_finish);	
+				new_finish = mystl::uninitialized_copy(position, finish_, new_finish);	
 			}
 			catch (...) {
-				data_allocator::destroy(new_start, new_finish);
+				mystl::destroy(new_start, new_finish);
 				data_allocator::deallocate(new_start, len);
 				throw;
 			}
-			// 析构释放原 vector
-			__destroy_and_deallocate();
-			// 调整迭代器，指向新的 vector
-			start = new_start;
-			finish = new_finish;
-			end_of_storage = new_start + len;
+			__destroy_and_deallocate();	//析构释放原 vector
+			start_ = new_start;	//调整迭代器，指向新的 vector
+			finish_ = new_finish;
+			end_of_storage_ = new_start + len;
 		}
 	}
 	
@@ -475,58 +472,56 @@ namespace MyTinySTL {
 	template <class InputIterator>
 	void vector<T, Alloc>::__insert_dispatch(iterator position, InputIterator first,
 		InputIterator last, __false_type) {
-		__range_insert(position, first, last, MyTinySTL::iterator_category(first));
+		__range_insert(position, first, last, mystl::iterator_category(first));
 	}
 
 	// __fill_insert 函数
 	template <class T, class Alloc>
 	void vector<T, Alloc>::__fill_insert(iterator position, size_type n, const T& x) {
 		if (n != 0) {
-			if (size_type(end_of_storage - finish) >= n) {
-				//备用空间大于等于增加的空间
-				T x_copy = x;
-				const size_type after_elems = finish - position;	//插入点后的元素个数
-				iterator old_finish = finish;
+			if (static_cast<size_type>(end_of_storage_ - finish_) >= n) {
+				// 如果备用空间大于等于增加的空间
+				auto x_copy = x;
+				const auto after_elems = finish_ - position;	//插入点后的元素个数
+				auto old_finish = finish_;
 				if (after_elems > n) {	//如果插入点后元素个数大于新增元素个数
-					MyTinySTL::uninitialized_copy(finish - n, finish, finish);	//复制原元素
-					finish += n;	//调整水位
-					MyTinySTL::copy_backward(position, old_finish - n, old_finish);	//复制剩余元素
-					MyTinySTL::uninitialized_fill_n(position, n, x_copy);	//填充新元素
+					mystl::uninitialized_copy(finish_ - n, finish_, finish_);	//复制原元素
+					finish_ += n;	//调整水位
+					mystl::copy_backward(position, old_finish - n, old_finish);	//复制剩余元素
+					mystl::fill_n(position, n, x_copy);	//填充新元素
 				}
 				else {
-					MyTinySTL::uninitialized_fill_n(finish, n - after_elems, x_copy);	//填充新元素
-					finish += n - after_elems;	//调整水位
-					MyTinySTL::uninitialized_copy(position, old_finish, finish);	//复制原元素
-					finish += after_elems;	//调整水位
-					MyTinySTL::uninitialized_fill(position, old_finish, x_copy);	//填充新元素
+					mystl::uninitialized_fill_n(finish_, n - after_elems, x_copy);	//填充新元素
+					finish_ += n - after_elems;	//调整水位
+					mystl::uninitialized_copy(position, old_finish, finish_);	//复制原元素
+					finish_ += after_elems;	//调整水位
+					mystl::fill(position, old_finish, x_copy);	//填充新元素
 				}
 			}
-			else {
-				//新长度：旧长度的两倍，旧长度+新增元素个数，取较大值
-				const size_type old_size = size();
-				const size_type len = old_size + max(old_size, n);
-				//配置新的 vector 空间
-				iterator new_start = data_allocator::allocate(len);
-				iterator new_finish = new_start;
+			else {	//备用空间不足，需要重新配置空间
+				// 新长度在 旧长度的两倍，旧长度+新增元素个数 中取较大值
+				const auto old_size = size();
+				const auto len = old_size + mystl::max(old_size, n);
+				// 配置新的 vector 空间
+				auto new_start = data_allocator::allocate(len);
+				auto new_finish = new_start;
 				try {
 					// 先将旧 vector 插入点前的元素复制到新 vector 空间
-					new_finish = MyTinySTL::uninitialized_copy(start, position, new_start);
+					new_finish = mystl::uninitialized_copy(start_, position, new_start);
 					// 将新增元素加入新空间
-					new_finish = MyTinySTL::uninitialized_fill_n(new_finish, n, x);
+					new_finish = mystl::uninitialized_fill_n(new_finish, n, x);
 					// 将旧 vector 插入点后的元素复制到新空间
-					new_finish = MyTinySTL::uninitialized_copy(position, finish, new_finish);
+					new_finish = mystl::uninitialized_copy(position, finish_, new_finish);
 				}
 				catch (...) {
-					data_allocator::destroy(new_start, new_finish);
+					mystl::destroy(new_start, new_finish);
 					data_allocator::deallocate(new_start, len);
 					throw;
 				}
-				// 析构释放原 vector
-				__destroy_and_deallocate();
-				//调整迭代器，指向新的 vector
-				start = new_start;
-				finish = new_finish;
-				end_of_storage = start + len;
+				__destroy_and_deallocate();	//析构释放原 vector
+				start_ = new_start;	//调整迭代器，指向新的 vector
+				finish_ = new_finish;
+				end_of_storage_ = start_ + len;
 			}
 		}
 	}
@@ -547,96 +542,94 @@ namespace MyTinySTL {
 	void vector<T, Alloc>::__range_insert(iterator position, ForwardIterator first,
 		ForwardIterator last, forward_iterator_tag) {
 		if (first != last) {
-			size_type n = distance(first, last);
-			if (size_type(end_of_storage - finish) >= n) { //如果剩余可用大小大于插入元素个数
-				const size_type after_elems = finish - position; //position 后面的元素个数
-				iterator old_finish = finish;
+			auto n = distance(first, last);
+			if (static_cast<size_type>(end_of_storage_ - finish_) >= n) { //如果剩余可用大小大于插入元素个数
+				const auto after_elems = finish_ - position; //position 后面的元素个数
+				auto old_finish = finish_;
 				if (after_elems > n) {	//如果 position 后面的元素个数大于插入元素个数
-					//先把最后 n 个元素复制到 finish 为起始的位置
-					MyTinySTL::uninitialized_copy(finish - n, finish, finish);
-					finish += n;
-					//原剩余元素接着后移
-					MyTinySTL::copy_backward(position, old_finish - n, old_finish);
-					MyTinySTL::copy(first, last, position); //将要插入的元素复制到 position 处
+					// 先把最后 n 个元素复制到 finish_ 为起始的位置
+					mystl::uninitialized_copy(finish_ - n, finish_, finish_);
+					finish_ += n;
+					// 原剩余元素接着后移
+					mystl::copy_backward(position, old_finish - n, old_finish);
+					mystl::copy(first, last, position); //将要插入的元素复制到 position 处
 				}
 				else {	//如果 position 后面的元素个数小于等于插入元素个数
-					ForwardIterator mid = first;
+					auto mid = first;
 					advance(mid, after_elems);	//以 after_elems 把要插入的区间分为前后段
-					MyTinySTL::uninitialized_copy(mid, last, finish);	//把后段复制到 finish 为起始的位置
-					finish += n - after_elems;	//调整 finish 水位
-					//原元素复制到 finish 为起始的位置
-					MyTinySTL::uninitialized_copy(position, old_finish, finish);
-					finish += after_elems;	//调整 finish 水位
-					MyTinySTL::copy(first, mid, position); //复制前半段到 position 位置
+					// 把后段复制到 finish_ 为起始的位置
+					mystl::uninitialized_copy(mid, last, finish_);	
+					finish_ += n - after_elems;	//调整水位
+					// 原元素复制到 finish_ 为起始的位置
+					mystl::uninitialized_copy(position, old_finish, finish_);
+					finish_ += after_elems;	//调整水位
+					mystl::copy(first, mid, position); //复制前半段到 position 位置
 				}
 			}
 			else {	//如果剩余可用大小小于插入元素个数
-				//新长度：旧长度的两倍，旧长度+新增元素个数，取较大值
-				const size_type old_size = size();
-				const size_type len = old_size + max(old_size, n);
-				//配置新的 vector 空间
-				iterator new_start = data_allocator::allocate(len);
-				iterator new_finish = new_start;
+				// 新长度在 旧长度的两倍，旧长度+新增元素个数 中取较大值
+				const auto old_size = size();
+				const auto len = old_size + mystl::max(old_size, n);
+				// 配置新的 vector 空间
+				auto new_start = data_allocator::allocate(len);
+				auto new_finish = new_start;
 				try {
-					//原 vector 的前半段复制到新的 vector 空间
-					new_finish = MyTinySTL::uninitialized_copy(start, position, new_start);
-					//把插入区间复制到新 vector 空间尾端
-					new_finish = MyTinySTL::uninitialized_copy(first, last, new_finish);
-					//原 vector 的后半段复制到新的 vector 空间尾端
-					new_finish = MyTinySTL::uninitialized_copy(position, finish, new_finish);
+					// 原 vector 的前半段复制到新的 vector 空间
+					new_finish = mystl::uninitialized_copy(start_, position, new_start);
+					// 把插入区间复制到新 vector 空间尾端
+					new_finish = mystl::uninitialized_copy(first, last, new_finish);
+					// 原 vector 的后半段复制到新的 vector 空间尾端
+					new_finish = mystl::uninitialized_copy(position, finish_, new_finish);
 				}
 				catch (...) {
-					data_allocator::destroy(new_start, new_finish);
+					mystl::destroy(new_start, new_finish);
 					data_allocator::deallocate(new_start, len);
 					throw;
 				}
-				// 析构释放原 vector
-				__destroy_and_deallocate();
-				//调整迭代器，指向新的 vector
-				start = new_start;
-				finish = new_finish;
-				end_of_storage = start + len;
+				__destroy_and_deallocate();	//析构释放原 vector
+				start_ = new_start;	//调整迭代器，指向新的 vector
+				finish_ = new_finish;
+				end_of_storage_ = start_ + len;
 			}
 		}
 	}
 	
 	// 重载比较操作符
 	template <class T, class Alloc>
-	inline bool operator==(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return x.size() == y.size() && 
-			MyTinySTL::equal(x.begin(), x.end(), y.begin(), y.end());
+	inline bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return lhs.size() == rhs.size() && mystl::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
 
 	template <class T, class Alloc>
-	inline bool operator<(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return MyTinySTL::lexicographical_compare(x.begin(), x.end(), y.begin(), x.end());
+	inline bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), lhs.end());
 	}
 
 	template <class T, class Alloc>
-	inline bool operator!=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return !(x == y);
+	inline bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return !(lhs == rhs);
 	}
 
 	template <class T, class Alloc>
-	inline bool operator>(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return y < x;
+	inline bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return rhs < lhs;
 	}
 
 	template <class T, class Alloc>
-	inline bool operator<=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return !(y < x);
+	inline bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return !(rhs < lhs);
 	}
 
 	template <class T, class Alloc>
-	inline bool operator>=(const vector<T, Alloc>& x, const vector<T, Alloc>& y) {
-		return !(x < y);
+	inline bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return !(lhs < rhs);
 	}
 	
-	// 重载 MyTinySTL 的 swap
+	// 重载 mystl 的 swap
 	template <class T, class Alloc>
-	inline void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
-		x.swap(y);
+	inline void swap(vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
+		lhs.swap(rhs);
 	}
 }
-#endif // !VECTOR_H
+#endif // !MYTINYSTL_VECTOR_H_
 
