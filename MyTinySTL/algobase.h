@@ -199,7 +199,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// equal
 	// 比较第一序列在 [first, last)区间上的元素值是否和第二序列相等
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	inline bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
@@ -295,7 +294,6 @@ namespace mystl {
 	// (2)如果到达 last1 而尚未到达 last2 返回 true
 	// (3)如果到达 last2 而尚未到达 last1 返回 false
 	// (4)如果同时到达 last1 和 last2 返回 false
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
@@ -337,7 +335,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// max
 	// 取二者中的较大值
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class T>
 	inline const T& max(const T& lhs, const T& rhs) {
@@ -353,7 +350,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// min 
 	// 取二者中的较小值
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class T>
 	inline const T& min(const T& lhs, const T& rhs) {
@@ -369,7 +365,6 @@ namespace mystl {
 	/*********************************************************************************/
 	// mismatch
 	// 平行比较两个序列，找到第一处失配的点，返回一对迭代器，分别指向两个序列中失配的点
-	// 重载版本使用函数对象 comp 代替比较操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
