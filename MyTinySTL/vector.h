@@ -16,27 +16,27 @@ namespace mystl {
 	class vector {
 	public:
 		// vector 的嵌套型别定义
-		typedef T			value_type;
-		typedef Alloc			allocator_type;
-		typedef value_type*		pointer;
+		typedef T					value_type;
+		typedef Alloc				allocator_type;
+		typedef value_type*			pointer;
 		typedef const value_type*	const_pointer;
-		typedef value_type&		reference;
+		typedef value_type&			reference;
 		typedef const value_type&	const_reference;
-		typedef size_t			size_type;
-		typedef ptrdiff_t		difference_type;
+		typedef size_t				size_type;
+		typedef ptrdiff_t			difference_type;
 
-		typedef value_type*		iterator;
+		typedef value_type*			iterator;
 		typedef const value_type*	const_iterator;		
 		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef reverse_iterator<iterator>		reverse_iterator;	
+		typedef reverse_iterator<iterator>	reverse_iterator;	
 
 	public:
 		typedef allocator<T, Alloc>	data_allocator;	//vector 的空间配置器
 		allocator_type get_allocator() { return allocator_type(); }
 
 	private:
-		iterator start_;		//表示目前使用空间的头
-		iterator finish_;		//表示目前使用空间的尾
+		iterator start_;			//表示目前使用空间的头
+		iterator finish_;			//表示目前使用空间的尾
 		iterator end_of_storage_;	//表示目前可用空间的尾
 
 	public:
@@ -165,13 +165,13 @@ namespace mystl {
 	template <class T, class Alloc>
 	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& rhs) {
 		if (this != &rhs) {
-			const size_type xlen = rhs.size();
+			const auto xlen = rhs.size();
 			if (xlen > capacity()) {	//如果要赋值的 vector 大小超过原 vector 容量大小
 				__destroy_and_deallocate();
 				__allocate_and_copy(rhs.begin(), rhs.end());
 			}
 			else if (size() >= xlen) {	//如果原 vector 大小大于等于要赋值的 vector 大小
-				iterator i = mystl::copy(rhs.begin(), rhs.end(), begin());
+				auto i = mystl::copy(rhs.begin(), rhs.end(), begin());
 				mystl::destroy(i, finish_);
 				finish_ = start_ + xlen;
 			}
@@ -322,13 +322,12 @@ namespace mystl {
 	template <class T, class Alloc>
 	template <class Integer>
 	void vector<T, Alloc>::__vector_construct(Integer n, Integer value, __true_type) {
-		__allocate_and_fill(n, value);
+		__allocate_and_fill(static_cast<size_type>(n), static_cast<T>(value));
 	}
 
 	template <class T, class Alloc>
 	template <class InputIterator>
-	void vector<T, Alloc>::__vector_construct(InputIterator first, InputIterator last,
-		__false_type) {
+	void vector<T, Alloc>::__vector_construct(InputIterator first, InputIterator last, __false_type) {
 		__allocate_and_copy(first, last);
 	}
 
@@ -351,8 +350,8 @@ namespace mystl {
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void vector<T, Alloc>::__allocate_and_copy(InputIterator first, InputIterator last) {
-		difference_type n = last - first;
-		start_ = data_allocator::allocate(n);
+		auto n = last - first;
+		start_ = data_allocator::allocate(static_cast<size_type>(n));
 		finish_ = mystl::uninitialized_copy(first, last, start_);
 		end_of_storage_ = finish_;
 	}
@@ -381,8 +380,7 @@ namespace mystl {
 
 	template <class T, class Alloc>
 	template <class InputIterator>
-	void vector<T, Alloc>::__assign_dispatch(InputIterator first, InputIterator last,
-		__false_type) {
+	void vector<T, Alloc>::__assign_dispatch(InputIterator first, InputIterator last, __false_type) {
 		__assign_aux(first, last, iterator_category(first));
 	}
 
@@ -406,11 +404,11 @@ namespace mystl {
 	void vector<T, Alloc>::__assign_aux(ForwardIterator first, ForwardIterator last,
 		forward_iterator_tag) {
 		auto len = distance(first, last);
-		if (len > capacity()) {	//如果区间长度大于容器容量
+		if (static_cast<size_type>(len) > capacity()) {	//如果区间长度大于容器容量
 			__destroy_and_deallocate();	//销毁原来的容器
 			__allocate_and_copy(first, last);	//重新分配空间并复制区间
 		}
-		else if (size() >= len) {	//如果容器大小大于等于区间长度
+		else if (size() >= static_cast<size_type>(len)) {	//如果容器大小大于等于区间长度
 			auto new_finish = mystl::copy(first, last, start_);	//复制区间到起始处
 			mystl::destroy(new_finish, finish_);	//销毁多余的元素
 			finish_ = new_finish;	//调整 finish_ 水位
@@ -451,7 +449,6 @@ namespace mystl {
 			catch (...) {
 				mystl::destroy(new_start, new_finish);
 				data_allocator::deallocate(new_start, len);
-				throw;
 			}
 			__destroy_and_deallocate();	//析构释放原 vector
 			start_ = new_start;	//调整迭代器，指向新的 vector
@@ -463,9 +460,8 @@ namespace mystl {
 	// __insert_dispatch 函数
 	template <class T, class Alloc>
 	template <class Integer>
-	void vector<T, Alloc>::__insert_dispatch(iterator position, Integer n, Integer x,
-		__true_type) {
-		__fill_insert(position, n, x);
+	void vector<T, Alloc>::__insert_dispatch(iterator position, Integer n, Integer x, __true_type) {
+		__fill_insert(position, static_cast<size_type>(n), static_cast<T>(x));
 	}
 
 	template <class T, class Alloc>
@@ -484,15 +480,15 @@ namespace mystl {
 				auto x_copy = x;
 				const auto after_elems = finish_ - position;	//插入点后的元素个数
 				auto old_finish = finish_;
-				if (after_elems > n) {	//如果插入点后元素个数大于新增元素个数
-					mystl::uninitialized_copy(finish_ - n, finish_, finish_);	//复制原元素
-					finish_ += n;	//调整水位
-					mystl::copy_backward(position, old_finish - n, old_finish);	//复制剩余元素
+				if (static_cast<size_type>(after_elems) > n) {	//如果插入点后元素个数大于新增元素个数
+					mystl::uninitialized_copy(finish_ - static_cast<difference_type>(n), finish_, finish_);	//复制原元素
+					finish_ += static_cast<difference_type>(n);	//调整水位
+					mystl::copy_backward(position, old_finish - static_cast<difference_type>(n), old_finish);	//复制剩余元素
 					mystl::fill_n(position, n, x_copy);	//填充新元素
 				}
 				else {
-					mystl::uninitialized_fill_n(finish_, n - after_elems, x_copy);	//填充新元素
-					finish_ += n - after_elems;	//调整水位
+					mystl::uninitialized_fill_n(finish_, n - static_cast<size_type>(after_elems), x_copy);	//填充新元素
+					finish_ += static_cast<difference_type>(n) - after_elems;	//调整水位
 					mystl::uninitialized_copy(position, old_finish, finish_);	//复制原元素
 					finish_ += after_elems;	//调整水位
 					mystl::fill(position, old_finish, x_copy);	//填充新元素
@@ -516,7 +512,6 @@ namespace mystl {
 				catch (...) {
 					mystl::destroy(new_start, new_finish);
 					data_allocator::deallocate(new_start, len);
-					throw;
 				}
 				__destroy_and_deallocate();	//析构释放原 vector
 				start_ = new_start;	//调整迭代器，指向新的 vector
@@ -543,7 +538,7 @@ namespace mystl {
 		ForwardIterator last, forward_iterator_tag) {
 		if (first != last) {
 			auto n = distance(first, last);
-			if (static_cast<size_type>(end_of_storage_ - finish_) >= n) { //如果剩余可用大小大于插入元素个数
+			if ((end_of_storage_ - finish_) >= n) { //如果剩余可用大小大于插入元素个数
 				const auto after_elems = finish_ - position; //position 后面的元素个数
 				auto old_finish = finish_;
 				if (after_elems > n) {	//如果 position 后面的元素个数大于插入元素个数
@@ -569,7 +564,7 @@ namespace mystl {
 			else {	//如果剩余可用大小小于插入元素个数
 				// 新长度在 旧长度的两倍，旧长度+新增元素个数 中取较大值
 				const auto old_size = size();
-				const auto len = old_size + mystl::max(old_size, n);
+				const auto len = old_size + mystl::max(old_size, static_cast<size_type>(n));
 				// 配置新的 vector 空间
 				auto new_start = data_allocator::allocate(len);
 				auto new_finish = new_start;
@@ -584,7 +579,6 @@ namespace mystl {
 				catch (...) {
 					mystl::destroy(new_start, new_finish);
 					data_allocator::deallocate(new_start, len);
-					throw;
 				}
 				__destroy_and_deallocate();	//析构释放原 vector
 				start_ = new_start;	//调整迭代器，指向新的 vector
