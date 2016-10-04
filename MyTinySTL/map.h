@@ -99,25 +99,25 @@ namespace mystl {
 			t_.insert_unique(first, last);
 		}
 		void erase(iterator position) { t_.erase(position); }
-		size_type erase(const key_type& x) { return t_.erase(x); }
+		size_type erase(const key_type& k) { return t_.erase(k); }
 		void erase(iterator first, iterator last) { t_.erase(first, last); }
 		void clear() { t_.clear(); }
 
 		// map 操作
-		iterator find(const key_type& x) { return t_.find(x); }
-		const_iterator find(const key_type& x) const { return t_.find(x); }
-		size_type count(const key_type& x) const { return t_.count(x); }
-		iterator lower_bound(const key_type& x) { return t_.lower_bound(x); }
-		const_iterator lower_bound(const key_type& x) const {
-			return t_.lower_bound(x);
+		iterator find(const key_type& k) { return t_.find(k); }
+		const_iterator find(const key_type& k) const { return t_.find(k); }
+		size_type count(const key_type& k) const { return t_.count(k); }
+		iterator lower_bound(const key_type& k) { return t_.lower_bound(k); }
+		const_iterator lower_bound(const key_type& k) const {
+			return t_.lower_bound(k);
 		}
-		iterator upper_bound(const key_type& x) { return t_.upper_bound(x); }
-		const_iterator upper_bound(const key_type& x) const {
-			return t_.upper_bound(x);
+		iterator upper_bound(const key_type& k) { return t_.upper_bound(k); }
+		const_iterator upper_bound(const key_type& k) const {
+			return t_.upper_bound(k);
 		}
-		pair<iterator, iterator> equal_range(const key_type& x) { return t_.equal_range(x); }
-		pair<const_iterator, const_iterator> equal_range(const key_type& x) const {
-			return t_.equal_range(x);
+		pair<iterator, iterator> equal_range(const key_type& k) { return t_.equal_range(k); }
+		pair<const_iterator, const_iterator> equal_range(const key_type& k) const {
+			return t_.equal_range(k);
 		}
 		void swap(map& rhs) { t_.swap(rhs.t_); }
 
@@ -244,7 +244,7 @@ namespace mystl {
 		}
 
 		// 插入删除操作，全部使用 rb_tree 的 insert_equal
-		pair<iterator, bool> insert(const value_type& x) { return t_.insert_equal(x); }
+		iterator insert(const value_type& x) { return t_.insert_equal(x); }
 		iterator insert(iterator position, const value_type& x) {
 			return t_.insert_equal(position, x);
 		}
@@ -253,25 +253,25 @@ namespace mystl {
 			t_.insert_equal(first, last);
 		}
 		void erase(iterator position) { t_.erase(position); }
-		size_type erase(const key_type& x) { return t_.erase(x); }
+		size_type erase(const key_type& k) { return t_.erase(k); }
 		void erase(iterator first, iterator last) { t_.erase(first, last); }
 		void clear() { t_.clear(); }
 
 		// multimap 操作
-		iterator find(const key_type& x) { return t_.find(x); }
-		const_iterator find(const key_type& x) const { return t_.find(x); }
-		size_type count(const key_type& x) const { return t_.count(x); }
-		iterator lower_bound(const key_type& x) { return t_.lower_bound(x); }
-		const_iterator lower_bound(const key_type& x) const {
-			return t_.lower_bound(x);
+		iterator find(const key_type& k) { return t_.find(k); }
+		const_iterator find(const key_type& k) const { return t_.find(k); }
+		size_type count(const key_type& k) const { return t_.count(k); }
+		iterator lower_bound(const key_type& k) { return t_.lower_bound(k); }
+		const_iterator lower_bound(const key_type& k) const {
+			return t_.lower_bound(k);
 		}
-		iterator upper_bound(const key_type& x) { return t_.upper_bound(x); }
-		const_iterator upper_bound(const key_type& x) const {
-			return t_.upper_bound(x);
+		iterator upper_bound(const key_type& k) { return t_.upper_bound(k); }
+		const_iterator upper_bound(const key_type& k) const {
+			return t_.upper_bound(k);
 		}
-		pair<iterator, iterator> equal_range(const key_type& x) { return t_.equal_range(x); }
-		pair<const_iterator, const_iterator> equal_range(const key_type& x) const {
-			return t_.equal_range(x);
+		pair<iterator, iterator> equal_range(const key_type& k) { return t_.equal_range(k); }
+		pair<const_iterator, const_iterator> equal_range(const key_type& k) const {
+			return t_.equal_range(k);
 		}
 		void swap(multimap& rhs) { t_.swap(rhs.t_); }
 
