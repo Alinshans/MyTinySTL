@@ -1,13 +1,15 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef MYTINYSTL_LIST_H_
+#define MYTINYSTL_LIST_H_
+
+// 这个头文件包含了一个模板类 list
+// list 是双向链表
 
 #include "iterator.h"
-#include "reverse_iterator.h"
 #include "memory.h"
 
-namespace MyTinySTL {
+namespace mystl {
 
-	// list的节点结构
+	// list 的节点结构
 	template <class T>
 	struct __list_node {
 		T data;	//数据域
@@ -15,14 +17,14 @@ namespace MyTinySTL {
 		__list_node<T>* next;	// 指向下一个节点
 		__list_node() {
 			data = 0;
-			prev = NULL;
-			next = NULL;
+			prev = nullptr;
+			next = nullptr;
 		}
-		__list_node(T value = 0, __list_node<T>* p = NULL, __list_node<T>* n = NULL)
+		__list_node(T value = 0, __list_node<T>* p = nullptr, __list_node<T>* n = nullptr)
 			:data(value), prev(p), next(n) {}
 	};
 
-	// list的迭代器
+	// list 的迭代器设计
 	template <class T, class Ref, class Ptr>
 	struct __list_iterator : public iterator<bidirectional_iterator_tag, T> {
 		typedef __list_iterator<T, T&, T*>	iterator;
@@ -35,20 +37,20 @@ namespace MyTinySTL {
 		typedef size_t size_type;
 
 		typedef __list_node<T>*	link_type;
-		link_type	node;
+		link_type	node_;	// 指向当前节点
 
 		// 构造函数
 		__list_iterator() {}
-		__list_iterator(link_type x) :node(x) {}
-		__list_iterator(const iterator& x) :node(x.node) {}
+		__list_iterator(link_type x) :node_(x) {}
+		__list_iterator(const iterator& rhs) :node_(rhs.node_) {}
 
 		// 重载操作符
-		bool operator==(const self& x) const { return node == x.node; }
-		bool operator!=(const self& x) const { return node != x.node; }
-		reference operator*() const { return (*node).data; }
+		bool operator==(const self& rhs) const { return node_ == rhs.node_; }
+		bool operator!=(const self& rhs) const { return node_ != rhs.node_; }
+		reference operator*() const { return (*node_).data; }
 		pointer operator->() const { return &(operator*()); }
 		self& operator++() {
-			node = node->next;
+			node_ = node_->next;
 			return *this;
 		}
 		self operator++(int) {
@@ -57,7 +59,7 @@ namespace MyTinySTL {
 			return tmp;
 		}
 		self& operator--() {
-			node = node->prev;
+			node_ = node_->prev;
 			return *this;
 		}
 		self operator--(int) {
@@ -67,13 +69,15 @@ namespace MyTinySTL {
 		}
 	};
 
-	// list:链表
+	// 模板类 list
+	// 参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc
+	// 表示双向链表
 	template <class T, class Alloc = alloc>
 	class list {
 	public:
 		// list 的嵌套型别定义
 		typedef T		value_type;
-		typedef Alloc	allocate_type;
+		typedef Alloc	allocator_type;
 		typedef value_type*	pointer;
 		typedef const value_type*	const_pointer;
 		typedef value_type&	reference;
@@ -90,42 +94,43 @@ namespace MyTinySTL {
 
 	public:
 		typedef allocator<__list_node<T>, Alloc>	data_allocate;	// list 的空间配置器
+		allocator_type get_allocator() { return allocator_type(); }
 
 	private:
-		link_type node;	// 指向尾端的一个空白节点
+		// 只用一个节点来表示整个 list
+		link_type node_;	// 指向尾端的一个空白节点
 
 	public:
-		// 构造函数
-		list() { __initialize(); }
+		// 构造、复制、析构函数
+		list() { __list_initialize(); }
 		explicit list(size_type n);
-		explicit list(size_type n, const T& value);
+		list(size_type n, const T& value);
 		template <class InputIterator>
 		list(InputIterator first, InputIterator last);
 
-		// 复制构造函数
-		list(const list& x);
+		list(const list& rhs);
+		list(list&& rhs);
 
-		// 赋值操作符 operator=
-		list& operator=(const list& x);
+		list& operator=(const list& rhs);
+		list& operator=(list&& rhs);
 
-		// 析构函数
 		~list();
 
 	public:
 		// 迭代器相关操作
-		iterator begin() { return (link_type)node->next; }
-		const_iterator begin() const { return (link_type)node->next; }
-		iterator end() { return node; }
-		const_iterator end() const { return node; }
+		iterator begin() { return node_->next; }
+		const_iterator begin() const { return node_->next; }
+		iterator end() { return node_; }
+		const_iterator end() const { return node_; }
 		reverse_iterator rbegin() { return reverse_iterator(end()); }
 		const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
 		reverse_iterator rend() { return reverse_iterator(begin()); }
 		const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 
 		// 容量相关操作
-		bool empty() const { return node->next == node; }
-		size_type size() const { return (size_type)distance(begin(), end()); }
-		size_type max_size() const { return size_type(-1); }
+		bool empty() const { return node_->next == node_; }
+		size_type size() const { return static_cast<size_type>(distance(begin(), end())); }
+		size_type max_size() const { return static_cast<size_type>(-1); }
 
 		// 访问元素相关操作
 		reference front() { return *begin(); }
@@ -152,9 +157,9 @@ namespace MyTinySTL {
 		void pop_back() { iterator tmp = end(); erase(--tmp); }
 		void resize(size_type new_size, const T& x);
 		void resize(size_type new_size) { resize(new_size, T()); }
-		void swap(list& x) { MyTinySTL::swap(node, x.node); }
+		void swap(list& rhs) { mystl::swap(node_, rhs.node_); }
 
-		// 容器相关操作
+		// list 相关操作
 		void splice(iterator position, list& x);
 		void splice(iterator position, list&, iterator i);
 		void splice(iterator position, list& x, iterator first, iterator last);
@@ -166,14 +171,11 @@ namespace MyTinySTL {
 		void sort();
 		void reverse();
 
-		// 配置器相关操作
-		allocate_type get_allocate() { return allocate_type(); }
-
 	protected:
 		// 内部成员函数
 		link_type __create_node(const T& x = T());
 		void __destroy_node(link_type p);
-		void __initialize();
+		void __list_initialize();
 		void __fill_assign(size_type n, const T& value);
 		template <class Integer>
 		void __assign_dispatch(Integer n, Integer value, __true_type);
@@ -183,8 +185,7 @@ namespace MyTinySTL {
 		template <class Integer>
 		void __insert_dispatch(iterator position, Integer n, Integer value, __true_type);
 		template <class InputIterator>
-		void __insert_dispatch(iterator position, InputIterator first, InputIterator last,
-			__false_type);
+		void __insert_dispatch(iterator position, InputIterator first, InputIterator last, __false_type);
 		void __transfer(iterator position, iterator first, iterator last);
 	};
 
@@ -193,38 +194,46 @@ namespace MyTinySTL {
 	// 构造函数
 	template <class T, class Alloc>
 	list<T, Alloc>::list(size_type n) {
-		__initialize(); 
+		__list_initialize(); 
 		insert(begin(), n, T());
 	}
 
 	template <class T, class Alloc>
 	list<T, Alloc>::list(size_type n, const T& value) {
-		__initialize(); 
+		__list_initialize(); 
 		insert(begin(), n, value);
 	}
 
 	template <class T, class Alloc>
 	template <class InputIterator>
 	list<T, Alloc>::list(InputIterator first, InputIterator last) {
-		__initialize();
+		__list_initialize();
 		insert(begin(), first, last);
 	}
 
 	// 复制构造函数
 	template <class T, class Alloc>
-	list<T, Alloc>::list(const list& x) { 
-		__initialize();
-		insert(begin(), x.begin(), x.end());
+	list<T, Alloc>::list(const list& rhs) { 
+		__list_initialize();
+		insert(begin(), rhs.begin(), rhs.end());
+	}
+
+	template <class T, class Alloc>
+	list<T, Alloc>::list(list&& rhs) {
+		if (this != &rhs) {
+			node_ = rhs.node_;
+			rhs.node_ = nullptr;
+		}
 	}
 
 	// 赋值操作符
 	template <class T, class Alloc>
-	list<T, Alloc>& list<T, Alloc>::operator=(const list<T, Alloc>& x) {
-		if (this != &x) {
+	list<T, Alloc>& list<T, Alloc>::operator=(const list& rhs) {
+		if (this != &rhs) {
 			iterator first1 = begin();
 			iterator last1 = end();
-			const_iterator first2 = x.begin();
-			const_iterator last2 = x.end();
+			const_iterator first2 = rhs.begin();
+			const_iterator last2 = rhs.end();
 			while (first1 != last1 && first2 != last2)
 				*first1++ = *first2++;
 			if (first2 == last2)
@@ -235,13 +244,22 @@ namespace MyTinySTL {
 		return *this;
 	}
 
+	template <class T, class Alloc>
+	list<T, Alloc>& list<T, Alloc>::operator=(list&& rhs) {
+		if (this != &rhs) {
+			node_ = rhs.node_;
+			rhs.node_ = nullptr;
+		}
+		return *this;
+	}
+
 	// 析构函数
 	template <class T, class Alloc>
 	list<T, Alloc>::~list() {
-		link_type first = (link_type)node->next;
-		link_type last = (link_type)node;
+		auto first = node_->next;
+		auto last = node_;
 		while (first != last) {
-			link_type cur = first;
+			auto cur = first;
 			first = first->next;
 			__destroy_node(cur);
 		}
@@ -251,19 +269,19 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void list<T, Alloc>::assign(InputIterator first, InputIterator last) {
-		typedef typename __is_integer<InputIterator>::is_integer integer;
-		__assign_dispatch(first, last, integer());
+		typedef typename __is_integer<InputIterator>::is_integer Integer;
+		__assign_dispatch(first, last, Integer());
 	}
 
 	// 在 position 处插入元素
 	template <class T, class Alloc>
 	typename list<T, Alloc>::iterator 
 		list<T, Alloc>::insert(iterator position, const T& x) {
-		link_type tmp = __create_node(x);
-		tmp->next = (link_type)position.node;
-		tmp->prev = (link_type)position.node->prev;
-		position.node->prev->next = tmp;
-		position.node->prev = tmp;
+		auto tmp = __create_node(x);
+		tmp->next = position.node_;
+		tmp->prev = position.node_->prev;
+		position.node_->prev->next = tmp;
+		position.node_->prev = tmp;
 		return tmp;
 	}
 
@@ -277,21 +295,21 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void list<T, Alloc>::insert(iterator position, InputIterator first, InputIterator last) {
-		typedef typename __is_integer<InputIterator>::is_integer integer;
-		__insert_dispatch(position, first, last, integer());
+		typedef typename __is_integer<InputIterator>::is_integer Integer;
+		__insert_dispatch(position, first, last, Integer());
 	}
 
 	// 删除 position 处的元素
 	template <class T, class Alloc>
 	typename list<T, Alloc>::iterator
 		list<T, Alloc>::erase(iterator position) {
-		link_type prev_node = (link_type)position.node->prev;
-		link_type next_node = (link_type)position.node->next;
-		link_type this_node = (link_type)position.node;
+		auto prev_node = position.node_->prev;
+		auto next_node = position.node_->next;
+		auto this_node = position.node_;
 		prev_node->next = next_node;
 		next_node->prev = prev_node;
 		__destroy_node(this_node);
-		return (iterator)next_node;
+		return iterator(next_node);
 	}
 
 	// 删除[first, last)内的元素
@@ -299,7 +317,7 @@ namespace MyTinySTL {
 	typename list<T, Alloc>::iterator
 		list<T, Alloc>::erase(iterator first, iterator last) {
 		while (first != last) {
-			iterator cur = first;
+			auto cur = first;
 			++first;
 			erase(cur);
 		}
@@ -309,7 +327,7 @@ namespace MyTinySTL {
 	// 重置容器大小
 	template <class T, class Alloc>
 	void list<T, Alloc>::resize(size_type new_size, const T& x) {
-		iterator i = begin();
+		auto i = begin();
 		size_type len = 0;
 		while (i != end() && len < new_size) {
 			++i;
@@ -324,14 +342,14 @@ namespace MyTinySTL {
 	// 清空 list
 	template <class T, class Alloc>
 	void list<T, Alloc>::clear() {
-		link_type first = (link_type)node->next;
-		link_type last = (link_type)node;
+		auto first = node_->next;
+		auto last = node_;
 		while (first != last) {
-			link_type cur = first;
+			auto cur = first;
 			first = first->next;
 			__destroy_node(cur);
 		}
-		node->prev = node->next = node;
+		node_->prev = node_->next = node_;
 	}
 
 	// 将 list x 接合于 position 之前
@@ -345,7 +363,7 @@ namespace MyTinySTL {
 	// 将 i 所指的元素接合于 position 之前
 	template <class T, class Alloc>
 	void list<T, Alloc>::splice(iterator position, list&, iterator i) {
-		iterator j = i;
+		auto j = i;
 		++j;
 		if (position == i || position == j)	return;
 		__transfer(position, i, j);
@@ -361,10 +379,10 @@ namespace MyTinySTL {
 	// 将数值为 value 的所有元素移除
 	template <class T, class Alloc>
 	void list<T, Alloc>::remove(const T& value) {
-		iterator first = begin();
-		iterator last = end();
+		auto first = begin();
+		auto last = end();
 		while (first != last) {
-			iterator next = first;
+			auto next = first;
 			++next;
 			if (*first == value)	erase(first);
 			first = next;
@@ -375,10 +393,10 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	template <class Predicate>
 	void list<T, Alloc>::remove_if(Predicate pred) {
-		iterator first = begin();
-		iterator last = end();
+		auto first = begin();
+		auto last = end();
 		while (first != last) {
-			iterator next = first;
+			auto next = first;
 			++next;
 			if (pred(*first))	erase(first);
 			first = next;
@@ -388,10 +406,10 @@ namespace MyTinySTL {
 	// 移除数值相同的连续元素
 	template <class T, class Alloc>
 	void list<T, Alloc>::unique() {
-		iterator first = begin();
-		iterator last = end();
+		auto first = begin();
+		auto last = end();
 		if (first == last)	return;
-		iterator next = first;
+		auto next = first;
 		while (++next != last) {
 			if (*first == *next)
 				erase(next);
@@ -404,13 +422,13 @@ namespace MyTinySTL {
 	// 与 x 合并
 	template <class T, class Alloc>
 	void list<T, Alloc>::merge(list<T, Alloc>& x) {
-		iterator first1 = begin();
-		iterator last1 = end();
-		iterator first2 = x.begin();
-		iterator last2 = x.end();
+		auto first1 = begin();
+		auto last1 = end();
+		auto first2 = x.begin();
+		auto last2 = x.end();
 		while (first1 != last1 && first2 != last2) {
 			if (*first2 < *first1) {
-				iterator next = first2;
+				auto next = first2;
 				__transfer(first1, first2, ++next);
 				first2 = next;
 			}
@@ -424,13 +442,13 @@ namespace MyTinySTL {
 	// 将 list 按升序排列
 	template <class T, class Alloc>
 	void list<T, Alloc>::sort() {
-		if (node->next == node || (link_type)node->next->next == node)	return;
-		list<T, Alloc> carry;
-		list<T, Alloc> counter[64];
-		int fill = 0;
+		if (node_->next == node_ || node_->next->next == node_)	return;
+		list carry;
+		list counter[64];
+		auto fill = 0;
 		while (!empty()) {
 			carry.splice(carry.begin(), *this, begin());
-			int i = 0;
+			auto i = 0;
 			while (i < fill && !counter[i].empty()) {
 				counter[i].merge(carry);
 				carry.swap(counter[i++]);
@@ -438,7 +456,7 @@ namespace MyTinySTL {
 			carry.swap(counter[i]);
 			if (i == fill)	++fill;
 		}
-		for (int i = 1; i < fill; ++i) {
+		for (auto i = 1; i < fill; ++i) {
 			counter[i].merge(counter[i - 1]);
 		}
 		swap(counter[fill - 1]);
@@ -447,11 +465,11 @@ namespace MyTinySTL {
 	// 将 list 逆转
 	template <class T, class Alloc>
 	void list<T, Alloc>::reverse() {
-		if (node->next == node || (link_type)node->next->next == node)	return;
-		iterator first = begin();
+		if (node_->next == node_ || node_->next->next == node_)	return;
+		auto first = begin();
 		++first;
 		while (first != end()) {
-			iterator old = first;
+			auto old = first;
 			++first;
 			__transfer(begin(), old, first);
 		}
@@ -461,9 +479,9 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	typename list<T, Alloc>::link_type 
 		list<T, Alloc>::__create_node(const T& x = T()) {
-		link_type p = data_allocate::allocate();
+		auto p = data_allocate::allocate();
 		try {
-			data_allocate::construct(p, __list_node<T>(x));
+			mystl::construct(p, __list_node<T>(x));
 		}
 		catch (...) {
 			data_allocate::deallocate(p);
@@ -474,25 +492,25 @@ namespace MyTinySTL {
 	// __destroy_node 函数
 	template <class T, class Alloc>
 	void list<T, Alloc>::__destroy_node(link_type p) {
-		MyTinySTL::destroy(&p->data);
+		mystl::destroy(&p->data);
 		data_allocate::deallocate(p);
 	}
 
-	// __initialize 函数
+	// __list_initialize 函数
 	template <class T, class Alloc>
-	void list<T, Alloc>::__initialize() {
-		node = __create_node();
-		node->prev = node->next = node;
+	void list<T, Alloc>::__list_initialize() {
+		node_ = __create_node();
+		node_->prev = node_->next = node_;
 	}
 
 	// __fill_assign 函数
 	template <class T, class Alloc>
 	void list<T, Alloc>::__fill_assign(size_type n, const T& value) {
-		iterator i = begin();
+		auto i = begin();
 		for (; i != end() && n > 0; ++i, --n) {
 			*i = value;
 		}
-		if (n > 0)	//如果还没有初始化完成
+		if (n > 0)	//如果还没有分配完成
 			insert(end(), n, value);
 		else
 			erase(i, end());
@@ -502,15 +520,15 @@ namespace MyTinySTL {
 	template <class T, class Alloc>
 	template <class Integer>
 	void list<T, Alloc>::__assign_dispatch(Integer n, Integer value, __true_type) {
-		__fill_assign((size_type)n, (T)value);
+		__fill_assign(static_cast<size_type>(n), static_cast<T>(value));
 	}
 
 	template <class T, class Alloc>
 	template <class InputIterator>
 	void list<T, Alloc>::__assign_dispatch(InputIterator first2, InputIterator last2,
 		__false_type) {
-		iterator first1 = begin();
-		iterator last1 = end();
+		auto first1 = begin();
+		auto last1 = end();
 		for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
 			*first1 = *first2;
 		}
@@ -531,9 +549,8 @@ namespace MyTinySTL {
 	// __insert_dispatch 函数
 	template <class T, class Alloc>
 	template <class Integer>
-	void list<T, Alloc>::__insert_dispatch(iterator position, Integer n, Integer value,
-		__true_type) {
-		__fill_insert(position, (size_type)n, (T)value);
+	void list<T, Alloc>::__insert_dispatch(iterator position, Integer n, Integer value, __true_type) {
+		__fill_insert(position, static_cast<size_type>(n), static_cast<T>(value));
 	}
 
 	template <class T, class Alloc>
@@ -550,24 +567,24 @@ namespace MyTinySTL {
 	void list<T, Alloc>::__transfer(iterator position, iterator first, iterator last) {
 		// 将[first, last)内的所有元素移到 position 之前
 		if (position != last) {
-			(link_type)last.node->prev->next = (link_type)position.node;
-			(link_type)first.node->prev->next = (link_type)last.node;
-			(link_type)position.node->prev->next = (link_type)first.node;
-			link_type tmp = (link_type)position.node->prev;
-			(link_type)position.node->prev = (link_type)last.node->prev;
-			(link_type)last.node->prev = (link_type)first.node->prev;
-			(link_type)first.node->prev = tmp;
+			last.node_->prev->next = position.node_;
+			first.node_->prev->next = last.node_;
+			position.node_->prev->next = first.node_;
+			auto tmp = position.node_->prev;
+			position.node_->prev = last.node_->prev;
+			last.node_->prev = first.node_->prev;
+			first.node_->prev = tmp;
 		}
 	}
 
 	// 重载比较操作符
 	template <class T, class Alloc>
-	inline bool operator==(const list<T, Alloc>& x, const list<T, Alloc>& y) {
+	inline bool operator==(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
 		typedef typename list<T, Alloc>::const_iterator const_iterator;
-		const_iterator first1 = x.begin();
-		const_iterator first2 = y.begin();
-		const_iterator last1 = x.end();
-		const_iterator last2 = y.end();
+		const_iterator first1 = lhs.begin();
+		const_iterator first2 = rhs.begin();
+		const_iterator last1 = lhs.end();
+		const_iterator last2 = rhs.end();
 		while (first1 != last1 && first2 != last2 && *first1 == *first2) {
 			++first1;
 			++first2;
@@ -576,35 +593,35 @@ namespace MyTinySTL {
 	}
 
 	template <class T, class Alloc>
-	inline bool operator<(const list<T, Alloc>& x, const list<T, Alloc>& y) {
-		return MyTinySTL::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+	inline bool operator<(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
+		return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 	template <class T, class Alloc>
-	inline bool operator!=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
-		return !(x == y);
+	inline bool operator!=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
+		return !(lhs == rhs);
 	}
 
 	template <class T, class Alloc>
-	inline bool operator>(const list<T, Alloc>& x, const list<T, Alloc>& y) {
-		return y < x;
+	inline bool operator>(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
+		return rhs < lhs;
 	}
 
 	template <class T, class Alloc>
-	inline bool operator<=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
-		return !(y < x);
+	inline bool operator<=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
+		return !(rhs < lhs);
 	}
 
 	template <class T, class Alloc>
-	inline bool operator>=(const list<T, Alloc>& x, const list<T, Alloc>& y) {
-		return !(x < y);
+	inline bool operator>=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs) {
+		return !(lhs < rhs);
 	}
 
-	// 重载 MyTinySTL 的 swap
+	// 重载 mystl 的 swap
 	template <class T, class Alloc>
-	inline void swap(list<T, Alloc>& x, list<T, Alloc>& y) {
-		x.swap(y);
+	inline void swap(list<T, Alloc>& lhs, list<T, Alloc>& rhs) {
+		lhs.swap(rhs);
 	}
 }
-#endif // !LIST_H
+#endif // !MYTINYSTL_LIST_H_
 
