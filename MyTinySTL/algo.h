@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_ALGO_H_
 #define MYTINYSTL_ALGO_H_
 
-// 这个头文件包含了 MyTinySTL 的一系列算法
+// 这个头文件包含了 mystl 的一系列算法
 
 #include <cstdlib>
 #include <ctime>
@@ -462,8 +462,8 @@ namespace mystl {
 	ForwardIterator __lower_bound(ForwardIterator first, ForwardIterator last,
 		const T& value, Distance*, forward_iterator_tag) {
 		Distance len = distance(first, last);	//求区间长度
-		auto half;
-		auto middle;
+		Distance half;
+		ForwardIterator middle;
 		while (len > 0) {
 			half = len >> 1;	//除以2
 			middle = first;
@@ -484,9 +484,9 @@ namespace mystl {
 	RandomAccessIterator __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
 		const T& value, Distance*, random_access_iterator_tag) {
 		Distance len = last - first;
-		auto half;
-		auto middle;
-		while (len > 0) {
+		Distance half;
+		RandomAccessIterator middle;
+		while (len > 0) {	
 			half = len >> 1;	//除以2
 			middle = first + half;	//令 middle 指向中间位置
 			if (*middle < value) {	//如果中间位置元素值小于 value
