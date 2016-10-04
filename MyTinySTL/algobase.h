@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_ALGOBASE_H_
 #define MYTINYSTL_ALGOBASE_H_
 
-// 这个头文件包含了 MyTinySTL 的基础算法
+// 这个头文件包含了 mystl 的基础算法
 
 #include <cstring>
 
@@ -288,6 +288,36 @@ namespace mystl {
 	}
 
 	/*********************************************************************************/
+	// max
+	// 取二者中的较大值
+	/*********************************************************************************/
+	template <class T>
+	inline const T& max(const T& lhs, const T& rhs) {
+		return lhs < rhs ? rhs : lhs;
+	}
+
+	// 重载版本使用函数对象 comp 代替比较操作
+	template <class T, class Compare>
+	inline const T& max(const T& lhs, const T& rhs, Compare comp) {
+		return comp(lhs, rhs) ? rhs : lhs;
+	}
+	
+	/*********************************************************************************/
+	// min 
+	// 取二者中的较小值
+	/*********************************************************************************/
+	template <class T>
+	inline const T& min(const T& lhs, const T& rhs) {
+		return rhs < lhs ? rhs : lhs;
+	}
+
+	// 重载版本使用函数对象 comp 代替比较操作
+	template <class T, class Compare>
+	inline const T& min(const T& lhs, const T& rhs, Compare comp) {
+		return comp(rhs, lhs) ? rhs : lhs;
+	}
+
+	/*********************************************************************************/
 	// lexicographical_compare
 	// 以字典序排列对两个序列进行比较，当在某个位置发现第一组不相等元素时，有下列几种情况：
 	// (1)如果第一序列的元素较小，返回 true ，否则返回 false
@@ -332,36 +362,6 @@ namespace mystl {
 		return result != 0 ? result < 0 : len1 < len2;
 	}
 	
-	/*********************************************************************************/
-	// max
-	// 取二者中的较大值
-	/*********************************************************************************/
-	template <class T>
-	inline const T& max(const T& lhs, const T& rhs) {
-		return lhs < rhs ? rhs : lhs;
-	}
-
-	// 重载版本使用函数对象 comp 代替比较操作
-	template <class T, class Compare>
-	inline const T& max(const T& lhs, const T& rhs, Compare comp) {
-		return comp(lhs, rhs) ? rhs : lhs;
-	}
-	
-	/*********************************************************************************/
-	// min 
-	// 取二者中的较小值
-	/*********************************************************************************/
-	template <class T>
-	inline const T& min(const T& lhs, const T& rhs) {
-		return rhs < lhs ? rhs : lhs;
-	}
-
-	// 重载版本使用函数对象 comp 代替比较操作
-	template <class T, class Compare>
-	inline const T& min(const T& lhs, const T& rhs, Compare comp) {
-		return comp(rhs, lhs) ? rhs : lhs;
-	}
-
 	/*********************************************************************************/
 	// mismatch
 	// 平行比较两个序列，找到第一处失配的点，返回一对迭代器，分别指向两个序列中失配的点
