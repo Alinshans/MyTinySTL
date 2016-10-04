@@ -13,6 +13,7 @@ namespace mystl {
 
 	// 模板类 queue
 	// 参数一代表数据类型，参数二代表容器类型，缺省使用 deque 作为底层容器
+	// 用法与 STL queue 类似
 	template <class T, class Sequence = deque<T>>
 	class queue {
 	public:
@@ -27,7 +28,7 @@ namespace mystl {
 
 	public:
 		queue() :c_() {}
-		queue(const Sequence& x) :c_(x) {}
+		queue(const Sequence& s) :c_(s) {}
 		queue(size_type n, const T& value) :c_(n, value) {}
 		explicit queue(size_type n) :c_(n) {}
 		template <class InputIterator>
@@ -46,7 +47,7 @@ namespace mystl {
 		void pop() { c_.pop_front(); }
 
 		void clear() { while (!empty()) pop(); }
-		void swap(const queue& rhs) { mystl::swap(c_, rhs.c_); }
+		void swap(queue& rhs) { mystl::swap(c_, rhs.c_); }
 
 	public:
 		friend bool operator==(const queue& lhs, const queue& rhs) {
@@ -80,13 +81,14 @@ namespace mystl {
 
 	// 重载 mystl 的 swap
 	template <class T, class Sequence>
-	void swap(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
+	void swap(queue<T, Sequence>& lhs, queue<T, Sequence>& rhs) {
 		lhs.swap(rhs);
 	}
 
 	// 模板类 priority_queue
 	// 参数一代表数据类型，参数二代表容器类型，缺省使用 vector 作为底层容器
 	// 参数三代表比较权值的方式，缺省使用 mystl 的 less 作为比较方式
+	// 用法与 STL priority_queue 类似
 	template <class T, class Sequence = vector<T>,
 		class Compare = less<T>>
 	class priority_queue {
