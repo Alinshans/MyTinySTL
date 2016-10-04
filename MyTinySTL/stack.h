@@ -1,12 +1,15 @@
-#ifndef STACK_H
-#define STACK_H
+#ifndef MYTINYSTL_STACK_H_
+#define MYTINYSTL_STACK_H_
+
+// 这个头文件包含了一个模板类 stack
+// stack 是一个后进先出的数据结构 
 
 #include "deque.h"	
 
-namespace MyTinySTL {
+namespace mystl {
 
-	// stack:是一个后进先出的数据结构
-	// 默认使用 deque 作为底层容器
+	// 模板类 stack
+	// 参数一代表数据类型，参数局代表容器类型，缺省使用 deque 作为底层容器
 	template <class T, class Sequence = deque<T>>
 	class stack {
 	public:
@@ -17,62 +20,63 @@ namespace MyTinySTL {
 		typedef typename Sequence::const_reference	const_reference;
 		
 	private:
-		Sequence c;	//底层容器
+		Sequence c_;	//底层容器
 
 	public:
-		stack() :c() {}
-		explicit stack(const Sequence& s) :c(s) {}
-		explicit stack(size_type n, const T& value) :c(n, value) {}
-		explicit stack(size_type n) :c(n) {}
+		stack() :c_() {}
+		stack(const Sequence& s) :c_(s) {}
+		stack(size_type n, const T& value) :c_(n, value) {}
+		explicit stack(size_type n) :c_(n) {}
 		template <class InputIterator>
-		stack(InputIterator first, InputIterator last) : c(first, last) {}
+		stack(InputIterator first, InputIterator last) : c_(first, last) {}
 
 		// 以下操作使用底层容器的操作
-		bool empty() const { return c.empty(); }
-		size_type size() const { return c.size(); }
-		reference top() { return c.back(); }
-		const_reference top() const { return c.back(); }
-		void push(const T& x) { c.push_back(x); }
-		void pop() { c.pop_back(); } 
+		bool empty() const { return c_.empty(); }
+		size_type size() const { return c_.size(); }
+
+		reference top() { return c_.back(); }
+		const_reference top() const { return c_.back(); }
+		void push(const T& x) { c_.push_back(x); }
+		void pop() { c_.pop_back(); } 
 
 		void clear() { while (!empty())	pop(); }
-		void swap(const stack& x) { MyTinySTL::swap(c, x.c); }
+		void swap(stack& rhs) { mystl::swap(c_, rhs.c_); }
 
 	public:
-		friend bool operator==(const stack& x, const stack& y) {
-			return x.c == y.c;
+		friend bool operator==(const stack& lhs, const stack& rhs) {
+			return lhs.c_ == rhs.c_;
 		}
-		friend bool operator<(const stack& x, const stack& y) {
-			return x.c < y.c;
+		friend bool operator<(const stack& lhs, const stack& rhs) {
+			return lhs.c_ < rhs.c_;
 		}
 	};
 
 	// 重载比较操作符
 	template <class T, class Sequence>
-	bool operator!=(const stack<T, Sequence>& x, const stack<T, Sequence>& y) {
-		return !(x == y);
+	bool operator!=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+		return !(lhs == rhs);
 	}
 
 	template <class T, class Sequence>
-	bool operator>(const stack<T, Sequence>& x, const stack<T, Sequence>& y) {
-		return y < x;
+	bool operator>(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+		return rhs < lhs;
 	}
 
 	template <class T, class Sequence>
-	bool operator<=(const stack<T, Sequence>& x, const stack<T, Sequence>& y) {
-		return !(y < x);
+	bool operator<=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+		return !(rhs < lhs);
 	}
 
 	template <class T, class Sequence>
-	bool operator>=(const stack<T, Sequence>& x, const stack<T, Sequence>& y) {
-		return !(x < y);
+	bool operator>=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+		return !(lhs < rhs);
 	}
 	
-	// 重载 MyTinySTL 的 swap
+	// 重载 mystl 的 swap
 	template <class T, class Sequence>
-	void swap(const stack<T, Sequence>& x, const stack<T, Sequence>& y) {
-		x.swap(y);
+	void swap(stack<T, Sequence>& lhs, stack<T, Sequence>& rhs) {
+		lhs.swap(rhs);
 	}
 }
-#endif // !STACK_H
+#endif // !MYTINYSTL_STACK_H_
 
