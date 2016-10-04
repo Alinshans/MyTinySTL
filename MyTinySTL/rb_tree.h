@@ -660,13 +660,13 @@ namespace mystl {
 			if (size() > 0 && key_compare(KeyOfValue()(value), key(position.node)))	//新值键值小于position节点的键值
 				return __insert(position.node, position.node, value);
 			else
-				return insert_unique(value);	//寻找合适的插入点
+				return insert_unique(value).first;	//寻找合适的插入点
 		}
 		else if (position.node == header_) {
 			if (key_compare(key(rightmost()), KeyOfValue()(value)))	// max 节点键值小于新值键值
 				return __insert(static_cast<base_ptr>(nullptr), rightmost(), value);
 			else
-				return insert_unique(value);	//寻找合适的插入点
+				return insert_unique(value).first;	//寻找合适的插入点
 		}
 		else {
 			auto before = position;
@@ -680,7 +680,7 @@ namespace mystl {
 					return __insert(position.node, position.node, value);
 			}
 			else
-				return insert_unique(value);	//寻找合适的插入点
+				return insert_unique(value).first;	//寻找合适的插入点
 		}
 	}
 
