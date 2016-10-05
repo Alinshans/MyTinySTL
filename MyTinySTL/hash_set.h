@@ -11,7 +11,7 @@ namespace mystl {
 	// 模板类 hash_set
 	// 参数一代表实值类型，参数二代表哈希函数，缺省使用 mystl 的 hash
 	// 参数三代表键值比较方式，缺省使用 mystl 的 equal_to，参数四代表空间配置器类型，缺省使用 mystl 的 alloc
-	// 使用方法与 set 相同，以 hashtable 作为底层机制，所以 hash_set 中的元素不会自动排序
+	// 使用方法与 set 类似，以 hashtable 作为底层机制，所以 hash_set 中的元素不会自动排序
 	template <class Value, class HashFcn = mystl::hash<Value>, 
 		class EqualKey = mystl::equal_to<Value>, class Alloc = alloc>
 		class hash_set {
