@@ -41,6 +41,30 @@ namespace mystl {
 	}
 
 	/*********************************************************************************/
+	// all_of
+	// 检查[first, last)内是否全部元素都满足一元操作 unary_pred 为 true 的情况，满足则返回 true
+	/*********************************************************************************/
+	template <class InputIterator, class UnaryPredicate>
+	bool all_of(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
+		for (; first != last; ++first) {
+			if (!unary_pred(*first))	return false;	//只要有不满足的就返回 false
+		}
+		return true;
+	}
+
+	/*********************************************************************************/
+	// any_of
+	// 检查[first, last)内是否存在某个元素满足一元操作 unary_pred 为 true 的情况，满足则返回 true
+	/*********************************************************************************/
+	template <class InputIterator, class UnaryPredicate>
+	bool any_of(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
+		for (; first != last; ++first) {
+			if (unary_pred(*first))	return true;	//只要存在满足的元素就返回 true
+		}
+		return false;
+	}
+
+	/*********************************************************************************/
 	// binary_search
 	// 二分查找，如果在[first, last)内有等同于 value 的元素，返回 true，否则返回 false
 	/*********************************************************************************/
@@ -74,14 +98,14 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// count_if
-	// 对[first, last)区间内的每个元素都进行一元 pred 操作，返回结果为 true 的个数
+	// 对[first, last)区间内的每个元素都进行一元 unary_pred 操作，返回结果为 true 的个数
 	/*********************************************************************************/
-	template <class InputIterator, class Predicate>
+	template <class InputIterator, class UnaryPredicate>
 	typename iterator_traits<InputIterator>::difference_type
-		count_if(InputIterator first, InputIterator last, Predicate pred) {
+		count_if(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
 		typename iterator_traits<InputIterator>::difference_type n = 0;
 		for (; first != last; ++first) {
-			if (pred(*first))	++n;
+			if (unary_pred(*first))	++n;
 		}
 		return n;
 	}
@@ -369,11 +393,21 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// find_if
-	// 在[first, last)区间内找到第一个令一元操作 pred 为 true 的元素并返回指向该元素的迭代器
+	// 在[first, last)区间内找到第一个令一元操作 unary_pred 为 true 的元素并返回指向该元素的迭代器
 	/*********************************************************************************/
-	template <class InputIterator, class Predicate>
-	InputIterator find_if(InputIterator first, InputIterator last, Predicate pred) {
-		while (first != last && !pred(*first))	++first;
+	template <class InputIterator, class UnaryPredicate>
+	InputIterator find_if(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
+		while (first != last && !unary_pred(*first))	++first;
+		return first;
+	}
+
+	/*********************************************************************************/
+	// find_if_not
+	// 在[first, last)区间内找到第一个令一元操作 unary_pred 为 false 的元素并返回指向该元素的迭代器
+	/*********************************************************************************/
+	template <class InputIterator, class UnaryPredicate>
+	InputIterator find_if_not(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
+		while (first != last && unary_pred(*first))	++first;
 		return first;
 	}
 
@@ -738,6 +772,18 @@ namespace mystl {
 	}
 
 	/*********************************************************************************/
+	// none_of
+	// 检查[first, last)内是否全部元素都不满足一元操作 unary_pred 为 true 的情况，满足则返回 true
+	/*********************************************************************************/
+	template <class InputIterator, class UnaryPredicate>
+	bool none_of(InputIterator first, InputIterator last, UnaryPredicate unary_pred) {
+		for (; first != last; ++first) {
+			if (unary_pred(*first))	return false;	//只要有满足的就返回 false
+		}
+		return true;
+	}
+
+	/*********************************************************************************/
 	// nth_element
 	// 对序列重排，使得所有小于第 n 个元素的元素出现在它的前面，大于它的出现在它的后面
 	/*********************************************************************************/
@@ -892,19 +938,19 @@ namespace mystl {
 	// 对区间内的元素重排，被一元条件运算判定为 true 的元素会放到区间的前段
 	// 该函数不保证元素的原始相对位置
 	/*********************************************************************************/
-	template <class BidirectionalIterator, class Predicate>
+	template <class BidirectionalIterator, class UnaryPredicate>
 	BidirectionalIterator partition(BidirectionalIterator first,
-		BidirectionalIterator last, Predicate pred) {
+		BidirectionalIterator last, UnaryPredicate unary_pred) {
 		while (true) {
 			while (true) {
 				if (first == last)	return first;
-				else if (pred(*first))	++first;//头指针所指元素符合 pred 为 true 的情况
+				else if (unary_pred(*first))	++first;//头指针所指元素符合 unary_pred 为 true 的情况
 				else break;
 			}
 			--last;		//尾指针回溯1
 			while (true) {
 				if (first == last)	return first;
-				else if (!pred(*last))	--last;	//尾指针所指元素符合 pred 为 false 的情况
+				else if (!unary_pred(*last))	--last;	//尾指针所指元素符合 unary_pred 为 false 的情况
 				else break;
 			}
 			mystl::iter_swap(first, last);	//交换头尾迭代器
@@ -1028,13 +1074,13 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// remove_copy_if
-	// 移除区间内所有令一元操作 pred 为 true 的元素，并将结果复制到以 result 为起始位置的容器上
+	// 移除区间内所有令一元操作 unary_pred 为 true 的元素，并将结果复制到以 result 为起始位置的容器上
 	/*********************************************************************************/
-	template <class InputIterator, class OutputIterator, class Predicate>
+	template <class InputIterator, class OutputIterator, class UnaryPredicate>
 	OutputIterator remove_copy_if(InputIterator first, InputIterator last,
-		OutputIterator result, Predicate pred) {
+		OutputIterator result, UnaryPredicate unary_pred) {
 		for (; first != last; ++first) {
-			if (!pred(*first)) {
+			if (!unary_pred(*first)) {
 				*result = *first;
 				++result;
 			}
@@ -1044,14 +1090,14 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// remove_if
-	// 移除区间内所有令一元操作 pred 为 true 的元素
+	// 移除区间内所有令一元操作 unary_pred 为 true 的元素
 	/*********************************************************************************/
-	template <class ForwardIterator, class Predicate>
+	template <class ForwardIterator, class UnaryPredicate>
 	ForwardIterator remove_if(ForwardIterator first, ForwardIterator last,
-		Predicate pred) {
-		first = mystl::find_if(first, last, pred);	//利用find_if找出第一个匹配的地方
+		UnaryPredicate unary_pred) {
+		first = mystl::find_if(first, last, unary_pred);	//利用find_if找出第一个匹配的地方
 		auto next = first;
-		return first == last ? first : mystl::remove_copy_if(++next, last, first, pred);
+		return first == last ? first : mystl::remove_copy_if(++next, last, first, unary_pred);
 	}
 
 	/*********************************************************************************/
@@ -1083,24 +1129,24 @@ namespace mystl {
 	// replace_copy_if
 	// 行为与 replace_if 类型，不同的是将结果复制到 result 所指的容器中，原序列没有改变
 	/*********************************************************************************/
-	template <class InputIterator, class OutputIterator, class Predicate, class T>
+	template <class InputIterator, class OutputIterator, class UnaryPredicate, class T>
 	OutputIterator replace_copy_if(InputIterator first, InputIterator last,
-		OutputIterator result, Predicate pred, const T& new_value) {
+		OutputIterator result, UnaryPredicate unary_pred, const T& new_value) {
 		for (; first != last; ++first, ++result) {
-			*result = pred(*first) ? new_value : *first;
+			*result = unary_pred(*first) ? new_value : *first;
 		}
 		return result;
 	}
 
 	/*********************************************************************************/
 	// replace_if
-	// 将区间内所有令一元操作 pred 为 true 的元素都用 new_value 替代
+	// 将区间内所有令一元操作 unary_pred 为 true 的元素都用 new_value 替代
 	/*********************************************************************************/
-	template <class ForwardIterator, class Predicate, class T>
-	void replace_if(ForwardIterator first, ForwardIterator last, Predicate pred,
+	template <class ForwardIterator, class UnaryPredicate, class T>
+	void replace_if(ForwardIterator first, ForwardIterator last, UnaryPredicate unary_pred,
 		const T& new_value) {
 		for (; first != last; ++first) {
-			if (pred(*first))	*first = new_value;
+			if (unary_pred(*first))	*first = new_value;
 		}
 	}
 
