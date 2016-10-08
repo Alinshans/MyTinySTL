@@ -480,6 +480,64 @@ namespace mystl {
 	}
 
 	/*********************************************************************************/
+	// is_heap
+	// 检查[first, last)内的元素是否为一个堆，如果是，则返回 true
+	/*********************************************************************************/
+	template <class RandomAccessIterator>
+	bool is_heap(RandomAccessIterator first, RandomAccessIterator last) {
+		auto n = distance(first, last);
+		auto parent = 0;
+		for (auto child = 1; child < n; ++child) {
+			if (first[parent] < first[child])	return false;
+			if ((child & 1) == 0)	//奇数
+				parent++;
+		}
+		return true;
+	}
+
+	// 重载版本使用函数对象 comp 代替比较操作
+	template <class RandomAccessIterator, class Compared>
+	bool is_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
+		auto n = distance(first, last);
+		auto parent = 0;
+		for (auto child = 1; child < n; ++child) {
+			if (comp(first[parent], first[child]))	return false;
+			if ((child & 1) == 0)	//奇数
+				parent++;
+		}
+		return true;
+	}
+
+	/*********************************************************************************/
+	// is_sorted
+	// 检查[first, last)内的元素是否升序，如果是升序，则返回 true
+	/*********************************************************************************/
+	template <class ForwardIterator>
+	bool is_sorted(ForwardIterator first, ForwardIterator last) {
+		if (first == last)	return true;
+		auto next = first;
+		++next;
+		for (; next != last; first = next, ++next) {
+			if (*next < *first)	
+				return false;
+		}
+		return true;
+	}
+
+	// 重载版本使用函数对象 comp 代替比较操作
+	template <class ForwardIterator, class Compared>
+	bool is_sorted(ForwardIterator first, ForwardIterator last, Compared comp) {
+		if (first == last)	return true;
+		auto next = first;
+		++next;
+		for (; next != last; first = next, ++next) {
+			if (comp(*next, *first))
+				return false;
+		}
+		return true;
+	}
+
+	/*********************************************************************************/
 	// lower_bound
 	// 在[first, last)中查找第一个不小于 value 的元素的位置
 	// 返回一个迭代器，指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的第一个位置。
@@ -1226,9 +1284,9 @@ namespace mystl {
 	template <class BidirectionalIterator, class Distance>
 	void __rotate(BidirectionalIterator first, BidirectionalIterator middle,
 		BidirectionalIterator last, Distance*, bidirectional_iterator_tag) {
-		mystl::reverse(first, middle);		//先反转前半段
-		mystl::reverse(middle, last);		//再反转后半段
-		mystl::reverse(first, last);		//最后反转整个区间
+		reverse(first, middle);		//先反转前半段
+		reverse(middle, last);		//再反转后半段
+		reverse(first, last);		//最后反转整个区间
 	}
 
 	// __rotate 的 random_access_iterator_tag 版本
