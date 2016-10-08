@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_NUMERIC_H_
 #define MYTINYSTL_NUMERIC_H_
 
-// 这个头文件包含了 MyTinySTL 的数值算法
+// 这个头文件包含了 mystl 的数值算法
 
 #include "iterator.h"
 
@@ -86,6 +86,18 @@ namespace mystl {
 			init = binary_op1(init, binary_op2(*first1, *first2));
 		}
 		return init;
+	}
+
+	/*********************************************************************************/
+	// iota
+	// 填充[first, last)，值从 value 开始递增 
+	/*********************************************************************************/
+	template <class ForwardIterator ,class T>
+	void iota(ForwardIterator first, ForwardIterator last, T value) {
+		while (first != last) {
+			*first++ = value;
+			++value;
+		}
 	}
 
 	/*********************************************************************************/
