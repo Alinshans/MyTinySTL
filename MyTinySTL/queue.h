@@ -28,7 +28,15 @@ namespace mystl {
 
 	public:
 		queue() :c_() {}
-		queue(const Sequence& s) :c_(s) {}
+		explicit queue(const Sequence& s) :c_(s) {}
+		explicit queue(Sequence&& s) :c_(std::move(s)) {}
+
+		queue(const queue& rhs) :c_(rhs.c_) {}
+		queue(queue&& rhs) :c_(std::move(rhs.c_)) {}
+
+		queue& operator=(const queue& rhs) { c_ = rhs.c_; return *this; }
+		queue& operator=(queue&& rhs) { c_ = rhs.c_; return *this; }
+
 		queue(size_type n, const T& value) :c_(n, value) {}
 		explicit queue(size_type n) :c_(n) {}
 		template <class InputIterator>
@@ -108,7 +116,16 @@ namespace mystl {
 	public:
 		// 构造函数
 		priority_queue() :c_() {}
-		priority_queue(const Sequence& s) :c_(s) { make_heap(c_.begin(), c_.end(), comp_); }
+		explicit priority_queue(const Sequence& s) :c_(s) { make_heap(c_.begin(), c_.end(), comp_); }
+		explicit priority_queue(Sequence&& s) :c_(std::move(s)) { make_heap(c_.begin(), c_.end(), comp_); }
+
+		priority_queue(const priority_queue& rhs) :c_(rhs.c_), comp_(rhs.comp_) { 
+			make_heap(c_.begin(), c_.end(), comp_); 
+		}
+		priority_queue(priority_queue&& rhs) :c_(std::move(rhs.c_)), comp_(std::move(rhs.comp_)) {
+			make_heap(c_.begin(), c_.end(), comp_);
+		}
+
 		priority_queue(size_type n, const T& value) 
 			:c_(n, value) { make_heap(c_.begin(), c_.end(), comp_); }
 		explicit priority_queue(size_type n) 
