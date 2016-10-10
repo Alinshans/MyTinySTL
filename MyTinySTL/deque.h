@@ -175,7 +175,7 @@ namespace mystl {
 		deque(InputIterator first, InputIterator last);
 
 		deque(const deque& rhs);
-		deque(deque&& rhs);
+		deque(deque&& rhs);	
 
 		deque& operator=(const deque& rhs);
 		deque& operator=(deque&& rhs);
@@ -230,7 +230,7 @@ namespace mystl {
 		void swap(deque& rhs);
 
 	protected:
-		// 内部成员函数
+		// deque 成员函数
 		void __create_node(map_pointer nstart, map_pointer nfinish);
 		void __destroy_node(map_pointer nstart, map_pointer nfinish);
 		void __map_initialize(size_type nelem);
@@ -290,21 +290,20 @@ namespace mystl {
 
 	// 复制构造函数
 	template <class T, class Alloc, size_t BufSiz>
-	deque<T, Alloc, BufSiz>::deque(const deque<T, Alloc, BufSiz>& rhs) {
+	deque<T, Alloc, BufSiz>::deque(const deque& rhs) {
 		__map_initialize(rhs.size());
 		mystl::uninitialized_copy(rhs.begin(), rhs.end(), start_);
 	}
 
+	// move 构造
 	template <class T, class Alloc, size_t BufSiz>
-	deque<T, Alloc, BufSiz>::deque(deque<T, Alloc, BufSiz>&& rhs) {
-		if (this != &rhs) {
-			start_ = rhs.start_;
-			finish_ = rhs.finish_;
-			map_ = rhs.map_;
-			map_size_ = rhs.map_size_;
-			rhs.start_ = rhs.finish_ = rhs.map_ = nullptr;
-			rhs.map_size_ = 0;
-		}
+	deque<T, Alloc, BufSiz>::deque(deque&& rhs) {
+		start_ = rhs.start_;
+		finish_ = rhs.finish_;
+		map_ = rhs.map_;
+		map_size_ = rhs.map_size_;
+		rhs.start_ = rhs.finish_ = rhs.map_ = nullptr;
+		rhs.map_size_ = 0;
 	}
 
 	// 赋值操作符operator=
@@ -323,6 +322,7 @@ namespace mystl {
 		return *this;
 	}
 
+	// move 赋值操作符
 	template <class T, class Alloc, size_t BufSiz>
 	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(deque&& rhs) {
 		if (this != &rhs) {
