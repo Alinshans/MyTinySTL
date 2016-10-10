@@ -45,10 +45,16 @@ namespace mystl {
 	public:
 		// 构造、复制函数
 		set() :t_() {}
+		
+		set(const set& rhs) :t_(rhs.t_) {}
+		set(set&& rhs) :t_(std::move(rhs.t_)) {}
+
+		set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
+		set& operator=(set&& rhs) { t_ = std::move(rhs.t_); return *this; }
+
 		template <class InputIterator>
 		set(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-		set(const set& rhs) :t_(rhs.t_) {}
-		set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
+		
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
@@ -176,10 +182,16 @@ namespace mystl {
 	public:
 		// 构造、复制函数
 		multiset() :t_() {}
+		
+		multiset(const multiset& rhs) :t_(rhs.t_) {}
+		multiset(multiset&& rhs) :t_(std::move(rhs.t_)) {}
+
+		multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
+		multiset& operator=(multiset&& rhs) { t = std::move(rhs.t_); return *this; }
+
 		template <class InputIterator>
 		multiset(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
-		multiset(const multiset& rhs) :t_(rhs.t_) {}
-		multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
+		
 
 		// 相关接口
 		key_compare key_comp() const { return t_.key_comp(); }
