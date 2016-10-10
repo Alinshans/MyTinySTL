@@ -322,7 +322,7 @@ namespace mystl {
 		return *this;
 	}
 
-	// move 赋值操作符
+	// move 赋值操作
 	template <class T, class Alloc, size_t BufSiz>
 	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(deque&& rhs) {
 		if (this != &rhs) {
