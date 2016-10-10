@@ -58,11 +58,17 @@ namespace mystl {
 
 	public:
 		// 构造、复制函数
-		map() :t_() {}
+		map() :t_() {}	
+
+		map(const map& rhs) :t_(rhs.t_) {}
+		map(map&& rhs) :t_(std::move(rhs.t_)) {}
+
+		map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
+		map& operator=(map&& rhs) { t_ = std::move(rhs.t_); return *this; }
+
 		template <class InputIterator>
 		map(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-		map(const map& rhs) :t_(rhs.t_) {}
-		map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
+	
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
@@ -213,10 +219,16 @@ namespace mystl {
 	public:
 		// 构造、复制函数
 		multimap() :t_() {}
+
+		multimap(const multimap& rhs) :t_(rhs.t_) {}
+		multimap(multimap&& rhs) :t_(std::move(rhs.t_)) {}
+
+		multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
+		multimap& operator=(multimap&& rhs) { t = std::move(rhs.t_); return *this; }
+
 		template <class InputIterator>
 		multimap(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
-		multimap(const multimap& rhs) :t_(rhs.t_) {}
-		multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
+		
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
