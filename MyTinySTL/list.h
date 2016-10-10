@@ -243,7 +243,7 @@ namespace mystl {
 		return *this;
 	}
 
-	// move 赋值操作符
+	// move 赋值操作
 	template <class T, class Alloc>
 	list<T, Alloc>& list<T, Alloc>::operator=(list&& rhs) {
 		if (this != &rhs) {
