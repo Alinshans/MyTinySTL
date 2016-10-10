@@ -139,11 +139,11 @@ namespace mystl {
 	// 以下四个非成员函数，用于调整 RB-tree，旋转与改变颜色
 
 	//-------------------------------------------------------------------------------
-	//			    x				    y
+	//				x					y
 	//			   / \				   / \
-	//			  a   y		=>		  x   c
-	//			     / \			 / \
-	//			    b	c			a   b
+	//			  a	  y		=>		  x   c
+	//				 / \			 / \
+	//				b	c			a	b
 	//-------------------------------------------------------------------------------
 	// 左旋，参数一为左旋点，参数二为根节点
 	inline void __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root) {
@@ -163,11 +163,11 @@ namespace mystl {
 	}
 
 	//-------------------------------------------------------------------------------
-	//			    x			            y
+	//				x					y
 	//			   / \				   / \
-	//			  y   c		=>		  a   x
-	//			 / \				     / \
-	//			a   b				    b	c
+	//			  y	  c		=>		  a   x
+	//			 / \					 / \
+	//			a	b					b	c
 	//-------------------------------------------------------------------------------
 	// 右旋，参数一为右旋点，参数二为根节点
 	inline void __rb_tree_rotate_right(__rb_tree_node_base* x, __rb_tree_node_base*& root) {
@@ -208,7 +208,7 @@ namespace mystl {
 					__rb_tree_rotate_right(x->parent->parent, root);
 				}
 			}
-			else {	//如果父节点是右子节点
+			else {	//如果父节点是右子节点，对称处理
 				auto y = x->parent->parent->left;	
 				if (y && y->color == __rb_tree_red) {	//伯父节点存在且为红
 					x->parent->color = __rb_tree_black;	//更改父节点为黑
@@ -328,7 +328,7 @@ namespace mystl {
 						break;
 					}
 				}
-				else {	//替代节点为右子节点
+				else {	//替代节点为右子节点，对称处理
 					auto w = x_parent->left;
 					if (w->color == __rb_tree_red) {
 						w->color = __rb_tree_black;
@@ -444,7 +444,10 @@ namespace mystl {
 		rb_tree() { __rb_tree_initialize(); }
 
 		rb_tree(const rb_tree& rhs);
+		rb_tree(rb_tree&& rhs);
+
 		rb_tree& operator=(const rb_tree& rhs);
+		rb_tree& operator=(rb_tree&& rhs);
 
 		~rb_tree() { clear(); }
 
@@ -532,37 +535,84 @@ namespace mystl {
 
 	// 复制构造函数
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::rb_tree(const rb_tree& x) {
-		if (x.root() == nullptr)
+	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::rb_tree(const rb_tree& rhs) {
+		if (rhs.root() == nullptr)
 			__rb_tree_initialize();
 		else {
 			color(header_) = __rb_tree_red;
-			root() = __copy(x.root(), header_);
+			root() = __copy(rhs.root(), header_);
 			leftmost() = minimum(root());
 			rightmost() = maximum(root());
 		}
-		node_count_ = x.node_count_;
+		node_count_ = rhs.node_count_;
+		key_compare = rhs.key_compare;
+	}
+
+	// move 构造
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::rb_tree(rb_tree&& rhs) {
+		if (rhs.root() == nullptr)
+			__rb_tree_initialize();
+		else {
+			color(header_) = __rb_tree_red;
+			root() = __copy(rhs.root(), header_);
+			leftmost() = minimum(root());
+			rightmost() = maximum(root());
+		}
+		node_count_ = rhs.node_count_;
+		key_compare = rhs.key_compare;
+		rhs.root() = nullptr;
+		rhs.leftmost() = rhs.header_;
+		rhs.rightmost() = rhs.header_;
+		rhs.node_count_ = 0;
 	}
 
 	// 赋值操作符operator=
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& 
-		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::operator=(const rb_tree& x) {
-		if (this != &x) {
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::operator=(const rb_tree& rhs) {
+		if (this != &rhs) {
 			clear();
 			node_count_ = 0;
-			key_compare = x.key_compare;
-			if (x.root() == nullptr) {
+			key_compare = rhs.key_compare;
+			if (rhs.root() == nullptr) {
 				root() = nullptr;
 				leftmost() = header_;
 				rightmost() = header_;
 			}
 			else {
-				root() = __copy(x.root(), header_);
+				root() = __copy(rhs.root(), header_);
 				leftmost() = minimum(root());
 				rightmost() = maximum(root());
-				node_count_ = x.node_count_;
+				node_count_ = rhs.node_count_;
 			}
+		}
+		return *this;
+	}
+
+	// move 赋值操作
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::operator=(rb_tree&& rhs) {
+		if (this != &rhs) {
+			clear();
+			node_count_ = 0;
+			key_compare = rhs.key_compare;
+			if (rhs.root() == nullptr) {
+				root() = nullptr;
+				leftmost() = header_;
+				rightmost() = header_;
+			}
+			else {
+				root() = __copy(rhs.root(), header_);
+				leftmost() = minimum(root());
+				rightmost() = maximum(root());
+				node_count_ = rhs.node_count_;
+			}
+			rhs.root() = nullptr;
+			rhs.leftmost() = rhs.header_;
+			rhs.rightmost() = rhs.header_;
+			rhs.node_count_ = 0;
 		}
 		return *this;
 	}
@@ -853,6 +903,7 @@ namespace mystl {
 		catch (...) {
 			__erase(top);
 		}
+		return top;
 	}
 
 	// __insert 函数
