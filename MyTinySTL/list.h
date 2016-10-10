@@ -171,8 +171,8 @@ namespace mystl {
 		void sort();
 		void reverse();
 
-	protected:
-		// 内部成员函数
+	private:
+		// list 成员函数
 		link_type __create_node(const T& x = T());
 		void __destroy_node(link_type p);
 		void __list_initialize();
@@ -218,12 +218,11 @@ namespace mystl {
 		insert(begin(), rhs.begin(), rhs.end());
 	}
 
+	// move 构造
 	template <class T, class Alloc>
 	list<T, Alloc>::list(list&& rhs) {
-		if (this != &rhs) {
-			node_ = rhs.node_;
-			rhs.node_ = nullptr;
-		}
+		node_ = rhs.node_;
+		rhs.node_ = nullptr;
 	}
 
 	// 赋值操作符
@@ -244,6 +243,7 @@ namespace mystl {
 		return *this;
 	}
 
+	// move 赋值操作符
 	template <class T, class Alloc>
 	list<T, Alloc>& list<T, Alloc>::operator=(list&& rhs) {
 		if (this != &rhs) {
