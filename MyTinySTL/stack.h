@@ -24,7 +24,15 @@ namespace mystl {
 
 	public:
 		stack() :c_() {}
-		stack(const Sequence& s) :c_(s) {}
+		explicit stack(const Sequence& s) :c_(s) {}
+		explicit stack(Sequence&& s) :c_(std::move(s)) {}
+
+		stack(const stack& rhs) :c_(rhs.c_) {}
+		stack(stack&& rhs) :c_(std::move(rhs.c_)) {}
+
+		stack& operator=(const stack& rhs) { c_ = rhs.c_; return *this; }
+		stack& operator=(stack&& rhs) { c = std::move(rhs.c_); return *this; }
+
 		stack(size_type n, const T& value) :c_(n, value) {}
 		explicit stack(size_type n) :c_(n) {}
 		template <class InputIterator>
