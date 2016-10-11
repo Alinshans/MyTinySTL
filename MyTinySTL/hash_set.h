@@ -46,6 +46,13 @@ namespace mystl {
 		public:
 			// 构造，复制函数
 			hash_set() :ht_(100, hasher(), key_equal()) {}	// 缺省使用大小为 100 的表格
+
+			hash_set(const hash_set& rhs) :ht_(rhs.ht_) {}
+			hash_set(hash_set&& rhs) :ht_(std::move(rhs.ht_)) {}
+
+			hash_set& operator=(const hash_set& rhs) { ht_ = rhs.ht_; return *this; }
+			hash_set& operator=(hash_set&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+
 			explicit hash_set(size_type n) :ht_(n, hasher(), key_equal()) {}
 			hash_set(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
 			hash_set(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
