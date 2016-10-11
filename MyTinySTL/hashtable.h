@@ -231,12 +231,18 @@ namespace mystl {
 			__hashtable_initialize(n);
 		}
 
-		hashtable(const hashtable& rhs)
-			:hash_(rhs.hash_), equal_(rhs.equal_), get_key_(rhs.get_key_), element_nums_(0) {
+		hashtable(const hashtable& rhs) :hash_(rhs.hash_), equal_(rhs.equal_),
+			get_key_(rhs.get_key_), element_nums_(0) {
 			__copy_from(rhs);
 		}
-		
+		hashtable(hashtable&& rhs) :hash_(rhs.hash_), equal_(rhs.equal_),
+			get_key_(rhs.get_key_), element_nums_(rhs.element_nums_) {
+			buckets_ = std::move(rhs.buckets_);
+			rhs.element_nums_ = 0;
+		}
+
 		hashtable& operator=(const hashtable& rhs);
+		hashtable& operator=(hashtable&& rhs);
 
 		~hashtable() { clear(); }
 
@@ -330,7 +336,24 @@ namespace mystl {
 			hash_ = rhs.hash_;
 			equal_ = rhs.equal_;
 			get_key_ = rhs.get_key_;
-			__copy_from(rhs);
+			buckets_ = rhs.buckets_;
+			element_nums_ = rhs.element_nums_;
+		}
+		return *this;
+	}
+
+	// move 赋值操作
+	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
+	hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>&
+		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::operator=(hashtable&& rhs) {
+		if (this != &rhs) {
+			clear();
+			hash_ = rhs.hash_;
+			equal_ = rhs.equal_;
+			get_key_ = rhs.get_key_;
+			buckets_ = std::move(rhs.buckets_);
+			element_nums_ = rhs.element_nums_;
+			rhs.element_nums_ = 0;
 		}
 		return *this;
 	}
@@ -754,15 +777,15 @@ namespace mystl {
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	typename hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::node* 
 		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::__new_node(const value_type & value) {
-		auto n = __get_node();
-		n->next = nullptr;
+		auto tmp = __get_node();
+		tmp->next = nullptr;
 		try {
-			mystl::construct(&n->value, value);
-			return n;
+			mystl::construct(&tmp->value, value);
 		}
 		catch (...) {
-			__put_node(n);
+			__put_node(tmp);
 		}
+		return tmp;
 	}
 
 	// __delete_node 函数
