@@ -1222,7 +1222,7 @@ namespace mystl {
 	void __reverse(BidirectionalIterator first, BidirectionalIterator last,
 		bidirectional_iterator_tag) {
 		while (true) {
-			if (first == last || first == -last)	// 0或1个元素
+			if (first == last || first == --last)	// 0或1个元素
 				return;
 			else
 				mystl::iter_swap(first++, last);
@@ -1254,53 +1254,108 @@ namespace mystl {
 	/*********************************************************************************/
 	// rotate
 	// 将[first, middle)内的元素和 [middle, last)内的元素互换，可以交换两个长度不同的区间
+	// 返回交换后 middle 的位置
 	/*********************************************************************************/
 	template <class ForwardIterator>
-	inline void rotate(ForwardIterator first, ForwardIterator middle,
+	inline ForwardIterator rotate(ForwardIterator first, ForwardIterator middle,
 		ForwardIterator last) {
-		if (first == middle || middle == last)	return;
-		__rotate(first, middle, last, distance_type(first), iterator_category(first));
+		return __rotate(first, middle, last, distance_type(first), iterator_category(first));
 	}
 
 	// __rotate 的 forward_iterator_tag 版本
 	template <class ForwardIterator, class Distance>
-	void __rotate(ForwardIterator first, ForwardIterator middle, ForwardIterator last,
+	ForwardIterator __rotate(ForwardIterator first, ForwardIterator middle, ForwardIterator last,
 		Distance*, forward_iterator_tag) {
-		for (auto i = middle; ;) {
-			mystl::iter_swap(first, i);	//前段后段元素互换
-			++first;
-			++i;
-			if (first == middle) {			//前半段结束
-				if (i == last)	return;		//后半段也结束，交换完成
-				middle = i;					//调整，对新的前后段进行交换
-			}
-			else if (i == last) {			//后半段结束
-				i = middle;					//调整，对新的前后段进行交换
-			}
+		if (first == middle)	
+			return last;
+		if (last == middle)	
+			return first;
+
+		auto first2 = middle;	//交换起点
+		do {
+			swap(*first++, *first2++);
+			if (first == middle)
+				middle = first2;
+		} while (first2 != last);	//后半段移到前面
+		auto new_middle = first;	//迭代器返回的位置
+		first2 = middle;
+		while (first2 != last) {	//调整剩余元素
+			mystl::swap(*first++, *first2++);
+			if (first == middle)
+				middle = first2;
+			else if (first2 == last)
+				first2 = middle;
 		}
+		return new_middle;
 	}
 	
 	// __rotate 的 bidirectional_iterator_tag 版本
 	template <class BidirectionalIterator, class Distance>
-	void __rotate(BidirectionalIterator first, BidirectionalIterator middle,
+	BidirectionalIterator __rotate(BidirectionalIterator first, BidirectionalIterator middle,
 		BidirectionalIterator last, Distance*, bidirectional_iterator_tag) {
-		reverse(first, middle);		//先反转前半段
-		reverse(middle, last);		//再反转后半段
-		reverse(first, last);		//最后反转整个区间
+		if (first == middle)
+			return last;
+		if (last == middle)
+			return first;
+
+		__reverse(first, middle, bidirectional_iterator_tag());	//反转前半段
+		__reverse(middle, last, bidirectional_iterator_tag());	//反转后半段
+		while (first != middle && middle != last)
+			mystl::swap(*first++, *--last);
+		if (first == middle) {	//前半段先结束，反转剩下部分
+			__reverse(middle, last, bidirectional_iterator_tag());
+			return last;
+		}
+		else {	//后半段先结束，反转剩下部分
+			__reverse(first, middle, bidirectional_iterator_tag());
+			return first;
+		}
 	}
 
 	// __rotate 的 random_access_iterator_tag 版本
 	template <class RandomAccessIterator, class Distance>
-	void __rotate(RandomAccessIterator first, RandomAccessIterator middle,
+	RandomAccessIterator __rotate(RandomAccessIterator first, RandomAccessIterator middle,
 		RandomAccessIterator last, Distance*, random_access_iterator_tag) {
 		//因为是 random access iterator，我们可以确定每个元素的位置
-		//取前半段和全长的最大公因子，即循环次数
-		auto n = __gcd(last - first, middle - first);
-		while (n--) {
-			// first + n : 起始位置
-			// middle - first : 偏移量
-			__rotate_cycle(first, last, first + n, middle - first, value_type(first));
+		auto n = last - first;	
+		auto l = middle - first;	
+		auto r = n - l;	
+		auto result = first + (last - middle);
+
+		if (l == 0)
+			return last;
+		else if (l == r) {
+			swap_ranges(first, middle, last);
+			return result;
 		}
+		auto cycle_times = __gcd(n, l);
+		for (Distance i = 0; i < cycle_times; ++i) {
+			auto tmp = *first;
+			auto p = first;
+			if (l < r) {
+				for (Distance j = 0; j < r / cycle_times; ++j) {
+					if (p > first + r) {
+						*p = *(p - r);
+						p -= r;
+					}
+					*p = *(p + l);
+					p += l;
+				}
+			}
+			else {
+				for (Distance j = 0; j < l / cycle_times - 1; ++j) {
+					if (p < last - l) {
+						*p = *(p + l);
+						p += l;
+					}
+					*p = *(p - r);
+					p -= r;
+				}
+			}
+			*p = tmp;
+			++first;
+		}
+		return result;
 	}
 
 	// 求最大公因子，辗转相除法
@@ -1312,24 +1367,6 @@ namespace mystl {
 			n = t;
 		}
 		return m;
-	}
-
-	template <class RandomAccessIterator, class Distance, class T>
-	void __rotate_cycle(RandomAccessIterator first, RandomAccessIterator last,
-		RandomAccessIterator initial, Distance shift, T*) {
-		// initial:起始位置 ， shift:偏移量
-		T value = *initial;
-		auto ptr1 = initial;
-		auto ptr2 = ptr1 + shift;
-		while (ptr2 != initial) {
-			*ptr1 = *ptr2;		//元素移动
-			ptr1 = ptr2;
-			if (last - ptr2 > shift)	//下次偏移未到达尾端
-				ptr2 += shift;
-			else						//下次偏移超出尾端
-				ptr2 = first + (shift - (last - ptr2));
-		}
-		*ptr1 = value;	//把 value 移到最后一个元素移到的位置
 	}
 
 	/*********************************************************************************/
