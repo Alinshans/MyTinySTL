@@ -393,9 +393,9 @@ namespace mystl {
 	/*********************************************************************************/
 	template <class T>
 	inline void swap(T& lhs, T& rhs) {
-		auto tmp = lhs;
-		lhs = rhs;
-		rhs = tmp;
+		auto tmp(std::move(lhs));
+		lhs = std::move(rhs);
+		rhs = std::move(tmp);
 	}
 }
 #endif // !MYTINYSTL_ALGOBASE_H_
