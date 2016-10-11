@@ -48,6 +48,13 @@ namespace mystl {
 		public:
 			// 构造函数
 			hash_map() :ht_(100, hasher(), key_equal()) {}	// 缺省使用大小为 100 的表格
+
+			hash_map(const hash_map& rhs) :ht_(rhs.ht_) {}
+			hash_map(hash_map&& rhs) :ht_(std::move(rhs.ht_)) {}
+
+			hash_map& operator=(const hash_map& rhs) { ht_ = rhs.ht_; return *this; }
+			hash_map& operator=(hash_map&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+
 			explicit hash_map(size_type n) :ht_(n, hasher(), key_equal()) {}
 			hash_map(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
 			hash_map(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
