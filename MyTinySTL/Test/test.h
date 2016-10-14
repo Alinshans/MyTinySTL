@@ -1,0 +1,5 @@
+#ifndef MYTINYSTL_TEST_H
+#define MYTINYSTL_TEST_H
+
+#endif // !MYTINYSTL_TEST_H
+
