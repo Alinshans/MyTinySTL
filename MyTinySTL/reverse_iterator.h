@@ -67,14 +67,14 @@ namespace mystl {
 		}
 
 		self operator+(difference_type n) const {
-			return static_cast<self>(current - n);
+			return self(current - n);
 		}
 		self& operator+=(difference_type n) {
 			current -= n;
 			return *this;
 		}
 		self operator-(difference_type n) const {
-			return static_cast<self>(current + n);
+			return self(current + n);
 		}
 		self& operator-=(difference_type n) {
 			current += n;
@@ -86,8 +86,14 @@ namespace mystl {
 			return *(*this + n);
 		}
 	};
+	
+	// 重载操作符
+	template <class Iterator>
+	inline typename reverse_iterator<Iterator>::difference_type 
+		operator-(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {
+		return rhs.base() - lhs.base();
+	}
 
-	// 重载比较操作符
 	template <class Iterator>
 	inline bool operator==(const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs) {
