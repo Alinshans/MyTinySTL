@@ -9,8 +9,8 @@ namespace mystl {
 	
 	/*********************************************************************************/
 	// accumulate                                 
-	// 版本1：对每个元素进行累加                       
-	// 版本2：对每个元素进行二元操作                    
+	// 版本1：以初值 init 对每个元素进行累加                       
+	// 版本2：以初值 init 对每个元素进行二元操作                    
 	/*********************************************************************************/
 	template <class InputIterator, class T>
 	T accumulate(InputIterator first, InputIterator last, T init) {
@@ -31,13 +31,13 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// adjacent_difference                     
-	// 版本1：计算相邻元素的差值                    
+	// 版本1：计算相邻元素的差值，结果保存到以 result 为起始的区间上               
 	// 版本2：相邻元素的二元操作                  
 	/*********************************************************************************/
 	template <class InputIterator, class OutputIterator>
 	OutputIterator adjacent_difference(InputIterator first, InputIterator last,
 		OutputIterator result) {
-		if (first == last)	return;
+		if (first == last)	return result;
 		*result = *first;	//记录第一个元素
 		auto value = *first;
 		while (++first != last) {
@@ -52,7 +52,7 @@ namespace mystl {
 	template <class InputIterator, class OutputIterator, class BinaryOperation>
 	OutputIterator adjacent_difference(InputIterator first, InputIterator last,
 		OutputIterator result, BinaryOperation binary_op) {
-		if (first == last)	return;
+		if (first == last)	return result;
 		*result = *first;	//记录第一个元素
 		auto value = *first;
 		while (++first != last) {
@@ -65,7 +65,7 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// inner_product                         
-	// 版本1：计算两个区间的内积                  
+	// 版本1：以 init 为初值，计算两个区间的内积                  
 	// 版本2：以仿函数提供 + 和 * 的操作
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2, class T>
@@ -90,7 +90,7 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// iota
-	// 填充[first, last)，值从 value 开始递增 
+	// 填充[first, last)，以 value 为初值开始递增 
 	/*********************************************************************************/
 	template <class ForwardIterator ,class T>
 	void iota(ForwardIterator first, ForwardIterator last, T value) {
@@ -102,13 +102,13 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// partial_sum                            
-	// 版本1：计算局部累计求和                    
+	// 版本1：计算局部累计求和，结果保存到以 result 为起始的区间上             
 	// 版本2：进行局部累计二元操作                 
 	/*********************************************************************************/
 	template <class InputIterator, class OutputIterator>
 	OutputIterator partial_sum(InputIterator first, InputIterator last,
 		OutputIterator result) {
-		if (first == last)	return;
+		if (first == last)	return result;
 		*result = *first;	//记录第一个元素
 		auto value = *first;
 		while (++first != last) {
@@ -122,7 +122,7 @@ namespace mystl {
 	template <class InputIterator, class OutputIterator, class BinaryOperation>
 	OutputIterator partial_sum(InputIterator first, InputIterator last,
 		OutputIterator result, BinaryOperation binary_op) {
-		if (first == last)	return;
+		if (first == last)	return result;
 		*result = *first;	//记录第一个元素
 		auto value = *first;
 		while (++first != last) {
