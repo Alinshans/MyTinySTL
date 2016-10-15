@@ -9,7 +9,7 @@
 #include "type_traits.h"
 #include "uninitialized.h"
 
-namespace MyTinySTL {
+namespace mystl {
 
 	// 函数模板 get_temporary_buffer，获取一个临时缓冲区
 	// 版本1：接受一个大小
@@ -35,7 +35,7 @@ namespace MyTinySTL {
 			T* tmp = static_cast<T*>(malloc(static_cast<size_t>(len) * sizeof(T)));
 			if (tmp != 0)
 				return pair<T*, ptrdiff_t>(tmp, len);	//申请成功就返回
-			len >> 1;	//申请失败时减少 len 的大小
+			len /= 2;	//申请失败时减少 len 的大小
 		}
 		return pair<T*, ptrdiff_t>((T*)0, 0);
 	}
@@ -60,7 +60,7 @@ namespace MyTinySTL {
 		temporary_buffer(ForwardIterator first, ForwardIterator last);
 
 		~temporary_buffer() {
-			MyTinySTL::destroy(buffer, buffer + len);
+			mystl::destroy(buffer, buffer + len);
 			free(buffer);
 		}
 
@@ -73,7 +73,7 @@ namespace MyTinySTL {
 		void __allocate_buffer();
 		void __initialize_buffer(const T&, __true_type) {}
 		void __initialize_buffer(const T& value, __false_type) {
-			MyTinySTL::uninitialized_fill_n(buffer, len, value);
+			mystl::uninitialized_fill_n(buffer, len, value);
 		}
 
 	private:
@@ -89,7 +89,7 @@ namespace MyTinySTL {
 		typedef typename __type_traits<T>::has_trivial_default_constructor Trivial;
 		try {
 			len = distance(first, last);
-			allocate_buffer();
+			__allocate_buffer();
 			if (len > 0) {
 				__initialize_buffer(*first, Trivial());
 			}
@@ -101,7 +101,7 @@ namespace MyTinySTL {
 		}
 	}
 
-	// 成员函数 allocate_buffer，分配换成区空间
+	// 成员函数 __allocate_buffer，分配换成区空间
 	template <class ForwardIterator, class T>
 	void temporary_buffer<ForwardIterator, T>::__allocate_buffer() {	
 		original_len = len;
@@ -111,7 +111,7 @@ namespace MyTinySTL {
 			buffer = static_cast<T*>(malloc(len * sizeof(T)));
 			if (buffer != 0)
 				break;
-			len >> 1;	//申请失败时减少空间大小
+			len /= 2;	//申请失败时减少空间大小
 		}
 	}
 }
