@@ -158,7 +158,7 @@ namespace mystl {
 	void sort_heap(RandomAccessIterator first, RandomAccessIterator last) {
 		// 每执行一次 pop_heap，最大的元素都被放到尾部，直到容器最多只有一个元素，完成排序
 		while (last - first > 1) {
-			pop_heap(first, last--);
+			mystl::pop_heap(first, last--);
 		}
 	}
 
@@ -166,7 +166,7 @@ namespace mystl {
 	template <class RandomAccessIterator, class Compared>
 	void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
 		while (last - first > 1) {
-			pop_heap(first, last--, comp);
+			mystl::pop_heap(first, last--, comp);
 		}
 	}
 
