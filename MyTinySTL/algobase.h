@@ -36,8 +36,7 @@ namespace mystl {
 	// 函数对象: __copy_dispatch 的泛化版本
 	template <class InputIterator, class OutputIterator>
 	struct __copy_dispatch {
-		OutputIterator operator()(InputIterator first, InputIterator last,
-			OutputIterator result) {
+		OutputIterator operator()(InputIterator first, InputIterator last, OutputIterator result) {
 			return __copy(first, last, result, iterator_category(first));
 		}
 	};
@@ -46,8 +45,8 @@ namespace mystl {
 	template <class T>
 	struct __copy_dispatch<T*, T*> {
 		T* operator()(T* first, T* last, T* result) {
-			typedef typename __type_traits<T>::has_trivial_assignment_operator t;
-			return __copy_t(first, last, result, t());
+			typedef typename __type_traits<T>::has_trivial_assignment_operator Trivial;
+			return __copy_t(first, last, result, Trivial());
 		}
 	};
 
@@ -77,7 +76,7 @@ namespace mystl {
 		return __copy_d(first, last, result, distance_type(first));
 	}
 
-	// __copy_d 
+	// __copy_d : 以 n 决定循环次数
 	template <class RandomAccessIterator, class OutputIterator, class Distance>
 	inline OutputIterator __copy_d(RandomAccessIterator first, RandomAccessIterator last,
 		OutputIterator result, Distance*) {
@@ -110,8 +109,8 @@ namespace mystl {
 		BidirectionalIterator1 last, BidirectionalIterator2 result) {
 		typedef typename __type_traits<typename iterator_traits<BidirectionalIterator2>::value_type>
 			::has_trivial_assignment_operator	Trivial;
-		return __copy_backward_dispatch<BidirectionalIterator1, BidirectionalIterator2,
-			Trivial()>::copy(first, last, result);
+		return __copy_backward_dispatch<BidirectionalIterator1, BidirectionalIterator2, Trivial()>
+			::copy(first, last, result);
 	}
 
 	// 函数对象: __copy_backward_dispatch 的泛化版本
@@ -175,7 +174,8 @@ namespace mystl {
 	template <class InputIterator, class Size, class OutputIterator>
 	inline pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
 		OutputIterator result) {
-		return __copy_n(first, n, result, iterator_traits(first));
+		typedef typename iterator_traits<InputIterator>::iterator_category Category;
+		return __copy_n(first, n, result, Category());
 	}
 
 	// __copy_n 的 input_iterator_tag 版本
@@ -282,9 +282,7 @@ namespace mystl {
 	/*********************************************************************************/
 	template <class ForwardIterator1, class ForwardIterator2>
 	inline void iter_swap(ForwardIterator1 lhs, ForwardIterator2 rhs) {
-		auto tmp = *lhs;
-		*lhs = *rhs;
-		*rhs = tmp;
+		mystl::swap(*lhs, *rhs);
 	}
 
 	/*********************************************************************************/
@@ -364,7 +362,7 @@ namespace mystl {
 	
 	/*********************************************************************************/
 	// mismatch
-	// 平行比较两个序列，找到第一处失配的点，返回一对迭代器，分别指向两个序列中失配的点
+	// 平行比较两个序列，找到第一处失配的元素，返回一对迭代器，分别指向两个序列中失配的元素
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2>
 	pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
