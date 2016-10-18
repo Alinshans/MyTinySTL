@@ -92,9 +92,9 @@ namespace mystl {
 		void assign(InputIterator first, InputIterator last);
 		void push_back(const T& x);
 		void pop_back();
-		iterator earse(iterator position);
-		iterator earse(iterator first, iterator last);
-		void clear() { earse(begin(), end()); }
+		iterator erase(iterator position);
+		iterator erase(iterator first, iterator last);
+		void clear() { erase(begin(), end()); }
 		iterator insert(iterator position, const T& x);
 		iterator insert(iterator position);
 		void insert(iterator position, size_type n, const T& x);
@@ -200,7 +200,7 @@ namespace mystl {
 	template <class T, class Alloc>
 	void vector<T, Alloc>::resize(size_type new_size, const T& x) {
 		if (new_size < size())
-			earse(begin() + new_size, end());
+			erase(begin() + new_size, end());
 		else
 			insert(end(), new_size - size(), x);
 	}
@@ -248,7 +248,7 @@ namespace mystl {
 	// 删除 position 位置上的元素
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
-		vector<T, Alloc>::earse(iterator position) {
+		vector<T, Alloc>::erase(iterator position) {
 		if (position + 1 != end())
 			mystl::copy(position + 1, finish_, position);	//后面的元素往前移
 		--finish_;
@@ -259,7 +259,7 @@ namespace mystl {
 	// 删除[first, last)上的元素
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator
-		vector<T, Alloc>::earse(iterator first, iterator last) {
+		vector<T, Alloc>::erase(iterator first, iterator last) {
 		auto i = mystl::copy(last, finish_, first);	//把last之后的元素复制到first为起始的空间
 		mystl::destroy(i, finish_);	//销毁不要的元素
 		finish_ = finish_ - (last - first);	//调整水位
@@ -368,7 +368,7 @@ namespace mystl {
 			finish_ = mystl::uninitialized_fill_n(finish_, n - size(), value);
 		}
 		else
-			earse(mystl::fill_n(start_, n, value), finish_);
+			erase(mystl::fill_n(start_, n, value), finish_);
 	}
 	
 	// __assign_dispatch 函数
@@ -394,7 +394,7 @@ namespace mystl {
 			*cur = *first;
 		}
 		if (first == last)	//如果[first, last)区间内的元素复制完成
-			earse(cur, end());	//删除多余的元素
+			erase(cur, end());	//删除多余的元素
 		else
 			insert(end(), first, last);	//否则插入区间剩余元素
 	}
