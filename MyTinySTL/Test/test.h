@@ -456,6 +456,35 @@ void TESTCASE_NAME(testcase_name)::Run()
 	}} while(0)
 
 
+// 一些常用的宏定义
+// 输出容器
+#define COUT(container) \
+	for(auto it : container)	std::cout << " " << it; std::cout << std::endl;
+
+#define FUN_TEST1(name, type, count) \
+	do { \
+		string n = #name; \
+		char *t = #type; \
+		std::cout << green << n << " " << t << " type " << count << " times:" << std::endl; \
+		time_t start, end; \
+		srand((int)time(0)); \
+		type* arr = new type[count]; \
+		for(size_t n = 0; n < count; ++n) \
+			*(arr + n) = rand(); \
+		start = clock(); \
+		std::name(arr, arr + count); \
+		end = clock(); \
+		std::cout << "std costs " << end - start << "ms" << std::endl; \
+		for(size_t n = 0; n < count; ++n) \
+			*(arr + n) = rand(); \
+		start = clock(); \
+		mystl::name(arr, arr + count); \
+		end = clock(); \
+		std::cout << "mystl costs " << end - start << "ms" << std::endl; \
+		UnitTest::GetInstance()->CurrentTestCase->nPassed++; \
+	} while(0)
+
+
 // 测试调用的宏
 // 简单测试: 测试运行的正确性
 #define TEST(testcase_name) \
@@ -474,5 +503,6 @@ void TESTCASE_NAME(testcase_name)::Run()
 }	// mystl
 
 #include "algorithm_test.h"
+#include "vector_test.h"
 #endif // !MYTINYSTL_TEST_H
 
