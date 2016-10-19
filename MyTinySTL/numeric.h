@@ -32,7 +32,7 @@ namespace mystl {
 	/*********************************************************************************/
 	// adjacent_difference                     
 	// 版本1：计算相邻元素的差值，结果保存到以 result 为起始的区间上               
-	// 版本2：相邻元素的二元操作                  
+	// 版本2：自定义相邻元素的二元操作                  
 	/*********************************************************************************/
 	template <class InputIterator, class OutputIterator>
 	OutputIterator adjacent_difference(InputIterator first, InputIterator last,
@@ -66,7 +66,7 @@ namespace mystl {
 	/*********************************************************************************/
 	// inner_product                         
 	// 版本1：以 init 为初值，计算两个区间的内积                  
-	// 版本2：以仿函数提供 + 和 * 的操作
+	// 版本2：自定义 operator+ 和 operator* 
 	/*********************************************************************************/
 	template <class InputIterator1, class InputIterator2, class T>
 	T inner_product(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T init) {
@@ -102,7 +102,7 @@ namespace mystl {
 	/*********************************************************************************/
 	// partial_sum                            
 	// 版本1：计算局部累计求和，结果保存到以 result 为起始的区间上             
-	// 版本2：进行局部累计二元操作                 
+	// 版本2：进行局部进行自定义二元操作                 
 	/*********************************************************************************/
 	template <class InputIterator, class OutputIterator>
 	OutputIterator partial_sum(InputIterator first, InputIterator last,
