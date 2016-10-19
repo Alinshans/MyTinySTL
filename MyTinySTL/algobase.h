@@ -13,7 +13,7 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// copy
-	// 把 [first, last)区间内的元素复制到 [result, result + (last - first))内
+	// 把 [first, last)区间内的元素拷贝到 [result, result + (last - first))内
 	/*********************************************************************************/
 	// 泛化版本
 	template <class InputIterator, class OutputIterator>
@@ -102,7 +102,7 @@ namespace mystl {
 
 	/*********************************************************************************/
 	// copy_backward
-	// 将 [first, last)区间内的元素复制到 [result - (last - first), result)内
+	// 将 [first, last)区间内的元素拷贝到 [result - (last - first), result)内
 	/*********************************************************************************/
 	template <class BidirectionalIterator1, class BidirectionalIterator2>
 	inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
@@ -167,9 +167,23 @@ namespace mystl {
 	}
 
 	/*********************************************************************************/
+	// copy_if
+	// 把[first, last)内满足一元操作 pred 的元素拷贝到以 result 为起始的位置上
+	/*********************************************************************************/
+	template <class InputIterator, class OutputIterator, class UnaryPredicate>
+	OutputIterator copy_if(InputIterator first, InputIterator last,
+		OutputIterator result, UnaryPredicate pred) {
+		for (; first != last; ++first) {
+			if (pred(*first))
+				*result++ = *first;
+		}
+		return result;
+	}
+
+	/*********************************************************************************/
 	// copy_n
-	// 把 [first, first + n)区间上的元素复制到 [result, result + n)上
-	// 返回一个 pair 分别指向复制结束的尾部
+	// 把 [first, first + n)区间上的元素拷贝到 [result, result + n)上
+	// 返回一个 pair 分别指向拷贝结束的尾部
 	/*********************************************************************************/
 	template <class InputIterator, class Size, class OutputIterator>
 	inline pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
