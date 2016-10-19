@@ -30,8 +30,7 @@ namespace mystl {
 
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
-	ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last,
-		Compared comp) {
+	ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last, Compared comp) {
 		if (first == last)	return last;	//区间为空或未找到都返回last
 		auto next = first;
 		while (++next != last) {
@@ -71,7 +70,7 @@ namespace mystl {
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
-		auto i = lower_bound(first, last, value);
+		auto i = mystl::lower_bound(first, last, value);
 		return i != last && !(value < *i);
 	}
 
@@ -79,7 +78,7 @@ namespace mystl {
 	template <class ForwardIterator, class T, class Compared>
 	bool binary_search(ForwardIterator first, ForwardIterator last, const T& value,
 		Compared comp) {
-		auto i = lower_bound(first, last, value);
+		auto i = mystl::lower_bound(first, last, value);
 		return i != last && !comp(value, *i);
 	}
 
@@ -141,9 +140,9 @@ namespace mystl {
 			else if (value < *middle)
 				len = half;	//修正 len，查找前半段
 			else {	// value == *middle
-				left = lower_bound(first, last, value);
+				left = mystl::lower_bound(first, last, value);
 				advance(first, len);
-				right = upper_bound(++middle, first, value);
+				right = mystl::upper_bound(++middle, first, value);
 				return pair<ForwardIterator, ForwardIterator>(left, right);
 			}
 		}
@@ -168,8 +167,8 @@ namespace mystl {
 			else if (value < *middle)
 				len = half;	//修正 len，查找前半段
 			else {	// *middle == value
-				left = lower_bound(first, middle, value);
-				right = upper_bound(++middle, first + len, value);
+				left = mystl::lower_bound(first, middle, value);
+				right = mystl::upper_bound(++middle, first + len, value);
 				return pair<RandomAccessIterator, RandomAccessIterator>(left, right);
 			}
 		}
@@ -179,9 +178,7 @@ namespace mystl {
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator, class T, class Compared>
 	inline pair<ForwardIterator, ForwardIterator>
-		equal_range(ForwardIterator first, ForwardIterator last, const T& value,
-			Compared comp) {
-		//根据迭代器不同采用不同的方法
+		equal_range(ForwardIterator first, ForwardIterator last, const T& value, Compared comp) {
 		return __equal_range(first, last, value, distance_type(first),
 			iterator_category(first), comp);
 	}
@@ -206,9 +203,9 @@ namespace mystl {
 			else if (comp(value, *middle))
 				len = half;	//修正 len，查找前半段
 			else {	// value == *middle
-				left = lower_bound(first, last, value, comp);
+				left = mystl::lower_bound(first, last, value, comp);
 				advance(first, len);
-				right = upper_bound(++middle, first, value, comp);
+				right = mystl::upper_bound(++middle, first, value, comp);
 				return pair<ForwardIterator, ForwardIterator>(left, right);
 			}
 		}
@@ -233,8 +230,8 @@ namespace mystl {
 			else if (comp(value, *middle))
 				len = half;	//修正 len，查找前半段
 			else {	// *middle == value
-				left = lower_bound(first, middle, value, comp);
-				right = upper_bound(++middle, first + len, value, comp);
+				left = mystl::lower_bound(first, middle, value, comp);
+				right = mystl::upper_bound(++middle, first + len, value, comp);
 				return pair<RandomAccessIterator, RandomAccessIterator>(left, right);
 			}
 		}
@@ -312,10 +309,10 @@ namespace mystl {
 	inline ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
 		ForwardIterator2 first2, ForwardIterator2 last2, Compared comp) {
 		typedef typename iterator_traits<ForwardIterator1>::iterator_category
-			category1;
+			Category1;
 		typedef typename iterator_traits<ForwardIterator2>::iterator_category
-			category2;
-		return __find_end(first1, last1, first2, last2, category1(), category2(), comp);
+			Category2;
+		return __find_end(first1, last1, first2, last2, Category1(), Category2(), comp);
 	}
 
 	// __find_end 的 forward_iterator_tag 版本
@@ -327,7 +324,7 @@ namespace mystl {
 		else {
 			auto result = last1;
 			while (true) {
-				//利用 search() 查找某个子序列的首次出现点，找不到则返回 last1
+				//利用 search 查找某个子序列的首次出现点，找不到则返回 last1
 				auto new_result = mystl::search(first1, last1, first2, last2, comp);
 				if (new_result == last1)	return result;	//没找到
 				else {	//寻找下一个目标点
@@ -369,8 +366,7 @@ namespace mystl {
 		ForwardIterator first2, ForwardIterator last2) {
 		for (; first1 != last1; ++first1) {
 			for (auto iter = first2; iter != last2; ++iter) {
-				//如果序列一的元素在序列二中找到，就返回
-				if (*first1 == *iter)
+				if (*first1 == *iter)	//如果序列一的元素在序列二中找到，就返回
 					return first1;
 			}
 		}
@@ -383,8 +379,7 @@ namespace mystl {
 		ForwardIterator first2, ForwardIterator last2, Compared comp) {
 		for (; first1 != last1; ++first1) {
 			for (auto iter = first2; iter != last2; ++iter) {
-				//如果找到符合比较条件的元素，就返回
-				if (comp(*first1, *iter))
+				if (comp(*first1, *iter))	//如果找到符合比较条件的元素，就返回
 					return first1;
 			}
 		}
@@ -455,13 +450,13 @@ namespace mystl {
 		InputIterator2 first2, InputIterator2 last2) {
 		while (first1 != last1 && first2 != last2) {
 			if (*first2 < *first1)	//序列二元素大于序列一
-				return false;		//被包含条件必然不成立
+				return false;	//被包含条件必然不成立
 			else if (*first1 < *first2)
 				++first1;
 			else
 				++first1, ++first2;
 		}
-		return first2 == last2;		//判断序列二是否遍历完
+		return first2 == last2;	//判断序列二是否遍历完
 	}
 
 	// 重载版本使用函数对象 comp 代替比较操作
@@ -470,13 +465,13 @@ namespace mystl {
 		InputIterator2 first2, InputIterator2 last2, Compared comp) {
 		while (first1 != last1 && first2 != last2) {
 			if (comp(*first2, *first1))	//comp(S2,S1)的包含条件为真
-				return false;			//被包含条件必然不成立
+				return false;	//被包含条件必然不成立
 			else if (comp(*first1, *first2))
 				++first1;
 			else
 				++first1, ++first2;
 		}
-		return first2 == last2;		//判断序列二是否遍历完
+		return first2 == last2;	//判断序列二是否遍历完
 	}
 
 	/*********************************************************************************/
@@ -510,7 +505,7 @@ namespace mystl {
 			return;
 		if (len1 + len2 == 2) {	//只有两个元素
 			if (*middle < *first)
-				iter_swap(first, middle);
+				mystl::iter_swap(first, middle);
 			return;
 		}
 
@@ -542,7 +537,7 @@ namespace mystl {
 		// 区间长度足够放进缓冲区
 		if (len1 <= len2 && len1 <= buffer_size) {
 			Pointer buffer_end = mystl::copy(first, middle, buffer);
-			merge(buffer, buffer_end, middle, last, first);
+			mystl::merge(buffer, buffer_end, middle, last, first);
 		}
 		else if (len2 <= buffer_size) {
 			Pointer buffer_end = mystl::copy(middle, last, buffer);
@@ -649,7 +644,7 @@ namespace mystl {
 			return;
 		if (len1 + len2 == 2) {	//只有两个元素
 			if (comp(*middle, *first))
-				iter_swap(first, middle);
+				mystl::iter_swap(first, middle);
 			return;
 		}
 
@@ -682,7 +677,7 @@ namespace mystl {
 		// 区间长度足够放进缓冲区
 		if (len1 <= len2 && len1 <= buffer_size) {
 			Pointer buffer_end = mystl::copy(first, middle, buffer);
-			merge(buffer, buffer_end, middle, last, first, comp);
+			mystl::merge(buffer, buffer_end, middle, last, first, comp);
 		}
 		else if (len2 <= buffer_size) {
 			Pointer buffer_end = mystl::copy(middle, last, buffer);
@@ -858,7 +853,7 @@ namespace mystl {
 	inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last,
 		const T& value, Compared comp) {
 		return __lower_bound(first, last, value, comp,
-			distance_type(first), iterator_category(fitst));
+			distance_type(first), iterator_category(first));
 	}
 
 	// __lower_bound 的 forward_iterator_tag 版本
@@ -866,8 +861,8 @@ namespace mystl {
 	ForwardIterator __lower_bound(ForwardIterator first, ForwardIterator last,
 		const T& value, Compared comp, Distance*, forward_iterator_tag) {
 		Distance len = distance(first, last);	//求区间长度
-		auto half;
-		auto middle;
+		Distance half;
+		ForwardIterator middle;
 		while (len > 0) {
 			half = len >> 1;	//除以2
 			middle = first;
@@ -888,8 +883,8 @@ namespace mystl {
 	RandomAccessIterator __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
 		const T& value, Compared comp, Distance*, random_access_iterator_tag) {
 		Distance len = last - first;
-		auto half;
-		auto middle;
+		Distance half;
+		RandomAccessIterator middle;
 		while (len > 0) {
 			half = len >> 1;	//除以2
 			middle = first + half;	//令 middle 指向中间位置
@@ -919,8 +914,7 @@ namespace mystl {
 
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
-	ForwardIterator max_element(ForwardIterator first, ForwardIterator last,
-		Compared comp) {
+	ForwardIterator max_element(ForwardIterator first, ForwardIterator last, Compared comp) {
 		if (first == last)	return first;
 		auto result = first;
 		while (++first != last) {
@@ -992,9 +986,8 @@ namespace mystl {
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class InputIterator1, class InputIterator2, class OutputIterator,
 		class Compared>
-	OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
-		InputIterator2 first2, InputIterator2 last2,
-		OutputIterator result, Compared comp) {
+	OutputIterator merge(InputIterator1 first1, InputIterator1 last1, 
+		InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp) {
 		while (first1 != last1 && first2 != last2) {
 			if (comp(*first2, *first1)) {
 				*result = *first2;
@@ -1025,8 +1018,7 @@ namespace mystl {
 
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
-	ForwardIterator min_elememt(ForwardIterator first, ForwardIterator last,
-		Compared comp) {
+	ForwardIterator min_elememt(ForwardIterator first, ForwardIterator last, Compared comp) {
 		if (first == last)	return first;
 		auto result = first;
 		while (++first != last) {
@@ -1109,7 +1101,7 @@ namespace mystl {
 		if (nth == last)	return;
 		while (last - first > 3) {
 			auto cut = mystl::__unguarded_partition(first, last,
-				static_cast<T>(mystl::median(*first, *(first + (last - first) / 2), *(last - 1))));
+				static_cast<T>(median(*first, *(first + (last - first) / 2), *(last - 1))));
 			if (cut <= nth)	//如果 nth 位于右段
 				first = cut;	//对右段进行分割
 			else
@@ -1131,7 +1123,7 @@ namespace mystl {
 		if (nth == last)	return;
 		while (last - first > 3) {
 			auto cut = mystl::__unguarded_partition(first, last,
-				static_cast<T>(mystl::median(*first, *(first + (last - first) / 2), *(last - 1))), comp);
+				static_cast<T>(median(*first, *(first + (last - first) / 2), *(last - 1))), comp);
 			if (cut <= nth)	//如果 nth 位于右段
 				first = cut;	//对右段进行分割
 			else
@@ -1165,12 +1157,12 @@ namespace mystl {
 	template <class RandomAccessIterator, class Compared>
 	inline void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
 		RandomAccessIterator last, Compared comp) {
-		__partial_sort(first, middle, last, comp, value_type(first));
+		__partial_sort(first, middle, last, value_type(first), comp);
 	}
 
 	template <class RandomAccessIterator, class Compared, class T>
 	void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
-		RandomAccessIterator last, Compared comp, T*) {
+		RandomAccessIterator last, T*, Compared comp) {
 		mystl::make_heap(first, middle, comp);
 		for (auto i = middle; i < last; ++i) {
 			if (comp(*i, *first))	
@@ -1218,15 +1210,15 @@ namespace mystl {
 	inline RandomAccessIterator partial_sort_copy(InputIterator first,
 		InputIterator last, RandomAccessIterator result_first,
 		RandomAccessIterator result_last, Compared comp) {
-		return __partial_sort_copy(first, last, result_first, result_last, comp,
-			distance_type(result_first), value_type(first));
+		return __partial_sort_copy(first, last, result_first, result_last,
+			distance_type(result_first), value_type(first), comp);
 	}
 
 	template <class InputIterator, class RandomAccessIterator, 
 		class Compared, class Distance, class T>
 	RandomAccessIterator __partial_sort_copy(InputIterator first, InputIterator last,
 		RandomAccessIterator result_first, RandomAccessIterator result_last,
-		Compared comp, Distance*, T*) {
+		Distance*, T*, Compared comp) {
 		if (result_first == result_last)	return result_last;
 		auto result_iter = result_first;
 		while (first != last && result_iter != result_last) {	//复制区间
@@ -1256,10 +1248,10 @@ namespace mystl {
 		while (true) {
 			while (true) {
 				if (first == last)	return first;
-				else if (unary_pred(*first))	++first;//头指针所指元素符合 unary_pred 为 true 的情况
+				else if (unary_pred(*first))	++first;	//头指针所指元素符合 unary_pred 为 true 的情况
 				else break;
 			}
-			--last;		//尾指针回溯1
+			--last;	//尾指针回溯1
 			while (true) {
 				if (first == last)	return first;
 				else if (!unary_pred(*last))	--last;	//尾指针所指元素符合 unary_pred 为 false 的情况
@@ -1343,8 +1335,7 @@ namespace mystl {
 	}
 
 	template <class RandomAccessIterator, class Distance>
-	void __random_shuffle(RandomAccessIterator first, RandomAccessIterator last,
-		Distance*) {
+	void __random_shuffle(RandomAccessIterator first, RandomAccessIterator last, Distance*) {
 		if (first == last)	return;
 		srand((unsigned)time(0));
 		for (auto i = first + 1; i != last; ++i) {
@@ -1358,7 +1349,7 @@ namespace mystl {
 		RandomNumberGenerator& rand) {
 		if (first == last)	return;
 		for (auto i = first + 1; i != last; ++i) {
-			iter_swap(i, first + rand((i - first) + 1));
+			mystl::iter_swap(i, first + rand((i - first) + 1));
 		}
 	}
 
@@ -1369,7 +1360,7 @@ namespace mystl {
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
 	ForwardIterator remove(ForwardIterator first, ForwardIterator last, const T& value) {
-		first = mystl::find(first, last, value);	//利用find找出第一个匹配的地方
+		first = mystl::find(first, last, value);	//利用 find 找出第一个匹配的地方
 		auto next = first;
 		return first == last ? first : mystl::remove_copy(++next, last, first, value);
 	}
@@ -1388,7 +1379,7 @@ namespace mystl {
 		}
 		return result;
 	}
-
+	
 	/*********************************************************************************/
 	// remove_copy_if
 	// 移除区间内所有令一元操作 unary_pred 为 true 的元素，并将结果复制到以 result 为起始位置的容器上
@@ -1412,7 +1403,7 @@ namespace mystl {
 	template <class ForwardIterator, class UnaryPredicate>
 	ForwardIterator remove_if(ForwardIterator first, ForwardIterator last,
 		UnaryPredicate unary_pred) {
-		first = mystl::find_if(first, last, unary_pred);	//利用find_if找出第一个匹配的地方
+		first = mystl::find_if(first, last, unary_pred);	//利用 find_if 找出第一个匹配的地方
 		auto next = first;
 		return first == last ? first : mystl::remove_copy_if(++next, last, first, unary_pred);
 	}
@@ -1422,8 +1413,7 @@ namespace mystl {
 	// 将区间内所有的 old_value 都以 new_value 替代
 	/*********************************************************************************/
 	template <class ForwardIterator, class T>
-	void replace(ForwardIterator first, ForwardIterator last,
-		const T& old_value, const T& new_value) {
+	void replace(ForwardIterator first, ForwardIterator last, const T& old_value, const T& new_value) {
 		for (; first != last; ++first) {
 			if (*first == old_value)	*first = new_value;
 		}
@@ -1532,8 +1522,8 @@ namespace mystl {
 
 		auto first2 = middle;	//交换起点
 		do {
-			swap(*first++, *first2++);
-			if (first == middle)
+			mystl::swap(*first++, *first2++);
+			if (first == middle)	
 				middle = first2;
 		} while (first2 != last);	//后半段移到前面
 		auto new_middle = first;	//迭代器返回的位置
@@ -1644,16 +1634,8 @@ namespace mystl {
 	// 在[first1, last1)中查找[first2, last2)的首次出现点
 	/*********************************************************************************/
 	template <class ForwardIterator1, class ForwardIterator2>
-	inline ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
+	ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
 		ForwardIterator2 first2, ForwardIterator2 last2) {
-		return __search(first1, last1, first2, last2, distance_type(first1),
-			distance_type(first2));
-	}
-
-	template <class ForwardIterator1, class ForwardIterator2,
-		class Distance1, class Distance2>
-	ForwardIterator1 __search(ForwardIterator1 first1, ForwardIterator1 last1,
-		ForwardIterator2 first2, ForwardIterator2 last2, Distance1*, Distance2*) {
 		auto d1 = distance(first1, last1);
 		auto d2 = distance(first2, last2);
 		if (d1 < d2)	return last1;	//若序列二长度大于序列一，不可能成为其子序列
@@ -1664,13 +1646,13 @@ namespace mystl {
 				++current1;
 				++current2;
 			}
-			else {				//元素不相等
+			else {	//元素不相等
 				if (d1 == d2)	//如果两个序列等长，则序列二不可能成为序列一子序列
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;		//重新开始比对
-					--d1;					//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;	//重新开始比对
+					--d1;	//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -1679,34 +1661,25 @@ namespace mystl {
 
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator1, class ForwardIterator2, class Compared>
-	inline ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
+	ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
 		ForwardIterator2 first2, ForwardIterator2 last2, Compared comp) {
-		return __search(first1, last1, first2, last2, distance_type(first1),
-			distance_type(first2), comp);
-	}
-
-	template <class ForwardIterator1, class ForwardIterator2, class Compared,
-		class Distance1, class Distance2>
-		ForwardIterator1 __search(ForwardIterator1 first1, ForwardIterator1 last1,
-			ForwardIterator2 first2, ForwardIterator2 last2,
-			Distance1*, Distance2*, Compared comp) {
 		auto d1 = distance(first1, last1);
 		auto d2 = distance(first2, last2);
 		if (d1 < d2)	return last1;	//若序列二长度大于序列一，不可能成为其子序列
 		auto current1 = first1;
 		auto current2 = first2;
 		while (current2 != last2) {
-			if (comp(*current1, *current2)) {//comp 结果为 true，比对下一个元素
+			if (comp(*current1, *current2)) {	//如果比较结果为 true，比对下一个元素
 				++current1;
 				++current2;
 			}
-			else {				//comp 结果为 false
+			else {
 				if (d1 == d2)	//如果两个序列等长，则序列二不可能成为序列一子序列
 					return last1;
 				else {
 					current1 = ++first1;	//调整序列一的标兵
-					current2 = first2;		//重新开始比对
-					--d1;					//已经排除了序列一的一个元素，长度要减1
+					current2 = first2;	//重新开始比对
+					--d1;	//已经排除了序列一的一个元素，长度要减1
 				}
 			}
 		}
@@ -1725,13 +1698,13 @@ namespace mystl {
 			first = mystl::find(first, last, value);	//先找出第一个 value 出现的位置
 			while (first != last) {
 				Size m = n - 1;	//还需要查找 n - 1 次
-				auto i = first;		//从上次出现点开始找
+				auto i = first;	//从上次出现点开始找
 				++i;
 				while (i != last && m != 0 && *i == value) {
 					++i;
 					--m;
 				}
-				if (m == 0)		//value 出现了 n 次
+				if (m == 0)	//value 出现了 n 次
 					return first;
 				else	//本次查找失败，重新从第一个位置开始找
 					first = mystl::find(i, last, value);
@@ -1752,13 +1725,13 @@ namespace mystl {
 			}	
 			while (first != last) {
 				Size m = n - 1;	//还需要查找 n - 1 次
-				auto i = first;		//从上次出现点开始找
+				auto i = first;	//从上次出现点开始找
 				++i;
 				while (i != last && m != 0 && comp(*i, value)) {
 					++i;
 					--m;
 				}
-				if (m == 0)		//value 出现了 n 次
+				if (m == 0)	//value 出现了 n 次
 					return first;
 				else {	//本次查找失败，重新从第一个位置开始找
 					while (i != last) {
@@ -1779,6 +1752,7 @@ namespace mystl {
 	template <class RandomAccessIterator>
 	inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
 		if (first != last) {
+			// 先进行内省式排序，将区间分为一个个小区间，然后对整体进行插入排序
 			__introsort_loop(first, last, value_type(first), __lg(last - first) * 2);
 			__final_insertion_sort(first, last);
 		}
@@ -1800,7 +1774,7 @@ namespace mystl {
 		T*, Size depth_limit) {
 		while (last - first > __SECTIONSIZE) {	//区间长度大于 __SECTIONSIZE 就分割
 			if (depth_limit == 0) {	//到达最大分割深度限制
-				partial_sort(first, last, last);	//改用 heap_sort
+				mystl::partial_sort(first, last, last);	//改用 heap_sort
 				return;
 			}
 			--depth_limit;
@@ -1843,7 +1817,7 @@ namespace mystl {
 	template <class RandomAccessIterator>
 	void __insertion_sort(RandomAccessIterator first, RandomAccessIterator last) {
 		if (first == last)	return;
-		for (RandomAccessIterator i = first + 1; i != last; ++i) {	//外循环
+		for (auto i = first + 1; i != last; ++i) {	//外循环
 			// 对[first, i)形成的子区间插入元素
 			__linear_insert(first, i, value_type(first));	//内循环
 		}
@@ -1886,7 +1860,7 @@ namespace mystl {
 	void __unguarded_insertion_sort_aux(RandomAccessIterator first,
 		RandomAccessIterator last, T*) {
 		for (auto i = first; i != last; ++i) {	//外循环
-			__unguarded_linear_insert(i, static_cast<T>(*i));
+			__unguarded_linear_insert(i, static_cast<T>(*i));	//内循环
 		}
 	}
 
@@ -1894,8 +1868,8 @@ namespace mystl {
 	template <class RandomAccessIterator, class Compared>
 	inline void sort(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
 		if (first != last) {
-			__introsort_loop(first, last, value_type(first),
-				__lg(last - first) * 2, comp);
+			// 先进行内省式排序，将区间分为一个个小区间，然后对整体进行插入排序
+			__introsort_loop(first, last, value_type(first), __lg(last - first) * 2, comp);
 			__final_insertion_sort(first, last, comp);
 		}
 	}
@@ -1906,7 +1880,7 @@ namespace mystl {
 		T*, Size depth_limit, Compared comp) {
 		while (last - first > __SECTIONSIZE) {	//区间长度大于 __SECTIONSIZE 就分割
 			if (depth_limit == 0) {	//到达最大分割深度限制
-				partial_sort(first, last, last, comp);	//改用 heap_sort
+				mystl::partial_sort(first, last, last, comp);	//改用 heap_sort
 				return;
 			}
 			--depth_limit;
@@ -1951,7 +1925,7 @@ namespace mystl {
 		if (first == last)	return;
 		for (auto i = first + 1; i != last; ++i) {	//外循环
 			//对[first, i)形成的子区间插入元素
-			__linear_insert(first, i, value_type(first), comp);
+			__linear_insert(first, i, value_type(first), comp);	//内循环
 		}
 	}
 
@@ -1993,7 +1967,7 @@ namespace mystl {
 	void __unguarded_insertion_sort_aux(RandomAccessIterator first,
 		RandomAccessIterator last, T*, Compared comp) {
 		for (auto i = first; i != last; ++i) {	//外循环
-			__unguarded_linear_insert(i, static_cast<T>(*i), comp);
+			__unguarded_linear_insert(i, static_cast<T>(*i), comp);	//内循环
 		}
 	}
 
@@ -2025,10 +1999,9 @@ namespace mystl {
 		return result;
 	}
 
-	template <class InputIterator1, class InputIterator2, class OutputIterator,
-		class BinaryOperation>
-		OutputIterator transform(InputIterator1 first1, InputIterator1 last1,
-			InputIterator2 first2, OutputIterator result, BinaryOperation binary_op) {
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class BinaryOperation>
+	OutputIterator transform(InputIterator1 first1, InputIterator1 last1,
+		InputIterator2 first2, OutputIterator result, BinaryOperation binary_op) {
 		for (; first1 != last1; ++first1, ++first2, ++result) {
 			*result = binary_op(*first1, *first2);
 		}
@@ -2041,14 +2014,14 @@ namespace mystl {
 	/*********************************************************************************/
 	template <class ForwardIterator>
 	ForwardIterator unique(ForwardIterator first, ForwardIterator last) {
-		first = mystl::adjacent_find(first, last);		//利用 adjacent_find 找到相邻重复元素的起点
+		first = mystl::adjacent_find(first, last);	//利用 adjacent_find 找到相邻重复元素的起点
 		return mystl::unique_copy(first, last, first);
 	}
 
 	// 重载版本使用函数对象 comp 代替比较操作
 	template <class ForwardIterator, class Compared>
 	ForwardIterator unique(ForwardIterator first, ForwardIterator last, Compared comp) {
-		first = mystl::adjacent_find(first, last, comp);		//利用 adjacent_find 找到相邻重复元素的起点
+		first = mystl::adjacent_find(first, last, comp);	//利用 adjacent_find 找到相邻重复元素的起点
 		return mystl::unique_copy(first, last, first, comp);
 	}
 
@@ -2075,18 +2048,11 @@ namespace mystl {
 	}
 
 	// __unique_copy 的 output_iterator_tag 版本
+	// 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
 	template <class InputIterator, class OutputIterator>
 	OutputIterator __unique_copy(InputIterator first, InputIterator last,
 		OutputIterator result, output_iterator_tag) {
-		//由于 output iterator 的限制，必须先知道其 value type
-		return __unique_copy(first, last, result, value_type(first));
-	}
-
-	// 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
-	template <class InputIterator, class OutputIterator, class T>
-	OutputIterator __unique_copy(InputIterator first, InputIterator last,
-		OutputIterator result, T*) {
-		T value = *first;
+		auto value = *first;
 		*result = value;
 		while (++first != last) {
 			if (value != *first) {
@@ -2102,13 +2068,13 @@ namespace mystl {
 	inline OutputIterator unique_copy(InputIterator first, InputIterator last,
 		OutputIterator result, Compared comp) {
 		if (first == last)	return result;
-		return __unique_copy(first, last, result, comp, iterator_category(result));
+		return __unique_copy(first, last, result, iterator_category(result), comp);
 	}
 
 	// __unique_copy 的 forward_iterator_tag 版本
 	template <class InputIterator, class ForwardIterator, class Compared>
 	ForwardIterator __unique_copy(InputIterator first, InputIterator last,
-		ForwardIterator result, Compared comp, forward_iterator_tag) {
+		ForwardIterator result, forward_iterator_tag, Compared comp) {
 		*result = *first;	//记录第一个元素
 		while (++first != last) {
 			if (!comp(*result, *first))	*++result = *first;	//元素不同就复制
@@ -2117,18 +2083,11 @@ namespace mystl {
 	}
 
 	// __unique_copy 的 output_iterator_tag 版本
+	// 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
 	template <class InputIterator, class OutputIterator, class Compared>
 	OutputIterator __unique_copy(InputIterator first, InputIterator last,
-		OutputIterator result, Compared comp, output_iterator_tag) {
-		// 由于 output iterator 的限制，必须先知道其value type
-		return __unique_copy(first, last, result, comp, value_type(first));
-	}
-
-	// 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
-	template <class InputIterator, class OutputIterator, class Compared, class T>
-	OutputIterator __unique_copy(InputIterator first, InputIterator last,
-		OutputIterator result, Compared comp, T*) {
-		T value = *first;
+		OutputIterator result, output_iterator_tag, Compared comp) {
+		auto value = *first;
 		*result = value;
 		while (++first != last) {
 			if (!comp(value, *first)) {
@@ -2147,7 +2106,6 @@ namespace mystl {
 	template <class ForwardIterator, class T>
 	inline ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last,
 		const T& value) {
-		//根据迭代器的不同采用不同操作
 		return __upper_bound(first, last, value,
 			distance_type(first), iterator_category(first));
 	}
