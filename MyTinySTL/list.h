@@ -15,11 +15,7 @@ namespace mystl {
 		T data;	//数据域
 		__list_node<T>* prev;	// 指向前一个节点
 		__list_node<T>* next;	// 指向下一个节点
-		__list_node() {
-			data = 0;
-			prev = nullptr;
-			next = nullptr;
-		}
+
 		__list_node(T value = 0, __list_node<T>* p = nullptr, __list_node<T>* n = nullptr)
 			:data(value), prev(p), next(n) {}
 	};
@@ -101,7 +97,7 @@ namespace mystl {
 		link_type node_;	// 指向尾端的一个空白节点
 
 	public:
-		// 构造、复制、析构函数
+		// 构造、复制、移动、析构函数
 		list() { __list_initialize(); }
 		explicit list(size_type n);
 		list(size_type n, const T& value);
@@ -172,7 +168,9 @@ namespace mystl {
 		void reverse();
 
 	private:
-		// list 成员函数
+		// list 的成员函数
+		link_type __get_node();
+		void __put_node(link_type p);
 		link_type __create_node(const T& x = T());
 		void __destroy_node(link_type p);
 		void __list_initialize();
@@ -218,14 +216,14 @@ namespace mystl {
 		insert(begin(), rhs.begin(), rhs.end());
 	}
 
-	// move 构造
+	// 移动构造函数
 	template <class T, class Alloc>
-	list<T, Alloc>::list(list&& rhs) {
+	list<T, Alloc>::list(list&& rhs) :node_(nullptr) {
 		node_ = rhs.node_;
 		rhs.node_ = nullptr;
 	}
 
-	// 赋值操作符
+	// 复制赋值运算符
 	template <class T, class Alloc>
 	list<T, Alloc>& list<T, Alloc>::operator=(const list& rhs) {
 		if (this != &rhs) {
@@ -243,10 +241,11 @@ namespace mystl {
 		return *this;
 	}
 
-	// move 赋值操作
+	// 移动赋值运算符
 	template <class T, class Alloc>
 	list<T, Alloc>& list<T, Alloc>::operator=(list&& rhs) {
 		if (this != &rhs) {
+			clear();
 			node_ = rhs.node_;
 			rhs.node_ = nullptr;
 		}
@@ -256,12 +255,10 @@ namespace mystl {
 	// 析构函数
 	template <class T, class Alloc>
 	list<T, Alloc>::~list() {
-		auto first = node_->next;
-		auto last = node_;
-		while (first != last) {
-			auto cur = first;
-			first = first->next;
-			__destroy_node(cur);
+		if (node_ != nullptr) {
+			clear();
+			__put_node(node_);
+			node_ = nullptr;
 		}
 	}
 
@@ -301,11 +298,10 @@ namespace mystl {
 
 	// 删除 position 处的元素
 	template <class T, class Alloc>
-	typename list<T, Alloc>::iterator
-		list<T, Alloc>::erase(iterator position) {
-		auto prev_node = position.node_->prev;
-		auto next_node = position.node_->next;
-		auto this_node = position.node_;
+	typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator position) {
+		link_type prev_node = position.node_->prev;
+		link_type next_node = position.node_->next;
+		link_type this_node = position.node_;
 		prev_node->next = next_node;
 		next_node->prev = prev_node;
 		__destroy_node(this_node);
@@ -314,8 +310,7 @@ namespace mystl {
 
 	// 删除[first, last)内的元素
 	template <class T, class Alloc>
-	typename list<T, Alloc>::iterator
-		list<T, Alloc>::erase(iterator first, iterator last) {
+	typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator first, iterator last) {
 		while (first != last) {
 			auto cur = first;
 			++first;
@@ -342,14 +337,15 @@ namespace mystl {
 	// 清空 list
 	template <class T, class Alloc>
 	void list<T, Alloc>::clear() {
-		auto first = node_->next;
-		auto last = node_;
-		while (first != last) {
-			auto cur = first;
-			first = first->next;
-			__destroy_node(cur);
+		if (node_ != nullptr) {
+			auto cur = node_->next;
+			while (cur != node_) {
+				auto tmp = cur;
+				cur = cur->next;
+				__destroy_node(tmp);
+			}
+			node_->prev = node_->next = node_;
 		}
-		node_->prev = node_->next = node_;
 	}
 
 	// 将 list x 接合于 position 之前
@@ -363,7 +359,7 @@ namespace mystl {
 	// 将 i 所指的元素接合于 position 之前
 	template <class T, class Alloc>
 	void list<T, Alloc>::splice(iterator position, list&, iterator i) {
-		auto j = i;
+		iterator j = i;
 		++j;
 		if (position == i || position == j)	return;
 		__transfer(position, i, j);
@@ -371,7 +367,7 @@ namespace mystl {
 
 	// 将 [first, last)内的所有元素接合于 position 之前
 	template <class T, class Alloc>
-	void list<T, Alloc>::splice(iterator position, list& x, iterator first, iterator last) {
+	void list<T, Alloc>::splice(iterator position, list&, iterator first, iterator last) {
 		if (first != last)
 			__transfer(position, first, last);
 	}
@@ -389,7 +385,7 @@ namespace mystl {
 		}
 	}
 
-	// 将使一元操作 pred 为真的所有元素移除
+	// 将另一元操作 pred 为真的所有元素移除
 	template <class T, class Alloc>
 	template <class Predicate>
 	void list<T, Alloc>::remove_if(Predicate pred) {
@@ -403,7 +399,7 @@ namespace mystl {
 		}
 	}
 
-	// 移除数值相同的连续元素
+	// 移除数值连续相同的元素
 	template <class T, class Alloc>
 	void list<T, Alloc>::unique() {
 		auto first = begin();
@@ -419,7 +415,7 @@ namespace mystl {
 		}
 	}
 
-	// 与 x 合并
+	// 与另一个 list 合并，两个 list 应保证有序
 	template <class T, class Alloc>
 	void list<T, Alloc>::merge(list<T, Alloc>& x) {
 		auto first1 = begin();
@@ -475,11 +471,20 @@ namespace mystl {
 		}
 	}
 
+	template <class T, class Alloc>
+	typename list<T, Alloc>::link_type list<T, Alloc>::__get_node() {
+		return data_allocate::allocate();
+	}
+
+	template <class T, class Alloc>
+	void list<T, Alloc>::__put_node(link_type p) {
+		data_allocate::deallocate(p);
+	}
+
 	// __create_node 函数
 	template <class T, class Alloc>
-	typename list<T, Alloc>::link_type 
-		list<T, Alloc>::__create_node(const T& x = T()) {
-		auto p = data_allocate::allocate();
+	typename list<T, Alloc>::link_type list<T, Alloc>::__create_node(const T& x = T()) {
+		auto p = __get_node();
 		try {
 			mystl::construct(p, __list_node<T>(x));
 		}
@@ -493,13 +498,13 @@ namespace mystl {
 	template <class T, class Alloc>
 	void list<T, Alloc>::__destroy_node(link_type p) {
 		mystl::destroy(&p->data);
-		data_allocate::deallocate(p);
+		__put_node(p);
 	}
 
 	// __list_initialize 函数
 	template <class T, class Alloc>
 	void list<T, Alloc>::__list_initialize() {
-		node_ = __create_node();
+		node_ = __get_node();
 		node_->prev = node_->next = node_;
 	}
 
@@ -567,10 +572,12 @@ namespace mystl {
 	void list<T, Alloc>::__transfer(iterator position, iterator first, iterator last) {
 		// 将[first, last)内的所有元素移到 position 之前
 		if (position != last) {
+			// 将[first, last)从原来的位置移出
 			last.node_->prev->next = position.node_;
 			first.node_->prev->next = last.node_;
 			position.node_->prev->next = first.node_;
-			auto tmp = position.node_->prev;
+			// 将[first, last)接合到新的位置
+			link_type tmp = position.node_->prev;
 			position.node_->prev = last.node_->prev;
 			last.node_->prev = first.node_->prev;
 			first.node_->prev = tmp;
