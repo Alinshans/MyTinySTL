@@ -457,9 +457,28 @@ void TESTCASE_NAME(testcase_name)::Run()
 
 
 // 一些常用的宏定义
-// 输出容器
+// 输出 passed 提示
+#define PASSED	std::cout << "[ PASSED ]" << std::endl;
+
+// 遍历输出容器
 #define COUT(container) \
+	std::string con_name = #container; \
+	std::cout << " " << con_name << " :"; \
 	for(auto it : container)	std::cout << " " << it; std::cout << std::endl;
+
+// 输出容器调用函数后的结果
+#define FUN_AFTER(con, fun) do { \
+	std::string str = #fun; \
+	std::cout << " After " << str << " :" << std::endl; \
+	fun; \
+	COUT(con); \
+	} while(0)
+
+// 输出容器调用函数的值
+#define FUN_VALUE(fun) do { \
+	std::string str = #fun; \
+	std::cout << " " << str << " : " << fun << std::endl; \
+	} while(0)
 
 #define FUN_TEST1(name, type, count) \
 	do { \
@@ -504,5 +523,6 @@ void TESTCASE_NAME(testcase_name)::Run()
 
 #include "algorithm_test.h"
 #include "vector_test.h"
+#include "list_test.h"
 #endif // !MYTINYSTL_TEST_H
 
