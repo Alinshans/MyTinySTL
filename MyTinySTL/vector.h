@@ -40,7 +40,7 @@ namespace mystl {
 		iterator end_of_storage_;	//表示目前可用空间的尾
 
 	public:
-		// 构造、复制、析构函数
+		// 构造、复制、移动、析构函数
 		vector() :start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
 		explicit vector(size_type n) { __allocate_and_fill(n, T()); }
 		vector(size_type n, const T& value) { __allocate_and_fill(n, value); }
@@ -149,21 +149,22 @@ namespace mystl {
 
 	// 复制构造函数
 	template <class T, class Alloc>
-	vector<T, Alloc>::vector(const vector<T, Alloc>& rhs) {
+	vector<T, Alloc>::vector(const vector& rhs) {
 		__allocate_and_copy(rhs.start_, rhs.finish_);
 	}
 
+	// 移动构造函数
 	template <class T, class Alloc>
-	vector<T, Alloc>::vector(vector<T, Alloc>&& rhs) {
+	vector<T, Alloc>::vector(vector&& rhs) {
 		start_ = rhs.start_;
 		finish_ = rhs.finish_;
 		end_of_storage_ = rhs.end_of_storage_;
 		rhs.start_ = rhs.finish_ = rhs.end_of_storage_ = nullptr;
 	}
 	
-	// 赋值操作符 operator=
+	// 复制赋值运算符
 	template <class T, class Alloc>
-	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector<T, Alloc>& rhs) {
+	vector<T, Alloc>& vector<T, Alloc>::operator=(const vector& rhs) {
 		if (this != &rhs) {
 			const auto xlen = rhs.size();
 			if (xlen > capacity()) {	//如果要赋值的 vector 大小超过原 vector 容量大小
@@ -184,10 +185,11 @@ namespace mystl {
 		return *this;
 	}
 
+	// 移动赋值运算符
 	template <class T, class Alloc>
-	vector<T, Alloc>& vector<T, Alloc>::operator=(vector<T, Alloc>&& rhs) {
-		if (*this != rhs) {
-			__destroy_and_deallocate();
+	vector<T, Alloc>& vector<T, Alloc>::operator=(vector&& rhs) {
+		if (this != &rhs) {
+			__destroy_and_deallocate();	//释放原资源
 			start_ = rhs.start_;
 			finish_ = rhs.finish_;
 			end_of_storage_ = rhs.end_of_storage_;
