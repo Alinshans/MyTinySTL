@@ -22,11 +22,11 @@ namespace mystl {
 			#define LIST_INSERT_TEST(mode, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
-				mode::list<int> v; \
+				mode::list<int> l; \
 				char buf[10]; \
 				start = clock(); \
 				for (size_t i = 0; i < count; ++i) \
-					v.insert(v.end(), rand()); \
+					l.insert(l.end(), rand()); \
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
@@ -39,12 +39,12 @@ namespace mystl {
 			#define LIST_SORT_TEST(mode, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
-				mode::list<int> v; \
+				mode::list<int> l; \
 				char buf[10]; \
 				for (size_t i = 0; i < count; ++i) \
-					v.insert(v.end(), rand()); \
+					l.insert(l.end(), rand()); \
 				start = clock(); \
-				v.sort(); \
+				l.sort(); \
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
