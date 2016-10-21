@@ -43,8 +43,8 @@ namespace mystl {
 			TEST(copy_backward_test) {		
 				int arr1[] = { 1,2,3,4,5 };
 				int arr2[] = { 0,0,0,0,0,6,7,8,9,10 };
-				std::vector<int> v1{ 0,0,0,0,0,5,6,7,8,9 };
-				mystl::vector<int> v2(arr2, arr2 + 9);
+				std::vector<int> v1{ 0,0,0,0,0,6,7,8,9,10 };
+				mystl::vector<int> v2(arr2, arr2 + 10);
 				std::copy_backward(arr1, arr1 + 5, v1.begin() + 5);
 				mystl::copy_backward(arr1, arr1 + 5, v2.begin() + 5);
 				EXPECT_CON_EQ(v1, v2);
