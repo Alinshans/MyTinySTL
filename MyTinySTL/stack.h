@@ -23,7 +23,13 @@ namespace mystl {
 		Sequence c_;	//底层容器
 
 	public:
+		// 构造、复制、移动函数
 		stack() :c_() {}
+		stack(size_type n, const T& value) :c_(n, value) {}
+		explicit stack(size_type n) :c_(n) {}
+		template <class InputIterator>
+		stack(InputIterator first, InputIterator last) : c_(first, last) {}
+
 		explicit stack(const Sequence& s) :c_(s) {}
 		explicit stack(Sequence&& s) :c_(std::move(s)) {}
 
@@ -32,11 +38,6 @@ namespace mystl {
 
 		stack& operator=(const stack& rhs) { c_ = rhs.c_; return *this; }
 		stack& operator=(stack&& rhs) { c = std::move(rhs.c_); return *this; }
-
-		stack(size_type n, const T& value) :c_(n, value) {}
-		explicit stack(size_type n) :c_(n) {}
-		template <class InputIterator>
-		stack(InputIterator first, InputIterator last) : c_(first, last) {}
 
 		// 以下操作使用底层容器的操作
 		bool empty() const { return c_.empty(); }
