@@ -11,7 +11,7 @@ namespace mystl {
 
 	// 这是一个全局函数，决定缓冲区的大小
 	inline size_t __deque_buf_size(size_t n, size_t sz) {
-		return n == 0 ? (sz < 512 ? static_cast<size_t>(512 / sz) : static_cast<size_t>(1)) : n;
+		return n == 0 ? (sz < 512 ? 512 / sz : 1) : n;
 	}
 
 	// deque 的迭代器设计
@@ -36,14 +36,41 @@ namespace mystl {
 		T*	last;	//指向所在缓冲区的尾
 		map_pointer node;	//缓冲区所在节点
 
-		// 构造函数
+		// 构造、复制、移动函数
 		__deque_iterator() :cur(nullptr), first(nullptr), last(nullptr), node(nullptr) {}
-		__deque_iterator(T* x, map_pointer y)
-			:cur(x), first(*y), last(*y + buffer_size()), node(y) {}
+		__deque_iterator(T* v, map_pointer n)
+			:cur(v), first(*n), last(*n + buffer_size()), node(n) {}
+
 		__deque_iterator(const iterator& rhs)
 			:cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {}
+		__deque_iterator(iterator&& rhs)
+			:cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {
+			rhs.cur = rhs.first = rhs.last = nullptr;
+			rhs.node = nullptr;
+		}
 
-		// 这个函数用于跳出一个缓冲区
+		self& operator=(const iterator& rhs) {
+			if (this != &rhs) {
+				cur = rhs.cur;
+				first = rhs.first;
+				last = rhs.last;
+				node = rhs.node;
+			}
+			return *this;
+		}
+		self& operator=(iterator&& rhs) {
+			if (this != &rhs) {
+				cur = rhs.cur;
+				first = rhs.first;
+				last = rhs.last;
+				node = rhs.node;
+				rhs.cur = rhs.first = rhs.last = nullptr;
+				rhs.node = nullptr;
+			}
+			return *this;
+		}
+
+		// 跳到另一个缓冲区
 		void set_node(map_pointer new_node) {
 			node = new_node;
 			first = *new_node;
@@ -88,9 +115,9 @@ namespace mystl {
 		self& operator+=(difference_type n) {
 			auto offset = n + (cur - first);
 			if (offset >= 0 && offset < static_cast<difference_type>(buffer_size()))
-				// 增进后还在同一个缓冲区
+				// 前进后还在同一个缓冲区
 				cur += n;
-			else {
+			else {	// 要跳到其他的缓冲区
 				auto node_offset = 
 					offset > 0 ? offset / static_cast<difference_type>(buffer_size())
 					: -static_cast<difference_type>((-offset - 1) / buffer_size()) - 1;
@@ -128,7 +155,7 @@ namespace mystl {
 	};
 
 	// 模板类 deque
-	// 第一参数是数据类型，第二参数是空间配置器类型，缺省使用 mystl 的 alloc，第三参数是缓冲区大小，缺省使用 512bytes
+	// 第一参数是数据类型，第二参数是空间配置器类型，缺省使用 mystl 的 alloc，第三参数是缓冲区大小，缺省使用 512 bytes
 	// 用法与 STL deque 类似
 	template <class T, class Alloc = alloc, size_t BufSiz = 0>
 	class deque {
@@ -151,8 +178,8 @@ namespace mystl {
 		static size_t buffer_size() { return __deque_buf_size(BufSiz, sizeof(T)); }
 
 	public:
-		typedef	allocator<T, Alloc>	data_allocator;	//元素的配置器
-		typedef allocator<T*, Alloc>	map_allocator;	//缓冲区的配置器
+		typedef	allocator<T, Alloc>	data_allocator;	//元素配置器
+		typedef allocator<T*, Alloc>	map_allocator;	//缓冲区配置器
 		allocator_type get_allocator() { return allocator_type(); }
 
 	private:
@@ -167,10 +194,10 @@ namespace mystl {
 		enum { __initial_map_size = 8 };	// map_ 的初始化大小
 
 	public:
-		// 构造、复制、析构函数
-		deque() { __deque_initialize(size_type(), T()); }
-		deque(size_type n, const T& value) { __deque_initialize(n, value); }
-		explicit deque(size_type n) { __deque_initialize(n, T()); }
+		// 构造、复制、移动、析构函数
+		deque() { __fill_initialize(size_type(), T()); }
+		deque(size_type n, const T& value) { __fill_initialize(n, value); }
+		explicit deque(size_type n) { __fill_initialize(n, T()); }
 		template <class InputIterator>
 		deque(InputIterator first, InputIterator last);
 
@@ -230,11 +257,11 @@ namespace mystl {
 		void swap(deque& rhs);
 
 	protected:
-		// deque 成员函数
+		// deque 的成员函数
 		void __create_node(map_pointer nstart, map_pointer nfinish);
 		void __destroy_node(map_pointer nstart, map_pointer nfinish);
 		void __map_initialize(size_type nelem);
-		void __deque_initialize(size_type n, const T& value);
+		void __fill_initialize(size_type n, const T& value);
 		template <class InputIterator>
 		void __range_initialize(InputIterator, InputIterator, input_iterator_tag);
 		template <class ForwardIterator>
@@ -295,26 +322,24 @@ namespace mystl {
 		mystl::uninitialized_copy(rhs.begin(), rhs.end(), start_);
 	}
 
-	// move 构造
+	// 移动构造函数
 	template <class T, class Alloc, size_t BufSiz>
-	deque<T, Alloc, BufSiz>::deque(deque&& rhs) {
-		start_ = rhs.start_;
-		finish_ = rhs.finish_;
-		map_ = rhs.map_;
-		map_size_ = rhs.map_size_;
-		rhs.start_ = rhs.finish_ = rhs.map_ = nullptr;
+	deque<T, Alloc, BufSiz>::deque(deque&& rhs)
+		:start_(std::move(rhs.start_)), finish_(std::move(rhs.finish_)),
+		map_(rhs.map_), map_size_(rhs.map_size_) {
+		rhs.map_ = nullptr;
 		rhs.map_size_ = 0;
 	}
 
-	// 赋值操作符operator=
+	// 复制赋值运算符
 	template <class T, class Alloc, size_t BufSiz>
 	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(const deque& rhs) {
-		const size_type len = size();
 		if (this != &rhs) {
+			const auto len = size();
 			if (len >= rhs.size())
 				erase(mystl::copy(rhs.begin(), rhs.end(), start_), finish_);
 			else {
-				const_iterator mid = rhs.begin() + difference_type(len);
+				const_iterator mid = rhs.begin() + static_cast<difference_type>(len);
 				mystl::copy(rhs.begin(), mid, start_);
 				insert(finish_, mid, rhs.end());
 			}
@@ -322,15 +347,17 @@ namespace mystl {
 		return *this;
 	}
 
-	// move 赋值操作
+	// 移动赋值运算符
 	template <class T, class Alloc, size_t BufSiz>
 	deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(deque&& rhs) {
 		if (this != &rhs) {
+			clear();
 			start_ = rhs.start_;
 			finish_ = rhs.finish_;
 			map_ = rhs.map_;
 			map_size_ = rhs.map_size_;
-			rhs.start_ = rhs.finish_ = rhs.map_ = nullptr;
+			rhs.start_ = rhs.finish_ = nullptr;
+			rhs.map_ = nullptr;
 			rhs.map_size_ = 0;
 		}
 		return *this;
@@ -342,6 +369,7 @@ namespace mystl {
 		if (map_) {
 			__destroy_node(start_.node, finish_.node + 1);
 			map_allocator::deallocate(map_, map_size_);
+			map_ = nullptr;
 		}
 	}
 
@@ -392,8 +420,8 @@ namespace mystl {
 		deque<T, Alloc, BufSiz>::erase(iterator position) {
 		auto next = position;
 		++next;
-		auto elem_before = position - start_;	//清除点之前的元素个数
-		if (static_cast<size_type>(elem_before) < (size() >> 1)) {	//清除点之前的元素比较少
+		auto elems_before = position - start_;	//清除点之前的元素个数
+		if (static_cast<size_type>(elems_before) < (size() >> 1)) {	//清除点之前的元素比较少
 			mystl::copy_backward(start_, position, next);
 			pop_front();
 		}
@@ -401,7 +429,7 @@ namespace mystl {
 			mystl::copy(next, finish_, position);
 			pop_back();
 		}
-		return start_ + index;
+		return start_ + elems_before;
 	}
 
 	// 删除[first, last)上的元素
@@ -413,31 +441,28 @@ namespace mystl {
 			return finish_;
 		}
 		else {
-			auto n = last - first;	//清除区间长度
-			auto elem_before = first - start_;	//清除区间之前的元素个数
-			if (static_cast<size_type>(elem_before) < ((size() - n) >> 1)) {	//清除区间前的元素较少
+			auto len = last - first;	//清除区间长度
+			auto elems_before = first - start_;	//清除区间之前的元素个数
+			if (static_cast<size_type>(elems_before) < ((size() - len) >> 1)) {	//清除区间前的元素较少
 				mystl::copy_backward(start_, first, last);
-				auto new_start = start_ + n;	//新起点
+				auto new_start = start_ + len;	//新的头部
 				mystl::destroy(start_, new_start);	//销毁多余元素
-				// 释放缓冲区
-				for (map_pointer cur = start_.node; cur < new_start.node; ++cur)
-					data_allocator::deallocate(*cur, buffer_size());
+				__destroy_node(start_.node, new_start.node);	// 释放缓冲区
 				start_ = new_start;
 			}
 			else {	//清除区间后的元素较少
 				mystl::copy(last, finish_, first);
-				auto new_finish = finish_ - n;	//新结尾
+				auto new_finish = finish_ - len;	//新的尾部
 				mystl::destroy(new_finish, finish_);	//销毁多余元素
 				// 释放缓冲区
-				for (map_pointer cur = new_finish.node + 1; cur <= finish_.node; ++cur)
-					data_allocator::deallocate(*cur, buffer_size());
+				__destroy_node(new_finish.node + 1, finish_.node + 1);
 				finish_ = new_finish;
 			}
-			return start_ + elem_before;
+			return start_ + elems_before;
 		}
 	}
 
-	// 清空容器
+	// 清空 deque
 	template <class T, class Alloc, size_t BufSiz>
 	void deque<T, Alloc, BufSiz>::clear() {
 		// clear 会保留至少一个缓冲区
@@ -556,7 +581,7 @@ namespace mystl {
 		}
 		catch (...) {
 			map_allocator::deallocate(map_, map_size_);
-			map_ = 0;
+			map_ = nullptr;
 			map_size_ = 0;
 		}
 		start_.set_node(nstart);
@@ -565,9 +590,9 @@ namespace mystl {
 		finish_.cur = finish_.first + nElem % buffer_size();
 	}
 
-	// __deque_initialize 函数
+	// __fill_initialize 函数
 	template <class T, class Alloc, size_t BufSiz>
-	void deque<T, Alloc, BufSiz>::__deque_initialize(size_type n, const T& value) {
+	void deque<T, Alloc, BufSiz>::__fill_initialize(size_type n, const T& value) {
 		__map_initialize(n);
 		map_pointer cur;
 		try {
@@ -620,7 +645,7 @@ namespace mystl {
 	template <class T, class Alloc, size_t BufSiz>
 	template <class Integer>
 	void deque<T, Alloc, BufSiz>::__initialize_dispatch(Integer n, Integer value, __true_type) {
-		__deque_initialize(n, value);
+		__fill_initialize(n, value);
 	}
 
 	template <class T, class Alloc, size_t BufSiz>
@@ -692,15 +717,15 @@ namespace mystl {
 	template <class T, class Alloc, size_t BufSiz>
 	typename deque<T, Alloc, BufSiz>::iterator
 		deque<T, Alloc, BufSiz>::__insert_aux(iterator position, const T& x) {
-		auto elem_before = position - start_;	//插入点之前的元素个数
+		auto elems_before = position - start_;	//插入点之前的元素个数
 		auto x_copy = x;
-		if (static_cast<size_type>(elem_before) < (size() >> 1)) {	//如果插入点之前的元素较少
+		if (static_cast<size_type>(elems_before) < (size() >> 1)) {	//如果插入点之前的元素较少
 			push_front(front());
 			auto front1 = start_;
 			++front1;
 			auto front2 = front1;
 			++front2;
-			position = start_ + elem_before;
+			position = start_ + elems_before;
 			auto pos1 = position;
 			++pos1;
 			mystl::copy(front2, pos1, front1);
@@ -711,7 +736,7 @@ namespace mystl {
 			--back1;
 			auto back2 = back1;
 			--back2;
-			position = start_ + elem_before;
+			position = start_ + elems_before;
 			mystl::copy_backward(position, back2, back1);
 		}
 		*position = x_copy;
