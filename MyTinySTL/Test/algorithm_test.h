@@ -40,17 +40,17 @@ namespace mystl {
 				EXPECT_CON_EQ(exp, act);
 			}
 
-			TEST(copy_backward_test) {
+			TEST(copy_backward_test) {		
 				int arr1[] = { 1,2,3,4,5 };
 				int arr2[] = { 0,0,0,0,0,6,7,8,9,10 };
-				int arr3[] = { 0,0,0,0,0,6,7,8,9,10 };
-				std::vector<int> v1{ 1,2,3,4,5,6,7,8,9,10 };
-				std::copy_backward(arr1, arr1 + 5, arr2 + 5);
-				mystl::copy_backward(arr1, arr1 + 5, arr3 + 5);
-				EXPECT_CON_EQ(arr2, arr3);
-				std::copy_backward(arr1, arr1 + 5, arr2 + 10);
-				mystl::copy_backward(arr1, arr1 + 5, arr3 + 10);
-				EXPECT_CON_EQ(arr2, arr3);
+				std::vector<int> v1{ 0,0,0,0,0,5,6,7,8,9 };
+				mystl::vector<int> v2(arr2, arr2 + 9);
+				std::copy_backward(arr1, arr1 + 5, v1.begin() + 5);
+				mystl::copy_backward(arr1, arr1 + 5, v2.begin() + 5);
+				EXPECT_CON_EQ(v1, v2);
+				std::copy_backward(v1.begin(), v1.begin() + 8, v1.begin() + 9);
+				mystl::copy_backward(v2.begin(), v2.begin() + 8, v2.begin() + 9);
+				EXPECT_CON_EQ(v1, v2);
 			}
 
 			TEST(copy_if_test) {
