@@ -27,7 +27,13 @@ namespace mystl {
 		Sequence c_;	//用底层容器来表现 queue
 
 	public:
+		// 构造、复制、移动函数
 		queue() :c_() {}
+		queue(size_type n, const T& value) :c_(n, value) {}
+		explicit queue(size_type n) :c_(n) {}
+		template <class InputIterator>
+		queue(InputIterator first, InputIterator last) : c_(first, last) {}
+
 		explicit queue(const Sequence& s) :c_(s) {}
 		explicit queue(Sequence&& s) :c_(std::move(s)) {}
 
@@ -36,11 +42,6 @@ namespace mystl {
 
 		queue& operator=(const queue& rhs) { c_ = rhs.c_; return *this; }
 		queue& operator=(queue&& rhs) { c_ = rhs.c_; return *this; }
-
-		queue(size_type n, const T& value) :c_(n, value) {}
-		explicit queue(size_type n) :c_(n) {}
-		template <class InputIterator>
-		queue(InputIterator first, InputIterator last) : c_(first, last) {}
 
 		// 以下操作使用底层容器的操作
 		bool empty() const { return c_.empty(); }
@@ -99,8 +100,7 @@ namespace mystl {
 	// 参数一代表数据类型，参数二代表容器类型，缺省使用 vector 作为底层容器
 	// 参数三代表比较权值的方式，缺省使用 mystl 的 less 作为比较方式
 	// 用法与 STL priority_queue 类似
-	template <class T, class Sequence = vector<T>,
-		class Compare = less<T>>
+	template <class T, class Sequence = vector<T>, class Compare = less<T>>
 	class priority_queue {
 	public:
 		// 使用底层容器的型别
@@ -114,8 +114,16 @@ namespace mystl {
 		Compare comp_;	//权值比较大小的标准
 
 	public:
-		// 构造函数
+		// 构造、复制、移动函数
 		priority_queue() :c_() {}
+		priority_queue(size_type n, const T& value) 
+			:c_(n, value) { make_heap(c_.begin(), c_.end(), comp_); }
+		explicit priority_queue(size_type n) 
+			:c_(n) { make_heap(c_.begin(), c_.end(), comp_); }
+		template <class InputIterator>
+		priority_queue(InputIterator first, InputIterator last)
+			: c_(first, last) { make_heap(c_.begin(), c_.end(), comp_); }
+
 		explicit priority_queue(const Sequence& s) :c_(s) { make_heap(c_.begin(), c_.end(), comp_); }
 		explicit priority_queue(Sequence&& s) :c_(std::move(s)) { make_heap(c_.begin(), c_.end(), comp_); }
 
@@ -126,13 +134,18 @@ namespace mystl {
 			make_heap(c_.begin(), c_.end(), comp_);
 		}
 
-		priority_queue(size_type n, const T& value) 
-			:c_(n, value) { make_heap(c_.begin(), c_.end(), comp_); }
-		explicit priority_queue(size_type n) 
-			:c_(n) { make_heap(c_.begin(), c_.end(), comp_); }
-		template <class InputIterator>
-		priority_queue(InputIterator first, InputIterator last)
-			: c_(first, last) { make_heap(c_.begin(), c_.end(), comp_); }
+		priority_queue& operator=(const priority_queue& rhs) {
+			c_ = rhs.c_;
+			comp_ = rhs.comp_;
+			make_heap(c_.begin(), c_.end(), comp_);
+			return *this;
+		}
+		priority_queue& operator=(priority_queue&& rhs) {
+			c_ = std::move(rhs.c_);
+			comp_ = std::move(rhs.comp_);
+			make_heap(c_.begin(), c_.end(), comp_);
+			return *this;
+		}
 
 	public:
 		// 以下操作使用底层容器的操作
@@ -144,6 +157,7 @@ namespace mystl {
 		void pop();
 
 		void clear() { while (!empty())	pop(); }
+		void swap(priority_queue& rhs) { mystl::swap(c_, rhs.c_); mystl::swap(comp_, rhs.comp_); }
 	};
 
 	// 插入一个元素
@@ -168,6 +182,13 @@ namespace mystl {
 		catch (...) {
 			c_.clear();
 		}
+	}
+
+	// 重载 mystl 的 swap
+	template <class T, class Sequence, class Compare>
+	void swap(priority_queue<T, Sequence, Compare>& lhs, 
+		priority_queue<T, Sequence, Compare>& rhs) {
+		lhs.swap(rhs);
 	}
 }
 #endif // !MYTINYSTL_QUEUE_H_
