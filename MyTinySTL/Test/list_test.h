@@ -92,6 +92,7 @@ namespace mystl {
 				FUN_AFTER(l1, l1.unique());
 				FUN_AFTER(l1, l1.merge(l7));
 				FUN_AFTER(l1, l1.reverse());
+				FUN_AFTER(l1, l1.clear());
 				mystl::list<int> l9(a, a + 5);
 				FUN_AFTER(l1, l1.swap(l9));
 				FUN_VALUE(*l1.begin());
