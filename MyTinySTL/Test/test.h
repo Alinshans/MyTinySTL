@@ -524,5 +524,6 @@ void TESTCASE_NAME(testcase_name)::Run()
 #include "algorithm_test.h"
 #include "vector_test.h"
 #include "list_test.h"
+#include "deque_test.h"
 #endif // !MYTINYSTL_TEST_H
 
