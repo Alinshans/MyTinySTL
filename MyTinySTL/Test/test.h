@@ -516,14 +516,22 @@ void TESTCASE_NAME(testcase_name)::Run()
 
 // 运行所有测试
 #define RUN_ALL_TESTS() \
-    UnitTest::GetInstance()->Run();
+    UnitTest::GetInstance()->Run(); \
+	deque_test::deque_test(); \
+	list_test::list_test(); \
+	queue_test::queue_test(); \
+	stack_test::stack_test(); \
+	vector_test::vector_test();
 
 }	// test
 }	// mystl
 
 #include "algorithm_test.h"
-#include "vector_test.h"
-#include "list_test.h"
 #include "deque_test.h"
+#include "list_test.h"
+#include "queue_test.h"
+#include "stack_test.h"
+#include "vector_test.h"
+
 #endif // !MYTINYSTL_TEST_H
 
