@@ -19,11 +19,11 @@ namespace mystl {
 			#define DEQUE_INSERT_TEST(mode, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
-				mode::deque<int> v; \
+				mode::deque<int> d; \
 				char buf[10]; \
 				start = clock(); \
 				for (size_t i = 0; i < count; ++i) \
-					v.insert(v.end(), rand()); \
+					d.insert(d.end(), rand()); \
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
