@@ -3,6 +3,7 @@
 
 // deque 测试: 测试 deque 的 API 和 insert 的性能
 
+#include <iomanip>
 #include <iostream>
 #include <deque>
 
@@ -82,13 +83,13 @@ namespace mystl {
 				cout << "|---------------|-------------|-------------|-------------|" << endl;
 				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
 				cout << "|      std      |";
-				LIST_INSERT_TEST(std, 100000);
-				LIST_INSERT_TEST(std, 1000000);
-				LIST_INSERT_TEST(std, 10000000);
+				DEQUE_INSERT_TEST(std, 100000);
+				DEQUE_INSERT_TEST(std, 1000000);
+				DEQUE_INSERT_TEST(std, 10000000);
 				cout << endl << "|     mystl     |";
-				LIST_INSERT_TEST(mystl, 100000);
-				LIST_INSERT_TEST(mystl, 1000000);
-				LIST_INSERT_TEST(mystl, 10000000);
+				DEQUE_INSERT_TEST(mystl, 100000);
+				DEQUE_INSERT_TEST(mystl, 1000000);
+				DEQUE_INSERT_TEST(mystl, 10000000);
 				cout << endl;
 				cout << "|---------------|-------------|-------------|-------------|" << endl;
 				PASSED;
