@@ -3,6 +3,7 @@
 
 // list 测试: 测试 list 的 API 与 insert、sort 的性能
 
+#include <iomanip>
 #include <iostream>
 #include <list>
 
