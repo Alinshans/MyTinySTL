@@ -20,14 +20,14 @@ namespace mystl {
 
 			// 遍历输出 queue 的宏定义
 			#define QUEUE_COUT(q) do { \
-				string q_name = #q; \
+				std::string q_name = #q; \
 				cout << " " << q_name << " :"; \
 				queue_print(q); \
 			} while(0)
 
 			// 遍历输出 priority_queue 的宏定义
 			#define P_QUEUE_COUT(p) do { \
-				string p_name = #p; \
+				std::string p_name = #p; \
 				cout << " " << p_name << " :"; \
 				p_queue_print(p); \
 			} while(0)
@@ -48,7 +48,7 @@ namespace mystl {
 				cout << endl;
 			}
 
-			// queue 与 priority_queue push 的性能测试
+			// queue，priority_queue push 的性能测试
 			#define QUEUE_PUSH_TEST(mode, con, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
