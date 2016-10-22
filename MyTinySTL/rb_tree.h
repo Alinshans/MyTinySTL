@@ -137,6 +137,7 @@ namespace mystl {
 	}
 
 	// 以下四个非成员函数，用于调整 RB-tree，旋转与改变颜色
+
 	// 左旋，参数一为左旋点，参数二为根节点
 	inline void __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root) {
 		auto y = x->right;	//设置y为旋转点的右子节点
@@ -470,10 +471,13 @@ namespace mystl {
 		// rb_tree 相关操作
 		iterator find(const key_type& k);
 		const_iterator find(const key_type& k) const;
-		size_type count(const key_type& k);
+		size_type count(const key_type& k) const;
 		iterator lower_bound(const key_type& k);
+		const_iterator lower_bound(const key_type& k) const;
 		iterator upper_bound(const key_type& k);
+		const_iterator upper_bound(const key_type& k) const;
 		inline pair<iterator, iterator> equal_range(const key_type& k);
+		inline pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 		Compare key_comp() const { return key_compare; }
 
 	private:
@@ -810,7 +814,7 @@ namespace mystl {
 	// 查找键值为 k 的节点出现的次数
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
-		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) {
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const key_type& k) const {
 		auto p = equal_range(k);
 		auto n = static_cast<size_type>(distance(p.first, p.second));
 		return n;
@@ -831,6 +835,20 @@ namespace mystl {
 		return iterator(y);
 	}
 
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const key_type& k) const {
+		auto y = header_;
+		auto x = root();
+		while (x != nullptr) {
+			if (!key_compare(key(x), k))	// k <= x
+				y = x, x = left(x);
+			else
+				x = right(x);
+		}
+		return const_iterator(y);
+	}
+
 	// 键值不小于 k 的最后一个位置
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
@@ -846,12 +864,33 @@ namespace mystl {
 		return iterator(y);
 	}
 
-	// 查找与键值 k 相等的区间，返回一个 pair
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const key_type& k) const {
+		auto y = header_;
+		auto x = root();
+		while (x != nullptr) {
+			if (key_compare(k, key(x)))	// k < x
+				y = x, x = left(x);
+			else
+				x = right(x);
+		}
+		return const_iterator(y);
+	}
+
+	// 查找与键值 k 相等的区间，返回一个 pair 分别指向相等区间的首尾
 	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 	inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
 		typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
 		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const key_type& k) {
 		return pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+	}
+
+	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+	inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
+		typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator>
+		rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const key_type& k) const {
+		return pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
 	}
 
 	// __rb_tree_initialize 函数
