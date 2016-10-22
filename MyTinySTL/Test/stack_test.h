@@ -19,7 +19,7 @@ namespace mystl {
 
 			// 遍历输出 stack 的宏定义
 			#define STACK_COUT(s) do { \
-				string s_name = #s; \
+				std::string s_name = #s; \
 				cout << " " << s_name << " :"; \
 				stack_print(s); \
 			} while(0)
