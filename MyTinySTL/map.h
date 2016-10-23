@@ -57,18 +57,17 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制函数
+		// 构造、复制、移动函数
 		map() :t_() {}	
 
+		template <class InputIterator>
+		map(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
+	
 		map(const map& rhs) :t_(rhs.t_) {}
 		map(map&& rhs) :t_(std::move(rhs.t_)) {}
 
 		map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
 		map& operator=(map&& rhs) { t_ = std::move(rhs.t_); return *this; }
-
-		template <class InputIterator>
-		map(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-	
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
@@ -217,7 +216,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制函数
+		// 构造、复制、移动函数
 		multimap() :t_() {}
 
 		multimap(const multimap& rhs) :t_(rhs.t_) {}
