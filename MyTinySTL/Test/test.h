@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_TEST_H
-#define MYTINYSTL_TEST_H
+#ifndef MYTINYSTL_TEST_H_
+#define MYTINYSTL_TEST_H_
 
-// 一个简单的单元测试，定义了两个类 TestCase 和 UnitTest，以及一系列的宏
+// 一个简单的单元测试框架，定义了两个类 TestCase 和 UnitTest，以及一系列用于测试的宏
 
 #include <ctime>
 #include <cstring>
@@ -517,21 +517,34 @@ void TESTCASE_NAME(testcase_name)::Run()
 // 运行所有测试
 #define RUN_ALL_TESTS() \
     UnitTest::GetInstance()->Run(); \
-	deque_test::deque_test(); \
+	vector_test::vector_test(); \
 	list_test::list_test(); \
+	deque_test::deque_test(); \
 	queue_test::queue_test(); \
+	queue_test::priority_test(); \
 	stack_test::stack_test(); \
-	vector_test::vector_test();
+	map_test::map_test(); \
+	map_test::multimap_test(); \
+	set_test::set_test(); \
+	set_test::multiset_test(); \
+	hash_map_test::hash_map_test(); \
+	hash_map_test::hash_multimap_test(); \
+	hash_set_test::hash_set_test(); \
+	hash_set_test::hash_multiset_test();
 
 }	// test
 }	// mystl
 
 #include "algorithm_test.h"
-#include "deque_test.h"
+#include "vector_test.h"
 #include "list_test.h"
+#include "deque_test.h"
 #include "queue_test.h"
 #include "stack_test.h"
-#include "vector_test.h"
+#include "map_test.h"
+#include "set_test.h"
+#include "hash_map_test.h"
+#include "hash_set_test.h"
 
-#endif // !MYTINYSTL_TEST_H
+#endif // !MYTINYSTL_TEST_H_
 
