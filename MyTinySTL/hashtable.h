@@ -2,7 +2,7 @@
 #define MYTINYSTL_HASHTABLE_H_
 
 // 这个头文件包含了一个模板类 hashtable
-// hashtable 代表一个哈希表的数据结构
+// hashtable 代表哈希表类型数据结构
 
 #include "algo.h"
 #include "functional.h"
@@ -148,6 +148,7 @@ namespace mystl {
 
 	// 开链法用 28 个质数来设计表格大小
 	static const int kPrimeNum = 28;
+
 	static const unsigned long __prime_list[kPrimeNum] = {
 		53ul,			97ul,			193ul,			389ul,			769ul, 
 		1543ul,			3079ul,			6151ul,			12289ul,		24593ul,
@@ -223,7 +224,7 @@ namespace mystl {
 		bucket_type buckets_;	//以 vector 完成
 
 	public:
-		// 构造，复制，析构函数
+		// 构造，复制，析构，移动函数
 		explicit hashtable(size_type n, const HashFcn& hf = HashFcn(), 
 			const EqualKey& eqk = EqualKey(),
 			const ExtractKey exk = ExtractKey())
@@ -311,7 +312,7 @@ namespace mystl {
 		void swap(hashtable& rhs);
 
 	private:
-		// 内部成员函数
+		// hashtable 成员函数
 		size_type __next_size(size_type n) const;
 		void __hashtable_initialize(size_type n);
 		size_type __bkt_num(const value_type& value, size_type n) const;
@@ -327,7 +328,7 @@ namespace mystl {
 
 	/**************************************************************************************/
 
-	// 赋值操作符 operator=
+	// 复制赋值运算符
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>& 
 		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::operator=(const hashtable & rhs) {
@@ -342,7 +343,7 @@ namespace mystl {
 		return *this;
 	}
 
-	// move 赋值操作
+	// 移动赋值运算符
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>&
 		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::operator=(hashtable&& rhs) {
@@ -379,7 +380,7 @@ namespace mystl {
 		return end();	// 没有找到返回 end
 	}
 
-	// 在某个位置节点的个数
+	// 在某个 bucket 节点的个数
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	typename hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::size_type
 		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::elems_in_bucket(size_type n) const {
@@ -616,7 +617,6 @@ namespace mystl {
 							tmp[index] = next;
 						}
 					}
-					throw;
 				}
 			}
 		}
@@ -733,7 +733,7 @@ namespace mystl {
 		return __next_prime(n);
 	}
 
-	// __hashtable_initialize 
+	// __hashtable_initialize 函数
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
 		__hashtable_initialize(size_type n) {
