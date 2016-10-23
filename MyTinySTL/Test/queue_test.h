@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_QUEUE_TEST_H
 #define MYTINYSTL_QUEUE_TEST_H
 
-// queue 测试: 测试 queue 与 priority_queue 的 API 和它们 push 的性能
+// queue 测试: 测试 queue，priority_queue 的 API 和它们 push 的性能
 
 #include <iomanip>
 #include <iostream>
