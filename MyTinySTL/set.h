@@ -43,18 +43,17 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制函数
+		// 构造、复制、移动函数
 		set() :t_() {}
+		
+		template <class InputIterator>
+		set(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
 		
 		set(const set& rhs) :t_(rhs.t_) {}
 		set(set&& rhs) :t_(std::move(rhs.t_)) {}
 
 		set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
 		set& operator=(set&& rhs) { t_ = std::move(rhs.t_); return *this; }
-
-		template <class InputIterator>
-		set(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-		
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
@@ -72,8 +71,7 @@ namespace mystl {
 		
 		// 插入删除操作，全部使用 rb_tree 的 insert_unique
 		pair<iterator, bool> insert(const value_type& x) {
-			auto p = t_.insert_unique(x);
-			return pair<iterator, bool>(p.first, p.second);
+			return t_.insert_unique(x);
 		}
 		iterator insert(iterator position, const value_type& x) {
 			typedef typename rep_type::iterator rep_iterator;
@@ -109,7 +107,7 @@ namespace mystl {
 		friend bool operator<(const set& lhs, const set& rhs) { return lhs.t_ < rhs.t_; }
 	};
 
-	// 重载操作符
+	// 重载比较操作符
 	template <class Key, class Compare, class Alloc>
 	inline bool operator==(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
 		return lhs == rhs;
@@ -180,7 +178,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制函数
+		// 构造、复制、移动函数
 		multiset() :t_() {}
 		
 		multiset(const multiset& rhs) :t_(rhs.t_) {}
@@ -245,7 +243,7 @@ namespace mystl {
 		friend bool operator<(const multiset& lhs, const multiset& rhs) { return lhs.t_ < rhs.t_; }
 	};
 
-	// 重载操作符
+	// 重载比较操作符
 	template <class Key, class Compare, class Alloc>
 	inline bool operator!=(const multiset<Key, Compare, Alloc>& lhs, 
 		const multiset<Key, Compare, Alloc>& rhs) {
