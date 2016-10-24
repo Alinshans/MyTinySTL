@@ -62,8 +62,19 @@ ___
       * divides
       * modulus
       * negate
+      * identity_element
+   * 关系运算类
+      * equal_to
+      * not_equal_to
+      * greater
+      * less
+      * greater_equal
+      * less_equal
+   * 逻辑运算类
+      * logical_and
+      * logical_or
+      * logical_not
    * 
- 
 ##容器
 
 
