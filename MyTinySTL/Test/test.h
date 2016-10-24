@@ -6,12 +6,12 @@
 #include <ctime>
 #include <cstring>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <Windows.h>
 
 namespace mystl {
-
 namespace test {
 
 // 改变输出流文本的颜色
@@ -480,71 +480,17 @@ void TESTCASE_NAME(testcase_name)::Run()
 	std::cout << " " << str << " : " << fun << std::endl; \
 	} while(0)
 
-#define FUN_TEST1(name, type, count) \
-	do { \
-		string n = #name; \
-		char *t = #type; \
-		std::cout << green << n << " " << t << " type " << count << " times:" << std::endl; \
-		time_t start, end; \
-		srand((int)time(0)); \
-		type* arr = new type[count]; \
-		for(size_t n = 0; n < count; ++n) \
-			*(arr + n) = rand(); \
-		start = clock(); \
-		std::name(arr, arr + count); \
-		end = clock(); \
-		std::cout << "std costs " << end - start << "ms" << std::endl; \
-		for(size_t n = 0; n < count; ++n) \
-			*(arr + n) = rand(); \
-		start = clock(); \
-		mystl::name(arr, arr + count); \
-		end = clock(); \
-		std::cout << "mystl costs " << end - start << "ms" << std::endl; \
-		UnitTest::GetInstance()->CurrentTestCase->nPassed++; \
-	} while(0)
-
-
 // 测试调用的宏
 // 简单测试: 测试运行的正确性
 #define TEST(testcase_name) \
     MYTINYSTL_TEST_(testcase_name)
 
-// 性能测试: 测试运行的性能
-#define TEST_P(testcase_name) \
-	MYTINYSTL_TEST_(testcase_name)
-
-
 // 运行所有测试
 #define RUN_ALL_TESTS() \
-    UnitTest::GetInstance()->Run(); \
-	vector_test::vector_test(); \
-	list_test::list_test(); \
-	deque_test::deque_test(); \
-	queue_test::queue_test(); \
-	queue_test::priority_test(); \
-	stack_test::stack_test(); \
-	map_test::map_test(); \
-	map_test::multimap_test(); \
-	set_test::set_test(); \
-	set_test::multiset_test(); \
-	hash_map_test::hash_map_test(); \
-	hash_map_test::hash_multimap_test(); \
-	hash_set_test::hash_set_test(); \
-	hash_set_test::hash_multiset_test();
+    mystl::test::UnitTest::GetInstance()->Run();
 
 }	// test
 }	// mystl
-
-#include "algorithm_test.h"
-#include "vector_test.h"
-#include "list_test.h"
-#include "deque_test.h"
-#include "queue_test.h"
-#include "stack_test.h"
-#include "map_test.h"
-#include "set_test.h"
-#include "hash_map_test.h"
-#include "hash_set_test.h"
 
 #endif // !MYTINYSTL_TEST_H_
 
