@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_MAP_TEST_H
-#define MYTINYSTL_MAP_TEST_H
+#ifndef MYTINYSTL_MAP_TEST_H_
+#define MYTINYSTL_MAP_TEST_H_
 
-// map 测试: 测试 map、multimap 的 API 与它们 insert 的性能
+// map test : 测试 map,multimap 的 API 与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -9,8 +9,6 @@
 
 #include "..\map.h"
 #include "test.h"
-
-using namespace std;
 
 namespace mystl {
 	namespace test {
@@ -22,15 +20,15 @@ namespace mystl {
 			// 遍历输出 map 的宏定义
 			#define MAP_COUT(m) do { \
 				std::string m_name = #m; \
-				cout << " " << m_name << " :"; \
-				for (auto it : m)	cout << " " << m_name << "[" << it.first << "] = " << it.second; \
-				cout << endl; \
+				std::cout << " " << m_name << " :"; \
+				for (auto it : m)	std::cout << " " << m_name << "[" << it.first << "] = " << it.second; \
+				std::cout << std::endl; \
 			} while(0)
 
 			// map 函数操作的宏定义
 			#define MAP_FUN_AFTER(con, fun) do { \
 				std::string str = #fun; \
-				cout << " After " << str << " :" << endl; \
+				std::cout << " After " << str << " :" << std::endl; \
 				fun; \
 				MAP_COUT(con); \
 			} while(0)
@@ -39,10 +37,10 @@ namespace mystl {
 			#define MAP_VALUE(fun) do { \
 				std::string str = #fun; \
 				auto it = fun; \
-				cout << " " << str << " :" << " pair<" << it.first << ", " << it.second << ">" << endl; \
+				std::cout << " " << str << " :" << " pair<" << it.first << ", " << it.second << ">" << std::endl; \
 			} while(0)
 
-			// map，multimap insert 的性能测试
+			// map,multimap insert 的性能测试
 			#define MAP_INSERT_TEST(mode, con, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
@@ -54,15 +52,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
 
 			void map_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[--------------- Run container test : map ----------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[--------------- Run container test : map ----------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(i, i));
@@ -85,9 +83,9 @@ namespace mystl {
 				MAP_VALUE(*m1.begin());
 				MAP_VALUE(*m1.rbegin());
 				FUN_VALUE(m1[1]);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(m1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(m1.size());
 				FUN_VALUE(m1.max_size());
 				FUN_VALUE(m1.count(1));
@@ -96,30 +94,30 @@ namespace mystl {
 				MAP_VALUE(*m1.upper_bound(3));
 				auto first = *m1.equal_range(3).first;
 				auto second = *m1.equal_range(3).second;
-				cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
-					<< "> to pair<" << second.first << ", " << second.second << ">" << endl;
+				std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
+					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				MAP_INSERT_TEST(std, map, 100000);
 				MAP_INSERT_TEST(std, map, 1000000);
 				MAP_INSERT_TEST(std, map, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, map, 100000);
 				MAP_INSERT_TEST(mystl, map, 1000000);
 				MAP_INSERT_TEST(mystl, map, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[--------------- End container test : map ----------------]" << endl;
+				std::cout << "[--------------- End container test : map ----------------]" << std::endl;
 			}
 
 			void multimap_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[------------- Run container test : multimap -------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[------------- Run container test : multimap -------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(i, i));
@@ -143,9 +141,9 @@ namespace mystl {
 				MAP_VALUE(*m1.begin());
 				MAP_VALUE(*m1.rbegin());
 				FUN_VALUE(m1[1]);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(m1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(m1.size());
 				FUN_VALUE(m1.max_size());
 				FUN_VALUE(m1.count(3));
@@ -154,27 +152,27 @@ namespace mystl {
 				MAP_VALUE(*m1.upper_bound(3));
 				auto first = *m1.equal_range(3).first;
 				auto second = *m1.equal_range(3).second;
-				cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
-					<< "> to pair<" << second.first << ", " << second.second << ">" << endl;
+				std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
+					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				MAP_INSERT_TEST(std, multimap, 100000);
 				MAP_INSERT_TEST(std, multimap, 1000000);
 				MAP_INSERT_TEST(std, multimap, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, multimap, 100000);
 				MAP_INSERT_TEST(mystl, multimap, 1000000);
 				MAP_INSERT_TEST(mystl, multimap, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[------------- Run container test : multimap -------------]" << endl;
+				std::cout << "[------------- Run container test : multimap -------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_MAP_TEST_H
+#endif // !MYTINYSTL_MAP_TEST_H_
 
