@@ -1,18 +1,31 @@
-#ifndef MYTINYSTL_ALGORITHM_TEST_H
-#define MYTINYSTL_ALGORITHM_TEST_H
+#ifndef MYTINYSTL_ALGORITHM_TEST_H_
+#define MYTINYSTL_ALGORITHM_TEST_H_
 
 // 算法测试: 包含了 mystl 的 79 个算法测试
 
 #include <algorithm>
 #include <functional>
-#include <iterator>
 #include <numeric>
 #include <string>
 
 #include "..\algorithm.h"
+#include "..\vector.h"
 #include "test.h"
 
 namespace mystl {
+
+	#ifdef max
+	#undef max
+	#endif // max
+
+	#ifdef min
+	#undef min
+	#endif // min
+
+	#ifdef __transfer
+	#undef __transfer
+	#endif // __transfer
+
 	namespace test {
 		namespace algorithm_test {
 
@@ -146,8 +159,6 @@ namespace mystl {
 					mystl::lexicographical_compare(arr1, arr1 + 5, arr5, arr5 + 3, std::less<int>()));
 			}
 
-			#ifdef max
-			#undef max
 			TEST(max_test) {
 				int i1 = 1, i2 = 2;
 				double d1 = 1.1, d2 = 2.2;
@@ -156,10 +167,7 @@ namespace mystl {
 				EXPECT_EQ(std::max(d1, d2), mystl::max(d1, d2));
 				EXPECT_EQ(std::max(c1, c2), mystl::max(c1, c2));
 			}
-			#endif // max
 
-			#ifdef min
-			#undef min
 			TEST(min_test) {
 				int i1 = 1, i2 = 2;
 				double d1 = 1.1, d2 = 2.2;
@@ -168,7 +176,6 @@ namespace mystl {
 				EXPECT_EQ(std::min(d1, d2), mystl::min(d1, d2));
 				EXPECT_EQ(std::min(c1, c2), mystl::min(c1, c2));
 			}
-			#endif // min
 
 			TEST(mismatch_test) {
 				int arr1[] = { 1,1,2,2,3,4,5 };
@@ -1054,5 +1061,5 @@ namespace mystl {
 		}
 	}
 }
-#endif // !MYTINYSTL_ALGORITHM_TEST_H
+#endif // !MYTINYSTL_ALGORITHM_TEST_H_
 
