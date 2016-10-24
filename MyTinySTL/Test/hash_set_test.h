@@ -13,16 +13,14 @@
 #include "set_test.h"
 #include "test.h"
 
-using namespace std;
-
 namespace mystl {
 	namespace test {
 		namespace hash_set_test {
 
 			void hash_set_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[------------- Run container test : hash_set -------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[------------- Run container test : hash_set -------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::hash_set<int> hs1;
 				mystl::hash_set<int> hs2(520);
@@ -47,9 +45,9 @@ namespace mystl {
 				FUN_AFTER(hs1, hs1.clear());
 				FUN_AFTER(hs1, hs1.swap(hs5));
 				FUN_VALUE(*hs1.begin());
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(hs1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(hs1.size());
 				FUN_VALUE(hs1.max_size());
 				FUN_VALUE(hs1.bucket_count());
@@ -64,29 +62,29 @@ namespace mystl {
 				FUN_VALUE(*hs1.find(3));
 				auto first = *hs1.equal_range(3).first;
 				auto second = *hs1.equal_range(3).second;
-				cout << " hs1.equal_range(3) : from " << first << " to " << second << endl;
+				std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				SET_INSERT_TEST(std, hash_set, 100000);
 				SET_INSERT_TEST(std, hash_set, 1000000);
 				SET_INSERT_TEST(std, hash_set, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, hash_set, 100000);
 				SET_INSERT_TEST(mystl, hash_set, 1000000);
 				SET_INSERT_TEST(mystl, hash_set, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[------------- End container test : hash_set -------------]" << endl;
+				std::cout << "[------------- End container test : hash_set -------------]" << std::endl;
 			}
 
 			void hash_multiset_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[----------- Run container test : hash_multiset ----------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[----------- Run container test : hash_multiset ----------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::hash_multiset<int> hs1;
 				mystl::hash_multiset<int> hs2(520);
@@ -111,9 +109,9 @@ namespace mystl {
 				FUN_AFTER(hs1, hs1.clear());
 				FUN_AFTER(hs1, hs1.swap(hs5));
 				FUN_VALUE(*hs1.begin());
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(hs1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(hs1.size());
 				FUN_VALUE(hs1.max_size());
 				FUN_VALUE(hs1.bucket_count());
@@ -128,23 +126,23 @@ namespace mystl {
 				FUN_VALUE(*hs1.find(3));
 				auto first = *hs1.equal_range(3).first;
 				auto second = *hs1.equal_range(3).second;
-				cout << " hs1.equal_range(3) : from " << first << " to " << second << endl;
+				std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				SET_INSERT_TEST(std, hash_multiset, 100000);
 				SET_INSERT_TEST(std, hash_multiset, 1000000);
 				SET_INSERT_TEST(std, hash_multiset, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, hash_multiset, 100000);
 				SET_INSERT_TEST(mystl, hash_multiset, 1000000);
 				SET_INSERT_TEST(mystl, hash_multiset, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[----------- Run container test : hash_multiset ----------]" << endl;
+				std::cout << "[----------- Run container test : hash_multiset ----------]" << std::endl;
 			}
 		}
 	}
