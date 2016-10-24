@@ -6,6 +6,7 @@
 // priority_queue: 优先队列，具有权值的队列，权值大的优先出队
 
 #include "deque.h"
+#include "functional.h"
 #include "heap_algo.h"
 #include "vector.h"
 
