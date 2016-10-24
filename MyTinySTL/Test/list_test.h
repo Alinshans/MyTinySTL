@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_LIST_TEST_H
-#define MYTINYSTL_LIST_TEST_H
+#ifndef MYTINYSTL_LIST_TEST_H_
+#define MYTINYSTL_LIST_TEST_H_
 
-// list 测试: 测试 list 的 API 与 insert、sort 的性能
+// list test : 测试 list 的 API 与 insert,sort 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -9,8 +9,6 @@
 
 #include "..\list.h"
 #include "test.h"
-
-using namespace std;
 
 namespace mystl {
 	namespace test {
@@ -31,10 +29,11 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
+
 
 			// list sort 的性能测试
 			#define LIST_SORT_TEST(mode, count) do { \
@@ -49,15 +48,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
 
 			void list_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[--------------- Run container test : list ---------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[--------------- Run container test : list ---------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::list<int> l1;
 				mystl::list<int> l2(5);
@@ -100,41 +99,41 @@ namespace mystl {
 				FUN_VALUE(*l1.rbegin());
 				FUN_VALUE(l1.front());
 				FUN_VALUE(l1.back());
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(l1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(l1.size());
 				FUN_VALUE(l1.max_size());
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				LIST_INSERT_TEST(std, 100000);
 				LIST_INSERT_TEST(std, 1000000);
 				LIST_INSERT_TEST(std, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				LIST_INSERT_TEST(mystl, 100000);
 				LIST_INSERT_TEST(mystl, 1000000);
 				LIST_INSERT_TEST(mystl, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|     sort      |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|     sort      |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				LIST_SORT_TEST(std, 100000);
 				LIST_SORT_TEST(std, 1000000);
 				LIST_SORT_TEST(std, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				LIST_SORT_TEST(mystl, 100000);
 				LIST_SORT_TEST(mystl, 1000000);
 				LIST_SORT_TEST(mystl, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[--------------- End container test : list ---------------]" << endl;
+				std::cout << "[--------------- End container test : list ---------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_LIST_TEST_H
+#endif // !MYTINYSTL_LIST_TEST_H_
 
