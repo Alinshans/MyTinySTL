@@ -10,7 +10,7 @@ namespace mystl {
 
 	// 模板类 stack
 	// 参数一代表数据类型，参数局代表容器类型，缺省使用 deque 作为底层容器
-	template <class T, class Sequence = deque<T>>
+	template <class T, class Sequence = mystl::deque<T>>
 	class stack {
 	public:
 		// 使用底层容器的型别
