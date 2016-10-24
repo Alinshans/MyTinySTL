@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_VECTOR_TEST_H
-#define MYTINYSTL_VECTOR_TEST_H
+#ifndef MYTINYSTL_VECTOR_TEST_H_
+#define MYTINYSTL_VECTOR_TEST_H_
 
-// vector 测试: 测试 vector 的 API 与 push_back 的性能
+// vector test : 测试 vector 的 API 与 push_back 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -9,8 +9,6 @@
 
 #include "..\vector.h"
 #include "test.h"
-
-using namespace std;
 
 namespace mystl {
 	namespace test {
@@ -28,16 +26,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
-			
 
 			void vector_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[-------------- Run container test : vector --------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[-------------- Run container test : vector --------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::vector<int> v1;
 				mystl::vector<int> v2(10);
@@ -70,9 +67,9 @@ namespace mystl {
 				FUN_VALUE(v1.back());
 				FUN_VALUE(v1[0]);
 				FUN_VALUE(v1.at(1));
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(v1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.max_size());
 				FUN_VALUE(v1.capacity());
@@ -92,24 +89,24 @@ namespace mystl {
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|   push_back   |   1000000   |  10000000   |  100000000  |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|   push_back   |   1000000   |  10000000   |  100000000  |" << std::endl;
+				std::cout << "|      std      |";
 				VECTOR_PUSH_BACK_TEST(std, 1000000);
 				VECTOR_PUSH_BACK_TEST(std, 10000000);
 				VECTOR_PUSH_BACK_TEST(std, 100000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				VECTOR_PUSH_BACK_TEST(mystl, 1000000);
 				VECTOR_PUSH_BACK_TEST(mystl, 10000000);
 				VECTOR_PUSH_BACK_TEST(mystl, 100000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[-------------- End container test : vector --------------]" << endl;
+				std::cout << "[-------------- End container test : vector --------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_VECTOR_TEST_H
+#endif // !MYTINYSTL_VECTOR_TEST_H_
 
