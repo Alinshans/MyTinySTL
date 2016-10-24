@@ -14,7 +14,7 @@ namespace mystl {
 	// 模板类 queue
 	// 参数一代表数据类型，参数二代表容器类型，缺省使用 deque 作为底层容器
 	// 用法与 STL queue 类似
-	template <class T, class Sequence = deque<T>>
+	template <class T, class Sequence = mystl::deque<T>>
 	class queue {
 	public:
 		// 使用底层容器的型别
@@ -100,7 +100,7 @@ namespace mystl {
 	// 参数一代表数据类型，参数二代表容器类型，缺省使用 vector 作为底层容器
 	// 参数三代表比较权值的方式，缺省使用 mystl 的 less 作为比较方式
 	// 用法与 STL priority_queue 类似
-	template <class T, class Sequence = vector<T>, class Compare = less<T>>
+	template <class T, class Sequence = mystl::vector<T>, class Compare = mystl::less<T>>
 	class priority_queue {
 	public:
 		// 使用底层容器的型别
