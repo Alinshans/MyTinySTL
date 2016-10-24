@@ -45,8 +45,9 @@ ___
 
 
 ##配置器
-    
-
+   包括了`allocator`和`constructor`，分别定义在[allocator.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/allocator.h) 和 [construct.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/construct.h) 中。
+   `allocator`
+   
 ##迭代器
 
 
