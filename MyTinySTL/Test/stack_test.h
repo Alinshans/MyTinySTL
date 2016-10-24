@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_STACK_TEST_H
-#define MYTINYSTL_STACK_TEST_H
+#ifndef MYTINYSTL_STACK_TEST_H_
+#define MYTINYSTL_STACK_TEST_H_
 
-// stack 测试: 测试 stack 的 API 和 push 的性能
+// stack test : 测试 stack 的 API 和 push 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -11,8 +11,6 @@
 #include "..\stack.h"
 #include "test.h"
 
-using namespace std;
-
 namespace mystl {
 	namespace test {
 		namespace stack_test {
@@ -20,16 +18,16 @@ namespace mystl {
 			// 遍历输出 stack 的宏定义
 			#define STACK_COUT(s) do { \
 				std::string s_name = #s; \
-				cout << " " << s_name << " :"; \
+				std::cout << " " << s_name << " :"; \
 				stack_print(s); \
 			} while(0)
 
 			void stack_print(mystl::stack<int> s) {
 				while (!s.empty()) {
-					cout << " " << s.top();
+					std::cout << " " << s.top();
 					s.pop();
 				}
-				cout << endl;
+				std::cout << std::endl;
 			}
 
 			// stack push 的性能测试
@@ -44,15 +42,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
 
 			void stack_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[-------------- Run container test : stack ---------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[-------------- Run container test : stack ---------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::deque<int> d1(5);
 				mystl::stack<int> s1;
@@ -66,48 +64,48 @@ namespace mystl {
 				mystl::stack<int> s9 = s3;
 				mystl::stack<int> s10 = std::move(s3);
 
-				cout << " After s1 push 1,2,3,4,5 :" << endl;
+				std::cout << " After s1 push 1,2,3,4,5 :" << std::endl;
 				s1.push(1);
 				s1.push(2);
 				s1.push(3);
 				s1.push(4);
 				s1.push(5);
 				STACK_COUT(s1);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(s1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(s1.size());
 				FUN_VALUE(s1.top());
 				while (!s1.empty()) {
-					cout << " After s1.pop():" << endl;
+					std::cout << " After s1.pop():" << std::endl;
 					s1.pop();
 					STACK_COUT(s1);
 				}
-				cout << " After s1.swap(s4) :" << endl;
+				std::cout << " After s1.swap(s4) :" << std::endl;
 				s1.swap(s4);
 				STACK_COUT(s1);
-				cout << " After s1.clear() :" << endl;
+				std::cout << " After s1.clear() :" << std::endl;
 				s1.clear();
 				STACK_COUT(s1);
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|     push      |   1000000   |  10000000   |  100000000  |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|     push      |   1000000   |  10000000   |  100000000  |" << std::endl;
+				std::cout << "|      std      |";
 				STACK_PUSH_TEST(std, 1000000);
 				STACK_PUSH_TEST(std, 10000000);
 				STACK_PUSH_TEST(std, 100000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				STACK_PUSH_TEST(mystl, 1000000);
 				STACK_PUSH_TEST(mystl, 10000000);
 				STACK_PUSH_TEST(mystl, 100000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[-------------- End container test : stack ---------------]" << endl;
+				std::cout << "[-------------- End container test : stack ---------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_STACK_TEST_H
+#endif // !MYTINYSTL_STACK_TEST_H_
 
