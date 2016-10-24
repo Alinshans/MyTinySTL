@@ -45,15 +45,25 @@ ___
 
 
 ##配置器
-   包括了`allocator`和`constructor`，分别定义在[allocator.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/allocator.h) 和 [construct.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/construct.h) 中。
-   `allocator`
+   包括了 `allocator` 和 `constructor`，分别定义在 [allocator.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/allocator.h) 和 [construct.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/construct.h) 中。<br>
+   `allocator` 负责空间的配置与回收，对应两个成员函数： `allocate` 和 `deallocate`。<br>
+   `construct` 负责对象的构造与析构，对应两个全局函数： `construct` 和 `destroy`。
    
 ##迭代器
-
+   `iterator`，连接着容器与算法，是一种`泛型指针`，定义在 [iterator.h](https://github.com/Alinshans/MyTinySTL/edit/master/MyTinySTL/iterator.h) 中。每个容器都附带专属的迭代器，是一种重载了 `operator*`，`operator->`，`operator++`，`operator--` 等操作的模板类。
 
 ##仿函数
-
-
+   仿函数，现在称为`函数对象`，包括了 `functional` 和 `hash_functional`，分别定义在 [functional.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/functional.h) 和 [hash_functional.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_functional.h) 中。 <br>
+   `functional` 中包含
+   * 算术类
+      * plus
+      * minus
+      * multiplies
+      * divides
+      * modulus
+      * negate
+   * 
+ 
 ##容器
 
 
