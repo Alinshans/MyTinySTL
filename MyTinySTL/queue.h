@@ -116,34 +116,37 @@ namespace mystl {
 	public:
 		// 构造、复制、移动函数
 		priority_queue() :c_() {}
-		priority_queue(size_type n, const T& value) 
-			:c_(n, value) { make_heap(c_.begin(), c_.end(), comp_); }
-		explicit priority_queue(size_type n) 
-			:c_(n) { make_heap(c_.begin(), c_.end(), comp_); }
+		priority_queue(size_type n, const T& value) :c_(n, value) {
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
+		}
+		explicit priority_queue(size_type n) :c_(n) {
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
+		}
 		template <class InputIterator>
-		priority_queue(InputIterator first, InputIterator last)
-			: c_(first, last) { make_heap(c_.begin(), c_.end(), comp_); }
+		priority_queue(InputIterator first, InputIterator last): c_(first, last) {
+			mystl::make_heap(c_.begin(), c_.end(), comp_); 
+		}
 
-		explicit priority_queue(const Sequence& s) :c_(s) { make_heap(c_.begin(), c_.end(), comp_); }
-		explicit priority_queue(Sequence&& s) :c_(std::move(s)) { make_heap(c_.begin(), c_.end(), comp_); }
+		explicit priority_queue(const Sequence& s) :c_(s) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
+		explicit priority_queue(Sequence&& s) :c_(std::move(s)) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
 
 		priority_queue(const priority_queue& rhs) :c_(rhs.c_), comp_(rhs.comp_) { 
-			make_heap(c_.begin(), c_.end(), comp_); 
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
 		}
 		priority_queue(priority_queue&& rhs) :c_(std::move(rhs.c_)), comp_(std::move(rhs.comp_)) {
-			make_heap(c_.begin(), c_.end(), comp_);
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
 		}
 
 		priority_queue& operator=(const priority_queue& rhs) {
 			c_ = rhs.c_;
 			comp_ = rhs.comp_;
-			make_heap(c_.begin(), c_.end(), comp_);
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
 			return *this;
 		}
 		priority_queue& operator=(priority_queue&& rhs) {
 			c_ = std::move(rhs.c_);
 			comp_ = std::move(rhs.comp_);
-			make_heap(c_.begin(), c_.end(), comp_);
+			mystl::make_heap(c_.begin(), c_.end(), comp_);
 			return *this;
 		}
 
@@ -165,7 +168,7 @@ namespace mystl {
 	void priority_queue<T, Sequence, Compare>::push(const T& x) {
 		try {
 			c_.push_back(x);
-			push_heap(c_.begin(), c_.end(), comp_);
+			mystl::push_heap(c_.begin(), c_.end(), comp_);
 		}
 		catch (...) {
 			c_.clear();
@@ -176,7 +179,7 @@ namespace mystl {
 	template <class T, class Sequence, class Compare>
 	void priority_queue<T, Sequence, Compare>::pop() {
 		try {
-			pop_heap(c_.begin(), c_.end(), comp_);
+			mystl::pop_heap(c_.begin(), c_.end(), comp_);
 			c_.pop_back();
 		}
 		catch (...) {
