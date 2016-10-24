@@ -13,16 +13,14 @@
 #include "map_test.h"
 #include "test.h"
 
-using namespace std;
-
 namespace mystl {
 	namespace test {
 		namespace hash_map_test {
 
 			void hash_map_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[------------- Run container test : hash_map -------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[------------- Run container test : hash_map -------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(5 - i, 5 - i));
@@ -49,9 +47,9 @@ namespace mystl {
 				MAP_FUN_AFTER(hm1, hm1.swap(hm5));
 				MAP_VALUE(*hm1.begin());
 				FUN_VALUE(hm1[1]);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(hm1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(hm1.size());
 				FUN_VALUE(hm1.max_size());
 				FUN_VALUE(hm1.bucket_count());
@@ -66,30 +64,30 @@ namespace mystl {
 				MAP_VALUE(*hm1.find(3));
 				auto first = *hm1.equal_range(3).first;
 				auto second = *hm1.equal_range(3).second;
-				cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
-					<< "> to pair<" << second.first << ", " << second.second << ">" << endl;
+				std::cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
+					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				MAP_INSERT_TEST(std, hash_map, 100000);
 				MAP_INSERT_TEST(std, hash_map, 1000000);
 				MAP_INSERT_TEST(std, hash_map, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, hash_map, 100000);
 				MAP_INSERT_TEST(mystl, hash_map, 1000000);
 				MAP_INSERT_TEST(mystl, hash_map, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[------------- Run container test : hash_map -------------]" << endl;
+				std::cout << "[------------- Run container test : hash_map -------------]" << std::endl;
 			}
 
 			void hash_multimap_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[----------- Run container test : hash_multimap ----------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[----------- Run container test : hash_multimap ----------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(5 - i, 5 - i));
@@ -116,9 +114,9 @@ namespace mystl {
 				MAP_FUN_AFTER(hm1, hm1.swap(hm5));
 				MAP_VALUE(*hm1.begin());
 				FUN_VALUE(hm1[1]);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(hm1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(hm1.size());
 				FUN_VALUE(hm1.max_size());
 				FUN_VALUE(hm1.bucket_count());
@@ -133,24 +131,24 @@ namespace mystl {
 				MAP_VALUE(*hm1.find(3));
 				auto first = *hm1.equal_range(3).first;
 				auto second = *hm1.equal_range(3).second;
-				cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
-					<< "> to pair<" << second.first << ", " << second.second << ">" << endl;
+				std::cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
+					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				MAP_INSERT_TEST(std, hash_multimap, 100000);
 				MAP_INSERT_TEST(std, hash_multimap, 1000000);
 				MAP_INSERT_TEST(std, hash_multimap, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, hash_multimap, 100000);
 				MAP_INSERT_TEST(mystl, hash_multimap, 1000000);
 				MAP_INSERT_TEST(mystl, hash_multimap, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[----------- Run container test : hash_multimap ----------]" << endl;
+				std::cout << "[----------- Run container test : hash_multimap ----------]" << std::endl;
 			}
 		}
 	}
