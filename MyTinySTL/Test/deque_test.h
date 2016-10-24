@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_DEQUE_TEST_H
-#define MYTINYSTL_DEQUE_TEST_H
+#ifndef MYTINYSTL_DEQUE_TEST_H_
+#define MYTINYSTL_DEQUE_TEST_H_
 
-// deque 测试: 测试 deque 的 API 和 insert 的性能
+// deque test : 测试 deque 的 API 和 insert 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -9,8 +9,6 @@
 
 #include "..\deque.h"
 #include "test.h"
-
-using namespace std;
 
 namespace mystl {
 	namespace test {
@@ -28,15 +26,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
 
 			void deque_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[-------------- Run container test : deque ---------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[-------------- Run container test : deque ---------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::deque<int> d1;
 				mystl::deque<int> d2(5);
@@ -73,30 +71,30 @@ namespace mystl {
 				FUN_VALUE(d1.back());
 				FUN_VALUE(d1.at(1));
 				FUN_VALUE(d1[2]);
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(d1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(d1.size());
 				FUN_VALUE(d1.max_size());
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				DEQUE_INSERT_TEST(std, 100000);
 				DEQUE_INSERT_TEST(std, 1000000);
 				DEQUE_INSERT_TEST(std, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				DEQUE_INSERT_TEST(mystl, 100000);
 				DEQUE_INSERT_TEST(mystl, 1000000);
 				DEQUE_INSERT_TEST(mystl, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[-------------- End container test : deque ---------------]" << endl;
+				std::cout << "[-------------- End container test : deque ---------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_DEQUE_TEST_H
+#endif // !MYTINYSTL_DEQUE_TEST_H_
 
