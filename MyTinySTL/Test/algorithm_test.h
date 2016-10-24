@@ -92,7 +92,7 @@ namespace mystl {
 				std::vector<int> v1{ 1,2,3,4,5 };
 				std::vector<int> v2{ 1,2,3,4,5,6 };
 				int arr1[] = { 1,2,3,4,5 };
-				int arr2[] = { 1,2,3,4 };
+				int arr2[] = { 1,2,3,4,6 };
 				EXPECT_EQ(std::equal(v1.begin(), v1.end(), v2.begin()),
 					mystl::equal(v1.begin(), v1.end(), v2.begin()));
 				EXPECT_EQ(std::equal(arr1, arr1 + 5, arr2),
@@ -642,8 +642,8 @@ namespace mystl {
 				std::merge(arr1, arr1 + 5, arr2, arr2 + 5, exp);
 				mystl::merge(arr3, arr3 + 5, arr4, arr4 + 5, act);
 				EXPECT_CON_EQ(exp, act);
-				std::merge(arr1, arr1 + 5, arr2, arr2 + 5, exp, std::greater<int>());
-				mystl::merge(arr3, arr3 + 5, arr4, arr4 + 5, act, std::greater<int>());
+				std::merge(arr1, arr1 + 5, arr2, arr2 + 5, exp, std::less<int>());
+				mystl::merge(arr3, arr3 + 5, arr4, arr4 + 5, act, std::less<int>());
 				EXPECT_CON_EQ(exp, act);
 			}
 
@@ -876,7 +876,7 @@ namespace mystl {
 
 			TEST(replace_copy_if_test) {
 				int arr1[] = { 1,2,3,4,5,6,7,8,9,10 };
-				int exp[5], act[5];
+				int exp[10] = { 0 }, act[10] = { 0 };
 				std::replace_copy_if(arr1, arr1 + 10, exp, is_odd, 1);
 				mystl::replace_copy_if(arr1, arr1 + 10, act, is_odd, 1);
 				EXPECT_CON_EQ(exp, act);
