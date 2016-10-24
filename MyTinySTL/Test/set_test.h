@@ -1,7 +1,7 @@
-#ifndef MYTINYSTL_SET_TEST_H
-#define MYTINYSTL_SET_TEST_H
+#ifndef MYTINYSTL_SET_TEST_H_
+#define MYTINYSTL_SET_TEST_H_
 
-// set 测试: 测试 set、multiset 的 API 与它们 insert 的性能
+// set test : 测试 set,multiset 的 API 与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
@@ -10,13 +10,11 @@
 #include "..\set.h"
 #include "test.h"
 
-using namespace std;
-
 namespace mystl {
 	namespace test {
 		namespace set_test {
 
-			// set，multiset insert 的性能测试
+			// set,multiset insert 的性能测试
 			#define SET_INSERT_TEST(mode, con, count) do { \
 				srand((int)time(0)); \
 				clock_t start, end; \
@@ -28,15 +26,15 @@ namespace mystl {
 				end = clock(); \
 				int n = end - start; \
 				sprintf_s(buf, "%d", n); \
-				string t = buf; \
+				std::string t = buf; \
 				t += "ms    |"; \
-				cout << setw(14) << t; \
+				std::cout << std::setw(14) << t; \
 			} while(0)
 
 			void set_test(){
-				cout << "[=========================================================]" << endl;
-				cout << "[--------------- Run container test : set ----------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[--------------- Run container test : set ----------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::set<int> s1;
 				mystl::set<int> s2(a, a + 5);
@@ -56,9 +54,9 @@ namespace mystl {
 				FUN_AFTER(s1, s1.swap(s4));
 				FUN_VALUE(*s1.begin());
 				FUN_VALUE(*s1.rbegin());
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(s1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(s1.size());
 				FUN_VALUE(s1.max_size());
 				FUN_VALUE(s1.count(1));
@@ -67,29 +65,29 @@ namespace mystl {
 				FUN_VALUE(*s1.upper_bound(3));
 				auto first = *s1.equal_range(3).first;
 				auto second = *s1.equal_range(3).second;
-				cout << " s1.equal_range(3) : from " << first << " to " << second << endl;
+				std::cout << " s1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				SET_INSERT_TEST(std, set, 100000);
 				SET_INSERT_TEST(std, set, 1000000);
 				SET_INSERT_TEST(std, set, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, set, 100000);
 				SET_INSERT_TEST(mystl, set, 1000000);
 				SET_INSERT_TEST(mystl, set, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[--------------- End container test : set ----------------]" << endl;
+				std::cout << "[--------------- End container test : set ----------------]" << std::endl;
 			}
 
 			void multiset_test() {
-				cout << "[=========================================================]" << endl;
-				cout << "[------------- Run container test : multiset -------------]" << endl;
-				cout << "[----------------------- API test ------------------------]" << endl;
+				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[------------- Run container test : multiset -------------]" << std::endl;
+				std::cout << "[----------------------- API test ------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::multiset<int> s1;
 				mystl::multiset<int> s2(a, a + 5);
@@ -109,9 +107,9 @@ namespace mystl {
 				FUN_AFTER(s1, s1.swap(s4));
 				FUN_VALUE(*s1.begin());
 				FUN_VALUE(*s1.rbegin());
-				cout << boolalpha;
+				std::cout << std::boolalpha;
 				FUN_VALUE(s1.empty());
-				cout << noboolalpha;
+				std::cout << std::noboolalpha;
 				FUN_VALUE(s1.size());
 				FUN_VALUE(s1.max_size());
 				FUN_VALUE(s1.count(1));
@@ -120,26 +118,26 @@ namespace mystl {
 				FUN_VALUE(*s1.upper_bound(3));
 				auto first = *s1.equal_range(3).first;
 				auto second = *s1.equal_range(3).second;
-				cout << " s1.equal_range(3) : from " << first << " to " << second << endl;
+				std::cout << " s1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				cout << "[------------------ Performance Testing ------------------]" << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
-				cout << "|    insert     |   100000    |   1000000   |  10000000   |" << endl;
-				cout << "|      std      |";
+				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
+				std::cout << "|      std      |";
 				SET_INSERT_TEST(std, multiset, 100000);
 				SET_INSERT_TEST(std, multiset, 1000000);
 				SET_INSERT_TEST(std, multiset, 10000000);
-				cout << endl << "|     mystl     |";
+				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, multiset, 100000);
 				SET_INSERT_TEST(mystl, multiset, 1000000);
 				SET_INSERT_TEST(mystl, multiset, 10000000);
-				cout << endl;
-				cout << "|---------------|-------------|-------------|-------------|" << endl;
+				std::cout << std::endl;
+				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				cout << "[------------- End container test : multiset -------------]" << endl;
+				std::cout << "[------------- End container test : multiset -------------]" << std::endl;
 			}
 		}
 	}
 }
-#endif // !MYTINYSTL_SET_TEST_H
+#endif // !MYTINYSTL_SET_TEST_H_
 
