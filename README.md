@@ -2,7 +2,7 @@ MyTinySTL
 =======
    这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，也加入了一些c++标准库中的内容。这个项目仅作为学习用途，若要下载运行，要将解决方案配置为`Release`。如发现错误，还请指出。
     
-   编译环境：Visual Studio 2015 (ps: 建议内存大小: 8G 以上)
+   编译环境：Visual Studio 2015  (ps: 建议内存大小: 8G 以上)
     
    以下介绍具体的实现内容。
   
@@ -74,9 +74,26 @@ ___
       * logical_and
       * logical_or
       * logical_not
-   * 
+   * 证同、选择、投影
+      * identity
+      * selectfirst
+      * selectsecond
+      * projectfirst
+      * projectsecond
+   `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(哈希表的位置)，并对一些内置型别做了特化处理。
+   
 ##容器
-
+   以下列出容器以及它们的主要 API，详情请到链接中查看。
+   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/vector.h)
+      * constructor
+         * vector()
+      * destructor
+      * operator==
+      * Iterators
+      * Capacity
+      * Element access
+      * Modifiers
+      * Allocator
 
 ##算法
 
