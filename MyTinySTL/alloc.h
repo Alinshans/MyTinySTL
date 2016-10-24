@@ -1,62 +1,12 @@
 #ifndef MYTINYSTL_ALLOC_H_
 #define MYTINYSTL_ALLOC_H_
 
-// 这个头文件包含一个类 alloc，代表 MyTinySTL 默认的空间配置器
+// 这个头文件包含一个类 alloc，代表 mystl 默认的空间配置器
 
 #include <cstdlib>	//for malloc/free
-#include <iostream>	//for cerr
+#include <iostream>	
 
-namespace MyTinySTL {
-
-#if !defined(_THROW_BAD_ALLOC)
-#define _THROW_BAD_ALLOC \
-	do {\
-	std::cerr << "out of memory" << std::endl;\
-	exit(1);\
-	} while (0);\
-
-	//// 空间配置类 _alloc
-	//// 处理内存较大，超过128 bytes时，内存的分配与回收
-	//// 直接调用 C 函数 malloc(), free() 处理
-	//class _alloc {
-	//private:
-	//	//oom: out of memory
-	//	static void* oom_malloc(size_t);
-	//	static void (*__oom_handler)();	// 
-
-	//public:
-	//	static void* allocate(size_t n) {	// 分配大小为 n 的内存
-	//		void* result = malloc(n);	
-	//		if (result == 0)	result = oom_malloc(n);	//内存不足时，调用 oom_malloc
-	//		return result;
-	//	}
-
-	//	static void deallocate(void *p, size_t) {	// 释放内存
-	//		free(p);
-	//	}
-
-	//	//指定自己的out-of-memory handler
-	//	static void(*set_malloc_handler(void(*f)()))(){
-	//		void(*old)() = __oom_handler;
-	//		__oom_handler = f;
-	//		return old;
-	//	}
-	//};
-
-	//void (*_alloc::__oom_handler)() = 0;
-
-	//void * _alloc::oom_malloc(size_t n) {
-	//	void (*my_malloc_handler)();
-	//	void * result;
-	//	for (;;) {	//不断尝试释放、配置、再释放、再配置……
-	//		my_malloc_handler = __oom_handler;
-	//		if (my_malloc_handler == 0) { _THROW_BAD_ALLOC; }
-	//		(*my_malloc_handler)();	//调用处理例程，企图释放内存
-	//		result = malloc(n);	//再次尝试分配内存
-	//		if (result)	return result;
-	//	}
-	//}
-#endif // !_THROW_BAD_ALLOC
+namespace mystl {
 
 	// 共用体: FreeList
 	// 采用链表的方式管理内存碎片，分配与回收小内存区块
@@ -71,7 +21,7 @@ namespace MyTinySTL {
 	enum { ENFreeLists = 16 };	// free list 个数
 
 	// 空间配置类 alloc
-	// 如果内存较大，超过128 bytes，直接调用 malloc(), free()
+	// 如果内存较大，超过 128 bytes，直接调用 malloc, free
 	// 当内存较小时，以内存池管理，每次配置一大块内存，并维护对应的自由链表
 	class alloc {
 	private:
@@ -234,7 +184,8 @@ namespace MyTinySTL {
 						return chunk_alloc(size, nobj); //递归调用自己，修正 nobj
 					}
 					end_free = 0; //到处都没有内存可用了
-					_THROW_BAD_ALLOC;
+					std::cerr << "out of memory" << std::endl; 
+					std::exit(1); 
 				}
 			}
 			end_free = start_free + bytes_to_get;
