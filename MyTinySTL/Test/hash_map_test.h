@@ -34,6 +34,7 @@ namespace mystl {
 				mystl::hash_map<int, int> hm10(std::move(hm2));
 				mystl::hash_map<int, int> hm11 = hm3;
 				mystl::hash_map<int, int> hm12 = std::move(hm3);
+				hm12.~hash_map();
 
 				MAP_FUN_AFTER(hm1, hm1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(hm1, hm1.insert(PAIR(5, 5)));
@@ -101,6 +102,7 @@ namespace mystl {
 				mystl::hash_multimap<int, int> hm10(std::move(hm2));
 				mystl::hash_multimap<int, int> hm11 = hm3;
 				mystl::hash_multimap<int, int> hm12 = std::move(hm3);
+				hm12.~hash_multimap();
 
 				MAP_FUN_AFTER(hm1, hm1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(hm1, hm1.insert(PAIR(5, 5)));
