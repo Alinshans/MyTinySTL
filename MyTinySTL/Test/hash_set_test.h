@@ -1,13 +1,11 @@
 #ifndef MYTINYSTL_HASH_SET_TEST_H_
 #define MYTINYSTL_HASH_SET_TEST_H_
 
-#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
-
 // hash_set test : 测试 hash_set,hash_multiset 的 API 与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
-#include <hash_set>
+#include <unordered_set>
 
 #include "..\hash_set.h"
 #include "set_test.h"
@@ -68,9 +66,9 @@ namespace mystl {
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
 				std::cout << "|      std      |";
-				SET_INSERT_TEST(std, hash_set, 100000);
-				SET_INSERT_TEST(std, hash_set, 1000000);
-				SET_INSERT_TEST(std, hash_set, 10000000);
+				SET_INSERT_TEST(std, unordered_set, 100000);
+				SET_INSERT_TEST(std, unordered_set, 1000000);
+				SET_INSERT_TEST(std, unordered_set, 10000000);
 				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, hash_set, 100000);
 				SET_INSERT_TEST(mystl, hash_set, 1000000);
@@ -132,9 +130,9 @@ namespace mystl {
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
 				std::cout << "|      std      |";
-				SET_INSERT_TEST(std, hash_multiset, 100000);
-				SET_INSERT_TEST(std, hash_multiset, 1000000);
-				SET_INSERT_TEST(std, hash_multiset, 10000000);
+				SET_INSERT_TEST(std, unordered_multiset, 100000);
+				SET_INSERT_TEST(std, unordered_multiset, 1000000);
+				SET_INSERT_TEST(std, unordered_multiset, 10000000);
 				std::cout << std::endl << "|     mystl     |";
 				SET_INSERT_TEST(mystl, hash_multiset, 100000);
 				SET_INSERT_TEST(mystl, hash_multiset, 1000000);
