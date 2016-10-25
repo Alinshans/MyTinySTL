@@ -69,6 +69,8 @@ namespace mystl {
 		map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
 		map& operator=(map&& rhs) { t_ = std::move(rhs.t_); return *this; }
 
+		~map() {}
+
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
 		value_compare value_comp() const { return value_compare(t_.key_comp()); }
@@ -219,15 +221,16 @@ namespace mystl {
 		// 构造、复制、移动函数
 		multimap() :t_() {}
 
+		template <class InputIterator>
+		multimap(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
+		
 		multimap(const multimap& rhs) :t_(rhs.t_) {}
 		multimap(multimap&& rhs) :t_(std::move(rhs.t_)) {}
 
 		multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
 		multimap& operator=(multimap&& rhs) { t = std::move(rhs.t_); return *this; }
 
-		template <class InputIterator>
-		multimap(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
-		
+		~multimap() {}
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
