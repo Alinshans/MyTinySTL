@@ -124,7 +124,7 @@ namespace mystl {
 			}
 
 
-			void resize(size_type hint) { ht_.resize(hint); }
+			void reserve(size_type hint) { ht_.reserve(hint); }
 			size_type bucket_count() const { return ht_.bucket_count(); }
 			size_type max_bucket_count() const { return ht_.max_bucket_count(); }
 			size_type elems_in_bucket(size_type n)const { return ht_.elems_in_bucket(n); }
@@ -274,7 +274,7 @@ namespace mystl {
 				return ht_.equal_range(key);
 			}
 
-			void resize(size_type hint) { ht_.resize(hint); }
+			void reserve(size_type hint) { ht_.reserve(hint); }
 			size_type bucket_count() const { return ht_.bucket_count(); }
 			size_type max_bucket_count() const { return ht_.max_bucket_count(); }
 			size_type elems_in_bucket(size_type n)const { return ht_.elems_in_bucket(n); }
