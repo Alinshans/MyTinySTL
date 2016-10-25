@@ -1,6 +1,6 @@
 MyTinySTL
 =======
-   这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，也加入了一些c++标准库中的内容。这个项目仅作为学习用途，若要下载运行，要将解决方案配置为`Release`。如发现错误，还请指出。
+   这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，加入了一些c++标准库中的内容，也有部分作了修改。这个项目仅作为**学习用途**，若要下载运行，要将解决方案配置为`Release`。如发现错误，还请指出。
     
    编译环境：Visual Studio 2015  (ps: 建议内存大小: 8G 以上)
     
@@ -372,7 +372,8 @@ ___
       * upper_bound
 
 ##配接器
- ###container adapters
+
+###container adapters
    * [stack](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/stack.h) 
       * constructor
       * operator=
@@ -413,7 +414,8 @@ ___
          * pop
          * clear
          * swap
- ###iterator adapters
-      * [reverse_iterator](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/reverse_iterator.h)
-      `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
+         
+###iterator adapters
+   * [reverse_iterator](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/reverse_iterator.h)
+   `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
       
