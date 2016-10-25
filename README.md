@@ -26,8 +26,8 @@ MyTinySTL
   * deque
   * map
   * set
-  * hash_set
   * hash_map
+  * hash_set
 * [算法](#算法)
   * 基本算法
   * 数值算法
@@ -80,21 +80,110 @@ ___
       * selectsecond
       * projectfirst
       * projectsecond
-   `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(哈希表的位置)，并对一些内置型别做了特化处理。
+   `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(在哈希表中的位置)，并对一些内置型别做了特化处理。
    
 ##容器
-   以下列出容器以及它们的主要 API，详情请到链接中查看。
+   以下列出主要容器以及它们主要的 API，详情请到项目中查看。
    * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/vector.h)
       * constructor
-         * vector()
       * destructor
-      * operator==
+      * operator=
+      * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
+      * Capacity
+         * size
+         * max_size
+         * resize
+         * capacity
+         * empty
+         * reserve
+      * Element access
+         * operator[]
+         * at
+         * front
+         * back
+      * Modifiers
+         * assign
+         * push_back
+         * pop_back
+         * insert
+         * erase
+         * clear
+         * swap
+   * [list](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/list.h)
+      * constructor
+      * destructor
+      * operator=
       * Iterators
       * Capacity
       * Element access
       * Modifiers
-      * Allocator
-
+      * Operations
+   * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/deque.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+      * Capacity
+      * Element access
+      * Modifiers
+      * Operations
+   * [map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/map.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+      * Capacity
+      * Element access
+      * Modifiers
+      * Operations
+   * [set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+      * Capacity
+      * Element access
+      * Modifiers
+      * Operations
+   * [hash_map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_map.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+      * Capacity
+      * Element access
+      * Modifiers
+      * Operations
+   * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+         * begin
+         * end
+      * Capacity
+         * size
+         * max_size
+         * empty
+      * Modifiers
+         * insert 
+         * insert_noresize
+         * erase
+         * clear
+      * Operations
+         * find
+         * count
+         * equal_range
+         * swap
+      * Buckets
+         * reserve
+         * bucker_count
+         * max_bucket_count
+         * elems_in_bucket
 ##算法
 
 
