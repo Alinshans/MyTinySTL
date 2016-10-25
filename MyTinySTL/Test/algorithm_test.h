@@ -447,7 +447,7 @@ namespace mystl {
 				EXPECT_EQ(std::binary_search(arr1, arr1 + 5, 1),
 					mystl::binary_search(arr1, arr1 + 5, 1));
 				EXPECT_EQ(std::binary_search(arr1, arr1 + 5, 6),
-					mystl::binary_search(arr1, arr1 + 5, 6))
+					mystl::binary_search(arr1, arr1 + 5, 6));
 			}
 
 			TEST(count_test) {
@@ -507,7 +507,7 @@ namespace mystl {
 				EXPECT_EQ(std::find_first_of(arr1, arr1 + 5, arr2, arr2 + 3),
 					mystl::find_first_of(arr1, arr1 + 5, arr2, arr2 + 3));
 				EXPECT_EQ(std::find_first_of(arr1, arr1 + 5, arr3, arr3 + 3, std::equal_to<int>()),
-					mystl::find_first_of(arr1, arr1 + 5, arr3, arr3 + 3, std::equal_to<int>()))
+					mystl::find_first_of(arr1, arr1 + 5, arr3, arr3 + 3, std::equal_to<int>()));
 			}
 
 			TEST(find_if_test) {
