@@ -52,7 +52,7 @@ namespace mystl {
 				FUN_VALUE(hm1.max_size());
 				FUN_VALUE(hm1.bucket_count());
 				FUN_VALUE(hm1.max_bucket_count());
-				MAP_FUN_AFTER(hm1, hm1.resize(1000));
+				MAP_FUN_AFTER(hm1, hm1.reserve(1000));
 				FUN_VALUE(hm1.size());
 				FUN_VALUE(hm1.bucket_count());
 				FUN_VALUE(hm1.elems_in_bucket(1));
@@ -119,7 +119,7 @@ namespace mystl {
 				FUN_VALUE(hm1.max_size());
 				FUN_VALUE(hm1.bucket_count());
 				FUN_VALUE(hm1.max_bucket_count());
-				MAP_FUN_AFTER(hm1, hm1.resize(1000));
+				MAP_FUN_AFTER(hm1, hm1.reserve(1000));
 				FUN_VALUE(hm1.size());
 				FUN_VALUE(hm1.bucket_count());
 				FUN_VALUE(hm1.elems_in_bucket(1));
