@@ -38,6 +38,7 @@ ___
   * container adapters
     * stack
     * queue
+    * priority_queue
   * iterator adapters
     * reverse_iterator
     
@@ -182,7 +183,6 @@ ___
          * swap
    * [map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/map.h)（映射）
       * constructor
-      * destructor
       * operator=
       * Iterators
          * begin
@@ -208,7 +208,6 @@ ___
          * equal_range
    * [set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set.h)（集合）
       * constructor
-      * destructor
       * operator=
       * Iterators
          * begin
@@ -235,7 +234,6 @@ ___
          * equal_range
    * [hash_map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_map.h)（哈希映射）
       * constructor
-      * destructor
       * operator=
       * Iterators
          * begin
@@ -263,7 +261,6 @@ ___
          * elems_in_bucket
    * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)（哈希h集合）
       * constructor
-      * destructor
       * operator=
       * Iterators
          * begin
@@ -289,11 +286,134 @@ ___
          * elems_in_bucket
          
 ##算法
-   * 基本算法
-   
-   * 基本算法
-   * 基本算法
-   * 基本算法
+   * [基本算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algobase.h)（13个） 定义在 [algobase.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algobase.h)
+      * copy
+      * copy_backward
+      * copy_if
+      * copy_n
+      * equal
+      * fill
+      * fill_n
+      * iter_swap
+      * lexicographical_compare
+      * max
+      * min
+      * mismatch
+      * swap
+   * [数值算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/numeric.h)（5个） 定义在 [numeric.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/numeric.h)
+      * accumulate
+      * adjacent_difference
+      * inner_product
+      * iota
+      * partial_sum
+   * [set 算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set_algo.h)（4个） 定义在 [set_algo.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/heap_algo.h)
+      * set_difference
+      * set_intersection
+      * set_symmetric_difference
+      * set_union
+   * [heap 算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/heap_algo.h)（4个） 定义在 [heap_algo.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/heap_algo.h)
+      * make_heap
+      * pop_heap
+      * push_heap
+      * sort_heap
+   * [其它算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algo.h)（53个） 定义在 [algo.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algo.h)
+      * adjacent_find
+      * all_of
+      * any_of
+      * binary_search
+      * count 
+      * count_if
+      * equal_range
+      * find
+      * find_end
+      * find_first_of
+      * find_if
+      * find_if_not
+      * for_each
+      * generate
+      * generate_n
+      * includes
+      * inplace_merge
+      * is_heap
+      * is_sorted
+      * lower_bound
+      * max_element
+      * median
+      * merge
+      * min_elememt
+      * next_permutation
+      * none_of
+      * nth_element
+      * partial_sort
+      * partial_sort_copy
+      * partition
+      * partition_copy
+      * prev_permutation
+      * random_shuffle
+      * remove
+      * remove_copy
+      * remove_copy_if
+      * remove_if
+      * replace
+      * replace_copy
+      * replace_copy_if
+      * replace_if
+      * reverse
+      * reverse_copy
+      * rotate
+      * rotate_copy
+      * search
+      * search_n
+      * sort
+      * swap_ranges
+      * transform
+      * unique
+      * unique_copy
+      * upper_bound
 
 ##配接器
-
+ ###container adapters
+   * [stack](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/stack.h) 
+      * constructor
+      * operator=
+      * Element access
+         * top
+      * Capacity
+         * empty
+         * size
+      * Modifiers
+         * push
+         * pop
+         * clear
+         * swap
+   * [queue](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/queue.h)
+      * constructor
+      * operator=
+      * Element access
+         * front
+         * back
+      * Capacity
+         * empty
+         * size
+      * Modifiers
+         * push
+         * pop
+         * clear
+         * swap
+   * [priority_queue](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/queue.h)
+      * constructor
+      * operator=
+      * Element access
+         * top
+      * Capacity
+         * empty
+         * size
+      * Modifiers
+         * push
+         * pop
+         * clear
+         * swap
+ ###iterator adapters
+      * [reverse_iterator](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/reverse_iterator.h)
+      `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
+      
