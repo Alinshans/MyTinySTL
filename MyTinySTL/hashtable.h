@@ -263,11 +263,11 @@ namespace mystl {
 
 		// 调整容器相关操作
 		pair<iterator, bool> insert_unique(const value_type& value) {
-			resize(element_nums_ + 1);
+			reserve(element_nums_ + 1);
 			return insert_unique_noresize(value);
 		}
 		iterator insert_equal(const value_type& value) {
-			resize(element_nums_ + 1);
+			reserve(element_nums_ + 1);
 			return insert_equal_noresize(value);
 		}
 
@@ -299,7 +299,7 @@ namespace mystl {
 		void erase(const_iterator first, const_iterator last);
 		void clear();
 
-		void resize(size_type num_elements_hint);
+		void reserve(size_type num_elements_hint);
 
 		// hashtable 相关操作
 		reference find_or_insert(const value_type& value);
@@ -457,7 +457,7 @@ namespace mystl {
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
 		insert_unique(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
 		auto n = static_cast<size_type>(distance(first, last));
-		resize(element_nums_ + n);	//调整大小
+		reserve(element_nums_ + n);	//调整大小
 		for (; n > 0; --n, ++first)
 			insert_unique_noresize(*first);
 	}
@@ -468,7 +468,7 @@ namespace mystl {
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
 		insert_equal(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
 		auto n = static_cast<size_type>(distance(first, last));
-		resize(element_nums_ + n);	//调整大小
+		reserve(element_nums_ + n);	//调整大小
 		for (; n > 0; --n, ++first)
 			insert_equal_noresize(*first);
 	}
@@ -589,7 +589,7 @@ namespace mystl {
 	// 重新配置 hashtable 大小
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
-		resize(size_type num_elements_hint) {
+		reserve(size_type num_elements_hint) {
 		// 若新增元素后，元素个数大于 bucket vector 的大小，就重建表格
 		const auto old_num = buckets_.size();
 		if (num_elements_hint > old_num) {	//如果需要重建
@@ -627,7 +627,7 @@ namespace mystl {
 	typename hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::reference 
 		hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::
 		find_or_insert(const value_type & value) {
-		resize(element_nums_ + 1);
+		reserve(element_nums_ + 1);
 		auto n = __bkt_num(value);
 		auto first = buckets_[n];
 		for (auto cur = first; cur; cur = cur->next)
