@@ -6,7 +6,7 @@ MyTinySTL
     
    以下介绍具体的实现内容。
   
-=======
+___
 ##目录
 * [配置器](#配置器)
   * allocator
@@ -79,7 +79,8 @@ ___
       * selectfirst
       * selectsecond
       * projectfirst
-      * projectsecond
+      * projectsecond 
+      
    `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(在哈希表中的位置)，并对一些内置型别做了特化处理。
    
 ##容器
