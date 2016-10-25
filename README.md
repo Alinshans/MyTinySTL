@@ -48,7 +48,7 @@ ___
 ##配置器
    包括了 `allocator` 和 `constructor`，分别定义在 [allocator.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/allocator.h) 和 [construct.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/construct.h) 中。<br>
    `allocator` 负责空间的配置与回收，对应两个成员函数： `allocate` 和 `deallocate`。<br>
-   `construct` 负责对象的构造与析构，对应两个全局函数： `construct` 和 `destroy`。
+   `constructor` 负责对象的构造与析构，对应两个全局函数： `construct` 和 `destroy`。
    
 ##迭代器
    `iterator`，连接着容器与算法，是一种`泛型指针`，定义在 [iterator.h](https://github.com/Alinshans/MyTinySTL/edit/master/MyTinySTL/iterator.h) 中。每个容器都附带专属的迭代器，是一种重载了 `operator*`，`operator->`，`operator++`，`operator--` 等操作的模板类。
