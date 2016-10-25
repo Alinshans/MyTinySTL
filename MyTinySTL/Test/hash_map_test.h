@@ -1,13 +1,11 @@
 #ifndef MYTINYSTL_HASH_MAP_TEST_H_
 #define MYTINYSTL_HASH_MAP_TEST_H_
 
-#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
-
 // hash_map test : 测试 hash_map,hash_multimap 的 API 与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
-#include <hash_map>
+#include <unordered_map>
 
 #include "..\hash_map.h"
 #include "map_test.h"
@@ -71,9 +69,9 @@ namespace mystl {
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
 				std::cout << "|      std      |";
-				MAP_INSERT_TEST(std, hash_map, 100000);
-				MAP_INSERT_TEST(std, hash_map, 1000000);
-				MAP_INSERT_TEST(std, hash_map, 10000000);
+				MAP_INSERT_TEST(std, unordered_map, 100000);
+				MAP_INSERT_TEST(std, unordered_map, 1000000);
+				MAP_INSERT_TEST(std, unordered_map, 10000000);
 				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, hash_map, 100000);
 				MAP_INSERT_TEST(mystl, hash_map, 1000000);
@@ -138,9 +136,9 @@ namespace mystl {
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
 				std::cout << "|      std      |";
-				MAP_INSERT_TEST(std, hash_multimap, 100000);
-				MAP_INSERT_TEST(std, hash_multimap, 1000000);
-				MAP_INSERT_TEST(std, hash_multimap, 10000000);
+				MAP_INSERT_TEST(std, unordered_multimap, 100000);
+				MAP_INSERT_TEST(std, unordered_multimap, 1000000);
+				MAP_INSERT_TEST(std, unordered_multimap, 10000000);
 				std::cout << std::endl << "|     mystl     |";
 				MAP_INSERT_TEST(mystl, hash_multimap, 100000);
 				MAP_INSERT_TEST(mystl, hash_multimap, 1000000);
