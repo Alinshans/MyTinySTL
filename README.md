@@ -81,11 +81,11 @@ ___
       * projectfirst
       * projectsecond 
       
-   `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(在哈希表中的位置)，并对一些内置型别做了特化处理。
+  `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(在哈希表中的位置)，并对一些内置型别做了特化处理。
    
 ##容器
    以下列出主要容器以及它们主要的 API，详情请到项目中查看。
-   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/vector.h)
+   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/vector.h)（向量）
       * constructor
       * destructor
       * operator=
@@ -116,7 +116,7 @@ ___
          * swap
       * Operations
          * reverse
-   * [list](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/list.h)
+   * [list](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/list.h)（双向链表）
       * constructor
       * destructor
       * operator=
@@ -151,7 +151,7 @@ ___
          * merge
          * sort
          * reverse
-   * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/deque.h)
+   * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/deque.h)（双端队列）
       * constructor
       * destructor
       * operator=
@@ -180,7 +180,7 @@ ___
          * clear
          * resize
          * swap
-   * [map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/map.h)
+   * [map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/map.h)（映射）
       * constructor
       * destructor
       * operator=
@@ -206,7 +206,7 @@ ___
          * lower_bound
          * upper_bound
          * equal_range
-   * [set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set.h)
+   * [set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set.h)（集合）
       * constructor
       * destructor
       * operator=
@@ -233,7 +233,7 @@ ___
          * lower_bound
          * upper_bound
          * equal_range
-   * [hash_map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_map.h)
+   * [hash_map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_map.h)（哈希映射）
       * constructor
       * destructor
       * operator=
@@ -261,7 +261,7 @@ ___
          * bucker_count
          * max_bucket_count
          * elems_in_bucket
-   * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)
+   * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)（哈希h集合）
       * constructor
       * destructor
       * operator=
@@ -289,7 +289,11 @@ ___
          * elems_in_bucket
          
 ##算法
-
+   * 基本算法
+   
+   * 基本算法
+   * 基本算法
+   * 基本算法
 
 ##配接器
 
