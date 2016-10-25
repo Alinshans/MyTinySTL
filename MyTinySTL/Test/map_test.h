@@ -71,6 +71,7 @@ namespace mystl {
 				mystl::map<int, int> m5(std::move(m2));
 				mystl::map<int, int> m6 = m3;
 				mystl::map<int, int> m7 = std::move(m3);
+				m7.~map();
 
 				MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -128,6 +129,7 @@ namespace mystl {
 				mystl::multimap<int, int> m5(std::move(m2));
 				mystl::multimap<int, int> m6 = m3;
 				mystl::multimap<int, int> m7 = std::move(m3);
+				m7.~multimap();
 
 				MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
