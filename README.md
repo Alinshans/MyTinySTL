@@ -94,12 +94,10 @@ ___
          * rbegin
          * rend
       * Capacity
+         * empty
          * size
          * max_size
-         * resize
          * capacity
-         * empty
-         * reserve
       * Element access
          * operator[]
          * at
@@ -112,52 +110,156 @@ ___
          * insert
          * erase
          * clear
+         * resize
+         * reserve
          * swap
+      * Operations
+         * reverse
    * [list](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/list.h)
       * constructor
       * destructor
       * operator=
       * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
       * Capacity
+         * empty
+         * size
+         * max_size
       * Element access
+         * front
+         * back
       * Modifiers
+         * assign
+         * push_front
+         * push_back
+         * pop_front
+         * pop_back
+         * insert
+         * erase
+         * clear
+         * resize
+         * swap
       * Operations
+         * splice
+         * remove
+         * remove_if
+         * unique
+         * merge
+         * sort
+         * reverse
    * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/deque.h)
       * constructor
       * destructor
       * operator=
       * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
       * Capacity
+         * empty
+         * size
+         * max_size
       * Element access
+         * operator[]
+         * at
+         * front
+         * back   
       * Modifiers
-      * Operations
+         * assign
+         * push_front
+         * push_back
+         * pop_front
+         * pop_back
+         * insert
+         * erase
+         * clear
+         * resize
+         * swap
    * [map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/map.h)
       * constructor
       * destructor
       * operator=
       * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
       * Capacity
+         * empty
+         * size
+         * max_size
       * Element access
+         * operator[]
       * Modifiers
+         * insert
+         * erase
+         * clear
+         * swap
       * Operations
+         * find
+         * count
+         * lower_bound
+         * upper_bound
+         * equal_range
    * [set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/set.h)
       * constructor
       * destructor
       * operator=
       * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
       * Capacity
+         * empty
+         * size
+         * max_size
       * Element access
+         * operator[]
+         * at
       * Modifiers
+         * insert
+         * erase
+         * clear
+         * swap
       * Operations
+         * find
+         * count
+         * lower_bound
+         * upper_bound
+         * equal_range
    * [hash_map](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_map.h)
       * constructor
       * destructor
       * operator=
       * Iterators
+         * begin
+         * end
       * Capacity
+         * empty
+         * size
+         * max_size
       * Element access
+         * operator[]
       * Modifiers
+         * insert 
+         * insert_noresize
+         * erase
+         * clear
+         * swap
       * Operations
+         * find
+         * count
+         * equal_range
+      * Buckets
+         * reserve
+         * bucker_count
+         * max_bucket_count
+         * elems_in_bucket
    * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)
       * constructor
       * destructor
@@ -174,16 +276,17 @@ ___
          * insert_noresize
          * erase
          * clear
+         * swap
       * Operations
          * find
          * count
          * equal_range
-         * swap
       * Buckets
          * reserve
          * bucker_count
          * max_bucket_count
          * elems_in_bucket
+         
 ##算法
 
 
