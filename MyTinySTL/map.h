@@ -57,7 +57,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制、移动函数
+		// 构造、复制、移动、析构函数
 		map() :t_() {}	
 
 		template <class InputIterator>
@@ -218,7 +218,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制、移动函数
+		// 构造、复制、移动、析构函数
 		multimap() :t_() {}
 
 		template <class InputIterator>
