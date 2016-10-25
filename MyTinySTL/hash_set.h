@@ -44,7 +44,7 @@ namespace mystl {
 			allocator_type get_allocator() const { return ht_.get_allocator(); }
 
 		public:
-			// 构造、复制、移动函数
+			// 构造、复制、移动、析构函数
 			hash_set() :ht_(100, hasher(), key_equal()) {}	// 缺省使用大小为 100 的表格
 
 			explicit hash_set(size_type n) :ht_(n, hasher(), key_equal()) {}
@@ -56,6 +56,8 @@ namespace mystl {
 
 			hash_set& operator=(const hash_set& rhs) { ht_ = rhs.ht_; return *this; }
 			hash_set& operator=(hash_set&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+
+			~hash_set() {}
 
 			// 全部使用 hashtable 的 insert_unique，键值不允许重复
 			template <class InputIterator>
@@ -184,7 +186,7 @@ namespace mystl {
 			allocator_type get_allocator() const { return ht_.get_allocator(); }
 
 		public:
-			// 构造、复制、移动函数
+			// 构造、复制、移动、析构函数
 			hash_multiset() :ht_(100, hasher(), key_equal()) {}	// 缺省使用大小为 100 的表格
 
 			explicit hash_multiset(size_type n) :ht_(n, hasher(), key_equal()) {}
@@ -196,6 +198,8 @@ namespace mystl {
 
 			hash_multiset& operator=(const hash_multiset& rhs) { ht_ = rhs.ht_; return *this; }
 			hash_multiset& operator=(hash_multiset&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+
+			~hash_multiset() {}
 
 			// 全部使用 insert_equal，键值允许重复
 			template <class InputIterator>
