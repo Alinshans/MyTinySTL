@@ -14,7 +14,7 @@
 namespace mystl {
 	namespace test {
 		namespace hash_set_test {
-
+			
 			void hash_set_test() {
 				std::cout << "[=========================================================]" << std::endl;
 				std::cout << "[------------- Run container test : hash_set -------------]" << std::endl;
@@ -32,7 +32,6 @@ namespace mystl {
 				mystl::hash_set<int> hs10(std::move(hs2));
 				mystl::hash_set<int> hs11 = hs3;
 				mystl::hash_set<int> hs12 = std::move(hs3);
-				hs12.~hash_set();
 
 				FUN_AFTER(hs1, hs1.insert(a, a + 5));
 				FUN_AFTER(hs1, hs1.insert(5));
@@ -96,7 +95,6 @@ namespace mystl {
 				mystl::hash_multiset<int> hs10(std::move(hs2));
 				mystl::hash_multiset<int> hs11 = hs3;
 				mystl::hash_multiset<int> hs12 = std::move(hs3);
-				hs12.~hash_multiset();
 
 				FUN_AFTER(hs1, hs1.insert(a, a + 5));
 				FUN_AFTER(hs1, hs1.insert(5));
@@ -140,7 +138,7 @@ namespace mystl {
 				std::cout << std::endl;
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[----------- Run container test : hash_multiset ----------]" << std::endl;
+				std::cout << "[----------- End container test : hash_multiset ----------]" << std::endl;
 			}
 		}
 	}
