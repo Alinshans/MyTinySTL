@@ -43,7 +43,6 @@ namespace mystl {
 				mystl::set<int> s5(std::move(s2));
 				mystl::set<int> s6 = s3;
 				mystl::set<int> s7 = std::move(s3);
-				s7.~set();
 
 				FUN_AFTER(s1, s1.insert(a, a + 5));
 				FUN_AFTER(s1, s1.insert(5));
@@ -97,8 +96,7 @@ namespace mystl {
 				mystl::multiset<int> s5(std::move(s2));
 				mystl::multiset<int> s6 = s3;
 				mystl::multiset<int> s7 = std::move(s3);
-				s7.~multiset();
-
+			
 				FUN_AFTER(s1, s1.insert(a, a + 5));
 				FUN_AFTER(s1, s1.insert(5));
 				FUN_AFTER(s1, s1.insert(s1.end(), 5));
