@@ -17,6 +17,8 @@ namespace mystl {
 	struct __hashtable_node {
 		__hashtable_node* next;	//指向下一个节点
 		T value;	//储存实值
+
+		__hashtable_node() :next(nullptr), value(0) {}
 	};
 
 	// 以下为 hashtable 与其迭代器的声明
@@ -224,7 +226,7 @@ namespace mystl {
 		bucket_type buckets_;	//以 vector 完成
 
 	public:
-		// 构造，复制，析构，移动函数
+		// 构造、复制、移动、析构函数
 		explicit hashtable(size_type n, const HashFcn& hf = HashFcn(), 
 			const EqualKey& eqk = EqualKey(),
 			const ExtractKey exk = ExtractKey())
@@ -574,16 +576,18 @@ namespace mystl {
 	// 清空 hashtable
 	template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 	void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::clear() {
-		for (size_type i = 0; i < buckets_.size(); ++i) {
-			auto cur = buckets_[i];
-			while (cur != nullptr) {
-				auto next = cur->next;
-				__delete_node(cur);	// 删除所有节点
-				cur = next;
+		if (element_nums_ != 0) {
+			for (size_type i = 0; i < buckets_.size(); ++i) {
+				node* cur = buckets_[i];
+				while (cur != nullptr) {
+					node* next = cur->next;
+					__delete_node(cur);	// 删除所有节点
+					cur = next;
+				}
+				buckets_[i] = nullptr;
 			}
-			buckets_[i] = nullptr;
+			element_nums_ = 0;
 		}
-		element_nums_ = 0;
 	}
 
 	// 重新配置 hashtable 大小
@@ -595,11 +599,11 @@ namespace mystl {
 		if (num_elements_hint > old_num) {	//如果需要重建
 			const auto n = __next_size(num_elements_hint);	//找到下一个质数
 			if (n > old_num) {
-				bucket_type tmp(n, static_cast<node*>(0));	//建立新的 buckets
+				bucket_type tmp(n);	//建立新的 buckets
 				try {
 					for (size_type index = 0; index < old_num; ++index) {
 						auto first = buckets_[index];	
-						while (first) {
+						while (first != nullptr) {
 							auto new_bucket = __bkt_num(first->value, n);
 							buckets_[index] = first->next;	//旧的 buckets_ 指向下一个节点
 							first->next = tmp[new_bucket];	//当前节点插入到新的 bucket
@@ -611,7 +615,7 @@ namespace mystl {
 				}
 				catch (...) {
 					for (size_type index = 0; index < tmp.size(); ++index) {
-						while (tmp[index]) {
+						while (tmp[index] != nullptr) {
 							auto next = tmp[index]->next;
 							__delete_node(tmp[index]);
 							tmp[index] = next;
@@ -739,7 +743,7 @@ namespace mystl {
 		__hashtable_initialize(size_type n) {
 		const auto bucket_nums = __next_size(n);
 		buckets_.reserve(bucket_nums);
-		buckets_.insert(buckets_.end(), bucket_nums, static_cast<node*>(0));
+		buckets_.insert(buckets_.end(), bucket_nums, static_cast<node*>(nullptr));
 		element_nums_ = 0;
 	}
 
