@@ -43,7 +43,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制、移动、析构函数
+		// 构造、复制、移动函数
 		set() :t_() {}
 		
 		template <class InputIterator>
@@ -54,8 +54,6 @@ namespace mystl {
 
 		set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
 		set& operator=(set&& rhs) { t_ = std::move(rhs.t_); return *this; }
-
-		~set() {}
 
 		// 相关接口操作
 		key_compare key_comp() const { return t_.key_comp(); }
@@ -180,7 +178,7 @@ namespace mystl {
 		typedef typename rep_type::allocator_type	allocator_type;
 
 	public:
-		// 构造、复制、移动、析构函数
+		// 构造、复制、移动函数
 		multiset() :t_() {}
 		
 		template <class InputIterator>
@@ -191,8 +189,6 @@ namespace mystl {
 
 		multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
 		multiset& operator=(multiset&& rhs) { t = std::move(rhs.t_); return *this; }
-
-		~multiset() {}
 
 		// 相关接口
 		key_compare key_comp() const { return t_.key_comp(); }
