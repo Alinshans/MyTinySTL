@@ -14,7 +14,7 @@
 namespace mystl {
 	namespace test {
 		namespace hash_map_test {
-
+			
 			void hash_map_test() {
 				std::cout << "[=========================================================]" << std::endl;
 				std::cout << "[------------- Run container test : hash_map -------------]" << std::endl;
@@ -34,7 +34,6 @@ namespace mystl {
 				mystl::hash_map<int, int> hm10(std::move(hm2));
 				mystl::hash_map<int, int> hm11 = hm3;
 				mystl::hash_map<int, int> hm12 = std::move(hm3);
-				hm12.~hash_map();
 
 				MAP_FUN_AFTER(hm1, hm1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(hm1, hm1.insert(PAIR(5, 5)));
@@ -80,7 +79,7 @@ namespace mystl {
 				std::cout << std::endl;
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[------------- Run container test : hash_map -------------]" << std::endl;
+				std::cout << "[------------- End container test : hash_map -------------]" << std::endl;
 			}
 
 			void hash_multimap_test() {
@@ -102,7 +101,6 @@ namespace mystl {
 				mystl::hash_multimap<int, int> hm10(std::move(hm2));
 				mystl::hash_multimap<int, int> hm11 = hm3;
 				mystl::hash_multimap<int, int> hm12 = std::move(hm3);
-				hm12.~hash_multimap();
 
 				MAP_FUN_AFTER(hm1, hm1.insert(v.begin(), v.end()));
 				MAP_FUN_AFTER(hm1, hm1.insert(PAIR(5, 5)));
@@ -148,7 +146,7 @@ namespace mystl {
 				std::cout << std::endl;
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[----------- Run container test : hash_multimap ----------]" << std::endl;
+				std::cout << "[----------- End container test : hash_multimap ----------]" << std::endl;
 			}
 		}
 	}
