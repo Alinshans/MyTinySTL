@@ -4,7 +4,9 @@ UnitTest
   测试在不同环境下的结果会有所差异，若内存过小也可能会导致测试失败。简单测试可能没有覆盖到所有的测试情况，性能测试只能大致比较 std 与 mystl 的相对情况。
 
 ___
-###
+###测试框架
+  测试框架的头文件定义在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个 class template 实现了一个简单的测试框架。使用宏掩盖复杂的封装测试过程。因为要运行所有测试，并记录下成功与失败的案例数，所以没有使用`assert`断言，而是使用了`expect`断言，保证测试的进行。
+  
 ###测试项目
   * [algorithm](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_test.h)
   * [algorithm_performance](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_performance_test.h)
