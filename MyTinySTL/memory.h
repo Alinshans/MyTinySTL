@@ -6,7 +6,6 @@
 #include "algobase.h"
 #include "allocator.h"
 #include "construct.h"
-#include "tempbuf.h"
 #include "uninitialized.h"
 
 namespace MyTinySTL {
