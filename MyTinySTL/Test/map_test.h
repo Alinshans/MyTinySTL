@@ -169,7 +169,7 @@ namespace mystl {
 				std::cout << std::endl;
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[------------- Run container test : multimap -------------]" << std::endl;
+				std::cout << "[------------- End container test : multimap -------------]" << std::endl;
 			}
 		}
 	}
