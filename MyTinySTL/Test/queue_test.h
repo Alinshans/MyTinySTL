@@ -177,7 +177,7 @@ namespace mystl {
 				std::cout << std::endl;
 				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[---------- Run container test : priority_queue ----------]" << std::endl;
+				std::cout << "[---------- End container test : priority_queue ----------]" << std::endl;
 			}
 		}
 	}
