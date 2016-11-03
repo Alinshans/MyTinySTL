@@ -8,7 +8,8 @@ MyTinySTL
    编译环境: Visual Studio 2015<br>
    (ps: 建议内存大小 8G 以上)<br>
     
-   以下介绍具体实现的内容。<br>
+    
+   以下是具体实现的内容。<br>
   
 ___
 ##目录
@@ -422,5 +423,6 @@ ___
          
 ###iterator adapters
    * [reverse_iterator](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/reverse_iterator.h)
-   `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
+   `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，
+   `operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
       
