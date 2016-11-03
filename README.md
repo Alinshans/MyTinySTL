@@ -422,5 +422,5 @@ ___
          
 ###iterator adapters
    * [reverse_iterator](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/reverse_iterator.h)
-   `reverse_iterator`是一种反向迭代器，重载了 `operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]` 等操作，变前进为后退，后退为前进。
+   `reverse_iterator`是一种反向迭代器，重载了`operator*`，`operator->`，`operator++`，`operator--`，`operator+`，`operator-`，`operator+=`，`operatpr-=`，`operator[]`等操作，变前进为后退，后退为前进。
       
