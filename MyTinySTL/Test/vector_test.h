@@ -28,13 +28,13 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms    |"; \
-				std::cout << std::setw(14) << t; \
+				std::cout << std::setw(WIDE) << t; \
 			} while(0)
 
 			void vector_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[-------------- Run container test : vector --------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[----------------- Run container test : vector -----------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::vector<int> v1;
 				mystl::vector<int> v2(10);
@@ -89,21 +89,22 @@ namespace mystl {
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|   push_back   |   1000000   |  10000000   |  100000000  |" << std::endl;
-				std::cout << "|      std      |";
-				VECTOR_PUSH_BACK_TEST(std, 1000000);
-				VECTOR_PUSH_BACK_TEST(std, 10000000);
-				VECTOR_PUSH_BACK_TEST(std, 100000000);
-				std::cout << std::endl << "|     mystl     |";
-				VECTOR_PUSH_BACK_TEST(mystl, 1000000);
-				VECTOR_PUSH_BACK_TEST(mystl, 10000000);
-				VECTOR_PUSH_BACK_TEST(mystl, 100000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|      push_back      |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
+				std::cout << "|         std         |";
+				VECTOR_PUSH_BACK_TEST(std, LEN2);
+				VECTOR_PUSH_BACK_TEST(std, LEN3);
+				VECTOR_PUSH_BACK_TEST(std, LEN4);
+				std::cout << std::endl << "|        mystl        |";
+				VECTOR_PUSH_BACK_TEST(mystl, LEN2);
+				VECTOR_PUSH_BACK_TEST(mystl, LEN3);
+				VECTOR_PUSH_BACK_TEST(mystl, LEN4);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[-------------- End container test : vector --------------]" << std::endl;
+				std::cout << "[----------------- End container test : vector -----------------]" << std::endl;
 			}
 		}
 	}
