@@ -16,9 +16,9 @@ namespace mystl {
 		namespace hash_set_test {
 			
 			void hash_set_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[------------- Run container test : hash_set -------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[---------------- Run container test : hash_set ----------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::hash_set<int> hs1;
 				mystl::hash_set<int> hs2(520);
@@ -61,27 +61,28 @@ namespace mystl {
 				auto second = *hs1.equal_range(3).second;
 				std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				SET_INSERT_TEST(std, unordered_set, 100000);
-				SET_INSERT_TEST(std, unordered_set, 1000000);
-				SET_INSERT_TEST(std, unordered_set, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				SET_INSERT_TEST(mystl, hash_set, 100000);
-				SET_INSERT_TEST(mystl, hash_set, 1000000);
-				SET_INSERT_TEST(mystl, hash_set, 10000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|       insert        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				SET_INSERT_TEST(std, unordered_set, LEN1);
+				SET_INSERT_TEST(std, unordered_set, LEN2);
+				SET_INSERT_TEST(std, unordered_set, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				SET_INSERT_TEST(mystl, hash_set, LEN1);
+				SET_INSERT_TEST(mystl, hash_set, LEN2);
+				SET_INSERT_TEST(mystl, hash_set, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[------------- End container test : hash_set -------------]" << std::endl;
+				std::cout << "[---------------- End container test : hash_set ----------------]" << std::endl;
 			}
 
 			void hash_multiset_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[----------- Run container test : hash_multiset ----------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[-------------- Run container test : hash_multiset -------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 5,4,3,2,1 };
 				mystl::hash_multiset<int> hs1;
 				mystl::hash_multiset<int> hs2(520);
@@ -124,21 +125,22 @@ namespace mystl {
 				auto second = *hs1.equal_range(3).second;
 				std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				SET_INSERT_TEST(std, unordered_multiset, 100000);
-				SET_INSERT_TEST(std, unordered_multiset, 1000000);
-				SET_INSERT_TEST(std, unordered_multiset, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				SET_INSERT_TEST(mystl, hash_multiset, 100000);
-				SET_INSERT_TEST(mystl, hash_multiset, 1000000);
-				SET_INSERT_TEST(mystl, hash_multiset, 10000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|       insert        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				SET_INSERT_TEST(std, unordered_multiset, LEN1);
+				SET_INSERT_TEST(std, unordered_multiset, LEN2);
+				SET_INSERT_TEST(std, unordered_multiset, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				SET_INSERT_TEST(mystl, hash_multiset, LEN1);
+				SET_INSERT_TEST(mystl, hash_multiset, LEN2);
+				SET_INSERT_TEST(mystl, hash_multiset, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[----------- End container test : hash_multiset ----------]" << std::endl;
+				std::cout << "[-------------- End container test : hash_multiset -------------]" << std::endl;
 			}
 		}
 	}
