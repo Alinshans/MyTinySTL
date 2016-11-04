@@ -44,13 +44,13 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms    |"; \
-				std::cout << std::setw(14) << t; \
+				std::cout << std::setw(WIDE) << t; \
 			} while(0)
 
 			void stack_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[-------------- Run container test : stack ---------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[----------------- Run container test : stack ------------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::deque<int> d1(5);
 				mystl::stack<int> s1;
@@ -88,21 +88,22 @@ namespace mystl {
 				s1.clear();
 				STACK_COUT(s1);
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|     push      |   1000000   |  10000000   |  100000000  |" << std::endl;
-				std::cout << "|      std      |";
-				STACK_PUSH_TEST(std, 1000000);
-				STACK_PUSH_TEST(std, 10000000);
-				STACK_PUSH_TEST(std, 100000000);
-				std::cout << std::endl << "|     mystl     |";
-				STACK_PUSH_TEST(mystl, 1000000);
-				STACK_PUSH_TEST(mystl, 10000000);
-				STACK_PUSH_TEST(mystl, 100000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|         push        |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
+				std::cout << "|         std         |";
+				STACK_PUSH_TEST(std, LEN2);
+				STACK_PUSH_TEST(std, LEN3);
+				STACK_PUSH_TEST(std, LEN4);
+				std::cout << std::endl << "|        mystl        |";
+				STACK_PUSH_TEST(mystl, LEN2);
+				STACK_PUSH_TEST(mystl, LEN3);
+				STACK_PUSH_TEST(mystl, LEN4);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[-------------- End container test : stack ---------------]" << std::endl;
+				std::cout << "[----------------- End container test : stack ------------------]" << std::endl;
 			}
 		}
 	}
