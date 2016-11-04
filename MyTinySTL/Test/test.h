@@ -6,7 +6,9 @@
 #include <ctime>
 #include <cstring>
 #include <iostream>
+#include <iomanip>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include <Windows.h>
@@ -455,6 +457,25 @@ void TESTCASE_NAME(testcase_name)::Run()
 
 
 // 一些常用的宏定义
+// 测试数量级
+#ifdef _DEBUG
+
+#define LEN1	10000
+#define LEN2	100000
+#define LEN3	1000000
+#define LEN4	10000000
+
+#else
+
+#define LEN1	100000
+#define LEN2	1000000
+#define LEN3	10000000
+#define LEN4	100000000
+
+#endif // _DEBUG
+
+#define WIDE	14
+
 // 输出 passed 提示
 #define PASSED	std::cout << "[ PASSED ]" << std::endl
 
@@ -477,6 +498,24 @@ void TESTCASE_NAME(testcase_name)::Run()
 	std::string str = #fun; \
 	std::cout << " " << str << " : " << fun << std::endl; \
 	} while(0)
+
+// 输出测试数量级
+void test_len(int len1,int len2,int len3, int wide) {
+	std::string str1, str2, str3;
+	std::stringstream ss;
+	ss << len1 << " " << len2 << " " << len3;
+	ss >> str1 >> str2 >> str3;
+	str1 += "   |";
+	std::cout << std::setw(wide) << str1;
+	str2 += "   |";
+	std::cout << std::setw(wide) << str2;
+	str3 += "   |";
+	std::cout << std::setw(wide) << str3 << std::endl;
+}
+
+#define TEST_LEN(len1, len2, len3, wide) \
+	test_len(len1, len2, len3, wide)
+
 
 // 测试调用的宏
 // 简单测试: 测试运行的正确性
