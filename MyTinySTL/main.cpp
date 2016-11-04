@@ -1,3 +1,7 @@
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "Test\algorithm_test.h"
 #include "Test\algorithm_performance_test.h"
 #include "Test\vector_test.h"
@@ -30,4 +34,6 @@ int main() {
 	mystl::test::hash_map_test::hash_multimap_test();
 	mystl::test::hash_set_test::hash_set_test();
 	mystl::test::hash_set_test::hash_multiset_test();
+
+	_CrtDumpMemoryLeaks();	// 检测 Debug 模式下是否有内存泄露
 }
