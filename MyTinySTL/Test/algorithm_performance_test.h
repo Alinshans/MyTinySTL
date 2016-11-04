@@ -30,7 +30,7 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms   |"; \
-				std::cout << std::setw(12) << t; \
+				std::cout << std::setw(WIDE) << t; \
 				delete []arr; \
 			} while(0)
 
@@ -50,45 +50,47 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms   |"; \
-				std::cout << std::setw(12) << t; \
+				std::cout << std::setw(WIDE) << t; \
 				delete []arr; \
 			} while(0)
 
 			void binary_search_test() {
-				std::cout << "[---------------- function : binary_search ---------------]" << std::endl;
-				std::cout << "| orders of magnitude |  1000000  |  10000000 | 100000000 |" << std::endl;
+				std::cout << "[------------------- function : binary_search ------------------]" << std::endl;
+				std::cout << "| orders of magnitude |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
 				std::cout << "|         std         |";
-				FUN_TEST2(std, binary_search, 1000000);
-				FUN_TEST2(std, binary_search, 10000000);
-				FUN_TEST2(std, binary_search, 100000000);
+				FUN_TEST2(std, binary_search, LEN2);
+				FUN_TEST2(std, binary_search, LEN3);
+				FUN_TEST2(std, binary_search, LEN4);
 				std::cout << std::endl << "|        mystl        |";
-				FUN_TEST2(mystl, binary_search, 1000000);
-				FUN_TEST2(mystl, binary_search, 10000000);
-				FUN_TEST2(mystl, binary_search, 100000000);
+				FUN_TEST2(mystl, binary_search, LEN2);
+				FUN_TEST2(mystl, binary_search, LEN3);
+				FUN_TEST2(mystl, binary_search, LEN4);
 				std::cout << std::endl;
 			}
 	
 			void sort_test() {
-				std::cout << "[-------------------- function : sort --------------------]" << std::endl;
-				std::cout << "| orders of magnitude |  1000000  |  10000000 | 100000000 |" << std::endl;
+				std::cout << "[----------------------- function : sort -----------------------]" << std::endl;
+				std::cout << "| orders of magnitude |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
 				std::cout << "|         std         |";
-				FUN_TEST1(std, sort, 1000000);
-				FUN_TEST1(std, sort, 10000000);
-				FUN_TEST1(std, sort, 100000000);
+				FUN_TEST1(std, sort, LEN2);
+				FUN_TEST1(std, sort, LEN3);
+				FUN_TEST1(std, sort, LEN4);
 				std::cout << std::endl << "|        mystl        |";
-				FUN_TEST1(mystl, sort, 1000000);
-				FUN_TEST1(mystl, sort, 10000000);
-				FUN_TEST1(mystl, sort, 100000000);
+				FUN_TEST1(mystl, sort, LEN2);
+				FUN_TEST1(mystl, sort, LEN3);
+				FUN_TEST1(mystl, sort, LEN4);
 				std::cout << std::endl;
 			}
 
 			void algorithm_performance_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[------------ Run algorithm performance test -------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[--------------- Run algorithm performance test ----------------]" << std::endl;
 				sort_test();
 				binary_search_test();
-				std::cout << "[------------ End algorithm performance test -------------]" << std::endl;
-				std::cout << "[=========================================================]" << std::endl;
+				std::cout << "[--------------- End algorithm performance test ----------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
 			}
 		}
 	}
