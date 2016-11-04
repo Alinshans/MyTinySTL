@@ -16,9 +16,9 @@ namespace mystl {
 		namespace hash_map_test {
 			
 			void hash_map_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[------------- Run container test : hash_map -------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[---------------- Run container test : hash_map ----------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(5 - i, 5 - i));
@@ -65,27 +65,28 @@ namespace mystl {
 				std::cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
 					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				MAP_INSERT_TEST(std, unordered_map, 100000);
-				MAP_INSERT_TEST(std, unordered_map, 1000000);
-				MAP_INSERT_TEST(std, unordered_map, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				MAP_INSERT_TEST(mystl, hash_map, 100000);
-				MAP_INSERT_TEST(mystl, hash_map, 1000000);
-				MAP_INSERT_TEST(mystl, hash_map, 10000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|       insert        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				MAP_INSERT_TEST(std, unordered_map, LEN1);
+				MAP_INSERT_TEST(std, unordered_map, LEN2);
+				MAP_INSERT_TEST(std, unordered_map, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				MAP_INSERT_TEST(mystl, hash_map, LEN1);
+				MAP_INSERT_TEST(mystl, hash_map, LEN2);
+				MAP_INSERT_TEST(mystl, hash_map, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[------------- End container test : hash_map -------------]" << std::endl;
+				std::cout << "[---------------- End container test : hash_map ----------------]" << std::endl;
 			}
 
 			void hash_multimap_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[----------- Run container test : hash_multimap ----------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[-------------- Run container test : hash_multimap -------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				mystl::vector<PAIR> v;
 				for (int i = 0; i < 5; ++i)
 					v.push_back(PAIR(5 - i, 5 - i));
@@ -132,21 +133,22 @@ namespace mystl {
 				std::cout << " hm1.equal_range(3) : from pair<" << first.first << ", " << first.second
 					<< "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				MAP_INSERT_TEST(std, unordered_multimap, 100000);
-				MAP_INSERT_TEST(std, unordered_multimap, 1000000);
-				MAP_INSERT_TEST(std, unordered_multimap, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				MAP_INSERT_TEST(mystl, hash_multimap, 100000);
-				MAP_INSERT_TEST(mystl, hash_multimap, 1000000);
-				MAP_INSERT_TEST(mystl, hash_multimap, 10000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|       insert        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				MAP_INSERT_TEST(std, unordered_multimap, LEN1);
+				MAP_INSERT_TEST(std, unordered_multimap, LEN2);
+				MAP_INSERT_TEST(std, unordered_multimap, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				MAP_INSERT_TEST(mystl, hash_multimap, LEN1);
+				MAP_INSERT_TEST(mystl, hash_multimap, LEN2);
+				MAP_INSERT_TEST(mystl, hash_multimap, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[----------- End container test : hash_multimap ----------]" << std::endl;
+				std::cout << "[-------------- End container test : hash_multimap -------------]" << std::endl;
 			}
 		}
 	}
