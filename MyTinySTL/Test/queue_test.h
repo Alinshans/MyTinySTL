@@ -60,13 +60,13 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms    |"; \
-				std::cout << std::setw(14) << t; \
+				std::cout << std::setw(WIDE) << t; \
 			} while(0)
 
 			void queue_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[-------------- Run container test : queue ---------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[----------------- Run container test : queue ------------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::deque<int> d1(5);
 				mystl::queue<int> q1;
@@ -105,27 +105,28 @@ namespace mystl {
 				q1.clear();
 				QUEUE_COUT(q1);
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|     push      |   1000000   |  10000000   |  100000000  |" << std::endl;
-				std::cout << "|      std      |";
-				QUEUE_PUSH_TEST(std, queue, 1000000);
-				QUEUE_PUSH_TEST(std, queue, 10000000);
-				QUEUE_PUSH_TEST(std, queue, 100000000);
-				std::cout << std::endl << "|     mystl     |";
-				QUEUE_PUSH_TEST(mystl, queue, 1000000);
-				QUEUE_PUSH_TEST(mystl, queue, 10000000);
-				QUEUE_PUSH_TEST(mystl, queue, 100000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|         push        |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
+				std::cout << "|         std         |";
+				QUEUE_PUSH_TEST(std, queue, LEN2);
+				QUEUE_PUSH_TEST(std, queue, LEN3);
+				QUEUE_PUSH_TEST(std, queue, LEN4);
+				std::cout << std::endl << "|        mystl        |";
+				QUEUE_PUSH_TEST(mystl, queue, LEN2);
+				QUEUE_PUSH_TEST(mystl, queue, LEN3);
+				QUEUE_PUSH_TEST(mystl, queue, LEN4);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[-------------- End container test : queue ---------------]" << std::endl;
+				std::cout << "[----------------- End container test : queue ------------------]" << std::endl;
 			}
 
 			void priority_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[---------- Run container test : priority_queue ----------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[------------- Run container test : priority_queue -------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::vector<int> v1(5);
 				mystl::priority_queue<int> p1;
@@ -163,21 +164,22 @@ namespace mystl {
 				p1.clear();
 				P_QUEUE_COUT(p1);
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|     push      |   1000000   |  10000000   |  100000000  |" << std::endl;
-				std::cout << "|      std      |";
-				QUEUE_PUSH_TEST(std, priority_queue, 1000000);
-				QUEUE_PUSH_TEST(std, priority_queue, 10000000);
-				QUEUE_PUSH_TEST(std, priority_queue, 100000000);
-				std::cout << std::endl << "|     mystl     |";
-				QUEUE_PUSH_TEST(mystl, priority_queue, 1000000);
-				QUEUE_PUSH_TEST(mystl, priority_queue, 10000000);
-				QUEUE_PUSH_TEST(mystl, priority_queue, 100000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|         push        |";
+				TEST_LEN(LEN2, LEN3, LEN4, WIDE);
+				std::cout << "|         std         |";
+				QUEUE_PUSH_TEST(std, priority_queue, LEN2);
+				QUEUE_PUSH_TEST(std, priority_queue, LEN3);
+				QUEUE_PUSH_TEST(std, priority_queue, LEN4);
+				std::cout << std::endl << "|        mystl        |";
+				QUEUE_PUSH_TEST(mystl, priority_queue, LEN2);
+				QUEUE_PUSH_TEST(mystl, priority_queue, LEN3);
+				QUEUE_PUSH_TEST(mystl, priority_queue, LEN4);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[---------- End container test : priority_queue ----------]" << std::endl;
+				std::cout << "[------------- End container test : priority_queue -------------]" << std::endl;
 			}
 		}
 	}
