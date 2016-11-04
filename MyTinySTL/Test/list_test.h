@@ -31,7 +31,7 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms    |"; \
-				std::cout << std::setw(14) << t; \
+				std::cout << std::setw(WIDE) << t; \
 			} while(0)
 
 
@@ -50,13 +50,13 @@ namespace mystl {
 				sprintf_s(buf, "%d", n); \
 				std::string t = buf; \
 				t += "ms    |"; \
-				std::cout << std::setw(14) << t; \
+				std::cout << std::setw(WIDE) << t; \
 			} while(0)
 
 			void list_test() {
-				std::cout << "[=========================================================]" << std::endl;
-				std::cout << "[--------------- Run container test : list ---------------]" << std::endl;
-				std::cout << "[----------------------- API test ------------------------]" << std::endl;
+				std::cout << "[===============================================================]" << std::endl;
+				std::cout << "[------------------ Run container test : list ------------------]" << std::endl;
+				std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
 				int a[] = { 1,2,3,4,5 };
 				mystl::list<int> l1;
 				mystl::list<int> l2(5);
@@ -105,32 +105,34 @@ namespace mystl {
 				FUN_VALUE(l1.size());
 				FUN_VALUE(l1.max_size());
 				PASSED;
-				std::cout << "[------------------ Performance Testing ------------------]" << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|    insert     |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				LIST_INSERT_TEST(std, 100000);
-				LIST_INSERT_TEST(std, 1000000);
-				LIST_INSERT_TEST(std, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				LIST_INSERT_TEST(mystl, 100000);
-				LIST_INSERT_TEST(mystl, 1000000);
-				LIST_INSERT_TEST(mystl, 10000000);
+				std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|       insert        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				LIST_INSERT_TEST(std, LEN1);
+				LIST_INSERT_TEST(std, LEN2);
+				LIST_INSERT_TEST(std, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				LIST_INSERT_TEST(mystl, LEN1);
+				LIST_INSERT_TEST(mystl, LEN2);
+				LIST_INSERT_TEST(mystl, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
-				std::cout << "|     sort      |   100000    |   1000000   |  10000000   |" << std::endl;
-				std::cout << "|      std      |";
-				LIST_SORT_TEST(std, 100000);
-				LIST_SORT_TEST(std, 1000000);
-				LIST_SORT_TEST(std, 10000000);
-				std::cout << std::endl << "|     mystl     |";
-				LIST_SORT_TEST(mystl, 100000);
-				LIST_SORT_TEST(mystl, 1000000);
-				LIST_SORT_TEST(mystl, 10000000);
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|         sort        |";
+				TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+				std::cout << "|         std         |";
+				LIST_SORT_TEST(std, LEN1);
+				LIST_SORT_TEST(std, LEN2);
+				LIST_SORT_TEST(std, LEN3);
+				std::cout << std::endl << "|        mystl        |";
+				LIST_SORT_TEST(mystl, LEN1);
+				LIST_SORT_TEST(mystl, LEN2);
+				LIST_SORT_TEST(mystl, LEN3);
 				std::cout << std::endl;
-				std::cout << "|---------------|-------------|-------------|-------------|" << std::endl;
+				std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
 				PASSED;
-				std::cout << "[--------------- End container test : list ---------------]" << std::endl;
+				std::cout << "[------------------ End container test : list ------------------]" << std::endl;
 			}
 		}
 	}
