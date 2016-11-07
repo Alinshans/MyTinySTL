@@ -264,7 +264,7 @@ ___
          * bucker_count
          * max_bucket_count
          * elems_in_bucket
-   * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)（哈希h集合）
+   * [hash_set](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/hash_set.h)（哈希集合）
       * constructor
       * operator=
       * Iterators
