@@ -67,6 +67,12 @@ namespace mystl {
 				FUN_VALUE(v1.back());
 				FUN_VALUE(v1[0]);
 				FUN_VALUE(v1.at(1));
+				int* p = v1.data();
+				*p = 10;
+				*++p = 20;
+				p[1] = 30;
+				std::cout << " After change v1.data() :" << std::endl;
+				COUT(v1);
 				std::cout << std::boolalpha;
 				FUN_VALUE(v1.empty());
 				std::cout << std::noboolalpha;
@@ -76,7 +82,13 @@ namespace mystl {
 				FUN_AFTER(v1, v1.resize(10));
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
+				FUN_AFTER(v1, v1.shrink_to_fit());
+				FUN_VALUE(v1.size());
+				FUN_VALUE(v1.capacity());
 				FUN_AFTER(v1, v1.resize(6, 6));
+				FUN_VALUE(v1.size());
+				FUN_VALUE(v1.capacity());
+				FUN_AFTER(v1, v1.shrink_to_fit());
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
 				FUN_AFTER(v1, v1.clear());
@@ -86,6 +98,9 @@ namespace mystl {
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
 				FUN_AFTER(v1, v1.reserve(20));
+				FUN_VALUE(v1.size());
+				FUN_VALUE(v1.capacity());
+				FUN_AFTER(v1, v1.shrink_to_fit());
 				FUN_VALUE(v1.size());
 				FUN_VALUE(v1.capacity());
 				PASSED;
