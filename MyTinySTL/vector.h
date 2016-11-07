@@ -71,8 +71,7 @@ namespace mystl {
 		size_type size() const { return static_cast<size_type>(end() - begin()); }
 		size_type max_size() const { return static_cast<size_type>(-1) / sizeof(T); }
 		size_type capacity() const { return static_cast<size_type>(end_of_storage_ - begin()); }
-		void resize(size_type new_size, const T& x);
-		void resize(size_type new_size) { return resize(new_size, T()); }
+		void shrink_to_fit();
 		void reserve(size_type n);
 
 		// 访问元素相关操作
@@ -84,6 +83,8 @@ namespace mystl {
 		const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
 		const_reference back() const { return *(end() - 1); }
+		pointer data() { return begin(); }
+		const_pointer data() const { return begin(); }
 
 		// 修改容器相关操作
 		void assign(size_type n, const T& value) { __fill_assign(n, value); }
@@ -100,11 +101,13 @@ namespace mystl {
 		void insert(iterator position, size_type n, const T& x);
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last);
+		void resize(size_type new_size, const T& x);
+		void resize(size_type new_size) { return resize(new_size, T()); }
 		void reverse() { mystl::reverse(begin(), end()); }
 		void swap(vector& rhs);
 
 	private:
-		// vector 的成员函数
+		// vector 成员函数
 		template <class Integer>
 		void __vector_construct(Integer n, Integer value, __true_type);
 		template <class InputIterator>
@@ -198,13 +201,13 @@ namespace mystl {
 		return *this;
 	}
 	
-	// 重置容器大小
+	// 放弃额外的容量
 	template <class T, class Alloc>
-	void vector<T, Alloc>::resize(size_type new_size, const T& x) {
-		if (new_size < size())
-			erase(begin() + new_size, end());
-		else
-			insert(end(), new_size - size(), x);
+	void vector<T, Alloc>::shrink_to_fit() {
+		if (finish_ != end_of_storage_) {
+			data_allocator::deallocate(finish_ + 1, end_of_storage_ - finish_);
+			end_of_storage_ = finish_;
+		}
 	}
 
 	// 重新配置大小
@@ -229,7 +232,7 @@ namespace mystl {
 		__assign_dispatch(first, last, Integer());
 	}
 
-	// 在容器尾端插入元素
+	// 在容器尾部插入元素
 	template <class T, class Alloc>
 	void vector<T, Alloc>::push_back(const T& x) {
 		if (finish_ != end_of_storage_) {
@@ -308,6 +311,15 @@ namespace mystl {
 		InputIterator first, InputIterator last) {
 		typedef typename __is_integer<InputIterator>::is_integer Integer;
 		__insert_dispatch(position, first, last, Integer());
+	}
+
+	// 重置容器大小
+	template <class T, class Alloc>
+	void vector<T, Alloc>::resize(size_type new_size, const T& x) {
+		if (new_size < size())
+			erase(begin() + new_size, end());
+		else
+			insert(end(), new_size - size(), x);
 	}
 
 	// 与另一个 vector 交换
