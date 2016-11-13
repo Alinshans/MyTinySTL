@@ -75,10 +75,10 @@ namespace mystl {
 		void reserve(size_type n);
 
 		// 访问元素相关操作
-		reference operator[](size_type n) { return *(begin() + n); }
-		const_reference operator[](size_type n) const { return *(begin() + n); }
-		reference at(size_type n) { return (*this)[n]; }
-		const_reference at(size_type n)	const { return (*this)[n]; }
+		reference operator[](difference_type n) { return *(begin() + n); }
+		const_reference operator[](difference_type n) const { return *(begin() + n); }
+		reference at(difference_type n) { return (*this)[n]; }
+		const_reference at(difference_type n)	const { return (*this)[n]; }
 		reference front() { return *begin(); }
 		const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
