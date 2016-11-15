@@ -658,7 +658,7 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	std::istream& operator>>(std::istream& in,
 		basic_string<CharType, CharTraits, Alloc>& str) {
-		CharType* buf = new CharType[str.capacity() << 1];
+		CharType* buf = new CharType[str.length() << 1];
 		in >> buf;
 		basic_string<CharType, CharTraits, Alloc> tmp(buf);
 		str = std::move(tmp);
@@ -681,7 +681,37 @@ namespace mystl {
 		return tmp;
 	}
 
-	
+	template<class CharType, class CharTraits, class Alloc>
+	basic_string<CharType, CharTraits, Alloc>
+		operator+(const CharType* lhs, const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		basic_string<CharType, CharTraits, Alloc> tmp(lhs);
+		tmp.add_back(rhs.begin(), rhs.end());
+		return tmp;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	basic_string<CharType, CharTraits, Alloc>
+		operator+(const basic_string<CharType, CharTraits, Alloc>& lhs, const CharType* rhs) {
+		basic_string<CharType, CharTraits, Alloc> tmp(lhs);
+		tmp.add_back(rhs);
+		return tmp;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	basic_string<CharType, CharTraits, Alloc>
+		operator+(CharType ch,const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		basic_string<CharType, CharTraits, Alloc> tmp(ch);
+		tmp.add_back(rhs.begin(), rhs.end());
+		return tmp;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	basic_string<CharType, CharTraits, Alloc>
+		operator+(const basic_string<CharType, CharTraits, Alloc>& lhs, CharType ch) {
+		basic_string<CharType, CharTraits, Alloc> tmp(lhs);
+		tmp.add_back(ch);
+		return tmp;
+	}
 }
 
 #endif // !MYTINYSTL_BASIC_STRING_H_
