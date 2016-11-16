@@ -44,34 +44,33 @@ namespace mystl {
 		static const size_type end_pos = -1;
 
 	private:
-		pointer buffer_;
-		difference_type start_;
-		difference_type finish_;
-		size_type buffer_size_;
+		iterator buffer_;
+		iterator finish_;
+		iterator end_;
 
 	public:
 		// 构造、复制、移动、析构函数
-		basic_string() { __initialize_string(init_size, init_char); }
+		basic_string() { __initialize_string(0, init_char); }
 		explicit basic_string(size_type n) { __initialize_string(n, init_char); }
 		basic_string(size_type n, value_type ch) { __initialize_string(n, ch); }
 
 		basic_string(const basic_string& other, size_type count);
-		basic_string(const basic_string& other, difference_type pos, size_type count);
+		basic_string(const basic_string& other, size_type index, size_type count);
 
 		basic_string(const_pointer str) { __copy_from(str, 0, __get_strlen(str)); }
 		basic_string(const_pointer str, size_type count) { __copy_from(str, 0, count); }
 
 		template<class InputIterator>
 		basic_string(InputIterator first, InputIterator last) {
-			__copy_from(first, 0, static_cast<size_type>(last - first));
+			__copy_from(first, 0, last - first);
 		}
 
 		basic_string(const basic_string& rhs) 
-			:buffer_(nullptr), start_(0), finish_(0), buffer_size_(0) {
+			:buffer_(nullptr), finish_(nullptr), end_(nullptr) {
 			*this = rhs;
 		}
 		basic_string(basic_string&& rhs)
-			:buffer_(nullptr), start_(0), finish_(0), buffer_size_(0) {
+			:buffer_(nullptr), finish_(nullptr), end_(nullptr) {
 			*this = std::move(rhs);
 		}
 
@@ -82,40 +81,40 @@ namespace mystl {
 
 	public:
 		// 迭代器相关操作
-		iterator begin() { return buffer_ + start_; }
-		const_iterator begin() const { return buffer_ + start_; }
-		const_iterator cbegin() const { return buffer_ + start_; }
+		iterator begin() { return buffer_; }
+		const_iterator begin() const { return buffer_; }
+		const_iterator cbegin() const { return buffer_; }
 
 		reverse_iterator rbegin() { return reverse_iterator(end()); }
 		const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
 		const_reverse_iterator crbegin() const { return reverse_iterator(end()); }
 
-		iterator end() { return buffer_ + finish_; }
-		const_iterator end() const { return buffer_ + finish_; }
-		const_iterator cend() const { return buffer_ + finish_; }
+		iterator end() { return finish_; }
+		const_iterator end() const { return finish_; }
+		const_iterator cend() const { return finish_; }
 		
 		reverse_iterator rend() { return reverse_iterator(begin()); }
 		const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 		const_reverse_iterator crend() const { return reverse_iterator(begin()); }
 
 		// 容量相关操作
-		bool empty() const { return start_ == finish_; }
-		size_type size() const { return finish_ - start_; }
-		size_type length() const { return finish_ - start_; }
-		size_type capacity() const { return buffer_size_; }
+		bool empty() const { return buffer_ == finish_; }
+		size_type size() const { return finish_ - buffer_; }
+		size_type length() const { return finish_ - buffer_; }
+		size_type capacity() const { return end_ - buffer_; }
 		size_type max_size() const { return static_cast<size_type>(-1) / sizeof(value_type); }
-		//void shrink_to_fit();
+		void shrink_to_fit();
 
 		// 访问元素相关操作
-		reference operator[](difference_type n) { 
-			if (n >= finish_ - start_)
+		reference operator[](size_type n) { 
+			if (n >= finish_ - buffer_)
 				throw_range_error;
-			return *(begin() + n); 
+			return *(buffer_ + n); 
 		}
-		const_reference operator[](difference_type n) const {
-			if (n >= finish_ - start_)
+		const_reference operator[](size_type n) const {
+			if (n >= finish_ - buffer_)
 				throw_range_error;
-			return *(begin() + n); 
+			return *(buffer_ + n); 
 		}
 		reference at(difference_type n) { return *this[n]; }
 		const_reference at(difference_type n) const { return *this[n]; }
@@ -136,7 +135,7 @@ namespace mystl {
 			insert(index, ch, 1); 
 		}
 		void insert(size_type index, const_pointer str) {
-			insert(begin() + static_cast<difference_type>(index), str, str + __get_strlen(str));
+			insert(begin() + index, str, str + __get_strlen(str));
 		}
 
 		iterator insert(iterator pos, value_type ch, size_type count);
@@ -147,12 +146,18 @@ namespace mystl {
 
 		void erase(size_type index) { erase(index, 1); }
 		void erase(size_type index, size_type count);
+
 		iterator erase(iterator pos) { return erase(pos, 1); }
 		iterator erase(iterator pos, size_type count);
 
-		void clear() { mystl::destroy(buffer_ + start_, buffer_ + finish_); finish_ = start_; }
+		void erase(iterator first, iterator last) { erase(first, last - first); }
 
-		basic_string& add_back(value_type ch) { return add_back(ch, 1); }
+		void clear() { erase(begin(), end()); }
+
+		basic_string& add_back(value_type ch) {
+			insert(end(), ch);
+			return *this;
+		}
 		basic_string& add_back(value_type ch, size_type count) {
 			insert(end(), ch, count);
 			return *this;
@@ -183,8 +188,8 @@ namespace mystl {
 		// basic_string 相关操作
 		int32_t compare(const basic_string& other) const;
 
-		basic_string substr(difference_type index) { return substr(index, finish_ - index); }
-		basic_string substr(difference_type index, size_type count);
+		basic_string substr(size_type index) { return substr(index, length() - index); }
+		basic_string substr(size_type index, size_type count);
 
 		void remove(value_type ch);
 		template <class UnaryPredicate>
@@ -203,21 +208,24 @@ namespace mystl {
 		void swap(basic_string& rhs);
 
 	public:
+		//
 		basic_string& operator+=(const basic_string& str) {
-			this->add_back(str.begin(), str.end());
+			if(str.length())
+				add_back(str.begin(), str.end());
 			return *this;
 		}
 		basic_string& operator+=(value_type ch) {
-			this->add_back(ch);
+			add_back(ch);
 			return *this;
 		}
 		basic_string& operator+=(const_pointer str) {
-			this->add_back(str, str + __get_strlen(str));
+			if(__get_strlen(str))
+				add_back(str, str + __get_strlen(str));
 			return *this;
 		}
 	private:
-		pointer __get_buffer(size_type n) { return data_allocator::allocate(n + 1); }
-		pointer __get_buffer(size_type n) const { return data_allocator::allocate(n + 1); }
+		pointer __get_buffer(size_type n) { return data_allocator::allocate(n); }
+		pointer __get_buffer(size_type n) const { return data_allocator::allocate(n); }
 		void __put_buffer(pointer buf) { data_allocator::deallocate(buf); }
 		void __destroy_buffer();
 		pointer __get_str();
@@ -240,16 +248,16 @@ namespace mystl {
 		if (count > other.length()) {
 			throw_range_error;
 		} 
-		__copy_from(other.buffer_, 0, count);
+		__copy_from(other.data(), 0, count);
 	}
 
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>::
-		basic_string(const basic_string& other, difference_type pos, size_type count) {
+		basic_string(const basic_string& other, size_type index, size_type count) {
 		if (count > other.length() - pos) {
 			throw_range_error;
 		}
-		__copy_from(other.buffer_, pos, count);
+		__copy_from(other.data(), index, count);
 	}
 
 	// 复制赋值操作符
@@ -270,50 +278,51 @@ namespace mystl {
 			__destroy_buffer();
 
 			buffer_ = rhs.buffer_;
-			start_ = rhs.start_;
 			finish_ = rhs.finish_;
-			buffer_size_ = rhs.buffer_size_;
+			end_ = rhs.end_;
 
 			rhs.buffer_ = nullptr;
-			rhs.start_ = 0;
-			rhs.finish_ = 0;
-			rhs.buffer_size_ = 0;
+			rhs.finish_ = nullptr;
+			rhs.end_ = nullptr;
 		}
 		return *this;
 	}
 
-	//// 减少不用的空间
-	//template<class CharType, class CharTraits, class Alloc>
-	//void basic_string<CharType, CharTraits, Alloc>::shrink_to_fit() {
-	//	if (static_cast<size_type>(finish_) < buffer_size_) {
-	//		data_allocator::deallocate(buffer_ + finish_ + 1, buffer_size_ - finish_);
-	//		buffer_size_ -= buffer_size_ - finish_;
-	//	}
-	//}
+	// 减少不用的空间
+	template<class CharType, class CharTraits, class Alloc>
+	void basic_string<CharType, CharTraits, Alloc>::shrink_to_fit() {
+		if (finish_ < end_) {
+			data_allocator::deallocate(finish_ + 1, end_ - finish_ - 1);
+			end_ = finish_;
+		}
+	}
 
 	// 在 pos 位置插入 n 个 ch
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::iterator 
 		basic_string<CharType, CharTraits, Alloc>::insert(iterator pos,
 			value_type ch, size_type count) {
-		if (buffer_size_ - static_cast<size_type>(finish_) < count)
+		if (count < 1)	return pos;
+		if (static_cast<size_type>(end_ - finish_) < count)	// 备用空间不够
 			return __reallocate_and_fill(pos, count, ch);
-		const auto elems_after = finish_ - (pos - (buffer_ + start_));
+		if (pos == end()) {	// 插入位置在尾部
+			finish_ = mystl::fill_n(end(), count, ch);
+			*finish_ = eof;
+			return pos + count;
+		}
+		const auto elems_after = finish_ - pos;	// pos 后的元素数目
 		auto old_finish = finish_;
-		if (static_cast<size_type>(elems_after) > count) {
-			mystl::uninitialized_copy(buffer_ + finish_ - count, buffer_ + finish_, buffer_ + finish_);
-			finish_ += count;
-			mystl::copy_backward(pos, buffer_ + old_finish - count, buffer_ + old_finish);
+		if (static_cast<size_type>(elems_after) > count) {	// pos 后的元素较多
+			finish_ = mystl::uninitialized_copy(finish_ - count, finish_, finish_);
+			mystl::copy_backward(pos, old_finish - count, old_finish);
 			mystl::fill_n(pos, count, ch);
-			buffer_[finish_] = eof;
-		} 
-		else {
-			mystl::uninitialized_fill_n(buffer_ + finish_, count - elems_after, ch);
-			finish_ += count - elems_after;
-			mystl::uninitialized_copy(pos, buffer_ + old_finish, buffer_ + finish_);
-			finish_ += elems_after;
-			mystl::fill(pos, buffer_ + old_finish, ch);
-			buffer_[finish_] = eof;
+			*finish_ = eof;
+		}
+		else {	// 插入的元素较多
+			finish_ = mystl::uninitialized_fill_n(finish_, count - elems_after, ch);
+			finish_ = mystl::uninitialized_copy(pos, old_finish, finish_);
+			mystl::fill(pos, old_finish, ch);
+			*finish_ = eof;
 		}
 		return pos + count;
 	}
@@ -323,28 +332,31 @@ namespace mystl {
 	template <class InputIterator>
 	void basic_string<CharType, CharTraits, Alloc>::insert(iterator pos,
 		InputIterator first, InputIterator last) {
-		auto len = last - first;
-		if (static_cast<difference_type>(buffer_size_) - finish_ < len) {
+		const auto len = last - first;
+		if (len < 1)	return;
+		if ((end_ - finish_) < len) {	// 备用空间不够
 			__reallocate_and_copy(pos, first, last);
 			return;
 		}
-		const auto elems_after = finish_ - (pos - (buffer_ + start_));
-		auto old_finish = finish_;
-		if (static_cast<difference_type>(elems_after) > len) {
-			mystl::uninitialized_copy(buffer_ + finish_ - len, buffer_ + finish_, buffer_ + finish_);
-			finish_ += len;
-			mystl::copy_backward(pos, buffer_ + old_finish - len, buffer_ + old_finish);
-			mystl::copy(first, last, pos);
-			buffer_[finish_] = eof;
+		if (pos == end()) {	// 插入位置在尾部
+			finish_ = mystl::copy(first, last, end());
+			*finish_ = eof;
+			return;
 		}
-		else {
+		const auto elems_after = finish_ - pos;	// pos 后的元素数目
+		auto old_finish = finish_;
+		if (elems_after > len) {	// pos 后元素较多
+			finish_ = mystl::uninitialized_copy(finish_ - len, finish_, finish_);
+			mystl::copy_backward(pos, old_finish - len, old_finish);
+			mystl::copy(first, last, pos);
+			*finish_ = eof;
+		}
+		else {	// 插入元素较多
 			auto mid = first + elems_after;
-			mystl::uninitialized_copy(mid, last, buffer_ + finish_);
-			finish_ += len - elems_after;
-			mystl::uninitialized_copy(pos, buffer_ + old_finish, buffer_ + finish_);
-			finish_ += elems_after;
+			finish_ = mystl::uninitialized_copy(mid, last, finish_);
+			finish_ = mystl::uninitialized_copy(pos, old_finish, finish_);
 			mystl::copy(first, mid, pos);
-			buffer_[finish_] = eof;
+			*finish_ = eof;
 		}
 	}
 
@@ -360,12 +372,18 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::iterator 
 		basic_string<CharType, CharTraits, Alloc>::erase(iterator pos, size_type count) {
-		size_type pos_after = buffer_ + finish_ - pos;
-		if (pos_after < count)
+		if (static_cast<size_type>(finish_ - pos) < count)
 			throw_range_error;
-		mystl::copy(pos + count, buffer_ + finish_, pos);
-		finish_ -= count;
-		buffer_[finish_] = eof;
+		if (pos == begin() && count == length()) {
+			mystl::destroy(buffer_, finish_);
+			finish_ = buffer_;
+			*finish_ = eof;
+			return finish_;
+		}
+		auto new_finish = mystl::copy(pos + count, finish_, pos);
+		mystl::destroy(new_finish, finish_);
+		finish_ = new_finish;
+		*finish_ = eof;
 		return pos;
 	}
 
@@ -392,7 +410,7 @@ namespace mystl {
 	// 比较两个 basic_string，小于返回一个负数，大于返回一个正数，等于返回 0
 	template<class CharType, class CharTraits, class Alloc>
 	int32_t basic_string<CharType, CharTraits, Alloc>::compare(const basic_string& other) const {
-		if (length() - other.length() != 0)	return length() - other.length();
+		if (length() - other.length())	return length() - other.length();
 		for (size_type i = 0; i < length(); ++i) {
 			if (*this[i] < other[i])	
 				return -1;
@@ -405,13 +423,8 @@ namespace mystl {
 	// 返回下标从 index 开始长度为 count 的子串
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>
-		basic_string<CharType, CharTraits, Alloc>::substr(difference_type index, size_type count) {
-		if (static_cast<size_type>(finish_ - index) < count)
-			count = finish_ - index;
-		/*auto tmp = __get_buffer(count);
-		mystl::uninitialized_copy(begin() + index, begin() + index + count, tmp);
-		tmp[count] = 0;
-		return basic_string(tmp);*/
+		basic_string<CharType, CharTraits, Alloc>::substr(size_type index, size_type count) {
+		count = mystl::min(count, length() - index);
 		return basic_string(begin() + index, begin() + index + count);
 	}
 
@@ -471,12 +484,12 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
 		basic_string<CharType, CharTraits, Alloc>::find(const_iterator first,
 			const_iterator last, const_pointer str) {
-		difference_type len = __get_strlen(str);
+		auto len = __get_strlen(str);
 		for (auto it = first; it != last; ++it) {
 			if (*it == *str) {
-				if (last - it < len)	return end_pos;
+				if (static_cast<size_type>(last - it) < len)	return end_pos;
 				else {
-					auto i = 1;
+					size_type i = 1;
 					for (; i < len; ++i) {
 						if (*(it + i) != *(str + i))	break;
 					}
@@ -494,8 +507,8 @@ namespace mystl {
 			const_iterator last, value_type ch) {
 		reverse_iterator rfirst(last);
 		reverse_iterator rlast(first);
-		for (auto it = rfirst; it != rlast; ++it) {
-			if (*it == ch)	return it - begin();
+		for (reverse_iterator it = rfirst; it != rlast; ++it) {
+			if (*it == ch)	return it.base() - begin();
 		}
 		return end_pos;
 	}
@@ -505,14 +518,14 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
 		basic_string<CharType, CharTraits, Alloc>::rfind(const_iterator first,
 			const_iterator last, const_pointer str) {
-		const_reverse_iterator rfirst(last);
-		const_reverse_iterator rlast(first);
-		difference_type len = __get_strlen(str);
-		for (const_reverse_iterator it = rfirst; it != rlast; ++it) {
+		reverse_iterator rfirst(last);
+		reverse_iterator rlast(first);
+		auto len = __get_strlen(str);
+		for (reverse_iterator it = rfirst; it != rlast; ++it) {
 			if (*it == *(str + len - 1)) {
 				if (rlast - it < len)	return end_pos;
 				else {
-					auto i = 1;
+					size_type i = 1;
 					for (; i < len; ++i) {
 						if (*(it + i) != *(str + len - i - 1))	break;
 					}
@@ -539,21 +552,19 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	void basic_string<CharType, CharTraits, Alloc>::swap(basic_string& rhs) {
 		mystl::swap(buffer_, rhs.buffer_);
-		mystl::swap(start_, rhs.start_);
 		mystl::swap(finish_, rhs.finish_);
-		mystl::swap(buffer_size_, rhs.buffer_size_);
+		mystl::swap(end_, rhs.end_);
 	}
 
 	// __destroy_buffer 函数
 	template<class CharType, class CharTraits, class Alloc>
 	void basic_string<CharType, CharTraits, Alloc>::__destroy_buffer() {
 		if (buffer_) {
-			mystl::destroy(buffer_ + start_, buffer_ + finish_);
+			mystl::destroy(buffer_, finish_);
 			__put_buffer(buffer_);
 			buffer_ = nullptr;
-			start_ = 0;
-			finish_ = 0;
-			buffer_size_ = 0;
+			finish_ = nullptr;
+			end_ = nullptr;
 		}
 	}
 
@@ -562,7 +573,7 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::pointer 
 		basic_string<CharType, CharTraits, Alloc>::__get_str() {
 		pointer tmp = __get_buffer(length());
-		mystl::uninitialized_copy(buffer_ + start_, buffer_ + finish_, tmp);
+		mystl::uninitialized_copy(buffer_, finish_, tmp);
 		tmp[length()] = 0;
 		return tmp;
 	}
@@ -571,7 +582,7 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::const_pointer
 		basic_string<CharType, CharTraits, Alloc>::__get_str() const {
 		pointer tmp = __get_buffer(length());
-		mystl::uninitialized_copy(buffer_ + start_, buffer_ + finish_, tmp);
+		mystl::uninitialized_copy(buffer_, finish_, tmp);
 		tmp[length()] = 0;
 		return static_cast<const_pointer>(tmp);
 	}
@@ -589,25 +600,22 @@ namespace mystl {
 	void basic_string<CharType, CharTraits, Alloc>::__initialize_string(size_type n, value_type ch) {
 		auto len = mystl::max(init_size, n);
 		buffer_ = __get_buffer(len);
-		buffer_size_ = __get_strlen(buffer_);
-		mystl::uninitialized_fill_n(buffer_, n, ch);
-		start_ = 0;
-		finish_ = n;
-		buffer_[finish_] = eof;
+		finish_ = mystl::uninitialized_fill_n(buffer_, n, ch);
+		end_ = buffer_ + len;
+		*finish_ = eof;
 	}
 
 	// __copy_from 函数
 	template<class CharType, class CharTraits, class Alloc>
 	void basic_string<CharType, CharTraits, Alloc>::__copy_from(const_pointer src,
 		size_type pos, size_type n) {
-		buffer_ = __get_buffer(n);
-		buffer_size_ = __get_strlen(buffer_);
 		if (__get_strlen(src) - pos < n)
 			throw_range_error;
-		mystl::copy_n(src + static_cast<difference_type>(pos), n, buffer_);
-		start_ = 0;
-		finish_ = n;
-		buffer_[finish_] = eof;
+		auto len = mystl::max(init_size, n);
+		buffer_ = __get_buffer(len);
+		finish_ = mystl::copy_n(src + pos, n, buffer_).second;
+		end_ = buffer_ + len;
+		*finish_ = eof;
 	}
 
 	// __reallocate_and_fill 函数
@@ -615,21 +623,19 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::iterator
 		basic_string<CharType, CharTraits, Alloc>::__reallocate_and_fill(iterator pos,
 			size_type n, value_type ch) {
-		auto return_pos = pos - (buffer_ + start_) + n;
-		auto len = length();
-		auto buf_size = buffer_size_;
-		auto old_buffer = buffer_;
-		auto new_buffer = __get_buffer(buf_size + n);
+		const auto return_pos = pos - buffer_ + n;
+		const auto old_len = length();
+		const auto new_len = old_len + n + ((old_len + n) >> 1);
+		auto new_buffer = __get_buffer(new_len);
+		mystl::uninitialized_copy(pos, finish_, 
+			mystl::uninitialized_fill_n(
+				mystl::uninitialized_copy(buffer_, pos, new_buffer), n, ch));
+		__put_buffer(buffer_);
 		buffer_ = new_buffer;
-		new_buffer = mystl::uninitialized_copy(old_buffer + start_, pos, new_buffer);
-		new_buffer = mystl::uninitialized_fill_n(new_buffer, n, ch);
-		mystl::uninitialized_copy(pos, old_buffer + finish_, new_buffer);
-		__put_buffer(old_buffer);
-		start_ = 0;
-		finish_ = len + n;
-		buffer_size_ = __get_strlen(buffer_);
-		buffer_[finish_] = eof;
-		return buffer_ + static_cast<difference_type>(return_pos);
+		finish_ = buffer_ + (old_len + n);
+		end_ = buffer_ + new_len;
+		*finish_ = eof;
+		return buffer_ + return_pos;
 	}
 
 	// __reallocate_and_copy 函数
@@ -637,21 +643,19 @@ namespace mystl {
 	typename basic_string<CharType, CharTraits, Alloc>::iterator
 		basic_string<CharType, CharTraits, Alloc>::__reallocate_and_copy(iterator pos,
 			const_iterator first, const_iterator last) {
-		auto return_pos = pos - (buffer_ + start_) + (last - first);
-		auto len = length();
-		auto buf_size = buffer_size_;
-		auto old_buffer = buffer_;
-		auto new_buffer = __get_buffer(buf_size + static_cast<size_type>(last - first));
+		const auto return_pos = pos - buffer_ + (last - first);
+		const auto old_len = length();
+		const auto new_len = old_len + (last - first) + ((old_len + (last - first)) >> 1);
+		auto new_buffer = __get_buffer(new_len);
+		mystl::uninitialized_copy(pos, finish_,
+			mystl::uninitialized_copy(first, last,
+				mystl::uninitialized_copy(buffer_, pos, new_buffer)));
+		__put_buffer(buffer_);
 		buffer_ = new_buffer;
-		new_buffer = mystl::uninitialized_copy(old_buffer + start_, pos, new_buffer);
-		new_buffer = mystl::uninitialized_copy(first, last, new_buffer);
-		mystl::uninitialized_copy(pos, old_buffer + finish_, new_buffer);
-		__put_buffer(old_buffer);
-		start_ = 0;
-		finish_ = static_cast<difference_type>(len) + (last - first);
-		buffer_size_ = __get_strlen(buffer_);
-		buffer_[finish_] = eof;
-		return buffer_ + static_cast<difference_type>(return_pos);
+		finish_ = buffer_ + (old_len + (last - first));
+		end_ = buffer_ + new_len;
+		*finish_ = eof;
+		return buffer_ + return_pos;
 	}
 
 	// 重载operator>>, operator<<
@@ -699,7 +703,7 @@ namespace mystl {
 
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>
-		operator+(CharType ch,const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		operator+(CharType ch, const basic_string<CharType, CharTraits, Alloc>& rhs) {
 		basic_string<CharType, CharTraits, Alloc> tmp(ch);
 		tmp.add_back(rhs.begin(), rhs.end());
 		return tmp;
