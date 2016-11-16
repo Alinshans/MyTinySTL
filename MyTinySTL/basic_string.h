@@ -11,7 +11,7 @@ namespace mystl {
 
 #ifndef throw_range_error
 #define throw_range_error	do { \
-	std::cerr << " out_of_range." << std::endl; \
+	std::cerr << "out_of_range." << std::endl; \
 	exit(1); \
 	} while(0)
 #endif // !throw_range_error
@@ -106,12 +106,12 @@ namespace mystl {
 		void shrink_to_fit();
 
 		// 访问元素相关操作
-		reference operator[](size_type n) { 
+		reference operator[](difference_type n) { 
 			if (n >= finish_ - buffer_)
 				throw_range_error;
 			return *(buffer_ + n); 
 		}
-		const_reference operator[](size_type n) const {
+		const_reference operator[](difference_type n) const {
 			if (n >= finish_ - buffer_)
 				throw_range_error;
 			return *(buffer_ + n); 
