@@ -107,12 +107,12 @@ namespace mystl {
 
 		// 访问元素相关操作
 		reference operator[](difference_type n) { 
-			if (n >= finish_ - buffer_)
+			if (n < 0 || n >= finish_ - buffer_)
 				throw_range_error;
-			return *(buffer_ + n); 
+			return *(buffer_ + n);
 		}
 		const_reference operator[](difference_type n) const {
-			if (n >= finish_ - buffer_)
+			if (n < 0 || n >= finish_ - buffer_)
 				throw_range_error;
 			return *(buffer_ + n); 
 		}
@@ -132,27 +132,30 @@ namespace mystl {
 			insert(begin() + index, ch, count);
 		}
 		void insert(size_type index, value_type ch) { 
-			insert(index, ch, 1); 
+			insert(begin() + index, ch); 
 		}
 		void insert(size_type index, const_pointer str) {
 			insert(begin() + index, str, str + __get_strlen(str));
 		}
 
 		iterator insert(iterator pos, value_type ch, size_type count);
-		iterator insert(iterator pos, value_type ch) { return insert(pos, ch, 1); }
+		iterator insert(iterator pos, value_type ch);
 
 		template <class InputIterator>
 		void insert(iterator pos, InputIterator first, InputIterator last);
 
 		void erase(size_type index) { erase(index, 1); }
-		void erase(size_type index, size_type count);
+		void erase(size_type index, size_type count) {
+			if (index >= length())	throw_range_error;
+			erase(buffer_ + index, count);
+		}
 
 		iterator erase(iterator pos) { return erase(pos, 1); }
 		iterator erase(iterator pos, size_type count);
 
 		void erase(iterator first, iterator last) { erase(first, last - first); }
 
-		void clear() { erase(begin(), end()); }
+		void clear();
 
 		basic_string& add_back(value_type ch) {
 			insert(end(), ch);
@@ -199,11 +202,19 @@ namespace mystl {
 		template <class UnaryPredicate>
 		void replace_if(UnaryPredicate up, value_type rch);
 
-		size_type find(const_iterator first, const_iterator last, value_type ch);
-		size_type find(const_iterator first, const_iterator last, const_pointer str);
-		size_type rfind(const_iterator first, const_iterator last, value_type ch);
-		size_type rfind(const_iterator first, const_iterator last, const_pointer str);
-		size_type count(const_iterator first, const_iterator last, value_type ch) const;
+		size_type find(value_type ch, size_type pos) const;
+		size_type find(value_type ch) const { return find(ch, 0); }
+		size_type find(const_pointer str, size_type pos) const;
+		size_type find(const_pointer str) const { return find(str, 0); }
+		size_type find(const basic_string& str) const { return find(str.data(), 0); }
+
+		size_type rfind(value_type ch, size_type pos) const;
+		size_type rfind(value_type ch) const { return rfind(ch, length() - 1); }
+		size_type rfind(const_pointer str, size_type pos) const;
+		size_type rfind(const_pointer str) const { return rfind(str, length() - 1); }
+		size_type rfind(const basic_string& str) const { return rfind(str.data(), length() - 1); }
+
+		size_type count(value_type ch, size_type pos) const;
 
 		void swap(basic_string& rhs);
 
@@ -230,9 +241,9 @@ namespace mystl {
 		void __destroy_buffer();
 		pointer __get_str();
 		const_pointer __get_str() const;
-		size_type __get_strlen(const_pointer str);
-		size_type __get_strlen(const_pointer str, char_type) { return strlen(str); }
-		size_type __get_strlen(const_pointer str, wchar_type) { return wcslen(str); }
+		size_type __get_strlen(const_pointer str) const;
+		size_type __get_strlen(const_pointer str, char_type) const { return strlen(str); }
+		size_type __get_strlen(const_pointer str, wchar_type) const { return wcslen(str); }
 		void __initialize_string(size_type n, value_type ch);
 		void __copy_from(const_pointer src, size_type pos, size_type n);
 		iterator __reallocate_and_fill(iterator pos, size_type n, value_type ch);
@@ -327,6 +338,18 @@ namespace mystl {
 		return pos + count;
 	}
 
+	// 在 pos 位置插入一个元素
+	template<class CharType, class CharTraits, class Alloc>
+	typename basic_string<CharType, CharTraits, Alloc>::iterator 
+		basic_string<CharType, CharTraits, Alloc>::insert(iterator pos, value_type ch) {
+		if (end_ == finish_)
+			return __reallocate_and_fill(pos, 1, ch);
+		mystl::copy_backward(pos, finish_, finish_ + 1);
+		*++finish_ = eof;
+		*pos = ch;
+		return pos + 1;
+	}
+
 	// 在 pos 位置插入 [first, last) 内的元素
 	template<class CharType, class CharTraits, class Alloc>
 	template <class InputIterator>
@@ -360,24 +383,14 @@ namespace mystl {
 		}
 	}
 
-	// 删除从下标 index 开始的 n 个元素
-	template<class CharType, class CharTraits, class Alloc>
-	void basic_string<CharType, CharTraits, Alloc>::erase(size_type index, size_type count) {
-		if (index >= length())
-			throw_range_error;
-		erase(buffer_ + index, count);
-	}
-
 	// 删除从 pos 位置开始的 n 个元素
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::iterator 
 		basic_string<CharType, CharTraits, Alloc>::erase(iterator pos, size_type count) {
 		if (static_cast<size_type>(finish_ - pos) < count)
 			throw_range_error;
-		if (pos == begin() && count == length()) {
-			mystl::destroy(buffer_, finish_);
-			finish_ = buffer_;
-			*finish_ = eof;
+		if (pos == begin() && count == length()) {	// 删除全部元素
+			clear();
 			return finish_;
 		}
 		auto new_finish = mystl::copy(pos + count, finish_, pos);
@@ -387,6 +400,14 @@ namespace mystl {
 		return pos;
 	}
 
+	// 清空全部元素
+	template<class CharType, class CharTraits, class Alloc>
+	void basic_string<CharType, CharTraits, Alloc>::clear() {
+		mystl::destroy(buffer_, finish_);
+		finish_ = buffer_;
+		*finish_ = eof;
+	}
+	
 	// 在尾部添加字符串前 count 个字符
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>& 
@@ -468,82 +489,67 @@ namespace mystl {
 		}
 	}
 
-	// 在[first, last)区间查找值为 ch 的元素，若找到返回其下标，否则返回 end_pos
+	// 从下标 pos 开始查找值为 ch 的元素，若找到返回其下标，否则返回 end_pos
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type 
-		basic_string<CharType, CharTraits, Alloc>::find(const_iterator first,
-			const_iterator last, value_type ch) {
-		for (auto it = first; it != last; ++it) {
-			if (*it == ch)	return it - begin();
+		basic_string<CharType, CharTraits, Alloc>::find(value_type ch, size_type pos) const {
+		for (auto i = pos; i < length(); ++i) {
+			if (*(buffer_ + i) == ch)	return i;
 		}
 		return end_pos;
 	}
 
-	// 在[first, last)区间查找字符串 str，若找到返回其开始的下标，否则返回 end_pos
+	// 从下标 pos 开始查找字符串 str，若找到返回其开始的下标，否则返回 end_pos
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::find(const_iterator first,
-			const_iterator last, const_pointer str) {
+		basic_string<CharType, CharTraits, Alloc>::find(const_pointer str, size_type pos) const {
 		auto len = __get_strlen(str);
-		for (auto it = first; it != last; ++it) {
-			if (*it == *str) {
-				if (static_cast<size_type>(last - it) < len)	return end_pos;
-				else {
-					size_type i = 1;
-					for (; i < len; ++i) {
-						if (*(it + i) != *(str + i))	break;
-					}
-					if (i == len)	return it - begin();
+		for (auto i = pos; i <= length() - len; i++) {
+			if (*(buffer_ + i) == *str) {
+				size_type j = 1;
+				for (; j < len; ++j) {
+					if (*(buffer_ + i + j) != *(str + j))	break;
 				}
+				if (j == len)	return i;
 			}
 		}
 		return end_pos;
 	}
 
-	// 在[first, last)区间反向查找值为 ch 的元素，与 find 类似
+	// 从下标 pos 开始反向查找值为 ch 的元素，与 find 类似
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::rfind(const_iterator first,
-			const_iterator last, value_type ch) {
-		reverse_iterator rfirst(last);
-		reverse_iterator rlast(first);
-		for (reverse_iterator it = rfirst; it != rlast; ++it) {
-			if (*it == ch)	return it.base() - begin();
+		basic_string<CharType, CharTraits, Alloc>::rfind(value_type ch, size_type pos) const {
+		for (auto i = pos; i >= 0; --i) {
+			if (*(buffer_ + i) == ch)	return i;
 		}
 		return end_pos;
 	}
 
-	// 在[first, last)区间反向查找字符串，与 find 类似
+	// 从下标 pos 开始反向查找字符串，与 find 类似
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::rfind(const_iterator first,
-			const_iterator last, const_pointer str) {
-		reverse_iterator rfirst(last);
-		reverse_iterator rlast(first);
+		basic_string<CharType, CharTraits, Alloc>::rfind(const_pointer str, size_type pos) const {
 		auto len = __get_strlen(str);
-		for (reverse_iterator it = rfirst; it != rlast; ++it) {
-			if (*it == *(str + len - 1)) {
-				if (rlast - it < len)	return end_pos;
-				else {
-					size_type i = 1;
-					for (; i < len; ++i) {
-						if (*(it + i) != *(str + len - i - 1))	break;
-					}
-					if (i == len)	return it.base() - begin() - len;
+		for (auto i = pos; i >= len; --i) {
+			if (*(buffer_ + i) == *(str + len - 1)) {
+				size_type j = 1;
+				for (; j < len; ++j) {
+					if (*(buffer_ + i - j) != *(str + len - j - 1))	break;
 				}
+				if (j == len)	return i - len + 1;
 			}
 		}
 		return end_pos;
 	}
 
-	// 返回[first, last)内值为 ch 的元素的出现次数
+	// 返回从下标 pos 开始值为 ch 的元素出现的次数
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::count(const_iterator first,
-			const_iterator last, value_type ch) const {
+		basic_string<CharType, CharTraits, Alloc>::count(value_type ch, size_type pos) const {
 		size_type n = 0;
-		for (auto it = first; it != last; ++it) {
-			if (*it == ch)	++n;
+		for (auto i = pos; i < length(); ++i) {
+			if (*(buffer_ + i) == ch)	++n;
 		}
 		return n;
 	}
@@ -590,7 +596,7 @@ namespace mystl {
 	// __get_strlen 函数
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::__get_strlen(const_pointer str) {
+		basic_string<CharType, CharTraits, Alloc>::__get_strlen(const_pointer str) const {
 		typedef typename CharTraits::value_type	T;
 		return __get_strlen(str, T());
 	}
@@ -658,11 +664,11 @@ namespace mystl {
 		return buffer_ + return_pos;
 	}
 
-	// 重载operator>>, operator<<
+	// 重载 operator>>, operator<<
 	template<class CharType, class CharTraits, class Alloc>
 	std::istream& operator>>(std::istream& in,
 		basic_string<CharType, CharTraits, Alloc>& str) {
-		CharType* buf = new CharType[str.length() << 1];
+		CharType* buf = new CharType[str.capacity() << 1];
 		in >> buf;
 		basic_string<CharType, CharTraits, Alloc> tmp(buf);
 		str = std::move(tmp);
@@ -670,12 +676,12 @@ namespace mystl {
 	}
 
 	template<class CharType, class CharTraits, class Alloc>
-	std::ostream& operator<<(std::ostream& out,
-		const basic_string<CharType, CharTraits, Alloc>& str) {
-		for (auto& it : str) out << it;
+	std::ostream& operator<<(std::ostream& out, const basic_string<CharType, CharTraits, Alloc>& str) {
+		for (auto it : str) out << it;
 		return out;
 	}
 
+	// 重载 operator+
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>
 		operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
@@ -715,6 +721,50 @@ namespace mystl {
 		basic_string<CharType, CharTraits, Alloc> tmp(lhs);
 		tmp.add_back(ch);
 		return tmp;
+	}
+
+	// 重载比较操作符
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator==(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) == 0;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator!=(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) != 0;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator<(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) < 0;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator<=(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) <= 0;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator>(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) > 0;
+	}
+
+	template<class CharType, class CharTraits, class Alloc>
+	bool operator>=(const basic_string<CharType, CharTraits, Alloc>& lhs,
+		const basic_string<CharType, CharTraits, Alloc>& rhs) {
+		return lhs.compare(rhs) >= 0;
+	}
+
+	// 重载 mystl 的 swap
+	template<class CharType, class CharTraits, class Alloc>
+	void swap(basic_string<CharType, CharTraits, Alloc>& lhs,
+		basic_string<CharType, CharTraits, Alloc>& rhs) {
+		lhs.swap(rhs);
 	}
 }
 
