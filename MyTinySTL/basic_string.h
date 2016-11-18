@@ -9,12 +9,33 @@
 
 namespace mystl {
 
-#ifndef throw_range_error
-#define throw_range_error	do { \
-	std::cerr << "out_of_range." << std::endl; \
+#ifndef MYTINYSTL_THROW_RANGE_ERROR
+#define MYTINYSTL_THROW_RANGE_ERROR do { \
+	std::cerr << " out_of_range." << std::endl; \
 	exit(1); \
 	} while(0)
-#endif // !throw_range_error
+#endif // !MYTINYSTL_THROW_RANGE_ERROR
+
+#ifndef MYTINYSTL_CHECK_INDEX_RANGE
+#define MYTINYSTL_CHECK_INDEX_RANGE(index) do { \
+	if(index < 0 || index >= static_cast<difference_type>(length())) \
+		MYTINYSTL_THROW_RANGE_ERROR; \
+	} while(0)
+#endif // !MYTINYSTL_CHECK_INDEX_RANGE
+
+#ifndef MYTINYSTL_CHECK_RANGE_COMP
+#define MYTINYSTL_CHECK_RANGE_COMP(first, second) do { \
+	if(first < second) \
+		MYTINYSTL_THROW_RANGE_ERROR; \
+	} while(0)
+#endif // !MYTINYSTL_CHECK_RANGE_COMP
+
+#ifndef MYTINYSTL_CHECK_END_ERROR
+#define MYTINYSTL_CHECK_END_ERROR(first, last) do { \
+	/Todo  \
+} while(0)
+#endif // !MYTINYSTL_CHECK_END_ERROR
+
 
 	template<class CharType, class CharTraits = __char_type<CharType>, class Alloc = alloc>
 	class basic_string {
@@ -38,12 +59,13 @@ namespace mystl {
 		allocator_type	get_allocator() { return allocator_type(); }
 
 	public:
-		static const size_type	init_size = 8;
-		static const value_type	init_char = 0x20;
-		static const value_type eof = 0x24;
 		static const size_type end_pos = -1;
 
 	private:
+		static const size_type	init_size = 8;
+		static const value_type	init_char = 0x20;
+		static const value_type eof = 0x24;
+
 		iterator buffer_;
 		iterator finish_;
 		iterator end_;
@@ -55,13 +77,15 @@ namespace mystl {
 		basic_string(size_type n, value_type ch) { __initialize_string(n, ch); }
 
 		basic_string(const basic_string& other, size_type count);
-		basic_string(const basic_string& other, size_type index, size_type count);
+		basic_string(const basic_string& other, difference_type index, size_type count);
 
 		basic_string(const_pointer str) { __copy_from(str, 0, __get_strlen(str)); }
 		basic_string(const_pointer str, size_type count) { __copy_from(str, 0, count); }
 
+		// *** 没有处理 basic_string 的 end
 		template<class InputIterator>
 		basic_string(InputIterator first, InputIterator last) {
+			MYTINYSTL_CHECK_RANGE_COMP(last, first);
 			__copy_from(first, 0, last - first);
 		}
 
@@ -76,6 +100,16 @@ namespace mystl {
 
 		basic_string& operator=(const basic_string& rhs);
 		basic_string& operator=(basic_string&& rhs);
+		basic_string& operator=(const_pointer str) {
+			basic_string tmp(str);
+			*this = std::move(tmp);
+			return *this;
+		}
+		basic_string& operator=(value_type ch) {
+			basic_string tmp(1, ch);
+			*this = std::move(tmp);
+			return *this;
+		}
 
 		~basic_string() { __destroy_buffer(); }
 
@@ -83,19 +117,15 @@ namespace mystl {
 		// 迭代器相关操作
 		iterator begin() { return buffer_; }
 		const_iterator begin() const { return buffer_; }
-		const_iterator cbegin() const { return buffer_; }
 
 		reverse_iterator rbegin() { return reverse_iterator(end()); }
 		const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
-		const_reverse_iterator crbegin() const { return reverse_iterator(end()); }
 
 		iterator end() { return finish_; }
 		const_iterator end() const { return finish_; }
-		const_iterator cend() const { return finish_; }
 		
 		reverse_iterator rend() { return reverse_iterator(begin()); }
 		const_reverse_iterator rend() const { return reverse_iterator(begin()); }
-		const_reverse_iterator crend() const { return reverse_iterator(begin()); }
 
 		// 容量相关操作
 		bool empty() const { return buffer_ == finish_; }
@@ -107,17 +137,15 @@ namespace mystl {
 
 		// 访问元素相关操作
 		reference operator[](difference_type n) { 
-			if (n < 0 || n >= finish_ - buffer_)
-				throw_range_error;
+			MYTINYSTL_CHECK_INDEX_RANGE(n);
 			return *(buffer_ + n);
 		}
 		const_reference operator[](difference_type n) const {
-			if (n < 0 || n >= finish_ - buffer_)
-				throw_range_error;
+			MYTINYSTL_CHECK_INDEX_RANGE(n);
 			return *(buffer_ + n); 
 		}
-		reference at(difference_type n) { return *this[n]; }
-		const_reference at(difference_type n) const { return *this[n]; }
+		reference at(difference_type n) { return (*this)[n]; }
+		const_reference at(difference_type n) const { return (*this)[n]; }
 		reference front() { return *begin(); }
 		const_reference front() const { return *begin(); }
 		reference back() { return *(end() - 1); }
@@ -128,25 +156,35 @@ namespace mystl {
 		const_pointer c_str() const { return __get_str(); }
 
 		// 添加删除相关操作	
-		void insert(size_type index, value_type ch, size_type count) {
-			insert(begin() + index, ch, count);
+		void insert(difference_type index, const basic_string& str) {
+			MYTINYSTL_CHECK_INDEX_RANGE(index);
+			insert(begin() + index, str.begin(), str.end());
 		}
-		void insert(size_type index, value_type ch) { 
-			insert(begin() + index, ch); 
+		void insert(difference_type index, size_type count, value_type ch) {
+			MYTINYSTL_CHECK_INDEX_RANGE(index);
+			insert(begin() + index, count, ch);
 		}
-		void insert(size_type index, const_pointer str) {
+		void insert(difference_type index, const_pointer str) {
+			MYTINYSTL_CHECK_INDEX_RANGE(index);
 			insert(begin() + index, str, str + __get_strlen(str));
 		}
 
-		iterator insert(iterator pos, value_type ch, size_type count);
+		iterator insert(iterator pos, size_type count, value_type ch);
 		iterator insert(iterator pos, value_type ch);
+		iterator insert(iterator pos, const_pointer str) {
+			insert(pos, str, str + __get_strlen(str));
+			return pos + __get_strlen(str);
+		}
 
 		template <class InputIterator>
 		void insert(iterator pos, InputIterator first, InputIterator last);
 
-		void erase(size_type index) { erase(index, 1); }
-		void erase(size_type index, size_type count) {
-			if (index >= length())	throw_range_error;
+		void erase(difference_type index) { 
+			MYTINYSTL_CHECK_INDEX_RANGE(index);
+			erase(index, 1); 
+		}
+		void erase(difference_type index, size_type count) {
+			MYTINYSTL_CHECK_INDEX_RANGE(index);
 			erase(buffer_ + index, count);
 		}
 
@@ -162,7 +200,7 @@ namespace mystl {
 			return *this;
 		}
 		basic_string& add_back(value_type ch, size_type count) {
-			insert(end(), ch, count);
+			insert(end(), count, ch);
 			return *this;
 		}
 		basic_string& add_back(const_pointer str) { return add_back(str, __get_strlen(str)); }
@@ -176,7 +214,7 @@ namespace mystl {
 
 		basic_string& add_front(value_type ch) { return add_front(ch, 1); }
 		basic_string& add_front(value_type ch, size_type count) {
-			insert(begin(), ch, count);
+			insert(begin(), count, ch);
 			return *this;
 		}
 		basic_string& add_front(const_pointer str) { return add_front(str, __get_strlen(str)); }
@@ -202,19 +240,20 @@ namespace mystl {
 		template <class UnaryPredicate>
 		void replace_if(UnaryPredicate up, value_type rch);
 
-		size_type find(value_type ch, size_type pos) const;
+		size_type find(value_type ch, size_type index) const;
 		size_type find(value_type ch) const { return find(ch, 0); }
-		size_type find(const_pointer str, size_type pos) const;
+		size_type find(const_pointer str, size_type index) const;
 		size_type find(const_pointer str) const { return find(str, 0); }
 		size_type find(const basic_string& str) const { return find(str.data(), 0); }
 
-		size_type rfind(value_type ch, size_type pos) const;
+		size_type rfind(value_type ch, size_type index) const;
 		size_type rfind(value_type ch) const { return rfind(ch, length() - 1); }
-		size_type rfind(const_pointer str, size_type pos) const;
+		size_type rfind(const_pointer str, size_type index) const;
 		size_type rfind(const_pointer str) const { return rfind(str, length() - 1); }
 		size_type rfind(const basic_string& str) const { return rfind(str.data(), length() - 1); }
 
-		size_type count(value_type ch, size_type pos) const;
+		size_type count(value_type ch) const { return count(ch, 0); }
+		size_type count(value_type ch, size_type index) const;
 
 		void swap(basic_string& rhs);
 
@@ -256,18 +295,16 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>::
 		basic_string(const basic_string& other, size_type count) {
-		if (count > other.length()) {
-			throw_range_error;
-		} 
+		MYTINYSTL_CHECK_RANGE_COMP(other.length(), count);
 		__copy_from(other.data(), 0, count);
 	}
 
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>::
-		basic_string(const basic_string& other, size_type index, size_type count) {
-		if (count > other.length() - pos) {
-			throw_range_error;
-		}
+		basic_string(const basic_string& other, difference_type index, size_type count) {
+		if (index < 0 || static_cast<size_type>(index) > other.length())
+			MYTINYSTL_THROW_RANGE_ERROR;
+		MYTINYSTL_CHECK_RANGE_COMP(other.length() - index, count);
 		__copy_from(other.data(), index, count);
 	}
 
@@ -312,7 +349,7 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::iterator 
 		basic_string<CharType, CharTraits, Alloc>::insert(iterator pos,
-			value_type ch, size_type count) {
+			size_type count, value_type ch) {
 		if (count < 1)	return pos;
 		if (static_cast<size_type>(end_ - finish_) < count)	// 备用空间不够
 			return __reallocate_and_fill(pos, count, ch);
@@ -355,7 +392,11 @@ namespace mystl {
 	template <class InputIterator>
 	void basic_string<CharType, CharTraits, Alloc>::insert(iterator pos,
 		InputIterator first, InputIterator last) {
+		MYTINYSTL_CHECK_RANGE_COMP(last, first);
 		const auto len = last - first;
+		if (static_cast<difference_type>(__get_strlen(first)) < len)
+			MYTINYSTL_THROW_RANGE_ERROR;
+		// Todo: check basic_string end
 		if (len < 1)	return;
 		if ((end_ - finish_) < len) {	// 备用空间不够
 			__reallocate_and_copy(pos, first, last);
@@ -387,8 +428,7 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::iterator 
 		basic_string<CharType, CharTraits, Alloc>::erase(iterator pos, size_type count) {
-		if (static_cast<size_type>(finish_ - pos) < count)
-			throw_range_error;
+		MYTINYSTL_CHECK_RANGE_COMP(static_cast<size_type>(finish_ - pos), count);
 		if (pos == begin() && count == length()) {	// 删除全部元素
 			clear();
 			return finish_;
@@ -412,8 +452,7 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>& 
 		basic_string<CharType, CharTraits, Alloc>::add_back(const_pointer str, size_type count) {
-		if (__get_strlen(str) < count)
-			throw_range_error;
+		MYTINYSTL_CHECK_RANGE_COMP(__get_strlen(str), count);
 		insert(end(), str, str + count);
 		return *this;
 	}
@@ -422,8 +461,7 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>&
 		basic_string<CharType, CharTraits, Alloc>::add_front(const_pointer str, size_type count) {
-		if (__get_strlen(str) < count)
-			throw_range_error;
+		MYTINYSTL_CHECK_RANGE_COMP(__get_strlen(str), count);
 		insert(begin(), str, str + count);
 		return *this;
 	}
@@ -433,9 +471,9 @@ namespace mystl {
 	int32_t basic_string<CharType, CharTraits, Alloc>::compare(const basic_string& other) const {
 		if (length() - other.length())	return length() - other.length();
 		for (size_type i = 0; i < length(); ++i) {
-			if (*this[i] < other[i])	
+			if ((*this)[i] < other[i])	
 				return -1;
-			else if (*this[i] > other[i])	
+			else if ((*this)[i] > other[i])	
 				return 1;
 		}
 		return 0;
@@ -445,8 +483,9 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	basic_string<CharType, CharTraits, Alloc>
 		basic_string<CharType, CharTraits, Alloc>::substr(size_type index, size_type count) {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
 		count = mystl::min(count, length() - index);
-		return basic_string(begin() + index, begin() + index + count);
+		return basic_string(begin() + index, begin() + index + count - 1);
 	}
 
 	// 移除值为 ch 的元素
@@ -489,22 +528,24 @@ namespace mystl {
 		}
 	}
 
-	// 从下标 pos 开始查找值为 ch 的元素，若找到返回其下标，否则返回 end_pos
+	// 从下标 index 开始查找值为 ch 的元素，若找到返回其下标，否则返回 end_pos
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type 
-		basic_string<CharType, CharTraits, Alloc>::find(value_type ch, size_type pos) const {
-		for (auto i = pos; i < length(); ++i) {
+		basic_string<CharType, CharTraits, Alloc>::find(value_type ch, size_type index) const {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
+		for (auto i = index; i < length(); ++i) {
 			if (*(buffer_ + i) == ch)	return i;
 		}
 		return end_pos;
 	}
 
-	// 从下标 pos 开始查找字符串 str，若找到返回其开始的下标，否则返回 end_pos
+	// 从下标 index 开始查找字符串 str，若找到返回其开始的下标，否则返回 end_pos
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::find(const_pointer str, size_type pos) const {
+		basic_string<CharType, CharTraits, Alloc>::find(const_pointer str, size_type index) const {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
 		auto len = __get_strlen(str);
-		for (auto i = pos; i <= length() - len; i++) {
+		for (auto i = index; i <= length() - len; i++) {
 			if (*(buffer_ + i) == *str) {
 				size_type j = 1;
 				for (; j < len; ++j) {
@@ -516,22 +557,24 @@ namespace mystl {
 		return end_pos;
 	}
 
-	// 从下标 pos 开始反向查找值为 ch 的元素，与 find 类似
+	// 从下标 index 开始反向查找值为 ch 的元素，与 find 类似
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::rfind(value_type ch, size_type pos) const {
-		for (auto i = pos; i >= 0; --i) {
+		basic_string<CharType, CharTraits, Alloc>::rfind(value_type ch, size_type index) const {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
+		for (auto i = index; i >= 0; --i) {
 			if (*(buffer_ + i) == ch)	return i;
 		}
 		return end_pos;
 	}
 
-	// 从下标 pos 开始反向查找字符串，与 find 类似
+	// 从下标 index 开始反向查找字符串，与 find 类似
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::rfind(const_pointer str, size_type pos) const {
+		basic_string<CharType, CharTraits, Alloc>::rfind(const_pointer str, size_type index) const {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
 		auto len = __get_strlen(str);
-		for (auto i = pos; i >= len; --i) {
+		for (auto i = index; i >= len; --i) {
 			if (*(buffer_ + i) == *(str + len - 1)) {
 				size_type j = 1;
 				for (; j < len; ++j) {
@@ -543,12 +586,13 @@ namespace mystl {
 		return end_pos;
 	}
 
-	// 返回从下标 pos 开始值为 ch 的元素出现的次数
+	// 返回从下标 index 开始值为 ch 的元素出现的次数
 	template<class CharType, class CharTraits, class Alloc>
 	typename basic_string<CharType, CharTraits, Alloc>::size_type
-		basic_string<CharType, CharTraits, Alloc>::count(value_type ch, size_type pos) const {
+		basic_string<CharType, CharTraits, Alloc>::count(value_type ch, size_type index) const {
+		MYTINYSTL_CHECK_INDEX_RANGE(index);
 		size_type n = 0;
-		for (auto i = pos; i < length(); ++i) {
+		for (auto i = index; i < length(); ++i) {
 			if (*(buffer_ + i) == ch)	++n;
 		}
 		return n;
@@ -604,6 +648,13 @@ namespace mystl {
 	// __initialize_string 函数
 	template<class CharType, class CharTraits, class Alloc>
 	void basic_string<CharType, CharTraits, Alloc>::__initialize_string(size_type n, value_type ch) {
+		if (n == 0) {
+			buffer_ = __get_buffer(init_size);
+			finish_ = buffer_;
+			end_ = buffer_ + init_size;
+			*finish_ = eof;
+			return;
+		}
 		auto len = mystl::max(init_size, n);
 		buffer_ = __get_buffer(len);
 		finish_ = mystl::uninitialized_fill_n(buffer_, n, ch);
@@ -614,12 +665,11 @@ namespace mystl {
 	// __copy_from 函数
 	template<class CharType, class CharTraits, class Alloc>
 	void basic_string<CharType, CharTraits, Alloc>::__copy_from(const_pointer src,
-		size_type pos, size_type n) {
-		if (__get_strlen(src) - pos < n)
-			throw_range_error;
-		auto len = mystl::max(init_size, n);
+		size_type pos, size_type count) {
+		MYTINYSTL_CHECK_RANGE_COMP(__get_strlen(src) - pos, count);
+		auto len = mystl::max(init_size, count);
 		buffer_ = __get_buffer(len);
-		finish_ = mystl::copy_n(src + pos, n, buffer_).second;
+		finish_ = mystl::copy_n(src + pos, count, buffer_).second;
 		end_ = buffer_ + len;
 		*finish_ = eof;
 	}
@@ -668,10 +718,11 @@ namespace mystl {
 	template<class CharType, class CharTraits, class Alloc>
 	std::istream& operator>>(std::istream& in,
 		basic_string<CharType, CharTraits, Alloc>& str) {
-		CharType* buf = new CharType[str.capacity() << 1];
+		// Todo 
+		/*CharType* buf = new CharType[str.capacity() << 1];
 		in >> buf;
 		basic_string<CharType, CharTraits, Alloc> tmp(buf);
-		str = std::move(tmp);
+		str = std::move(tmp);*/
 		return in;
 	}
 
