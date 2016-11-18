@@ -480,11 +480,12 @@ void TESTCASE_NAME(testcase_name)::Run()
 #define PASSED	std::cout << "[ PASSED ]" << std::endl
 
 // 遍历输出容器
-#define COUT(container) \
+#define COUT(container) do { \
 	std::string con_name = #container; \
 	std::cout << " " << con_name << " :"; \
-	for(auto it : container)	std::cout << " " << it; std::cout << std::endl
-
+	for(auto it : container)	std::cout << " " << it; std::cout << std::endl; \
+	} while(0)
+	
 // 输出容器调用函数后的结果
 #define FUN_AFTER(con, fun) do { \
 	std::string str = #fun; \
