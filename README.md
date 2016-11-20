@@ -90,7 +90,7 @@ ___
   `hash_functional` 中的 hash 函数对象用于计算元素的哈希值(在哈希表中的位置)，只对一些内置型别做了特化处理。
    
 ##容器
-   以下列出主要容器以及它们主要的 API，详情请到项目中查看。
+   以下列出主要容器以及它们主要的接口，详情请到项目中查看。
    * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/vector.h)（向量）
       * constructor
       * destructor
