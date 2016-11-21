@@ -58,12 +58,12 @@ namespace mystl {
 
             TEST(copy_backward_test) {        
                 int arr1[] = { 1,2,3,4,5 };
-                int exp[] = { 0,0,0,0,0,6,7,8,9,10 };
-                int act[] = { 0,0,0,0,0,6,7,8,9,10 };
-                std::copy_backward(arr1, arr1 + 5, exp + 5);
+                std::vector<int> exp{ 0,0,0,0,0,6,7,8,9,10 };
+                int act[] = { 0,0,0,0,0,6,7,8,9,10 };            
+                std::copy_backward(arr1, arr1 + 5, exp.begin() + 5);
                 mystl::copy_backward(arr1, arr1 + 5, act + 5);
                 EXPECT_CON_EQ(exp, act);
-                std::copy_backward(exp, exp + 8, exp + 9);
+                std::copy_backward(exp.begin(), exp.begin() + 8, exp.begin() + 9);
                 mystl::copy_backward(act, act + 8, act + 9);
                 EXPECT_CON_EQ(exp, act);
             }
@@ -123,8 +123,8 @@ namespace mystl {
                 std::fill_n(arr2, 5, 1);
                 mystl::fill_n(arr1, 5, 1);
                 EXPECT_CON_EQ(arr1, arr2);
-                std::fill_n(arr1, 10, 2);
-                mystl::fill_n(arr2, 10, 2);
+                std::fill_n(arr1 + 2, 3, 2);
+                mystl::fill_n(arr2 + 2, 3, 2);
                 EXPECT_CON_EQ(arr1, arr2);
             }
 
