@@ -1,15 +1,13 @@
 #ifndef MYTINYSTL_QUEUE_TEST_H_
 #define MYTINYSTL_QUEUE_TEST_H_
 
-// queue test : 测试 queue,priority_queue 的 API 和它们 push 的性能
+// queue test : 测试 queue, priority_queue 的接口和它们 push 的性能
 
 #include <iomanip>
 #include <iostream>
 #include <queue>
 
-#include "..\deque.h"
-#include "..\queue.h"
-#include "..\vector.h"
+#include "../queue.h"
 #include "test.h"
 
 namespace mystl {
