@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-#include "..\algorithm.h"
+#include "../algorithm.h"
 
 namespace mystl {
 	namespace test {
