@@ -8,25 +8,29 @@
 #include <numeric>
 #include <string>
 
-#include "..\algorithm.h"
-#include "..\vector.h"
+#include "../algorithm.h"
+#include "../vector.h"
 #include "test.h"
 
 namespace mystl {
-
-	#ifdef max
-	#undef max
-	#endif // max
-
-	#ifdef min
-	#undef min
-	#endif // min
-
-	#ifdef __transfer
-	#undef __transfer
-	#endif // __transfer
-
 	namespace test {
+
+#ifdef _MSC_VER
+
+#ifdef max
+#undef max
+#endif // max
+
+#ifdef min
+#undef min
+#endif // min
+
+#ifdef __transfer
+#undef __transfer
+#endif // __transfer
+
+#endif // _MSC_VER
+
 		namespace algorithm_test {
 
 			// 一些可能会用到的辅助数据和函数
