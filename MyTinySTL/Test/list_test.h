@@ -1,13 +1,13 @@
 #ifndef MYTINYSTL_LIST_TEST_H_
 #define MYTINYSTL_LIST_TEST_H_
 
-// list test : 测试 list 的 API 与 insert,sort 的性能
+// list test : 测试 list 的接口与 insert, sort 的性能
 
 #include <iomanip>
 #include <iostream>
 #include <list>
 
-#include "..\list.h"
+#include "../list.h"
 #include "test.h"
 
 namespace mystl {
