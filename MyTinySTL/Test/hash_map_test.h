@@ -1,13 +1,13 @@
 #ifndef MYTINYSTL_HASH_MAP_TEST_H_
 #define MYTINYSTL_HASH_MAP_TEST_H_
 
-// hash_map test : 测试 hash_map,hash_multimap 的 API 与它们 insert 的性能
+// hash_map test : 测试 hash_map,hash_multimap 的接口与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
 
-#include "..\hash_map.h"
+#include "../hash_map.h"
 #include "map_test.h"
 #include "test.h"
 
