@@ -1,13 +1,13 @@
 #ifndef MYTINYSTL_HASH_SET_TEST_H_
 #define MYTINYSTL_HASH_SET_TEST_H_
 
-// hash_set test : 测试 hash_set,hash_multiset 的 API 与它们 insert 的性能
+// hash_set test : 测试 hash_set, hash_multiset 的接口与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
 #include <unordered_set>
 
-#include "..\hash_set.h"
+#include "../hash_set.h"
 #include "set_test.h"
 #include "test.h"
 
