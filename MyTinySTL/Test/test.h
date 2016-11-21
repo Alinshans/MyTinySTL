@@ -517,7 +517,6 @@ void test_len(int len1,int len2,int len3, int wide) {
 #define TEST_LEN(len1, len2, len3, wide) \
 	test_len(len1, len2, len3, wide)
 
-
 // 测试调用的宏
 // 简单测试: 测试运行的正确性
 #define TEST(testcase_name) \
