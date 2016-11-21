@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_DEQUE_TEST_H_
 #define MYTINYSTL_DEQUE_TEST_H_
 
-// deque test : 测试 deque 的 API 和 insert 的性能
+// deque test : 测试 deque 的接口和 insert 的性能
 
 #include <iomanip>
 #include <iostream>
