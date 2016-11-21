@@ -11,22 +11,23 @@
 #include <sstream>
 #include <vector>
 
+#ifdef _WIN32
 #include <Windows.h>
+#endif
 
 namespace mystl {
 namespace test {
 
 // 改变输出流文本的颜色
-// 如 std::cout << red << "this text is red" << std::endl;    
-inline std::ostream& red(std::ostream &s) {
+inline std::ostream& red(std::ostream &os) {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    return s;
+    return os;
 }
-inline std::ostream& green(std::ostream &s) {
+inline std::ostream& green(std::ostream &os) {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    return s;
+    return os;
 }
 
 // TestCase 类
