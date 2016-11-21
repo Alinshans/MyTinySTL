@@ -1,13 +1,13 @@
 #ifndef MYTINYSTL_MAP_TEST_H_
 #define MYTINYSTL_MAP_TEST_H_
 
-// map test : 测试 map,multimap 的 API 与它们 insert 的性能
+// map test : 测试 map, multimap 的接口与它们 insert 的性能
 
 #include <iomanip>
 #include <iostream>
 #include <map>
 
-#include "..\map.h"
+#include "../map.h"
 #include "test.h"
 
 namespace mystl {
