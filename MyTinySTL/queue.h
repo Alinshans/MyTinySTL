@@ -12,188 +12,188 @@
 
 namespace mystl {
 
-	// 模板类 queue
-	// 参数一代表数据类型，参数二代表容器类型，缺省使用 deque 作为底层容器
-	// 用法与 STL queue 类似
-	template <class T, class Sequence = mystl::deque<T>>
-	class queue {
-	public:
-		// 使用底层容器的型别
-		typedef typename Sequence::value_type	value_type;
-		typedef typename Sequence::size_type	size_type;
-		typedef typename Sequence::reference	reference;
-		typedef typename Sequence::const_reference	const_reference;
+    // 模板类 queue
+    // 参数一代表数据类型，参数二代表容器类型，缺省使用 deque 作为底层容器
+    // 用法与 STL queue 类似
+    template <class T, class Sequence = mystl::deque<T>>
+    class queue {
+    public:
+        // 使用底层容器的型别
+        typedef typename Sequence::value_type    value_type;
+        typedef typename Sequence::size_type    size_type;
+        typedef typename Sequence::reference    reference;
+        typedef typename Sequence::const_reference    const_reference;
 
-	private:
-		Sequence c_;	//用底层容器来表现 queue
+    private:
+        Sequence c_;    //用底层容器来表现 queue
 
-	public:
-		// 构造、复制、移动函数
-		queue() :c_() {}
-		queue(size_type n, const T& value) :c_(n, value) {}
-		explicit queue(size_type n) :c_(n) {}
-		template <class InputIterator>
-		queue(InputIterator first, InputIterator last) : c_(first, last) {}
+    public:
+        // 构造、复制、移动函数
+        queue() :c_() {}
+        queue(size_type n, const T& value) :c_(n, value) {}
+        explicit queue(size_type n) :c_(n) {}
+        template <class InputIterator>
+        queue(InputIterator first, InputIterator last) : c_(first, last) {}
 
-		explicit queue(const Sequence& s) :c_(s) {}
-		explicit queue(Sequence&& s) :c_(std::move(s)) {}
+        explicit queue(const Sequence& s) :c_(s) {}
+        explicit queue(Sequence&& s) :c_(std::move(s)) {}
 
-		queue(const queue& rhs) :c_(rhs.c_) {}
-		queue(queue&& rhs) :c_(std::move(rhs.c_)) {}
+        queue(const queue& rhs) :c_(rhs.c_) {}
+        queue(queue&& rhs) :c_(std::move(rhs.c_)) {}
 
-		queue& operator=(const queue& rhs) { c_ = rhs.c_; return *this; }
-		queue& operator=(queue&& rhs) { c_ = rhs.c_; return *this; }
+        queue& operator=(const queue& rhs) { c_ = rhs.c_; return *this; }
+        queue& operator=(queue&& rhs) { c_ = rhs.c_; return *this; }
 
-		// 以下操作使用底层容器的操作
-		bool empty() const { return c_.empty(); }
-		size_type size() const { return c_.size(); }
+        // 以下操作使用底层容器的操作
+        bool empty() const { return c_.empty(); }
+        size_type size() const { return c_.size(); }
 
-		reference front() { return c_.front(); }
-		const_reference front() const { return c_.front(); }
-		reference back() { return c_.back(); }
-		const_reference back() const { return c_.back(); }
+        reference front() { return c_.front(); }
+        const_reference front() const { return c_.front(); }
+        reference back() { return c_.back(); }
+        const_reference back() const { return c_.back(); }
 
-		void push(const T& x) { c_.push_back(x); }
-		void pop() { c_.pop_front(); }
+        void push(const T& x) { c_.push_back(x); }
+        void pop() { c_.pop_front(); }
 
-		void clear() { while (!empty()) pop(); }
-		void swap(queue& rhs) { mystl::swap(c_, rhs.c_); }
+        void clear() { while (!empty()) pop(); }
+        void swap(queue& rhs) { mystl::swap(c_, rhs.c_); }
 
-	public:
-		friend bool operator==(const queue& lhs, const queue& rhs) {
-			return lhs.c_ == rhs.c_;
-		}
-		friend bool operator<(const queue& lhs, const queue& rhs) {
-			return lhs.c_ < rhs.c_;
-		}
-	};
+    public:
+        friend bool operator==(const queue& lhs, const queue& rhs) {
+            return lhs.c_ == rhs.c_;
+        }
+        friend bool operator<(const queue& lhs, const queue& rhs) {
+            return lhs.c_ < rhs.c_;
+        }
+    };
 
-	// 重载比较操作符
-	template <class T, class Sequence>
-	bool operator!=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
-		return !(lhs == rhs);
-	}
+    // 重载比较操作符
+    template <class T, class Sequence>
+    bool operator!=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
+        return !(lhs == rhs);
+    }
 
-	template <class T, class Sequence>
-	bool operator>(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
-		return rhs < lhs;
-	}
+    template <class T, class Sequence>
+    bool operator>(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
+        return rhs < lhs;
+    }
 
-	template <class T, class Sequence>
-	bool operator<=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
-		return !(rhs < lhs);
-	}
+    template <class T, class Sequence>
+    bool operator<=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
+        return !(rhs < lhs);
+    }
 
-	template <class T, class Sequence>
-	bool operator>=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
-		return !(lhs < rhs);
-	}
+    template <class T, class Sequence>
+    bool operator>=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs) {
+        return !(lhs < rhs);
+    }
 
-	// 重载 mystl 的 swap
-	template <class T, class Sequence>
-	void swap(queue<T, Sequence>& lhs, queue<T, Sequence>& rhs) {
-		lhs.swap(rhs);
-	}
+    // 重载 mystl 的 swap
+    template <class T, class Sequence>
+    void swap(queue<T, Sequence>& lhs, queue<T, Sequence>& rhs) {
+        lhs.swap(rhs);
+    }
 
-	/**************************************************************************************/
+    /**************************************************************************************/
 
-	// 模板类 priority_queue
-	// 参数一代表数据类型，参数二代表容器类型，缺省使用 vector 作为底层容器
-	// 参数三代表比较权值的方式，缺省使用 mystl 的 less 作为比较方式
-	// 用法与 STL priority_queue 类似
-	template <class T, class Sequence = mystl::vector<T>, class Compare = mystl::less<T>>
-	class priority_queue {
-	public:
-		// 使用底层容器的型别
-		typedef typename Sequence::value_type	value_type;
-		typedef typename Sequence::size_type	size_type;
-		typedef typename Sequence::reference	reference;
-		typedef typename Sequence::const_reference	const_reference;
+    // 模板类 priority_queue
+    // 参数一代表数据类型，参数二代表容器类型，缺省使用 vector 作为底层容器
+    // 参数三代表比较权值的方式，缺省使用 mystl 的 less 作为比较方式
+    // 用法与 STL priority_queue 类似
+    template <class T, class Sequence = mystl::vector<T>, class Compare = mystl::less<T>>
+    class priority_queue {
+    public:
+        // 使用底层容器的型别
+        typedef typename Sequence::value_type    value_type;
+        typedef typename Sequence::size_type    size_type;
+        typedef typename Sequence::reference    reference;
+        typedef typename Sequence::const_reference    const_reference;
 
-	private:
-		Sequence c_;	//底层容器
-		Compare comp_;	//权值比较大小的标准
+    private:
+        Sequence c_;    //底层容器
+        Compare comp_;    //权值比较大小的标准
 
-	public:
-		// 构造、复制、移动函数
-		priority_queue() :c_() {}
-		priority_queue(size_type n, const T& value) :c_(n, value) {
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-		}
-		explicit priority_queue(size_type n) :c_(n) {
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-		}
-		template <class InputIterator>
-		priority_queue(InputIterator first, InputIterator last): c_(first, last) {
-			mystl::make_heap(c_.begin(), c_.end(), comp_); 
-		}
+    public:
+        // 构造、复制、移动函数
+        priority_queue() :c_() {}
+        priority_queue(size_type n, const T& value) :c_(n, value) {
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+        }
+        explicit priority_queue(size_type n) :c_(n) {
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+        }
+        template <class InputIterator>
+        priority_queue(InputIterator first, InputIterator last): c_(first, last) {
+            mystl::make_heap(c_.begin(), c_.end(), comp_); 
+        }
 
-		explicit priority_queue(const Sequence& s) :c_(s) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
-		explicit priority_queue(Sequence&& s) :c_(std::move(s)) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
+        explicit priority_queue(const Sequence& s) :c_(s) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
+        explicit priority_queue(Sequence&& s) :c_(std::move(s)) { mystl::make_heap(c_.begin(), c_.end(), comp_); }
 
-		priority_queue(const priority_queue& rhs) :c_(rhs.c_), comp_(rhs.comp_) { 
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-		}
-		priority_queue(priority_queue&& rhs) :c_(std::move(rhs.c_)), comp_(std::move(rhs.comp_)) {
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-		}
+        priority_queue(const priority_queue& rhs) :c_(rhs.c_), comp_(rhs.comp_) { 
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+        }
+        priority_queue(priority_queue&& rhs) :c_(std::move(rhs.c_)), comp_(std::move(rhs.comp_)) {
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+        }
 
-		priority_queue& operator=(const priority_queue& rhs) {
-			c_ = rhs.c_;
-			comp_ = rhs.comp_;
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-			return *this;
-		}
-		priority_queue& operator=(priority_queue&& rhs) {
-			c_ = std::move(rhs.c_);
-			comp_ = std::move(rhs.comp_);
-			mystl::make_heap(c_.begin(), c_.end(), comp_);
-			return *this;
-		}
+        priority_queue& operator=(const priority_queue& rhs) {
+            c_ = rhs.c_;
+            comp_ = rhs.comp_;
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+            return *this;
+        }
+        priority_queue& operator=(priority_queue&& rhs) {
+            c_ = std::move(rhs.c_);
+            comp_ = std::move(rhs.comp_);
+            mystl::make_heap(c_.begin(), c_.end(), comp_);
+            return *this;
+        }
 
-	public:
-		// 以下操作使用底层容器的操作
-		bool empty() const { return c_.empty(); }
-		size_type size() const { return c_.size(); }
+    public:
+        // 以下操作使用底层容器的操作
+        bool empty() const { return c_.empty(); }
+        size_type size() const { return c_.size(); }
 
-		const_reference top() const { return c_.front(); }
-		void push(const T& x);
-		void pop();
+        const_reference top() const { return c_.front(); }
+        void push(const T& x);
+        void pop();
 
-		void clear() { while (!empty())	pop(); }
-		void swap(priority_queue& rhs) { mystl::swap(c_, rhs.c_); mystl::swap(comp_, rhs.comp_); }
-	};
+        void clear() { while (!empty())    pop(); }
+        void swap(priority_queue& rhs) { mystl::swap(c_, rhs.c_); mystl::swap(comp_, rhs.comp_); }
+    };
 
-	// 插入一个元素
-	template <class T, class Sequence, class Compare>
-	void priority_queue<T, Sequence, Compare>::push(const T& x) {
-		try {
-			c_.push_back(x);
-			mystl::push_heap(c_.begin(), c_.end(), comp_);
-		}
-		catch (...) {
-			c_.clear();
-		}
-	}
+    // 插入一个元素
+    template <class T, class Sequence, class Compare>
+    void priority_queue<T, Sequence, Compare>::push(const T& x) {
+        try {
+            c_.push_back(x);
+            mystl::push_heap(c_.begin(), c_.end(), comp_);
+        }
+        catch (...) {
+            c_.clear();
+        }
+    }
 
-	// 弹出队首元素
-	template <class T, class Sequence, class Compare>
-	void priority_queue<T, Sequence, Compare>::pop() {
-		try {
-			mystl::pop_heap(c_.begin(), c_.end(), comp_);
-			c_.pop_back();
-		}
-		catch (...) {
-			c_.clear();
-		}
-	}
+    // 弹出队首元素
+    template <class T, class Sequence, class Compare>
+    void priority_queue<T, Sequence, Compare>::pop() {
+        try {
+            mystl::pop_heap(c_.begin(), c_.end(), comp_);
+            c_.pop_back();
+        }
+        catch (...) {
+            c_.clear();
+        }
+    }
 
-	// 重载 mystl 的 swap
-	template <class T, class Sequence, class Compare>
-	void swap(priority_queue<T, Sequence, Compare>& lhs, 
-		priority_queue<T, Sequence, Compare>& rhs) {
-		lhs.swap(rhs);
-	}
+    // 重载 mystl 的 swap
+    template <class T, class Sequence, class Compare>
+    void swap(priority_queue<T, Sequence, Compare>& lhs, 
+        priority_queue<T, Sequence, Compare>& rhs) {
+        lhs.swap(rhs);
+    }
 }
 #endif // !MYTINYSTL_QUEUE_H_
 
