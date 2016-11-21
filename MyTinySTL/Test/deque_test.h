@@ -7,7 +7,7 @@
 #include <iostream>
 #include <deque>
 
-#include "..\deque.h"
+#include "../deque.h"
 #include "test.h"
 
 namespace mystl {
