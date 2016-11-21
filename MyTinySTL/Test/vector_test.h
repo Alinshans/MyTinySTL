@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "..\vector.h"
+#include "../vector.h"
 #include "test.h"
 
 namespace mystl {
