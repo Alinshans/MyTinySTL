@@ -4,10 +4,6 @@
 // 仅仅针对 sort, binary_search 做了性能测试
 
 #include <algorithm>
-#include <ctime>
-#include <iomanip>
-#include <iostream>
-#include <string>
 
 #include "../algorithm.h"
 
