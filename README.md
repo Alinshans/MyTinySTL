@@ -291,7 +291,7 @@ ___
          * bucker_count
          * max_bucket_count
          * elems_in_bucket
-   * [basic_string](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/basic_string.h)
+   * [basic_string](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/basic_string.h) （字符串）
       * constructor
       * destructor
       * operator=
