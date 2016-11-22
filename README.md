@@ -1,15 +1,15 @@
 MyTinySTL
 =======
 ####简介
-   这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，加入了一些c++标准库中的内容，也有部分作了修改。这个项目仅作为**学习用途**，若要下载运行，要将解决方案配置为`Release`。如发现错误，还请指出。<br>
+   这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，加入了一些c++标准库中的内容，也有部分作了修改。这个项目仅作为**学习用途**，请勿用作其它用途。若想下载使用或测试，只需在`Clone or download`下选择`Download ZIP`，然后将`MyTinySTL`下的`.h`文件加入项目中即可。如发现错误，还请在`Issues`中指出。欢迎`Fork`和`Pull requests`改善、补充代码。<br>
     
 ####编译环境
-   操作系统: Windows 10<br>
-   编译环境: Visual Studio 2015<br>
-   (ps: 建议内存大小 8G 以上)<br>
-    <br>
-   以下是具体实现的内容。<br>
-  
+   * `MyTinySTL`下的`.h`文件可跨平台使用
+   * 本机测试环境
+      * OS:  Windows 10
+      * IDE: Visual Studio 2015
+   * 若想进行全部单元测试，建议内存大小在**8G**以上
+
 ___
 ##目录
 * [配置器](#配置器)
@@ -32,6 +32,7 @@ ___
   * set
   * hash_map
   * hash_set
+  * basic_string
 * [算法](#算法)
   * 基本算法
   * 数值算法
@@ -105,6 +106,7 @@ ___
          * size
          * max_size
          * capacity
+         * shrink_to_fit
       * Element access
          * operator[]
          * at
@@ -285,10 +287,50 @@ ___
          * count
          * equal_range
       * Buckets
-         * reserve
+         * reserve   
          * bucker_count
          * max_bucket_count
          * elems_in_bucket
+   * [basic_string](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/basic_string.h)
+      * constructor
+      * destructor
+      * operator=
+      * Iterators
+         * begin
+         * end
+         * rbegin
+         * rend
+      * Capacity
+         * empty
+         * size
+         * length
+         * max_size
+         * capacity
+         * shrink_to_fit
+      * Element access
+         * operator[]
+         * at
+         * front
+         * back
+         * data
+         * c_str
+      * Modifiers
+         * insert
+         * erase
+         * clear
+         * add_back
+         * add_front
+      * Operations
+         * compare
+         * substr
+         * remove
+         * remove_if
+         * replace
+         * replace
+         * find
+         * rfind
+         * count
+         * swap
          
 ##算法
    * [基本算法](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algobase.h)（13个） 定义在 [algobase.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/algobase.h)
