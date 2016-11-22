@@ -320,6 +320,7 @@ ___
          * clear
          * add_back
          * add_front
+         * operator+=
       * Operations
          * compare
          * substr
