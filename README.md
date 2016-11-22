@@ -331,6 +331,7 @@ ___
          * find
          * rfind
          * count
+         * reverse
          * swap
          
 ##算法
