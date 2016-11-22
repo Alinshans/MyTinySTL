@@ -4,6 +4,7 @@
 // 这个头文件包含了应用于 hash 的函数对象，用于计算元素位置
 
 #include <cstddef>
+#include "string.h"
 
 namespace mystl {
 
