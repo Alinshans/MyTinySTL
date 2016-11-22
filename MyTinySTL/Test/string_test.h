@@ -47,15 +47,6 @@ namespace mystl {
                 mystl::string str10 = str6;
                 mystl::string str11 = std::move(str10);
                 str11.~basic_string();
-#if 0
-                mystl::string wrong_init_str1(str2, 6);
-                mystl::string wrong_init_str2(str2, -1, 3);
-                mystl::string wrong_init_str3(str2, 6, 3);
-                mystl::string wrong_init_str4(str2, 1, 5);
-                mystl::string wrong_init_str5(s, s + 8);
-                mystl::string wrong_init_str6(s + 3, s + 1);
-                mystl::string wrong_init_str7(str2.begin(), str2.begin() + 10);
-#endif // construct out_of_range
 
                 STR_COUT(str);
                 STR_FUN_AFTER(str, str = 'x');
@@ -68,12 +59,6 @@ namespace mystl {
                 FUN_VALUE(str.back());
                 FUN_VALUE(str[1]);
                 FUN_VALUE(str.at(2));
-#if 0
-                FUN_VALUE(str[-1]);
-                FUN_VALUE(str[10]);
-                FUN_VALUE(str.at(-1));
-                FUN_VALUE(str.at(10));
-#endif // access out_of_range
                 STR_COUT(str.data());
                 STR_COUT(str.c_str());
                 std::cout << std::boolalpha;
@@ -83,6 +68,7 @@ namespace mystl {
                 FUN_VALUE(str.size());
                 FUN_VALUE(str.capacity());
                 FUN_VALUE(str.max_size());
+
                 STR_FUN_AFTER(str, str.insert(0, 1, 'a'));
                 STR_FUN_AFTER(str, str.insert(1, "sdf"));
                 STR_FUN_AFTER(str, str.insert(0, str2));
@@ -90,25 +76,11 @@ namespace mystl {
                 STR_FUN_AFTER(str, str.insert(str.end(), 3, 'x'));
                 STR_FUN_AFTER(str, str.insert(str.end(), "yz"));
                 STR_FUN_AFTER(str, str.insert(str.end(), s, s + 3));
-#if 0
-                //STR_FUN_AFTER(str, str.insert(-1, 1, 'a'));
-                //STR_FUN_AFTER(str, str.insert(30, "abc"));
-                //STR_FUN_AFTER(str, str.insert(str.end(), s, s + 10));
-                //STR_FUN_AFTER(str, str.insert(str.end(), s + 5, s + 3));
-                //STR_FUN_AFTER(str, str.insert(str.end(), str2.begin(), str2.begin() + 6));
-                STR_FUN_AFTER(str, str.insert(str.end(), s + 3, s + 1));
-#endif // insert out_of_range
                 STR_FUN_AFTER(str, str.erase(0));
                 STR_FUN_AFTER(str, str.erase(0, 2));
                 STR_FUN_AFTER(str, str.erase(str.begin()));
                 STR_FUN_AFTER(str, str.erase(str.begin(), 1));
                 STR_FUN_AFTER(str, str.erase(str.begin(), str.begin() + 1));
-#if 0
-                STR_FUN_AFTER(str, str.erase(-1));
-                STR_FUN_AFTER(str, str.erase(0,30));
-                STR_FUN_AFTER(str, str.erase(str.end(),2));
-                STR_FUN_AFTER(str, str.erase(str.begin() + 5, str.begin() + 1));
-#endif // erase out_of_range
                 STR_FUN_AFTER(str, str.clear());
                 STR_FUN_AFTER(str, str.add_back('x'));
                 STR_FUN_AFTER(str, str.add_back('x', 2));
@@ -120,12 +92,7 @@ namespace mystl {
                 STR_FUN_AFTER(str, str.add_front("ab"));
                 STR_FUN_AFTER(str, str.add_front("none", 0));
                 STR_FUN_AFTER(str, str.add_front(s, s + 3));
-#if 0
-                STR_FUN_AFTER(str, str.add_back("nosix", 6));
-                STR_FUN_AFTER(str, str.add_back(s, s + 10));
-                STR_FUN_AFTER(str, str.add_front("nosix", 6));
-                STR_FUN_AFTER(str, str.add_front(s + 5, s + 3));
-#endif // add out_of_range
+
                 FUN_VALUE(str.compare("zzzzzzzzzzzzzzzz"));
                 FUN_VALUE(str.compare("aaaaaaaaaaaaaaaaaaaaaa"));
                 FUN_VALUE(str.compare("zzzzzzzzzzzzzzzzzzz"));
@@ -137,10 +104,6 @@ namespace mystl {
                 FUN_VALUE(str.substr(10));
                 FUN_VALUE(str.substr(10,5));
                 FUN_VALUE(str.substr(10,20));
-#if 0
-                FUN_VALUE(str.substr(-1));
-                FUN_VALUE(str.substr(30));
-#endif // substr out_of_range
                 STR_FUN_AFTER(str, str.remove('a'));
                 STR_FUN_AFTER(str, str.remove_if([](char c) {return c == 'b'; }));
                 STR_FUN_AFTER(str, str.replace('c','x'));
@@ -157,15 +120,10 @@ namespace mystl {
                 FUN_VALUE(str.rfind("ooo"));
                 FUN_VALUE(str.rfind("def", 10));
                 FUN_VALUE(str.rfind(str2));
-#if 0
-                FUN_VALUE(str.find('o', 30));
-                FUN_VALUE(str.find('o', -1));
-                FUN_VALUE(str.find("ooo", 30));
-                FUN_VALUE(str.find("ooo", -1));
-#endif // find out_of_range
                 FUN_VALUE(str.count('c'));
                 FUN_VALUE(str.count('o'));
                 FUN_VALUE(str.count('o', 1));
+                STR_FUN_AFTER(str, str.reverse());
                 STR_FUN_AFTER(str, str.swap(str2));
                 FUN_VALUE(str.size());
                 FUN_VALUE(str.length());
