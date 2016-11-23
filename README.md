@@ -4,7 +4,7 @@ MyTinySTL
    这是一个小型的STL，为了练习`数据结构`、`模板编程`和`c++11`的特性，而做的一个练习。这个小型的STL实现了绝大部分STL中原有的函数、容器，加入了一些c++标准库中的内容，也有部分作了修改。这个项目仅作为**学习用途**，请勿用作其它用途。若想下载使用或测试，只需在`Clone or download`下选择`Download ZIP`，然后将`MyTinySTL`下的`.h`文件加入项目中即可。如发现错误，还请在`Issues`中指出。欢迎`Fork`和`Pull requests`改善、补充代码。<br>
     
 ####编译环境
-   * `MyTinySTL`下的`.h`文件可跨平台使用
+   * [MyTinySTL](https://github.com/Alinshans/MyTinySTL/tree/master/MyTinySTL)下的所有`header file`可跨平台使用
    * 本机测试环境
       * OS:  Windows 10
       * IDE: Visual Studio 2015
