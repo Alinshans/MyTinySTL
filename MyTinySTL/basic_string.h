@@ -4,8 +4,6 @@
 // 这个头文件包含一个模板类 basic_string
 // 用于表示字符串类型
 
-#include <iostream>
-
 #include "iterator.h"
 #include "memory.h"
 #include "type_traits.h"
