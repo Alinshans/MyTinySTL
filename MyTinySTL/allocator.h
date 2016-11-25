@@ -1,67 +1,60 @@
-#ifndef MYTINYSTL_CONSTRUCT_H_
-#define MYTINYSTL_CONSTRUCT_H_
+#ifndef MYTINYSTL_ALLOCATOR_H_
+#define MYTINYSTL_ALLOCATOR_H_
 
-// 这个头文件包含两个全局函数 construct，destroy
-// construct 负责对象的构造
-// destroy   负责对象的析构
+// 这个头文件包含一个模板类 allocator，用于对象内存的分配与释放
 
-#include <new>
-
-#include "type_traits.h"
-#include "iterator.h"
+#include "alloc.h"    
 
 namespace mystl {
-    
-    // construct
-    // 构造对象的内容
-    // 版本1：接受一个指针
-    // 版本2：接受一个指针和初值
-    template <class T1>
-    inline void construct(T1* p) {
-        new (static_cast<void*>(p)) T1();
+
+    // 模板类：allocator
+    // 接受两个参数，参数一表示对象的类型，参数二表示空间配置器的类型
+    // 有两个成员函数:
+    // allocate   用于对象内存的分配，提供两个版本
+    // deallocate 用于对象内存的释放，提供两个版本
+    template <class T, class Alloc>
+    class allocator {
+    public:
+        typedef T            value_type;
+        typedef T*           pointer;
+        typedef const T*     const_pointer;
+        typedef T&           reference;
+        typedef const T&     const_reference;
+        typedef size_t       size_type;
+        typedef ptrdiff_t    difference_type;
+
+    public:
+        static T*   allocate();
+        static T*   allocate(size_type n);
+        static void deallocate(T* ptr);
+        static void deallocate(T* ptr, size_type n);
+    };
+
+    // allocate 第一个版本：没有参数，返回分配内存的起始位置
+    template <class T, class Alloc>
+    T* allocator<T, Alloc>::allocate() {
+        return static_cast<T*>(Alloc::allocate(sizeof(T)));
     }
 
-    template <class T1, class T2>
-    inline void construct(T1* p, const T2& value) {
-        new (static_cast<void*>(p)) T1(value);
+    // allocate 第二个版本：接受一个值，表示要分配的对象个数，返回分配内存的起始位置
+    template <class T, class Alloc>
+    T* allocator<T, Alloc>::allocate(size_type n) {
+        if (n == 0)    return nullptr;
+        return static_cast<T*>(Alloc::allocate(n * sizeof(T)));
     }
 
-    // destroy
-    // 将对象析构
-    // 版本1：接受一个指针
-    // 版本2：接受两个迭代器，指向析构区间首尾
-    template <class T>
-    inline void destroy(T* pointer) {
-        pointer->~T();
+    // deallocate 第一个版本：接受一个指针，释放其内存，无返回值
+    template <class T, class Alloc>
+    void allocator<T, Alloc>::deallocate(T* ptr) {
+        if (ptr == nullptr)    return;
+        Alloc::deallocate(ptr, sizeof(T));
     }
 
-    template <class ForwardIterator>
-    inline void destroy(ForwardIterator first, ForwardIterator last) {
-        __destroy(first, last, value_type(first));
+    // deallocate 第二个版本：接受一个指针和一个数值，释放 n 个对象的内存，无返回值
+    template <class T, class Alloc>
+    void allocator<T, Alloc>::deallocate(T* ptr, size_type n) {
+        if (ptr == nullptr)    return;
+        Alloc::deallocate(ptr, n * sizeof(T));
     }
-
-    template <class ForwardIterator, class T>
-    inline void __destroy(ForwardIterator first, ForwardIterator last, T*) {
-        typedef typename __type_traits<T>::has_trivial_destructor TrivialDestructor;
-        return __destroy_aux(first, last, TrivialDestructor());
-    }
-
-    template <class ForwardIterator>
-    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type) {
-        for (; first != last; ++first)
-            destroy(&*first);
-    }
-
-    // 如果是对象有 trivial destructor，则什么也不做
-    template <class ForwardIterator>
-    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __true_type) {}
-
-    // 如果销毁的对象是指针，则什么也不做
-    inline void destroy(char*, char*) {}
-    inline void destroy(wchar_t*, wchar_t*) {}
-    inline void destroy(int*, int*) {}
-    inline void destroy(long*, long*) {}
-    inline void destroy(float*, float*) {}
-    inline void destroy(double*, double*) {}
 }
-#endif // !MYTINYSTL_CONSTRUCT_H_
+#endif // !MYTINYSTL_ALLOCATOR_H_
