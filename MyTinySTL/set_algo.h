@@ -1,8 +1,9 @@
 #ifndef MYTINYSTL_SET_ALGO_H_
 #define MYTINYSTL_SET_ALGO_H_
 
-// 这个头文件包含 set 的四种算法：union(并集),intersection(交集),difference(差集),symmetric difference(对称差集)
-// 所有函数要求序列有序
+// 这个头文件包含 set 的四种算法:
+// union(并集)， intersection(交集)， difference(差集)， symmetric difference(对称差集)
+// 所有函数都要求序列有序
 
 #include "algobase.h"
 #include "iterator.h"
