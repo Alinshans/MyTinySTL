@@ -15,7 +15,6 @@ namespace mystl {
     // copy
     // 把 [first, last)区间内的元素拷贝到 [result, result + (last - first))内
     /*********************************************************************************/
-    // 泛化版本
     template <class InputIterator, class OutputIterator>
     inline OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result) {
         return __copy_dispatch<InputIterator, OutputIterator>()(first, last, result);
@@ -33,7 +32,8 @@ namespace mystl {
         return result + (last - first);
     }
 
-    // 函数对象: __copy_dispatch 的泛化版本
+    // 根据类型性质分派不同函数
+    // __copy_dispatch 的泛化版本
     template <class InputIterator, class OutputIterator>
     struct __copy_dispatch {
         OutputIterator operator()(InputIterator first, InputIterator last, OutputIterator result) {
@@ -41,7 +41,7 @@ namespace mystl {
         }
     };
 
-    // 函数对象: __copy_dispatch 的偏特化版本，两个参数都是 T* 指针形式
+    // __copy_dispatch 的偏特化版本，两个参数都是 T* 形式
     template <class T>
     struct __copy_dispatch<T*, T*> {
         T* operator()(T* first, T* last, T* result) {
@@ -50,7 +50,7 @@ namespace mystl {
         }
     };
 
-    // 函数对象: __copy_dispatch的偏特化版本，第一个参数是 const T* 指针形式，第二个参数是 T* 指针形式
+    // __copy_dispatch的偏特化版本，第一个参数是 const T* 形式，第二个参数是 T* 形式
     template <class T>
     struct __copy_dispatch<const T*, T*> {
         T* operator()(const T* first, const T* last, T* result) {
@@ -96,7 +96,7 @@ namespace mystl {
     // __copy_t : 指针所指对象具备 non-trivial assignment operator
     template <class T>
     inline T* __copy_t(const T* first, const T* last, T* result, __false_type) {
-        // 原生指针也是 RandomAccessIterator，交给 __copy_d 处理
+        // 原生指针也是 random access iterator，交给 __copy_d 处理
         return __copy_d(first, last, result, static_cast<ptrdiff_t*>(0));
     }
 
@@ -107,48 +107,15 @@ namespace mystl {
     template <class BidirectionalIterator1, class BidirectionalIterator2>
     inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
         BidirectionalIterator1 last, BidirectionalIterator2 result) {
-        typedef typename __type_traits<typename iterator_traits<BidirectionalIterator2>::value_type>
-            ::has_trivial_assignment_operator    Trivial;
-        return __copy_backward_dispatch<BidirectionalIterator1, BidirectionalIterator2, Trivial()>
-            ::copy(first, last, result);
+        return __copy_backward(first, last, result,
+            distance_type(first), iterator_category(first));
     }
-
-    // 函数对象: __copy_backward_dispatch 的泛化版本
-    template <class BidirectionalIterator1, class BidirectionalIterator2, class Type>
-    struct __copy_backward_dispatch {
-        typedef typename iterator_traits<BidirectionalIterator1>::iterator_category Category;
-        typedef typename iterator_traits<BidirectionalIterator1>::difference_type Distance;
-
-        static BidirectionalIterator2 copy(BidirectionalIterator1 first,
-            BidirectionalIterator1 last, BidirectionalIterator2 result) {
-            return __copy_backward(first, last, result, Category(), static_cast<Distance*>(0));
-        }
-    };
-
-    // 函数对象: __copy_backward_dispatch 的偏特化版本，两个参数都是 T*
-    template <class T>
-    struct __copy_backward_dispatch<T*, T*, __true_type> {
-        static T* copy(const T* first, const T* last, T* result) {
-            const auto n = last - first;
-            memmove(result - n, first, sizeof(T) * n);
-            return result - n;
-        }
-    };
-
-    // 函数对象: __copy_backward_dispatch 的偏特化版本，第一个参数是 const T*，第二个参数是 T*
-    template <class T>
-    struct __copy_backward_dispatch<const T*, T*, __true_type> {
-        static T* copy(const T* first, const T* last, T* result) {
-            return __copy_backward_dispatch<T*, T*, __true_type>
-                ::copy(first, last, result);
-        }
-    };
 
     // __copy_backward 的 bidirectional_iterator_tag 版本
     template <class BidirectionalIterator1, class BidirectionalIterator2, class Distance>
     inline BidirectionalIterator2 __copy_backward(BidirectionalIterator1 first,
         BidirectionalIterator1 last, BidirectionalIterator2 result,
-        bidirectional_iterator_tag, Distance*) {
+        Distance*, bidirectional_iterator_tag) {
         while (first != last) {
             *--result = *--last;
         }
@@ -159,7 +126,7 @@ namespace mystl {
     template <class BidirectionalIterator1, class BidirectionalIterator2, class Distance>
     inline BidirectionalIterator2 __copy_backward(BidirectionalIterator1 first,
         BidirectionalIterator1 last, BidirectionalIterator2 result,
-        random_access_iterator_tag, Distance*) {
+        Distance*, random_access_iterator_tag) {
         for (auto n = last - first; n > 0; --n) {
             *--result = *--last;
         }
@@ -219,7 +186,7 @@ namespace mystl {
         for (; first1 != last1; ++first1, ++first2) {
             if (*first1 != *first2)    return false;
         }
-        return true;    //全部相等，返回true
+        return true;    // 全部相等，返回 true
     }
 
     // 重载版本使用函数对象 comp 代替比较操作
@@ -229,7 +196,7 @@ namespace mystl {
         for (; first1 != last1; ++first1, ++first2) {
             if (!comp(*first1, *first2))    return false;    
         }
-        return true;    //全部相等，返回true
+        return true;    // 全部相等，返回 true
     }
 
     /*********************************************************************************/
@@ -243,7 +210,7 @@ namespace mystl {
         }
     }
 
-    //为 char* 类型提供特化版本
+    // 为 one-byte 类型提供特化版本
     inline void fill(unsigned char* first, unsigned char* last, const unsigned char& c) {
         unsigned char tmp = c;
         memset(first, tmp, last - first);
@@ -269,25 +236,6 @@ namespace mystl {
             *first = value;
         }
         return first;
-    }
-
-    //为 char* 类型提供特化版本
-    template <class Size>
-    inline unsigned char* fill_n(unsigned char* first, Size n, const unsigned char& c) {
-        fill(first, first + n, c);
-        return first + n;
-    }
-
-    template <class Size>
-    inline signed char* fill_n(signed char* first, Size n, const signed char& c) {
-        fill(first, first + n, c);
-        return first + n;
-    }
-
-    template <class Size>
-    inline char* fill_n(char* first, Size n, const char& c) {
-        fill(first, first + n, c);
-        return first + n;
     }
 
     /*********************************************************************************/
@@ -341,13 +289,12 @@ namespace mystl {
     bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
         InputIterator2 first2, InputIterator2 last2) {
         for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
-            if (*first1 < *first2)    //情况(1)
+            if (*first1 < *first2)                  // 情况(1)
                 return true;
             if (*first2 < *first1)
                 return false;
-            //若相等则进行下一组比较
         }
-        return first1 == last1 && first2 != last2;    //只有情况(2)才返回 true
+        return first1 == last1 && first2 != last2;  // 情况(2)
     }
 
     // 重载版本使用函数对象 comp 代替比较操作
@@ -370,7 +317,7 @@ namespace mystl {
         const auto len2 = last2 - first2;
         // 先比较相同长度的部分
         const auto result = memcmp(first1, first2, mystl::min(len1, len2));
-        // 若相等，则较长的比较大
+        // 若相等，长度较长的比较大
         return result != 0 ? result < 0 : len1 < len2;
     }
     
