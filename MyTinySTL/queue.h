@@ -170,7 +170,7 @@ class priority_queue {
 
     void push(const value_type& value) {
         try {
-            s_.push_back(x);
+            s_.push_back(value);
             mystl::push_heap(s_.begin(), s_.end(), comp_);
         }
         catch (...) { s_.clear(); }
