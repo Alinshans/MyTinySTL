@@ -1,4 +1,5 @@
 language: cpp
+sudo: false
 dist: trusty
 compiler:
  - gcc
