@@ -1,9 +1,8 @@
 language: cpp
-sudu: false
+dist: trusty
 compiler:
-- gcc
-os:
-- windows
+ - gcc
+ - clang
 branches:
   only:
   - master
