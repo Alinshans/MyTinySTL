@@ -18,9 +18,8 @@
 namespace mystl {
 namespace test {
 
+// 平台，编辑器相关
 #ifdef _WIN32
-
-// 改变输出流文本的颜色
 inline std::ostream& red(std::ostream &os) {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
@@ -31,13 +30,16 @@ inline std::ostream& green(std::ostream &os) {
     SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     return os;
 }
-
 #endif // _WIN32
 
 #if !defined(_WIN32)
 #define red   ""
 #define green ""
 #endif // !_WIN32
+
+#if !defined(_MSC_VER)
+#define sprintf_s sprintf
+#endif
 
 } // namespace test
 
