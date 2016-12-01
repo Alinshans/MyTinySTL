@@ -1,5 +1,5 @@
 language: cpp
-sudu: required
+sudu: false
 compiler:
 - gcc
 os:
