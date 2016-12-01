@@ -1,7 +1,5 @@
 language: cpp
-sudo: required
-dist: trusty
 compiler:
-- msvc
+- gcc
 os:
 - windows
