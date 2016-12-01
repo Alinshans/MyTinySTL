@@ -4,5 +4,8 @@ compiler:
 - gcc
 os:
 - windows
-
-./configure && make && make test
+branches:
+  only:
+  - master
+notifications:
+  email: false
