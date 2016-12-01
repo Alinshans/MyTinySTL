@@ -4,3 +4,7 @@ compiler:
 - gcc
 os:
 - windows
+branches:
+  only
+  - master
+./configure && make && make test
