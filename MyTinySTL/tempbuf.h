@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <climits>
 
 #include "type_traits.h"
 #include "uninitialized.h"
@@ -36,7 +37,7 @@ pair<T*, ptrdiff_t> __get_temporary_buffer(ptrdiff_t len, T*) {
             return pair<T*, ptrdiff_t>(tmp, len);  // 申请成功就返回
         len /= 2;                                  // 申请失败时减少 len 的大小
     }
-    return pair<T*, ptrdiff_t>((static_cast<T*>(0), static_cast<ptrdiff_t>(0));
+    return pair<T*, ptrdiff_t>((static_cast<T*>(0), static_cast<ptrdiff_t>(0)));
 }
 
 // 释放指针指向的空间
