@@ -1,4 +1,5 @@
 language: cpp
+sudu: required
 compiler:
 - gcc
 os:
