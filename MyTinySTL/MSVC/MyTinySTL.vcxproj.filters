@@ -141,9 +141,18 @@
     <ClInclude Include="Test\algorithm_performance_test.h">
       <Filter>头文件\Text</Filter>
     </ClInclude>
+    <ClInclude Include="basic_string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\string_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Test\test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
