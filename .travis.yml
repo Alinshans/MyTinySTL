@@ -11,5 +11,4 @@ notifications:
 before_install:
 - echo $LANG
 - echo $LC_ALL
-script:
-- make -j 4 check
+
