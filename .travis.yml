@@ -1,6 +1,5 @@
 language: cpp
-sudo: required
-dist: trusty
+sudo: false
 compiler:
  - gcc
  - clang
@@ -9,3 +8,8 @@ branches:
   - master
 notifications:
   email: false
+before_install:
+- echo $LANG
+- echo $LC_ALL
+script:
+- make -j 4 check
