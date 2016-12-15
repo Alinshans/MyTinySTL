@@ -11,19 +11,9 @@ namespace mystl {
 // push_heap
 // 该函数接受两个迭代器，表示一个 heap 容器的首尾，并且新元素已经插入到底部容器的最尾端，调整 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator>
-inline void push_heap(RandomAccessIterator first, RandomAccessIterator last) {
-    // 新元素应该已置于底部容器的最尾端
-    __push_heap(first, last, distance_type(first), value_type(first));
-}
-
 template <class RandomAccessIterator, class Distance, class T>
-inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last, Distance*, T*) {
-    __push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
-}
-
-template <class RandomAccessIterator, class Distance, class T>
-void __push_heap_aux(RandomAccessIterator first, Distance holeIndex, Distance topIndex, T value) {
+void __push_heap_aux(RandomAccessIterator first, Distance holeIndex, 
+                     Distance topIndex, T value) {
     auto parent = (holeIndex - 1) / 2;             // 父节点与根节点的距离
     while (holeIndex > topIndex && *(first + parent) < value) {
         // 未到达根节点且父节点的值小于插入的值
@@ -35,18 +25,19 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex, Distance to
     *(first + holeIndex) = value;                  // 最后令洞值等于新值，调整完毕
 }
 
+template <class RandomAccessIterator, class Distance, class T>
+inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last, 
+                        Distance*, T*) {
+    __push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
+}
+
+template <class RandomAccessIterator>
+inline void push_heap(RandomAccessIterator first, RandomAccessIterator last) {
+    // 新元素应该已置于底部容器的最尾端
+    __push_heap(first, last, distance_type(first), value_type(first));
+}
+
 // 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Compared>
-inline void push_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
-    __push_heap(first, last, distance_type(first), value_type(first), comp);
-}
-
-template <class RandomAccessIterator, class Compared, class Distance, class T>
-inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last,
-    Distance*, T*, Compared comp) {
-    __push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1), comp);
-}
-
 template <class RandomAccessIterator, class Distance, class T, class Compared>
 void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
     Distance topIndex, T value, Compared comp) {
@@ -59,29 +50,21 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
     *(first + holeIndex) = value;                  // 最后令洞值等于新值，调整完毕
 }
 
+template <class RandomAccessIterator, class Compared, class Distance, class T>
+inline void __push_heap(RandomAccessIterator first, RandomAccessIterator last,
+                        Distance*, T*, Compared comp) {
+    __push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1), comp);
+}
+
+template <class RandomAccessIterator, class Compared>
+inline void push_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
+    __push_heap(first, last, distance_type(first), value_type(first), comp);
+}
+
 /*****************************************************************************************/
 // pop_heap
 // 该函数接受两个迭代器，表示 heap 容器的首尾，将 heap 的根节点取出放到容器尾部，调整 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator>
-inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last) {
-    __pop_heap(first, last, value_type(first));
-}
-
-template <class RandomAccessIterator, class T>
-inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last, T*) {
-    // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
-    __pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first));
-        
-}
-
-template <class RandomAccessIterator, class T, class Distance>
-inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
-    RandomAccessIterator result, T value, Distance*) {
-    *result = *first;  // 先将尾指设置成首值，即尾指为欲求结果
-    __adjust_heap(first, static_cast<Distance>(0), last - first, value);
-}
-
 template <class RandomAccessIterator, class T, class Distance>
 void __adjust_heap(RandomAccessIterator first, Distance holeIndex, Distance len, T value) {
     // 先进行下溯(percolate down)过程
@@ -103,24 +86,25 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex, Distance len,
     __push_heap_aux(first, holeIndex, topIndex, value);
 }
 
-// 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Compared>
-inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
-    __pop_heap(first, last, value_type(first), comp);
-}
-
-template <class RandomAccessIterator, class T, class Compared>
-inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last, T*, Compared comp) {
-    __pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first), comp);
-}
-
-template <class RandomAccessIterator, class T, class Distance, class Compared>
+template <class RandomAccessIterator, class T, class Distance>
 inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
-    RandomAccessIterator result, T value, Distance*, Compared comp) {
+                           RandomAccessIterator result, T value, Distance*) {
     *result = *first;  // 先将尾指设置成首值，即尾指为欲求结果
-    __adjust_heap(first, static_cast<Distance>(0), last - first, value, comp);
+    __adjust_heap(first, static_cast<Distance>(0), last - first, value);
 }
 
+template <class RandomAccessIterator, class T>
+inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last, T*) {
+    // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
+    __pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first));
+}
+
+template <class RandomAccessIterator>
+inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last) {
+    __pop_heap(first, last, value_type(first));
+}
+
+// 重载版本使用函数对象 comp 代替比较操作
 template <class RandomAccessIterator, class T, class Distance, class Compared>
 void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
     Distance len, T value, Compared comp) {
@@ -139,6 +123,24 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
     }
     // 再执行一次上溯(percolate up)过程
     __push_heap_aux(first, holeIndex, topIndex, value, comp);
+}
+
+template <class RandomAccessIterator, class T, class Distance, class Compared>
+inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
+                           RandomAccessIterator result, T value, Distance*, Compared comp) {
+    *result = *first;  // 先将尾指设置成首值，即尾指为欲求结果
+    __adjust_heap(first, static_cast<Distance>(0), last - first, value, comp);
+}
+
+template <class RandomAccessIterator, class T, class Compared>
+inline void __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
+                       T*, Compared comp) {
+    __pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first), comp);
+}
+
+template <class RandomAccessIterator, class Compared>
+inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp) {
+    __pop_heap(first, last, value_type(first), comp);
 }
 
 /*****************************************************************************************/
@@ -165,11 +167,6 @@ void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compared c
 // make_heap
 // 该函数接受两个迭代器，表示 heap 容器的首尾，把容器内的数据变为一个 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator>
-inline void make_heap(RandomAccessIterator first, RandomAccessIterator last) {
-    __make_heap(first, last, value_type(first), distance_type(first));;
-}
-
 template <class RandomAccessIterator, class T, class Distance>
 void __make_heap(RandomAccessIterator first, RandomAccessIterator last, T*, Distance*) {
     if (last - first < 2)  return;    // 长度为0或1时不需要重排
@@ -183,13 +180,12 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last, T*, Dist
     }
 }
 
-// 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Compared>
-inline void make_heap(RandomAccessIterator first, RandomAccessIterator last,
-    Compared comp) {
-    __make_heap(first, last, value_type(first), distance_type(first), comp);;
+template <class RandomAccessIterator>
+inline void make_heap(RandomAccessIterator first, RandomAccessIterator last) {
+    __make_heap(first, last, value_type(first), distance_type(first));;
 }
 
+// 重载版本使用函数对象 comp 代替比较操作
 template <class RandomAccessIterator, class T, class Distance, class Compared>
 void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
     T*, Distance*, Compared comp) {
@@ -202,6 +198,12 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
         if (holeIndex == 0)  return;  // 走完根节点
         holeIndex--;                  // 向前移一个节点
     }
+}
+
+template <class RandomAccessIterator, class Compared>
+inline void make_heap(RandomAccessIterator first, RandomAccessIterator last,
+                      Compared comp) {
+    __make_heap(first, last, value_type(first), distance_type(first), comp);
 }
 
 } // namespace mystl
