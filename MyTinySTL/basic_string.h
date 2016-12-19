@@ -51,7 +51,8 @@ class basic_string {
     // 构造、复制、移动、析构函数
     basic_string()                                   { __initialize_string(0, init_char); }
     explicit basic_string(size_type n)               { __initialize_string(n, init_char); }
-    basic_string(value_type ch, size_type n)         { __initialize_string(n, ch); }
+    basic_string(size_type n, value_type ch)         { __initialize_string(n, ch); }
+
     basic_string(const_pointer str)                  { __copy_from(str, 0, __get_strlen(str)); }
     basic_string(const_pointer str, size_type count) { __copy_from(str, 0, count); }
 
@@ -76,7 +77,7 @@ class basic_string {
         return *this;
     }
     basic_string& operator=(value_type ch) {
-        basic_string tmp(ch, 1);
+        basic_string tmp(1, ch);
         *this = std::move(tmp);
         return *this;
     }
@@ -117,16 +118,6 @@ class basic_string {
     const_pointer   c_str()                 const { return __get_str(); }
 
     // 添加删除相关操作
-    void insert(difference_type index, const basic_string& str) {
-        insert(begin() + index, str.begin(), str.end());
-    }
-    void insert(difference_type index, size_type count, value_type ch) {
-        insert(begin() + index, count, ch);
-    }
-    void insert(difference_type index, const_pointer str) {
-        insert(begin() + index, str, str + __get_strlen(str));
-    }
-
     iterator insert(iterator pos, size_type count, value_type ch);
     iterator insert(iterator pos, value_type ch);
     iterator insert(iterator pos, const_pointer str) {
@@ -137,8 +128,6 @@ class basic_string {
     template <class InputIterator>
     void insert(iterator pos, InputIterator first, InputIterator last);
 
-    void erase(difference_type index)                       { erase(buffer_ + index, 1); }
-    void erase(difference_type index, size_type count)      { erase(buffer_ + index, count); }
     iterator erase(iterator pos)                            { return erase(pos, 1); }
     iterator erase(iterator pos, size_type count);
     void erase(iterator first, iterator last)               { erase(first, last - first); }
@@ -664,19 +653,19 @@ typename basic_string<CharType, CharTraits, Alloc>::iterator
 
 // 重载 operator>>, operator<<
 template<class CharType, class CharTraits, class Alloc>
-std::istream& operator>>(std::istream& in,
+std::istream& operator>>(std::istream& is,
     basic_string<CharType, CharTraits, Alloc>& str) {
     CharType* buf = new CharType[4096];
-    in >> buf;
+    is >> buf;
     basic_string<CharType> tmp(buf);
     str = std::move(tmp);
-    return in;
+    return is;
 }
 
 template<class CharType, class CharTraits, class Alloc>
-std::ostream& operator<<(std::ostream& out, const basic_string<CharType, CharTraits, Alloc>& str) {
-    for (auto it : str) out << it;
-    return out;
+std::ostream& operator<<(std::ostream& os, const basic_string<CharType, CharTraits, Alloc>& str) {
+    for (auto it : str) os << it;
+    return os;
 }
 
 // 重载 operator+
@@ -708,7 +697,7 @@ basic_string<CharType, CharTraits, Alloc>
 template<class CharType, class CharTraits, class Alloc>
 basic_string<CharType, CharTraits, Alloc>
     operator+(CharType ch, const basic_string<CharType, CharTraits, Alloc>& rhs) {
-    basic_string<CharType, CharTraits, Alloc> tmp(ch, 1);
+    basic_string<CharType, CharTraits, Alloc> tmp(1, ch);
     tmp.add_back(rhs.begin(), rhs.end());
     return tmp;
 }
