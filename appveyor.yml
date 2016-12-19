@@ -1,0 +1,5 @@
+version: 1.0 {build}
+image: Visual Studio 2015
+os: Visual Studio 2015
+build:
+  project: MyTinySTL\MSVC\MyTinySTL.sln
