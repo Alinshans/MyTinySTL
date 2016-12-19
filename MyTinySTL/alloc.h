@@ -40,7 +40,7 @@ private:
     static size_t round_up(size_t bytes);
     static size_t freelist_index(size_t bytes);
     static void*  refill(size_t n);
-    static char*  chunk_alloc(size_t size, int &nobj);
+    static char*  chunk_alloc(size_t size, size_t &nobj);
 };
 
 // alloc 静态成员变量初值设定
@@ -104,7 +104,7 @@ size_t alloc::freelist_index(size_t bytes) {
 // 重新填充 free list
 // 返回大小为 n 的对象，有时会适当为 free list 增加节点
 void* alloc::refill(size_t n) {
-    int nobj = 20;  // 尝试获得区块的个数
+    size_t nobj = 20;  // 尝试获得区块的个数
     // 调用 chunk_alloc, 尝试取得 nobj 个区块作为 free list 的新节点
     char* c = chunk_alloc(n, nobj);
     FreeList* volatile* my_free_list;
@@ -130,7 +130,7 @@ void* alloc::refill(size_t n) {
 }
 
 // 从内存池中取空间给 free list 使用，条件不允许时，会调整 nobj
-char* alloc::chunk_alloc(size_t size, int& nobj) {
+char* alloc::chunk_alloc(size_t size, size_t& nobj) {
     char* result;
     size_t need_bytes = size * nobj;            // 需要分配的大小
     size_t pool_bytes = end_free - start_free;  // 内存池剩余大小
