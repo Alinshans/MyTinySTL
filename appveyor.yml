@@ -1,5 +1,18 @@
-version: 1.0 {build}
+version: 1.0.{build}
+
+branches:
+  only:
+    - master
+    
+skip_commits:
+  message: /Created.*\.(png|jpg|jpeg|bmp|gif)/
+  
 image: Visual Studio 2015
-os: Visual Studio 2015
+
+platform: Any CPU
+
+configuration: Release
+
 build:
-  project: MyTinySTL\MSVC\MyTinySTL.sln
+  parallel: true
+  project: MyTinySTL/MSVC/MyTinySTL.sln
