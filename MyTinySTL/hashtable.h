@@ -721,7 +721,7 @@ void hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::swap(hashtable& 
 template<class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
 typename hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::size_type 
     hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::__next_size(size_type n) const {
-    return __next_prime(n);
+    return __next_prime(static_cast<unsigned long>(n));
 }
 
 // __hashtable_initialize 函数
@@ -877,3 +877,4 @@ void swap(hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>& lhs,
 
 } // namespace mystl
 #endif // !MYTINYSTL_HASHTABLE_H_
+
