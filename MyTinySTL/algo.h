@@ -1150,7 +1150,7 @@ void random_shuffle(RandomAccessIterator first, RandomAccessIterator last,
                     RandomNumberGenerator& rand) {
     if (first == last)  return;
     for (auto i = first + 1; i != last; ++i) {
-        mystl::iter_swap(i, first + rand((i - first) + 1));
+        mystl::iter_swap(i, first + rand(static_cast<size_t>((i - first) + 1)));
     }
 }
 
