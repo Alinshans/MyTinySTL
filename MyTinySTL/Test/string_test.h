@@ -19,7 +19,7 @@ void string_test() {
     const char* s = "abcdefg";
     mystl::string str;
     mystl::string str1(10);
-    mystl::string str2('a', 5);
+    mystl::string str2(5, 'a');
     mystl::string str3(str2, 3);
     mystl::string str4(str2, 0, 5);
     mystl::string str5(s);
@@ -52,15 +52,10 @@ void string_test() {
     FUN_VALUE(str.capacity());
     FUN_VALUE(str.max_size());
 
-    STR_FUN_AFTER(str, str.insert(0, 1, 'a'));
-    STR_FUN_AFTER(str, str.insert(1, "sdf"));
-    STR_FUN_AFTER(str, str.insert(0, str2));
     STR_FUN_AFTER(str, str.insert(str.begin(), 'a'));
     STR_FUN_AFTER(str, str.insert(str.end(), 3, 'x'));
     STR_FUN_AFTER(str, str.insert(str.end(), "yz"));
     STR_FUN_AFTER(str, str.insert(str.end(), s, s + 3));
-    STR_FUN_AFTER(str, str.erase(0));
-    STR_FUN_AFTER(str, str.erase(0, 2));
     STR_FUN_AFTER(str, str.erase(str.begin()));
     STR_FUN_AFTER(str, str.erase(str.begin(), 1));
     STR_FUN_AFTER(str, str.erase(str.begin(), str.begin() + 1));
