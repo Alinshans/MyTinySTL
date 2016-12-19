@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\Text">
+      <UniqueIdentifier>{8670b44d-de04-4732-8d7e-7f407bcdf603}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="type_traits.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="construct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="alloc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="uninitialized.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="numeric.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="algobase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pair.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="heap_algo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="set_algo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="algo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="reverse_iterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="algorithm.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tempbuf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="deque.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="functional.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rb_tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="set.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hashtable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_functional.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_set.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\algorithm_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\vector_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\list_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\deque_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\queue_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\stack_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\map_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\set_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\hash_map_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\hash_set_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\algorithm_performance_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="basic_string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\string_test.h">
+      <Filter>头文件\Text</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Test\test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
