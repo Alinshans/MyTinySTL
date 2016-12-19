@@ -9,10 +9,12 @@ skip_commits:
   
 image: Visual Studio 2015
 
-platform: Any CPU
-
-configuration: Release
+configuration: 
+  - Debug
+  - Release
 
 build:
   parallel: true
-  project: MyTinySTL/MSVC/MyTinySTL.sln
+  project: MyTinySTL.sln
+  
+
