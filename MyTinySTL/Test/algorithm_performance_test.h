@@ -26,7 +26,7 @@ namespace algorithm_performance_test
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms   |";                                             \
     std::cout << std::setw(WIDE) << t;                         \
@@ -46,7 +46,7 @@ namespace algorithm_performance_test
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms   |";                                             \
     std::cout << std::setw(WIDE) << t;                         \
