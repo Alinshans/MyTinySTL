@@ -29,15 +29,16 @@ namespace test {
 namespace algorithm_test {
 
 // 一些可能会用到的辅助数据和函数
-int for_each_sum = 0;
-bool is_odd(int i) { return i & 1; }
-bool is_even(int i) { return !(i & 1); }
-void arr_sum(int i) { for_each_sum += i; }
-int gen() { return 5; }
-bool cmp(const int& a, const int& b) { return b < a; }
-int unary_op(const int& x) { return x + 1; }
-int binary_op(const int& x, const int& y) { return x + y; }
-int r(int i) { return (i * 5 + 1) % 9; }
+int  for_each_sum = 0;
+
+int  gen()                                 { return 5; }
+int  r(int i)                              { return (i * 5 + 1) % 9; }
+bool is_odd(int i)                         { return i & 1; }
+bool is_even(int i)                        { return !(i & 1); }
+void arr_sum(int i)                        { for_each_sum += i; }
+bool cmp(const int& a, const int& b)       { return b < a; }
+int  unary_op(const int& x)                { return x + 1; }
+int  binary_op(const int& x, const int& y) { return x + y; }
 
 // 以下为 79 个函数的简单测试
 // algobase test:
