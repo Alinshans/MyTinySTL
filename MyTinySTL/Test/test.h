@@ -11,15 +11,11 @@
 #include <sstream>
 #include <vector>
 
-#ifdef _WIN32
-#include <Windows.h>
-#endif
-
 namespace mystl {
 namespace test {
 
-// 平台，编辑器相关
-#ifdef _WIN32
+#if defined(_WIN32) || defined(WIN32) || defined(WIN64)
+#include <Windows.h>
 inline std::ostream& red(std::ostream &os) {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
@@ -30,15 +26,23 @@ inline std::ostream& green(std::ostream &os) {
     SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     return os;
 }
-#endif // _WIN32
 
-#if !defined(_WIN32)
-#define red   ""
-#define green ""
-#endif // !_WIN32
+#elif defined(__linux__) || defined(__unix__) || defined(__unix) || defined(__APPLE__) || defined(__MACH__)
+#include <unistd.h>
+inline std::ostream& red(std::ostream &os) {
+    std::cout << "\033[91m";
+    return os;
+}
+inline std::ostream& green(std::ostream &os) {
+    std::cout << "\033[92m";
+    return os;
+}
 
-#if !defined(_MSC_VER)
-#define sprintf_s sprintf
+#endif
+
+#if defined(_MSC_VER)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4996)
 #endif
 
 } // namespace test
@@ -593,7 +597,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms    |";                                            \
     std::cout << std::setw(WIDE) << t;                         \
@@ -610,7 +614,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms    |";                                            \
     std::cout << std::setw(WIDE) << t;                         \
@@ -628,7 +632,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms    |";                                            \
     std::cout << std::setw(WIDE) << t;                         \
@@ -645,7 +649,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     end = clock();                                             \
     int n = static_cast<int>(static_cast<double>(end - start)  \
         / CLOCKS_PER_SEC * 1000);                              \
-    sprintf_s(buf, "%d", n);                                   \
+    sprintf(buf, "%d", n);                                     \
     std::string t = buf;                                       \
     t += "ms    |";                                            \
     std::cout << std::setw(WIDE) << t;                         \
