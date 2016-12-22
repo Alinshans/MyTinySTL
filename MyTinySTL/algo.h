@@ -1,6 +1,10 @@
 #ifndef MYTINYSTL_ALGO_H_
 #define MYTINYSTL_ALGO_H_
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4244)
+#endif
+
 // 这个头文件包含了 mystl 的一系列算法
 
 #include <cstddef>
