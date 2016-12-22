@@ -13,7 +13,7 @@ namespace mystl {
 // 参数一代表键值类型，参数二代表实值类型，参数三代表键值的比较方式，缺省使用 mystl 的 less
 // 参数四代表空间配置器的类型，缺省使用 mystl 的 alloc
 // 每个元素都是 pair，拥有键值与实值，不允许有重复的键值，使用 rb_tree 作为底层机制
-template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = alloc>
+template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
 class map {
   public:
     // map 的嵌套型别定义
@@ -167,7 +167,7 @@ void swap(map<Key, T, Compare, Alloc>& lhs, map<Key, T, Compare, Alloc>& rhs) {
 
 // 模板类 multimap
 // 键值允许重复的 map
-template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = alloc>
+template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
 class multimap {
   public:
     // multimap 的型别定义
