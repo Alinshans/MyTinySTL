@@ -11,26 +11,25 @@ namespace mystl {
 
 // 模板类: vector
 // 接受两个参数，参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc
-template <class T, class Alloc = alloc>
+template <class T, class Alloc = mystl::alloc>
 class vector {
   public:
     // vector 的嵌套型别定义
-    typedef T                                   value_type;
-    typedef Alloc                               allocator_type;
-    typedef value_type*                         pointer;
-    typedef const value_type*                   const_pointer;
-    typedef value_type&                         reference;
-    typedef const value_type&                   const_reference;
-    typedef size_t                              size_type;
-    typedef ptrdiff_t                           difference_type;
+    typedef T                                          value_type;
+    typedef Alloc                                      allocator_type;
+    typedef value_type*                                pointer;
+    typedef const value_type*                          const_pointer;
+    typedef value_type&                                reference;
+    typedef const value_type&                          const_reference;
+    typedef size_t                                     size_type;
+    typedef ptrdiff_t                                  difference_type;
 
-    typedef value_type*                         iterator;
-    typedef const value_type*                   const_iterator;
-    typedef reverse_iterator<const_iterator>    const_reverse_iterator;
-    typedef reverse_iterator<iterator>          reverse_iterator;
+    typedef value_type*                                iterator;
+    typedef const value_type*                          const_iterator;
+    typedef mystl::reverse_iterator<iterator>          reverse_iterator;
+    typedef mystl::reverse_iterator<const_iterator>    const_reverse_iterator;
 
-  public:
-    typedef allocator<T, Alloc>    data_allocator;
+    typedef mystl::allocator<T, Alloc>                 data_allocator;
     allocator_type get_allocator() { return allocator_type(); }
 
   private:
