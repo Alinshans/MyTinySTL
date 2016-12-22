@@ -155,7 +155,7 @@ struct __deque_iterator : public iterator<random_access_iterator_tag, T> {
 
 // 模板类 deque
 // 参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc，参数三代表缓冲区大小，缺省使用 512 bytes
-template <class T, class Alloc = alloc, size_t BufSiz = 0>
+template <class T, class Alloc = mystl::alloc, size_t BufSiz = 0>
 class deque {
   public:
     // deque 的型别定义
@@ -170,18 +170,17 @@ class deque {
 
     typedef __deque_iterator<T, T&, T*, BufSiz>                iterator;
     typedef __deque_iterator<T, const T&, const T*, BufSiz>    const_iterator;
-    typedef reverse_iterator<const_iterator>                   const_reverse_iterator;
-    typedef reverse_iterator<iterator>                         reverse_iterator;
+    typedef mystl::reverse_iterator<iterator>                  reverse_iterator;
+    typedef mystl::reverse_iterator<const_iterator>            const_reverse_iterator;
 
-    static size_t buffer_size() { return __deque_buf_size(BufSiz, sizeof(T)); }
-
-  public:
-    typedef allocator<T, Alloc>    data_allocator;  // 元素配置器
-    typedef allocator<T*, Alloc>   map_allocator;   // 缓冲区配置器
+    typedef mystl::allocator<T, Alloc>                         data_allocator;
+    typedef mystl::allocator<T*, Alloc>                        map_allocator;
     allocator_type get_allocator() { return allocator_type(); }
 
+    size_type buffer_size() { return __deque_buf_size(BufSiz, sizeof(T)); }
+
   private:
-      typedef pointer*    map_pointer;
+    typedef pointer*    map_pointer;
 
     // 用以下四个数据来表现一个 deque
     iterator       start_;            // 指向第一个节点
