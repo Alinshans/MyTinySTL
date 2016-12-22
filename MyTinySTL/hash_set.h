@@ -13,11 +13,12 @@ namespace mystl {
 // 参数三代表键值比较方式，缺省使用 mystl 的 equal_to，参数四代表空间配置器类型，缺省使用 mystl 的 alloc
 // 使用方法与 set 类似，以 hashtable 作为底层机制，所以 hash_set 中的元素不会自动排序
 template <class Value, class HashFcn = mystl::hash<Value>, 
-    class EqualKey = mystl::equal_to<Value>, class Alloc = alloc>
+    class EqualKey = mystl::equal_to<Value>, class Alloc = mystl::alloc>
 class hash_set {
   private:
     // 使用 hash_table 作为底层机制
-    typedef hashtable<Value, Value, HashFcn, mystl::identity<Value>, EqualKey, Alloc>  rep_type;
+    typedef hashtable<Value, Value, HashFcn, 
+        mystl::identity<Value>, EqualKey, Alloc>  rep_type;
     rep_type ht_;
 
 public:
@@ -146,11 +147,12 @@ void swap(hash_set<Value, HashFcn, EqualKey, Alloc>& lhs,
 // 模板类 hash_multiset
 // 键值允许重复，其它与 hash_set 相同
 template <class Value, class HashFcn = mystl::hash<Value>,
-    class EqualKey = mystl::equal_to<Value>, class Alloc = alloc>
+    class EqualKey = mystl::equal_to<Value>, class Alloc = mystl::alloc>
 class hash_multiset {
   private:
     // 使用 hash_table 作为底层机制
-    typedef hashtable<Value, Value, HashFcn, mystl::identity<Value>, EqualKey, Alloc>  rep_type;
+    typedef hashtable<Value, Value, HashFcn, 
+        mystl::identity<Value>, EqualKey, Alloc>  rep_type;
     rep_type ht_;
 
   public:
