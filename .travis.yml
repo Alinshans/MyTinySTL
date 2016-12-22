@@ -11,7 +11,7 @@ compiler:
 before_install:
 - echo $LANG
 - echo $LC_ALL
-- if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y bsdtar clang-3.8 llvm-3.8-dev libedit-dev; fi
 - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm38 && brew install openssl && brew link --force --overwrite llvm38; fi
 - gem update --system
 - gem --version
