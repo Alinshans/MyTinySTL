@@ -64,8 +64,8 @@ class map {
     map(const map& rhs) :t_(rhs.t_) {}
     map(map&& rhs) :t_(std::move(rhs.t_)) {}
 
-    map& operator=(const map& rhs)               { t_ = rhs.t_; return *this; }
-    map& operator=(map&& rhs)                    { t_ = std::move(rhs.t_); return *this; }
+    map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
+    map& operator=(map&& rhs)      { t_ = std::move(rhs.t_); return *this; }
 
     // 相关接口操作
     key_compare            key_comp()      const { return t_.key_comp(); }
@@ -218,8 +218,8 @@ class multimap {
     multimap(const multimap& rhs) :t_(rhs.t_) {}
     multimap(multimap&& rhs) :t_(std::move(rhs.t_)) {}
 
-    multimap& operator=(const multimap& rhs)     { t_ = rhs.t_; return *this; }
-    multimap& operator=(multimap&& rhs)          { t = std::move(rhs.t_); return *this; }
+    multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
+    multimap& operator=(multimap&& rhs)      { t_ = std::move(rhs.t_); return *this; }
 
     // 相关接口操作
     key_compare            key_comp()      const { return t_.key_comp(); }
