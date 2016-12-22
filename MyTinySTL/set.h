@@ -185,7 +185,7 @@ class multiset {
     multiset(multiset&& rhs) :t_(std::move(rhs.t_)) {}
 
     multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
-    multiset& operator=(multiset&& rhs)      { t = std::move(rhs.t_); return *this; }
+    multiset& operator=(multiset&& rhs)      { t_ = std::move(rhs.t_); return *this; }
 
     // 相关接口
     key_compare      key_comp()      const { return t_.key_comp(); }
