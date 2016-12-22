@@ -37,7 +37,7 @@ class stack {
     stack(stack&& rhs) :s_(std::move(rhs.s_)) {}
 
     stack& operator=(const stack& rhs) { s_ = rhs.s_; return *this; }
-    stack& operator=(stack&& rhs) { c = std::move(rhs.s_); return *this; }
+    stack& operator=(stack&& rhs)      { s_ = std::move(rhs.s_); return *this; }
 
     // 以下操作使用底层容器的操作
     bool            empty()                        const { return s_.empty(); }
