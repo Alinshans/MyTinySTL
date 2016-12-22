@@ -13,25 +13,25 @@ namespace mystl {
 // 模板类 basic_string
 // 参数一代表字符类型，参数二代表萃取字符类型的方式，缺省使用 mystl 的 __char_type
 // 参数三代表空间配置器，缺省使用 mystl 的 alloc
-template<class CharType, class CharTraits = __char_type<CharType>, class Alloc = alloc>
+template<class CharType, class CharTraits = mystl::__char_type<CharType>,
+    class Alloc = mystl::alloc>
 class basic_string {
   public:
-    typedef CharType                            value_type;
-    typedef Alloc                               allocator_type;
-    typedef value_type*                         pointer;
-    typedef const value_type*                   const_pointer;
-    typedef value_type&                         reference;
-    typedef const value_type&                   const_reference;
-    typedef size_t                              size_type;
-    typedef ptrdiff_t                           difference_type;
+    typedef CharType                                   value_type;
+    typedef Alloc                                      allocator_type;
+    typedef value_type*                                pointer;
+    typedef const value_type*                          const_pointer;
+    typedef value_type&                                reference;
+    typedef const value_type&                          const_reference;
+    typedef size_t                                     size_type;
+    typedef ptrdiff_t                                  difference_type;
 
-    typedef value_type*                         iterator;
-    typedef const value_type*                   const_iterator;
-    typedef reverse_iterator<const_iterator>    const_reverse_iterator;
-    typedef reverse_iterator<iterator>          reverse_iterator;
-        
-  public:
-    typedef allocator<value_type, Alloc>        data_allocator;
+    typedef value_type*                                iterator;
+    typedef const value_type*                          const_iterator;
+    typedef mystl::reverse_iterator<iterator>          reverse_iterator;
+    typedef mystl::reverse_iterator<const_iterator>    const_reverse_iterator;
+
+    typedef mystl::allocator<value_type, Alloc>        data_allocator;
     allocator_type get_allocator() { return allocator_type(); }
 
   public:
