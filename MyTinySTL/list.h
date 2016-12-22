@@ -71,28 +71,27 @@ struct __list_iterator : public iterator<bidirectional_iterator_tag, T> {
 
 // 模板类 list
 // 参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc
-template <class T, class Alloc = alloc>
+template <class T, class Alloc = mystl::alloc>
 class list {
   public:
     // list 的嵌套型别定义
-    typedef T                                         value_type;
-    typedef Alloc                                     allocator_type;
-    typedef value_type*                               pointer;
-    typedef const value_type*                         const_pointer;
-    typedef value_type&                               reference;
-    typedef const value_type&                         const_reference;
-    typedef size_t                                    size_type;
-    typedef ptrdiff_t                                 difference_type;
+    typedef T                                          value_type;
+    typedef Alloc                                      allocator_type;
+    typedef value_type*                                pointer;
+    typedef const value_type*                          const_pointer;
+    typedef value_type&                                reference;
+    typedef const value_type&                          const_reference;
+    typedef size_t                                     size_type;
+    typedef ptrdiff_t                                  difference_type;
 
-    typedef __list_iterator<T, T&, T*>                iterator;
-    typedef __list_iterator<T, const T&, const T*>    const_iterator;
-    typedef reverse_iterator<const_iterator>          const_reverse_iterator;
-    typedef reverse_iterator<iterator>                reverse_iterator;
+    typedef __list_iterator<T, T&, T*>                 iterator;
+    typedef __list_iterator<T, const T&, const T*>     const_iterator;
+    typedef mystl::reverse_iterator<iterator>          reverse_iterator;
+    typedef mystl::reverse_iterator<const_iterator>    const_reverse_iterator;
 
-    typedef __list_node<T>*                           link_type;
+    typedef __list_node<T>*                            link_type;
 
-  public:
-    typedef allocator<__list_node<T>, Alloc>          data_allocate;
+    typedef mystl::allocator<__list_node<T>, Alloc>    data_allocate;
     allocator_type get_allocator() { return allocator_type(); }
 
   private:
