@@ -13,7 +13,7 @@ namespace mystl {
 // 参数一代表键值类型，参数二代表键值比较方式，缺省使用 mystl 的 less 
 // 参数三代表空间配置器类型，缺省使用 mystl 的 alloc
 // 键值与实值相同，键值不允许重复，以 rb_tree 作为底层机制，元素会根据键值大小自动排序
-template <class Key, class Compare = mystl::less<Key>, class Alloc = alloc>
+template <class Key, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
 class set {
   public:
     typedef Key        key_type;
@@ -147,7 +147,7 @@ void swap(set<Key, Compare, Alloc>& lhs, set<Key, Compare, Alloc>& rhs) {
 
 // 模板类 multiset
 // 允许键值重复的 set
-template <class Key, class Compare = mystl::less<Key>, class Alloc = alloc>
+template <class Key, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
 class multiset {
   public:
     typedef Key        key_type;
