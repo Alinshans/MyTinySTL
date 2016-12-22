@@ -365,12 +365,12 @@ inline __rb_tree_node_base* __rb_tree_rebalance_for_erase(__rb_tree_node_base* z
 // 参数一代表键值类型，参数二代表实值类型，参数三代表实值转化成键值的方式，缺省使用 mystl 的 identity
 // 参数四代表键值比较的方法，缺省使用 mystl 的 less，参数代表为空间配置器的类型，缺省使用 mystl 的 alloc
 template <class Key, class Value, class KeyOfValue = mystl::identity<Key>,
-    class Compare = mystl::less<Key>, class Alloc = alloc>
+    class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
 class rb_tree {
   private:
-    typedef __rb_tree_node_base*    base_ptr;
+    typedef __rb_tree_node_base*     base_ptr;
     typedef __rb_tree_node<Value>    rb_tree_node;
-    typedef __rb_tree_color_type    color_type;
+    typedef __rb_tree_color_type     color_type;
 
   public:
     // rb tree 的嵌套型别定义
@@ -387,11 +387,10 @@ class rb_tree {
 
     typedef __rb_tree_iterator<Value, Value&, Value*>                iterator;
     typedef __rb_tree_iterator<Value, const Value&, const Value*>    const_iterator;
-    typedef reverse_iterator<const_iterator>                         const_reverse_iterator;
-    typedef reverse_iterator<iterator>                               reverse_iterator;
+    typedef mystl::reverse_iterator<iterator>                        reverse_iterator;
+    typedef mystl::reverse_iterator<const_iterator>                  const_reverse_iterator;
 
-  public:
-    typedef allocator<rb_tree_node, Alloc>    rb_tree_node_allocator;
+    typedef mystl::allocator<rb_tree_node, Alloc>                    rb_tree_node_allocator;
     allocator_type get_allocator() const { return allocator_type(); }
 
   private:
@@ -678,7 +677,7 @@ pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
         comp = key_compare(KeyOfValue()(value), key(x));  // value 键值小于当前节点键值
         x = comp ? left(x) : right(x);                    // 小于向左走，否则向右走
     }
-    auto j = iterator(y);                                 // 此时 y 为插入点的父节点
+    iterator j = iterator(y);                             // 此时 y 为插入点的父节点
     if (comp) {                                           // 离开循坏时 comp 为 true，插在左边
         if (j == begin())                                 // 父节点为最左节点
             return pair<iterator, bool>(__insert(x, y, value), true);
@@ -779,13 +778,15 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::clear() {
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
     rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const key_type& k) {
-    auto y = header_;                 // 最后一个不小于 k 的节点
+    auto y = header_;                   // 最后一个不小于 k 的节点
     auto x = root();
     while (x != nullptr) {
-        if (!key_compare(key(x), k))  // k 小于等于 x 键值，向左走
+        if (!key_compare(key(x), k)) {  // k 小于等于 x 键值，向左走
             y = x, x = left(x);
-        else                          // k 大于 x 键值，向右走
+        }
+        else {                          // k 大于 x 键值，向右走
             x = right(x);
+        }
     }
     iterator j = iterator(y);
     return (j == end() || key_compare(k, key(j.node))) ? end() : j;
@@ -794,13 +795,15 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
     rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const key_type& k) const {
-    auto y = header_;                 // 最后一个不小于 k 的节点
+    auto y = header_;                   // 最后一个不小于 k 的节点
     auto x = root();
     while (x != nullptr) {
-        if (!key_compare(key(x), k))  // k 小于等于 x 键值，向左走
+        if (!key_compare(key(x), k)) {  // k 小于等于 x 键值，向左走
             y = x, x = left(x);
-        else                          // k 大于 x 键值，向右走
+        }
+        else {                           // k 大于 x 键值，向右走
             x = right(x);
+        }
     }
     const_iterator j = const_iterator(y);
     return (j == end() || key_compare(k, key(j.node))) ? end() : j;
@@ -822,10 +825,12 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
     auto y = header_;
     auto x = root();
     while (x != nullptr) {
-        if (!key_compare(key(x), k))  // k <= x
+        if (!key_compare(key(x), k)) {  // k <= x
             y = x, x = left(x);
-        else
+        }
+        else {
             x = right(x);
+        }
     }
     return iterator(y);
 }
@@ -836,10 +841,12 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
     auto y = header_;
     auto x = root();
     while (x != nullptr) {
-        if (!key_compare(key(x), k))  // k <= x
+        if (!key_compare(key(x), k)) {  // k <= x
             y = x, x = left(x);
-        else
+        }
+        else {
             x = right(x);
+        }
     }
     return const_iterator(y);
 }
@@ -851,10 +858,12 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
     auto y = header_;
     auto x = root();
     while (x != nullptr) {
-        if (key_compare(k, key(x)))  // k < x
+        if (key_compare(k, key(x))) {  // k < x
             y = x, x = left(x);
-        else
+        }
+        else {
             x = right(x);
+        }
     }
     return iterator(y);
 }
@@ -865,10 +874,12 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
     auto y = header_;
     auto x = root();
     while (x != nullptr) {
-        if (key_compare(k, key(x)))  // k < x
+        if (key_compare(k, key(x))) {  // k < x
             y = x, x = left(x);
-        else
+        }
+        else {
             x = right(x);
+        }
     }
     return const_iterator(y);
 }
