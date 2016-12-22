@@ -20,23 +20,30 @@ struct __hashtable_node {
     __hashtable_node() :next(nullptr), value(0) {}
 };
 
-// hashtable 与其迭代器的声明
-template <class Val, class Key, class HashFun, class ExtractKey, class EqualKey, class Alloc>
+// 前置声明
+template <class Val, class Key, class HashFun, 
+    class ExtractKey, class EqualKey, class Alloc>
 class hashtable;
 
-template <class Val, class Key, class HashFun, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFun, 
+    class ExtractKey, class EqualKey, class Alloc>
 struct __hashtable_iterator;
 
-template <class Val, class Key, class HashFun, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFun, 
+    class ExtractKey, class EqualKey, class Alloc>
 struct __hashtable_const_iterator;
 
 // __hashtable_iterator 定义
-template <class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFcn, 
+    class ExtractKey, class EqualKey, class Alloc>
 struct __hashtable_iterator {
-    typedef hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>                     hashtable;
-    typedef __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>          iterator;
-    typedef __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    const_iterator;
-    typedef __hashtable_node<Val>                                                         node;
+    typedef mystl::hashtable<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    hashtable;
+    typedef mystl::__hashtable_iterator<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    iterator;
+    typedef mystl::__hashtable_const_iterator<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    const_iterator;
+    typedef __hashtable_node<Val>                          node;
 
     // __hashtable_iterator 的内嵌型别
     typedef forward_iterator_tag    iterator_category;
@@ -46,7 +53,7 @@ struct __hashtable_iterator {
     typedef size_t                  size_type;
     typedef ptrdiff_t               difference_type;
 
-    node* cur;        // 迭代器当前所指节点
+    node*      cur;   // 迭代器当前所指节点
     hashtable* ht;    // 保持与容器的连结
 
     // 构造函数
@@ -71,7 +78,8 @@ struct __hashtable_iterator {
 };
 
 // 定义 __hashtable_iterator 的 operator++ 
-template <class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFcn, 
+    class ExtractKey, class EqualKey, class Alloc>
 __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>&
     __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::operator++() {
     const node* old = cur;  // 原来的节点
@@ -85,12 +93,16 @@ __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>&
 }
 
 // __hashtable_const_iterator 定义
-template <class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFcn, 
+    class ExtractKey, class EqualKey, class Alloc>
 struct __hashtable_const_iterator {
-    typedef hashtable<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>                     hashtable;
-    typedef __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>          iterator;
-    typedef __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    const_iterator;
-    typedef __hashtable_node<Val>                                                         node;
+    typedef mystl::hashtable<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    hashtable;
+    typedef mystl::__hashtable_iterator<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    iterator;
+    typedef mystl::__hashtable_const_iterator<
+        Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>    const_iterator;
+    typedef __hashtable_node<Val>                          node;
 
     // __hashtable_const_iterator 的内嵌型别
     typedef forward_iterator_tag    iterator_category;
@@ -100,7 +112,7 @@ struct __hashtable_const_iterator {
     typedef size_t                  size_type;
     typedef ptrdiff_t               difference_type;
 
-    const node* cur;        // 迭代器目前所指节点
+    const node*      cur;   // 迭代器目前所指节点
     const hashtable* ht;    // 保持与容器的连结
 
     // 构造函数
@@ -124,7 +136,8 @@ struct __hashtable_const_iterator {
 };
 
 // 定义 __hashtable_const_iterator 的 operator++ 
-template <class Val, class Key, class HashFcn, class ExtractKey, class EqualKey, class Alloc>
+template <class Val, class Key, class HashFcn, 
+    class ExtractKey, class EqualKey, class Alloc>
 __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>&
     __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>::operator++() {
     const node* old = cur;  // 原来的节点
@@ -163,38 +176,37 @@ inline unsigned long __next_prime(unsigned long n) {
 // 参数五代表键值比较方式，缺省使用 mystl 的 equal_to，参数六代表空间配置器类型，缺省使用 mystl 的 alloc
 // hashtable 内的元素不会自动排序
 template <class Val, class Key, class HashFcn, class ExtractKey = mystl::identity<Key>, 
-    class EqualKey = mystl::equal_to<Key>, class Alloc = alloc>
+    class EqualKey = mystl::equal_to<Key>, class Alloc = mystl::alloc>
 class hashtable {
   public:
     // hashtable 的型别定义
-    typedef Val                       value_type;
-    typedef Key                       key_type;
-    typedef HashFcn                   hasher;
-    typedef EqualKey                  key_equal;
-    typedef Alloc                     allocator_type;
+    typedef Val                            value_type;
+    typedef Key                            key_type;
+    typedef HashFcn                        hasher;
+    typedef EqualKey                       key_equal;
+    typedef Alloc                          allocator_type;
 
-    typedef size_t                    size_type;
-    typedef ptrdiff_t                 difference_type;
-    typedef Val*                      pointer;
-    typedef const Val*                const_pointer;
-    typedef Val&                      reference;
-    typedef const Val&                const_reference;
-    typedef __hashtable_node<Val>     node;
-    typedef vector<node*, Alloc>      bucket_type;
+    typedef size_t                         size_type;
+    typedef ptrdiff_t                      difference_type;
+    typedef Val*                           pointer;
+    typedef const Val*                     const_pointer;
+    typedef Val&                           reference;
+    typedef const Val&                     const_reference;
+    typedef __hashtable_node<Val>          node;
+    typedef mystl::vector<node*, Alloc>    bucket_type;
 
-    friend struct __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
-    friend struct __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
-    typedef __hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>
+    friend struct mystl::__hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
+    friend struct mystl::__hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
+    typedef mystl::__hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>
         iterator;
-    typedef __hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>
+    typedef mystl::__hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>
         const_iterator;
  
-    hasher    hash_fcn() const { return hash_; }   // 获取 hash function 的型别
-    key_equal key_eq()   const { return equal_; }  // 获取从节点中取出键值的方法
-
-  public:
     typedef allocator<node, Alloc>    node_allocator;
     allocator_type get_allocator() const { return allocator_type(); }
+
+    hasher    hash_fcn() const { return hash_; }   // 获取 hash function 的型别
+    key_equal key_eq()   const { return equal_; }  // 获取从节点中取出键值的方法
 
 private:
     // 用以下五个参数来表现 hashtable
