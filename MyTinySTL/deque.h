@@ -1054,14 +1054,14 @@ typename deque<T, Alloc, BufSiz>::iterator
 
 // __reserve_map_at_back 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__reserve_map_at_back(size_type n = 1) {
+void deque<T, Alloc, BufSiz>::__reserve_map_at_back(size_type n) {
     if ((n + 1) > (map_size_ - static_cast<size_type>(finish_.node - map_)))
         __reallocate_map(n, false);
 }
 
 // __reserve_map_at_front 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__reserve_map_at_front(size_type n = 1) {
+void deque<T, Alloc, BufSiz>::__reserve_map_at_front(size_type n) {
     if (n > static_cast<size_type>(start_.node - map_))
         __reallocate_map(n, true);
 }
