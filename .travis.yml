@@ -23,7 +23,6 @@ addons:
     
 script:
   - cd MyTinySTL/Test
-  - test.cpp
   
 branches:
   only:
