@@ -15,13 +15,15 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.6
     packages:
     - gcc-4.8
     - g++-4.8
-    - clang
+    - clang-3.6
     
 script:
   - cd MyTinySTL/Test
+  - make -j 4
   
 branches:
   only:
