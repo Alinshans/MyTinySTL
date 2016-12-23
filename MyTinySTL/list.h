@@ -173,7 +173,7 @@ class list {
     // list 的私有成员函数
     link_type __get_node();
     void      __put_node(link_type p);
-    link_type __create_node(const value_type& value = value_type());
+    link_type __create_node(const value_type& value);
     void      __destroy_node(link_type p);
     void      __list_initialize();
     void      __fill_assign(size_type n, const value_type& value);
@@ -487,7 +487,7 @@ void list<T, Alloc>::__put_node(link_type p) {
 
 // __create_node 函数
 template <class T, class Alloc>
-typename list<T, Alloc>::link_type list<T, Alloc>::__create_node(const value_type& value = value_type()) {
+typename list<T, Alloc>::link_type list<T, Alloc>::__create_node(const value_type& value) {
     auto p = __get_node();
     try {
         mystl::construct(p, __list_node<T>(value));
