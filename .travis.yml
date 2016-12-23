@@ -31,14 +31,11 @@ matrix:
           packages:
             - clang-3.6
       env: COMPILER=clang++-3.6
-
-before_script:
-  - mkdir build
   
 script:
-  - cd build
+  - cd MyTinySTL/Test
   - cmake ./
-  - make
+  - make test
   
   
 branches:
