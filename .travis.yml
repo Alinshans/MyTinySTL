@@ -33,7 +33,6 @@ matrix:
       env: COMPILER=clang++-3.6
   
 script:
-  - cd MyTinySTL/Test
   - cmake ./
   - make
   
