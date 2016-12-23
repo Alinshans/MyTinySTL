@@ -33,7 +33,6 @@ matrix:
       env: COMPILER=clang++-3.6
 
 before_script:
-  - sed -i CMakeLists.txt
   - mkdir build
   
 script:
