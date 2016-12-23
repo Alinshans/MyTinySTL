@@ -37,20 +37,17 @@ class basic_string {
   public:
     // 末尾位置的值，用法如下
     // if(str.find('a') != str.end_pos) { /* do something */ }
-    static const size_type    end_pos = -1;
+    static constexpr size_type    end_pos = -1;
 
   private:
-    static const size_type    init_size = 8;     // 默认初始化长度
-    static const value_type   init_char = 0x20;  // 默认初始化字符
-
     iterator buffer_;  // 储存字符串的起始位置
     iterator finish_;  // 储存字符串的结束位置
     iterator end_;     // 储存空间的结束位置
 
   public:
     // 构造、复制、移动、析构函数
-    basic_string()                                   { __initialize_string(0, init_char); }
-    explicit basic_string(size_type n)               { __initialize_string(n, init_char); }
+    basic_string()                                   { __initialize_string(0, value_type()); }
+    explicit basic_string(size_type n)               { __initialize_string(n, value_type()); }
     basic_string(size_type n, value_type ch)         { __initialize_string(n, ch); }
 
     basic_string(const_pointer str)                  { __copy_from(str, 0, __get_strlen(str)); }
@@ -148,7 +145,7 @@ class basic_string {
     void add_front(InputIterator first, InputIterator last) { insert(begin(), first, last); }
 
     // basic_string 相关操作
-    difference_type compare(const basic_string& other) const;
+    difference_type compare(const basic_string& other)        const;
     basic_string    substr(size_type index);
     basic_string    substr(size_type index, size_type count);
     void            remove(value_type ch);
@@ -190,6 +187,7 @@ class basic_string {
     }
 
   private:
+    size_type     __init_size()                   { return static_cast<size_type>(16); }
     pointer       __get_buffer(size_type n)       { return data_allocator::allocate(n); }
     pointer       __get_buffer(size_type n) const { return data_allocator::allocate(n); }
     void          __put_buffer(pointer buf)       { data_allocator::deallocate(buf); }
@@ -597,7 +595,7 @@ typename basic_string<CharType, CharTraits, Alloc>::size_type
 // __initialize_string 函数
 template<class CharType, class CharTraits, class Alloc>
 void basic_string<CharType, CharTraits, Alloc>::__initialize_string(size_type n, value_type ch) {
-    auto len = mystl::max(init_size, n);
+    auto len = mystl::max(__init_size(), n);
     buffer_ = __get_buffer(len);
     finish_ = mystl::uninitialized_fill_n(buffer_, n, ch);
     end_ = buffer_ + len;
@@ -607,7 +605,7 @@ void basic_string<CharType, CharTraits, Alloc>::__initialize_string(size_type n,
 template<class CharType, class CharTraits, class Alloc>
 void basic_string<CharType, CharTraits, Alloc>::__copy_from(const_pointer src,
     size_type pos, size_type count) {
-    auto len = mystl::max(init_size, count);
+    auto len = mystl::max(__init_size(), count);
     buffer_ = __get_buffer(len);
     finish_ = mystl::copy_n(src + pos, count, buffer_).second;
     end_ = buffer_ + len;
