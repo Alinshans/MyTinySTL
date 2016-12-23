@@ -35,7 +35,7 @@ matrix:
 script:
   - cd MyTinySTL/Test
   - cmake ./
-  - make test
+  - make
   
   
 branches:
