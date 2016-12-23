@@ -1489,8 +1489,8 @@ void __merge_without_buffer(BidirectionalIterator first, BidirectionalIterator m
     }
     auto new_middle = mystl::rotate(first_cut, middle, second_cut);
     // 递归处理
-    __merge_without_buffer(first, first_cut, new_middle, len11, len22);
-    __merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22);
+    mystl::__merge_without_buffer(first, first_cut, new_middle, len11, len22);
+    mystl::__merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22);
 }
 
 template <class BidirectionalIterator1, class BidirectionalIterator2>
@@ -1554,7 +1554,7 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
     }
     else if (len2 <= buffer_size) {
         Pointer buffer_end = mystl::copy(middle, last, buffer);
-        __merge_backward(first, middle, buffer, buffer_end, last);
+        mystl::__merge_backward(first, middle, buffer, buffer_end, last);
     }
     else {  // 区间长度太长，分割递归处理
         auto first_cut = first;
@@ -1577,10 +1577,10 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
             mystl::__rotate_adaptive(first_cut, middle, second_cut, 
                                      len1 - len11, len22, buffer, buffer_size);
         // 递归处理
-        __merge_adaptive(first, first_cut, new_middle, len11, len22, 
-                         buffer, buffer_size);
-        __merge_adaptive(new_middle, second_cut, last, len1 - len11, 
-                         len2 - len22, buffer, buffer_size);
+        mystl::__merge_adaptive(first, first_cut, new_middle, len11, len22, 
+                                buffer, buffer_size);
+        mystl::__merge_adaptive(new_middle, second_cut, last, len1 - len11, 
+                                len2 - len22, buffer, buffer_size);
     }
 }
 
@@ -1590,10 +1590,12 @@ inline void __inplace_merge_aux(BidirectionalIterator first, BidirectionalIterat
     auto len1 = distance(first, middle);
     auto len2 = distance(middle, last);
     temporary_buffer<BidirectionalIterator, T> buf(first, last);  // 申请额外缓冲区
-    if (!buf.begin())  // 申请失败
+    if (!buf.begin()) {
         mystl::__merge_without_buffer(first, middle, last, len1, len2);
-    else
+    }
+    else {
         mystl::__merge_adaptive(first, middle, last, len1, len2, buf.begin(), buf.size());
+    }
 }
 
 template <class BidirectionalIterator>
@@ -1633,8 +1635,8 @@ void __merge_without_buffer(BidirectionalIterator first, BidirectionalIterator m
     }
     auto new_middle = mystl::rotate(first_cut, middle, second_cut);
     // 递归处理
-    __merge_without_buffer(first, first_cut, new_middle, len11, len22, comp);
-    __merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22, comp);
+    mystl::__merge_without_buffer(first, first_cut, new_middle, len11, len22, comp);
+    mystl::__merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22, comp);
 }
 
 template <class BidirectionalIterator1, class BidirectionalIterator2, class Compared>
@@ -1676,7 +1678,7 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
     }
     else if (len2 <= buffer_size) {
         Pointer buffer_end = mystl::copy(middle, last, buffer);
-        __merge_backward(first, middle, buffer, buffer_end, last, comp);
+        mystl::__merge_backward(first, middle, buffer, buffer_end, last, comp);
     }
     else {  // 区间长度太长，分割递归处理
         auto first_cut = first;
@@ -1699,10 +1701,10 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
             mystl::__rotate_adaptive(first_cut, middle, second_cut, len1 - len11,
                                      len22, buffer, buffer_size);
         // 递归处理
-        __merge_adaptive(first, first_cut, new_middle, len11,
-                         len22, buffer, buffer_size, comp);
-        __merge_adaptive(new_middle, second_cut, last, len1 - len11,
-                         len2 - len22, buffer, buffer_size, comp);
+        mystl::__merge_adaptive(first, first_cut, new_middle, len11,
+                                len22, buffer, buffer_size, comp);
+        mystl::__merge_adaptive(new_middle, second_cut, last, len1 - len11,
+                                len2 - len22, buffer, buffer_size, comp);
     }
 }
 
