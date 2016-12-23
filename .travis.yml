@@ -23,7 +23,7 @@ addons:
     
 script:
   - cd MyTinySTL/Test
-  - make -j 4
+  - test.cpp
   
 branches:
   only:
