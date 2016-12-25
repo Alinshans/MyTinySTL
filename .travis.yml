@@ -36,7 +36,7 @@ before_script:
   - export CXX=$COMPILER
 
 script:
-  - make test
+  - make
   
 branches:
   only:
