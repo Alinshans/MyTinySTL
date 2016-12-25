@@ -36,6 +36,7 @@ before_script:
   - export CXX=$COMPILER
 
 script:
+  - cd MyTinySTL/Test
   - make
   
 branches:
