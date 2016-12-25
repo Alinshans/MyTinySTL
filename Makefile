@@ -1,11 +1,12 @@
-CXXFLAGS = -Os -std=c++11
+CXX=g++
+CXXFLAGS =-std=c++11 -O2 -I/MyTinySTL/Test
 
 vpath %.h ./MyTinySTL
 vpath %.h ./MyTinySTL/Test
 
-all::test
+all: test
 
-test: test.cpp
+test.o: test.cpp
     $(CXX) -o test $(CXXFLAGS) test.cpp
 
 clean:
