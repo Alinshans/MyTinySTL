@@ -34,12 +34,9 @@ matrix:
       
 before_script:
   - export CXX=$COMPILER
-  - mkdir build
-  - cd build
 
 script:
-  - cmake --build .
-  - ./bin/runTest
+  - CXX --version
   
 branches:
   only:
