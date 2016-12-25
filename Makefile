@@ -7,7 +7,8 @@ vpath %.h ./MyTinySTL/Test
 all: test
 
 test.o: test.cpp
-    $(CXX) -o test $(CXXFLAGS) test.cpp
+	$(CXX) -o test $(CXXFLAGS) test.cpp
 
 clean:
-    rm -rf *.o main
+	rm -rf *.o main
+
