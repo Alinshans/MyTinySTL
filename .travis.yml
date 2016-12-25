@@ -31,12 +31,16 @@ matrix:
           packages:
             - clang-3.6
       env: COMPILER=clang++-3.6
-  
+      
+before_script:
+  - export CXX=$COMPILER
+  - mkdir build
+  - cd build
+  - cmake -DCOVERALLS=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug ..
+
 script:
-  - cd MyTinySTL/Test
-  - cmake ./
-  - make
-  
+  - cmake --build .
+  - ./bin/runTest
   
 branches:
   only:
