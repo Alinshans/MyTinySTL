@@ -34,9 +34,9 @@ matrix:
       
 before_script:
   - export CXX=$COMPILER
-  - cd MyTinySTL/Test
 
 script:
+  - cd MyTinySTL/Test
   - make
   
 branches:
