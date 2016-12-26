@@ -1,9 +1,11 @@
 language: cpp
-sudo: false
+
+sudo: required
+dist: trusty
 
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.6"; fi
+- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.5"; fi
 
 matrix:
   include:
