@@ -8,4 +8,4 @@ test.o: test.cpp
 	$(CXX) -c $(CXXFLAGS) test.cpp
 
 clean:
-	rm -rf *.o runtest
+	rm -f *.o runtest
