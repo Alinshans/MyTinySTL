@@ -1,14 +1,24 @@
 language: cpp
 
+# Ubuntu 14.04 Trusty support
 sudo: required
 dist: trusty
 
 install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.5"; fi
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.6" CC="gcc-4.6"; fi
+- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.3"; fi
 
 matrix:
   include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.6']
+      env:
+        - COMPILER=g++-4.6
+
     - os: linux
       compiler: gcc
       addons:
@@ -23,18 +33,27 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9']
-      env:
-        - COMPILER=g++-4.9
-
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-5']
       env:
         - COMPILER=g++-5
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.3']
+          packages: ['clang-3.3']
+      env:
+        - COMPILER=clang++-3.3
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.4']
+          packages: ['clang-3.4']
+      env:
+        - COMPILER=clang++-3.4
 
     - os: linux
       compiler: clang
@@ -45,32 +64,15 @@ matrix:
       env:
         - COMPILER=clang++-3.5
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
-          packages: ['clang-3.6']
+    - os: osx
+      compiler: gcc
       env:
-        - COMPILER=clang++-3.6
-
-    - os: linux
+        - COMPILER=g++-4.6
+        
+    - os: osx
       compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
-          packages: ['clang-3.7']
       env:
-        - COMPILER=clang++-3.7
-
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8']
-      env:
-        - COMPILER=clang++-3.8
+        - COMPILER=clang++-3.3
       
 before_script:
   - export CXX=$COMPILER
