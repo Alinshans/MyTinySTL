@@ -17,7 +17,8 @@ MyTinySTL
   * GCC 4.6
   * Clang++ 3.3 
   * MSVC 14.0
-___
+  
+***
 ##目录
 * [配置器](#配置器)
   * allocator
