@@ -12,15 +12,5 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-set(PROJECT_SRC ${PROJECT_SOURCE_DIR}/MyTinySTL/Test/test.cpp)
-
-set(CMAKE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-enable_testing()
-
-include_directories(MyTinySTL)
-include_directories(MyTinySTL/Test)
-
-if(BUILD_TESTING)
-    add_executable(runTest ${PROJECT_SOURCE_DIR}/MyTingSTL/Test/test.cpp)
-    add_test(RUNTEST ${CMAKE_BINARY_DIR}/bin/runTest)
-endif()
+include_directories("$(PROJECT_DIR)/MyTinySTL/Test")
+add_subdirectory(MyTinySTL/Test)
