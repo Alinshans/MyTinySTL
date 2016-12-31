@@ -11,10 +11,8 @@
 
 namespace mystl {
 
-// rb tree 节点颜色的类型，红色为 0，黑色为 1
-typedef bool __rb_tree_color_type;
-constexpr    __rb_tree_color_type    __rb_tree_red   = false;
-constexpr    __rb_tree_color_type    __rb_tree_black = true;
+// rb tree 节点颜色的类型
+typedef enum { __rb_tree_red = false, __rb_tree_black = true }__rb_tree_color_type;
 
 // rb tree 的节点设计
 struct __rb_tree_node_base {
@@ -88,6 +86,9 @@ struct __rb_tree_iterator_base {
             node = y;                   // 此时父节点为要找的前一个节点
         }
     }
+
+    bool operator==(const __rb_tree_iterator_base& rhs) { return node == rhs.node; }
+    bool operator!=(const __rb_tree_iterator_base& rhs) { return node != rhs.node; }
 };
 
 template <class T, class Ref, class Ptr>
@@ -128,15 +129,6 @@ struct __rb_tree_iterator :public __rb_tree_iterator_base {
         return tmp;
     }
 };
-
-// 重载比较操作符
-inline bool operator==(const __rb_tree_iterator_base& lhs, __rb_tree_iterator_base& rhs) {
-    return lhs.node == rhs.node;
-}
-
-inline bool operator!=(const __rb_tree_iterator_base& lhs, __rb_tree_iterator_base& rhs) {
-    return !(lhs == rhs);
-}
 
 // 以下四个全局函数，用于调整 rb tree 节点的位置与颜色
 // 左旋，参数一为左旋点，参数二为根节点
