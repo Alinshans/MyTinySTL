@@ -1,8 +1,8 @@
 #MyTinySTL
 
-|linux|osx|windows|release|
+|linux      |osx       |windows   |release   |
 |:=========:|:========:|:========:|:========:|
-|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl)|[![Release](https://github.com/Alinshans/MyTinySTL/blob/master/release.png)](https://github.com/Alinshans/MyTinySTL/releases)
+|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl)|[![Release](https://github.com/Alinshans/MyTinySTL/blob/master/release.png)](https://github.com/Alinshans/MyTinySTL/releases)|
 
 ###简介
    这是一个小型的 STL，为了练习`数据结构`、`模板编程`、`C++11`和`项目规范`等，而做的一个练习。这个小型的 STL 实现了绝大部分 STL 中原有的函数、容器，加入了一些 C++ 标准库中的内容，部分作了修改，也有加入自己的一些部分。这个项目只作为**个人学习用途**，请勿用作其它用途。如发现错误，还请在 `Issues` 中指出。欢迎 `Fork` 和 `Pull requests` 改善、补充代码。<br>
