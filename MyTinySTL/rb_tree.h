@@ -458,31 +458,31 @@ class rb_tree {
     size_type max_size() const { return static_cast<size_type>(-1); }
 
     // 插入删除相关操作
-    iterator             insert_equal(const value_type& value);
-    iterator             insert_equal(iterator position, const value_type& value);
+    iterator                    insert_equal(const value_type& value);
+    iterator                    insert_equal(iterator position, const value_type& value);
     template <class InputIterator>
-    void                 insert_equal(InputIterator first, InputIterator last);
-    pair<iterator, bool> insert_unique(const value_type& value);
-    iterator             insert_unique(iterator position, const value_type& value);
+    void                        insert_equal(InputIterator first, InputIterator last);
+    mystl::pair<iterator, bool> insert_unique(const value_type& value);
+    iterator                    insert_unique(iterator position, const value_type& value);
     template <class InputIterator>
-    void                 insert_unique(InputIterator first, InputIterator last);
-    void                 erase(iterator position);
-    size_type            erase(const key_type& k);
-    void                 erase(iterator first, iterator last);
-    void                 clear();
+    void                        insert_unique(InputIterator first, InputIterator last);
+    void                        erase(iterator position);
+    size_type                   erase(const key_type& k);
+    void                        erase(iterator first, iterator last);
+    void                        clear();
     
     // rb_tree 相关操作
-    Compare                              key_comp()                     const { return key_compare; }
-    iterator                             find(const key_type& k);
-    const_iterator                       find(const key_type& k)        const;
-    size_type                            count(const key_type& k)       const;
-    iterator                             lower_bound(const key_type& k);
-    const_iterator                       lower_bound(const key_type& k) const;
-    iterator                             upper_bound(const key_type& k);
-    const_iterator                       upper_bound(const key_type& k) const;
-    pair<iterator, iterator>             equal_range(const key_type& k);
-    pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
-    void                                 swap(rb_tree& rhs);
+    Compare                                     key_comp()                     const;
+    iterator                                    find(const key_type& k);
+    const_iterator                              find(const key_type& k)        const;
+    size_type                                   count(const key_type& k)       const;
+    iterator                                    lower_bound(const key_type& k);
+    const_iterator                              lower_bound(const key_type& k) const;
+    iterator                                    upper_bound(const key_type& k);
+    const_iterator                              upper_bound(const key_type& k) const;
+    mystl::pair<iterator, iterator>             equal_range(const key_type& k);
+    mystl::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+    void                                        swap(rb_tree& rhs);
 
   private:
     // rb_tree 的私有成员函数
@@ -659,7 +659,7 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(InputIterator
 
 // 插入新值，节点键值不允许重复，返回一个 pair，若插入成功，pair 的第二参数为 true，否则为 false
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
+mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
     rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const value_type& value) {
     auto y = header_;
     auto x = root();
@@ -672,14 +672,14 @@ pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
     iterator j = iterator(y);                             // 此时 y 为插入点的父节点
     if (comp) {                                           // 离开循坏时 comp 为 true，插在左边
         if (j == begin())                                 // 父节点为最左节点
-            return pair<iterator, bool>(__insert(x, y, value), true);
+            return mystl::pair<iterator, bool>(__insert(x, y, value), true);
         else
             --j;
     }
     if (key_compare(key(j.node), KeyOfValue()(value)))    // 新节点没有重复
-        return pair<iterator, bool>(__insert(x, y, value), true);
+        return mystl::pair<iterator, bool>(__insert(x, y, value), true);
     // 进行至此，表示新节点与现有节点键值重复
-    return pair<iterator, bool>(j, false);
+    return mystl::pair<iterator, bool>(j, false);
 }
 
 // 从 position 开始插入新值，节点键值不允许重复
@@ -764,6 +764,13 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::clear() {
         rightmost() = header_;
         node_count_ = 0;
     }
+}
+
+
+// 返回节点比较的函数对象
+template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+Compare rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::key_comp() const {
+    return key_compare;
 }
 
 // 查找键值为 k 的节点，返回指向它的迭代器
@@ -878,17 +885,17 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
 
 // 查找与键值 k 相等的区间，返回一个 pair 分别指向相等区间的首尾
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
+inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
     typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
     rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const key_type& k) {
-    return pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+    return mystl::pair<iterator, iterator>(lower_bound(k), upper_bound(k));
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
+inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
     typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator>
     rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const key_type& k) const {
-    return pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
+    return mystl::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
 }
 
 // 交换 rb tree
