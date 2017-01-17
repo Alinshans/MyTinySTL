@@ -206,24 +206,24 @@ OutputIterator copy_if(InputIterator first, InputIterator last,
 /*****************************************************************************************/
 // __copy_n 的 input_iterator_tag 版本
 template <class InputIterator, class Size, class OutputIterator>
-inline pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
+inline mystl::pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
     OutputIterator result, input_iterator_tag) {
     for (; n > 0; --n, ++first, ++result) {
         *result = *first;
     }
-    return pair<InputIterator, OutputIterator>(first, result);
+    return mystl::pair<InputIterator, OutputIterator>(first, result);
 }
 
 // __copy_n 的 random_access_iterator_tag 版本
 template <class InputIterator, class Size, class OutputIterator>
-inline pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
+inline mystl::pair<InputIterator, OutputIterator> __copy_n(InputIterator first, Size n,
     OutputIterator result, random_access_iterator_tag) {
     auto last = first + n;
-    return pair<InputIterator, OutputIterator>(last, mystl::copy(first, last, result));
+    return mystl::pair<InputIterator, OutputIterator>(last, mystl::copy(first, last, result));
 }
 
 template <class InputIterator, class Size, class OutputIterator>
-inline pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
+inline mystl::pair<InputIterator, OutputIterator> copy_n(InputIterator first, Size n,
                                                   OutputIterator result) {
     typedef typename iterator_traits<InputIterator>::iterator_category Category;
     return __copy_n(first, n, result, Category());
@@ -341,24 +341,24 @@ inline bool lexicographical_compare(const unsigned char* first1,
 // 平行比较两个序列，找到第一处失配的元素，返回一对迭代器，分别指向两个序列中失配的元素
 /*****************************************************************************************/
 template <class InputIterator1, class InputIterator2>
-pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
+mystl::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
     InputIterator2 first2) {
     while (first1 != last1 && *first1 == *first2) {
         ++first1;
         ++first2;
     }
-    return pair<InputIterator1, InputIterator2>(first1, first2);
+    return mystl::pair<InputIterator1, InputIterator2>(first1, first2);
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator1, class InputIterator2, class Compred>
-pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
+mystl::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
     InputIterator2 first2, Compred comp) {
     while (first1 != last1 && comp(*first1, *first2)) {
         ++first1;
         ++first2;
     }
-    return pair<InputIterator1, InputIterator2>(first1, first2);
+    return mystl::pair<InputIterator1, InputIterator2>(first1, first2);
 }
 
 } // namespace mystl
