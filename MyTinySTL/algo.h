@@ -1922,7 +1922,7 @@ partition_copy(InputIterator first, InputIterator last,
 // sort
 // 将[first, last)内的元素以递增的方式排序
 /*****************************************************************************************/
-constexpr static size_t kSmallSectionSize = 256;  // 小型区间的大小，在这个大小内采用插入排序
+constexpr static size_t kSmallSectionSize = 128;  // 小型区间的大小，在这个大小内采用插入排序
 
 // 用于控制分割恶化的情况
 template <class Size>
