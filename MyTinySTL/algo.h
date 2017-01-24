@@ -1817,10 +1817,11 @@ void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
 // partial_sort_copy
 // 行为与 partial_sort 类似，不同的是把排序结果复制到 result 容器中
 /*****************************************************************************************/
-template <class InputIterator, class RandomAccessIterator>
+template <class InputIterator, class RandomAccessIterator, class Distance>
 RandomAccessIterator
-partial_sort_copy(InputIterator first, InputIterator last,
-                    RandomAccessIterator result_first, RandomAccessIterator result_last) {
+__partial_sort_copy(InputIterator first, InputIterator last,
+                    RandomAccessIterator result_first, RandomAccessIterator result_last,
+                    Distance*) {
     if (result_first == result_last) 
         return result_last;
     auto result_iter = result_first;
@@ -1832,7 +1833,8 @@ partial_sort_copy(InputIterator first, InputIterator last,
     mystl::make_heap(result_first, result_iter);
     while (first != last) {
         if (*first < *result_first) {
-            mystl::__adjust_heap(result_first, 0, result_iter - result_first, *first);
+            mystl::__adjust_heap(result_first, static_cast<Distance>(0),
+                                 result_iter - result_first, *first);
         }
         ++first;
     }
@@ -1840,12 +1842,20 @@ partial_sort_copy(InputIterator first, InputIterator last,
     return result_iter;
 }
 
-// 重载版本使用函数对象 comp 代替比较操作
-template <class InputIterator, class RandomAccessIterator, class Compared>
-RandomAccessIterator 
+template <class InputIterator, class RandomAccessIterator>
+RandomAccessIterator
 partial_sort_copy(InputIterator first, InputIterator last,
+                  RandomAccessIterator result_first, RandomAccessIterator result_last) {
+    mystl::__partial_sort_copy(first, last, result_first, result_last,
+                               distance_type(result_first));
+}
+
+// 重载版本使用函数对象 comp 代替比较操作
+template <class InputIterator, class RandomAccessIterator, class Distance, class Compared>
+inline RandomAccessIterator 
+__partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last, 
-                  Compared comp) {
+                  Distance*, Compared comp) {
     if (result_first == result_last) 
         return result_last;
     auto result_iter = result_first;
@@ -1857,7 +1867,8 @@ partial_sort_copy(InputIterator first, InputIterator last,
     mystl::make_heap(result_first, result_iter, comp);
     while (first != last) {
         if (comp(*first, *result_first)) {
-            mystl::__adjust_heap(result_first, 0, result_iter - result_first, *first, comp);
+            mystl::__adjust_heap(result_first, static_cast<Distance>(0),
+                                 result_iter - result_first, *first, comp);
         }
         ++first;
     }
@@ -1865,6 +1876,14 @@ partial_sort_copy(InputIterator first, InputIterator last,
     return result_iter;
 }
 
+template <class InputIterator, class RandomAccessIterator, class Compared>
+inline RandomAccessIterator
+partial_sort_copy(InputIterator first, InputIterator last,
+                  RandomAccessIterator result_first, RandomAccessIterator result_last,
+                  Compared comp) {
+    mystl::__partial_sort_copy(first, last, result_first, result_last,
+                               distance_type(result_first), comp);
+}
 /*****************************************************************************************/
 // partition
 // 对区间内的元素重排，被一元条件运算判定为 true 的元素会放到区间的前段
