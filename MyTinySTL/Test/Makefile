@@ -1,4 +1,3 @@
-CXX=g++
 CXXFLAGS =-std=c++11
 
 runtest: test.o
