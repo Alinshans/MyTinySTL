@@ -1794,7 +1794,7 @@ void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
     mystl::make_heap(first, middle);
     for (auto i = middle; i < last; ++i) {
         if (*i < *first) {
-            mystl::__pop_heap_aux(first, middle, i, *i, distance_type(first));
+            mystl::__pop_heap(first, middle, i, *i, distance_type(first));
         }
     }
     mystl::sort_heap(first, middle);
@@ -1807,7 +1807,7 @@ void partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
     mystl::make_heap(first, middle, comp);
     for (auto i = middle; i < last; ++i) {
         if (comp(*i, *first)) {
-            mystl::__pop_heap_aux(first, middle, i, *i, distance_type(first), comp);
+            mystl::__pop_heap(first, middle, i, *i, distance_type(first), comp);
         }
     }
     mystl::sort_heap(first, middle, comp);
@@ -2267,3 +2267,4 @@ ForwardIterator unique(ForwardIterator first, ForwardIterator last, Compared com
 
 } // namespace mystl
 #endif // !MYTINYSTL_ALGO_H_
+
