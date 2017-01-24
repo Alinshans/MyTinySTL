@@ -48,20 +48,28 @@ matrix:
       compiler: clang
       addons:
         apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
+          packages: ['clang-3.6']
+      env:
+        - COMPILER=clang++-3.6
+        
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
+          packages: ['clang-3.7']
+      env:
+        - COMPILER=clang++-3.7
+        
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
           packages: ['clang-3.8']
       env:
         - COMPILER=clang++-3.8
-        
-    - os: osx
-      compiler: gcc
-      env:
-        - COMPILER=g++-4.7
-        
-    - os: osx
-      compiler: clang
-      env:
-        - COMPILER=clang++-3.5
       
 
 before_script:
