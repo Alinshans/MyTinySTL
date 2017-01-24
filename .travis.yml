@@ -4,10 +4,6 @@ language: cpp
 sudo: required
 dist: trusty
 
-#install:
-#- if [ "$CXX" = "g++" ]; then export CXX="g++-4.6" CC="gcc-4.6"; fi
-#- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.3"; fi
-
 matrix:
   include:
     - os: linux
@@ -15,45 +11,18 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.6']
+          packages: ['g++-4.7']
       env:
-        - COMPILER=g++-4.6
-
+        - COMPILER=g++-4.7
+        
     - os: linux
       compiler: gcc
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.8']
+          packages: ['g++-5.4']
       env:
-        - COMPILER=g++-4.8
-
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5']
-      env:
-        - COMPILER=g++-5
-
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.3']
-          packages: ['clang-3.3']
-      env:
-        - COMPILER=clang++-3.3
-
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.4']
-          packages: ['clang-3.4']
-      env:
-        - COMPILER=clang++-3.4
+        - COMPILER=g++-5.4
 
     - os: linux
       compiler: clang
@@ -63,22 +32,31 @@ matrix:
           packages: ['clang-3.5']
       env:
         - COMPILER=clang++-3.5
-
+        
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
+          packages: ['clang-3.8']
+      env:
+        - COMPILER=clang++-3.8
+        
     - os: osx
       compiler: gcc
       env:
-        - COMPILER=g++-4.6
+        - COMPILER=g++-4.7
         
     - os: osx
       compiler: clang
       env:
-        - COMPILER=clang++-3.3
+        - COMPILER=clang++-3.5
       
 before_script:
   - export CXX=$COMPILER
-
-script:
   - cd MyTinySTL/Test
+  
+script:
   - make
   
 branches:
