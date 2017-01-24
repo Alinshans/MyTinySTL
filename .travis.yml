@@ -4,6 +4,10 @@ language: cpp
 sudo: required
 dist: trusty
 
+# osx
+os: osx
+
+# linux
 matrix:
   include:
     - os: linux
