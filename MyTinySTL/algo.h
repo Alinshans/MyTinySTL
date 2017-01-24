@@ -1843,16 +1843,16 @@ __partial_sort_copy(InputIterator first, InputIterator last,
 }
 
 template <class InputIterator, class RandomAccessIterator>
-RandomAccessIterator
+inline RandomAccessIterator
 partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last) {
-    mystl::__partial_sort_copy(first, last, result_first, result_last,
-                               distance_type(result_first));
+    return mystl::__partial_sort_copy(first, last, result_first, result_last,
+                                      distance_type(result_first));
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator, class RandomAccessIterator, class Distance, class Compared>
-inline RandomAccessIterator 
+RandomAccessIterator 
 __partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last, 
                   Distance*, Compared comp) {
@@ -1881,8 +1881,8 @@ inline RandomAccessIterator
 partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last,
                   Compared comp) {
-    mystl::__partial_sort_copy(first, last, result_first, result_last,
-                               distance_type(result_first), comp);
+    return mystl::__partial_sort_copy(first, last, result_first, result_last,
+                                      distance_type(result_first), comp);
 }
 /*****************************************************************************************/
 // partition
