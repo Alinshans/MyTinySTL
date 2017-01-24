@@ -4,6 +4,10 @@ language: cpp
 sudo: required
 dist: trusty
 
+install:
+if [ "$CXX" = "g++" ]; then export CXX="g++-4.6" CC="gcc-4.6"; fi
+if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.3"; fi
+
 matrix:
   include:
     - os: linux
