@@ -1974,7 +1974,7 @@ void __introsort_loop(RandomAccessIterator first, RandomAccessIterator last, Siz
         --depth_limit;
         auto mid = mystl::median(*(first), *(first + (last - first) / 2), *(last - 1));
         auto cut = mystl::__unguarded_partition(first, last, mid);
-        __introsort_loop(cut, last, depth_limit);    // 对右半段进行递归
+        mystl::__introsort_loop(cut, last, depth_limit);
         last = cut;
     }
 }
@@ -2075,7 +2075,7 @@ void __introsort_loop(RandomAccessIterator first, RandomAccessIterator last,
         --depth_limit;
         auto mid = mystl::median(*(first), *(first + (last - first) / 2), *(last - 1));
         auto cut = mystl::__unguarded_partition(first, last, mid, comp);
-        __introsort_loop(cut, last, depth_limit, comp);
+        mystl::__introsort_loop(cut, last, depth_limit, comp);
         last = cut;
     }
 }
