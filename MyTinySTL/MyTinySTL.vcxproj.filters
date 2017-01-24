@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\Text">
+    <Filter Include="头文件\Test">
       <UniqueIdentifier>{8670b44d-de04-4732-8d7e-7f407bcdf603}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -106,40 +106,40 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Test\test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\algorithm_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\vector_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\list_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\deque_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\queue_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\stack_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\map_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\set_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\hash_map_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\hash_set_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\algorithm_performance_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
     <ClInclude Include="basic_string.h">
       <Filter>头文件</Filter>
@@ -148,7 +148,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Test\string_test.h">
-      <Filter>头文件\Text</Filter>
+      <Filter>头文件\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
