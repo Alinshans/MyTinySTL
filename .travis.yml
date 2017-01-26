@@ -4,10 +4,6 @@ language: cpp
 sudo: required
 dist: trusty
 
-# osx
-os: osx
-
-# linux
 matrix:
   include:
     - os: linux
@@ -74,6 +70,11 @@ matrix:
           packages: ['clang-3.8']
       env:
         - COMPILER=clang++-3.8
+        
+    - os: osx
+      compiler: clang
+      env:
+        - COMPILER=clang++-3.5
       
 
 before_script:
