@@ -512,17 +512,25 @@ void TESTCASE_NAME(testcase_name)::Run()
 // 常用的宏定义
 
 // 不同情况的测试数量级
-#if defined(_DEBUG)
-#define LEN1    10000
-#define LEN2    100000
-#define LEN3    1000000
-#define LEN4    10000000
-#else
+#if defined(NDEBUG)
 #define LEN1    100000
 #define LEN2    1000000
 #define LEN3    10000000
 #define LEN4    100000000
-#endif 
+#else
+#define LEN1    10000
+#define LEN2    100000
+#define LEN3    1000000
+#define LEN4    10000000
+#endif
+
+#define _LLL * 20
+#define _LL  * 10
+#define _L   * 5
+#define _M
+#define _S   / 5
+#define _SS  / 10
+#define _SSS / 20
 
 #define WIDE    14
 
@@ -685,6 +693,16 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
 // 运行所有测试案例
 #define RUN_ALL_TESTS() \
     mystl::test::UnitTest::GetInstance()->Run()
+
+// 是否开启性能测试
+#ifndef PERFORMANCE_TEST_ON
+#define PERFORMANCE_TEST_ON 1
+#endif // !PERFORMANCE_TEST_ON
+
+// 电脑内存是否够大( >= 8G )
+#ifndef MEMORY_IS_ENOUGH
+#define MEMORY_IS_ENOUGH 0
+#endif // !MEMORY_IS_ENOUGH
 
 }    // namespace test
 }    // namespace mystl
