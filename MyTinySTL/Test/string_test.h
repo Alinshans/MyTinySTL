@@ -119,17 +119,20 @@ void string_test() {
     std::cout << " text + \" success\" : " << text + " success" << std::endl;
     std::cout << " \"My \" + text : " << "My " + text << std::endl;
     std::cout << " text + text2 : " << text + text2 << std::endl;
-    std::cout << " Please input a string to the text :\n ";
-    std::cin >> text;
-    STR_COUT(text);
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|        insert       |";
-    CON_TEST_P2(string, insert, end, 's', LEN2, LEN3, LEN4);
+#if MEMORY_IS_ENOUGH
+    CON_TEST_P2(string, insert, end, 's', LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+    CON_TEST_P2(string, insert, end, 's', LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[----------------- End container test : string -----------------]" << std::endl;
 }
 
