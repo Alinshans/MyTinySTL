@@ -512,16 +512,14 @@ void TESTCASE_NAME(testcase_name)::Run()
 // 常用的宏定义
 
 // 不同情况的测试数量级
-#if defined(NDEBUG)
-#define LEN1    100000
-#define LEN2    1000000
-#define LEN3    10000000
-#define LEN4    100000000
-#else
+#if defined(_DEBUG) || defined(DEBUG)
 #define LEN1    10000
 #define LEN2    100000
 #define LEN3    1000000
-#define LEN4    10000000
+#else
+#define LEN1    100000
+#define LEN2    1000000
+#define LEN3    10000000
 #endif
 
 #define _LLL * 20
