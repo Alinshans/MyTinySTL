@@ -85,13 +85,19 @@ void vector_test() {
     FUN_VALUE(v1.size());
     FUN_VALUE(v1.capacity());
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|      push_back      |";
-    CON_TEST_P1(vector<int>, push_back, rand(), LEN2, LEN3, LEN4);
+#if MEMORY_IS_ENOUGH
+    CON_TEST_P1(vector<int>, push_back, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+    CON_TEST_P1(vector<int>, push_back, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[----------------- End container test : vector -----------------]" << std::endl;
 }
 
