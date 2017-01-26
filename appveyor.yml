@@ -1,20 +1,20 @@
-version: 1.0.{build}
+version: 1.1.{build}
 
 branches:
   only:
     - master
-    
-skip_commits:
-  message: /Created.*\.(png|jpg|jpeg|bmp|gif)/
   
 image: Visual Studio 2015
 
 configuration: 
-  - Debug
   - Release
 
 build:
   parallel: true
   project: MyTinySTL.sln
+  
+test_script:
+  - cmd: cd MyTinySTL\Test\Release
+  - cmd: MyTinySTL.exe
   
 

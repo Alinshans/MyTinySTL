@@ -58,13 +58,15 @@ void deque_test() {
     FUN_VALUE(d1.size());
     FUN_VALUE(d1.max_size());
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    CON_TEST_P2(deque<int>, insert, end, rand(), LEN1, LEN2, LEN3);
+    CON_TEST_P2(deque<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[----------------- End container test : deque ------------------]" << std::endl;
 }
 

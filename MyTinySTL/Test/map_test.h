@@ -78,21 +78,35 @@ void map_test() {
     std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
         << "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+#if MEMORY_IS_ENOUGH
+    TEST_LEN(LEN1 _M, LEN2 _M, LEN3 _M, WIDE);
     std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, map, LEN1);
-    MAP_INSERT_TEST(std, map, LEN2);
-    MAP_INSERT_TEST(std, map, LEN3);
+    MAP_INSERT_TEST(std, map, LEN1 _M);
+    MAP_INSERT_TEST(std, map, LEN2 _M);
+    MAP_INSERT_TEST(std, map, LEN3 _M);
     std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, map, LEN1);
-    MAP_INSERT_TEST(mystl, map, LEN2);
-    MAP_INSERT_TEST(mystl, map, LEN3);
+    MAP_INSERT_TEST(mystl, map, LEN1 _M);
+    MAP_INSERT_TEST(mystl, map, LEN2 _M);
+    MAP_INSERT_TEST(mystl, map, LEN3 _M);
+#else
+    TEST_LEN(LEN1 _SS, LEN2 _SS, LEN3 _SS, WIDE);
+    std::cout << "|         std         |";
+    MAP_INSERT_TEST(std, map, LEN1 _SS);
+    MAP_INSERT_TEST(std, map, LEN2 _SS);
+    MAP_INSERT_TEST(std, map, LEN3 _SS);
+    std::cout << std::endl << "|        mystl        |";
+    MAP_INSERT_TEST(mystl, map, LEN1 _SS);
+    MAP_INSERT_TEST(mystl, map, LEN2 _SS);
+    MAP_INSERT_TEST(mystl, map, LEN3 _SS);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[------------------ End container test : map -------------------]" << std::endl;
 }
 
@@ -137,21 +151,35 @@ void multimap_test() {
     std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
         << "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+#if MEMORY_IS_ENOUGH
+    TEST_LEN(LEN1 _S, LEN2 _S, LEN3 _S, WIDE);
     std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, multimap, LEN1);
-    MAP_INSERT_TEST(std, multimap, LEN2);
-    MAP_INSERT_TEST(std, multimap, LEN3);
+    MAP_INSERT_TEST(std, multimap, LEN1 _S);
+    MAP_INSERT_TEST(std, multimap, LEN2 _S);
+    MAP_INSERT_TEST(std, multimap, LEN3 _S);
     std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, multimap, LEN1);
-    MAP_INSERT_TEST(mystl, multimap, LEN2);
-    MAP_INSERT_TEST(mystl, multimap, LEN3);
+    MAP_INSERT_TEST(mystl, multimap, LEN1 _S);
+    MAP_INSERT_TEST(mystl, multimap, LEN2 _S);
+    MAP_INSERT_TEST(mystl, multimap, LEN3 _S);
+#else
+    TEST_LEN(LEN1 _SS, LEN2 _SS, LEN3 _SS, WIDE);
+    std::cout << "|         std         |";
+    MAP_INSERT_TEST(std, multimap, LEN1 _SS);
+    MAP_INSERT_TEST(std, multimap, LEN2 _SS);
+    MAP_INSERT_TEST(std, multimap, LEN3 _SS);
+    std::cout << std::endl << "|        mystl        |";
+    MAP_INSERT_TEST(mystl, multimap, LEN1 _SS);
+    MAP_INSERT_TEST(mystl, multimap, LEN2 _SS);
+    MAP_INSERT_TEST(mystl, multimap, LEN3 _SS);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[---------------- End container test : multimap ----------------]" << std::endl;
 }
 

@@ -28,6 +28,8 @@ void list_test() {
     mystl::list<int> l6(std::move(l2));
     mystl::list<int> l7 = l3;
     mystl::list<int> l8 = std::move(l3);
+    mystl::list<int> l9{ 1,2,3,4,5,6,7,8,9 };
+    mystl::list<int> l10 = { 1,2,2,3,5 };
     l8.~list();
 
     FUN_AFTER(l1, l1.assign(10));
@@ -44,18 +46,20 @@ void list_test() {
     FUN_AFTER(l1, l1.pop_front());
     FUN_AFTER(l1, l1.pop_back());
     FUN_AFTER(l1, l1.resize(10));
-    FUN_AFTER(l1, l1.resize(5, 1));
+    FUN_AFTER(l1, l1.resize(8, 1));
     FUN_AFTER(l1, l1.splice(l1.end(), l4));
     FUN_AFTER(l1, l1.splice(l1.end(), l5, l5.begin()));
     FUN_AFTER(l1, l1.splice(l1.begin(), l6, l6.begin(), l6.end()));
-    FUN_AFTER(l1, l1.remove(1));
+    FUN_AFTER(l1, l1.remove(0));
     FUN_AFTER(l1, l1.remove_if(is_odd));
+    FUN_AFTER(l1, l1.insert(l1.end(), 1));
+    FUN_AFTER(l1, l1.insert(l1.begin(), 2, 6));
+    FUN_AFTER(l1, l1.assign({ 9,5,3,3,7,8,1,3,2,2 }));
     FUN_AFTER(l1, l1.sort());
     FUN_AFTER(l1, l1.unique());
     FUN_AFTER(l1, l1.merge(l7));
     FUN_AFTER(l1, l1.reverse());
     FUN_AFTER(l1, l1.clear());
-    mystl::list<int> l9(a, a + 5);
     FUN_AFTER(l1, l1.swap(l9));
     FUN_VALUE(*l1.begin());
     FUN_VALUE(*l1.rbegin());
@@ -67,25 +71,43 @@ void list_test() {
     FUN_VALUE(l1.size());
     FUN_VALUE(l1.max_size());
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    CON_TEST_P2(list<int>, insert, end, rand(), LEN1, LEN2, LEN3);
+#if MEMORY_IS_ENOUGH
+    CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#else
+    CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|         sort        |";
-    TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+#if MEMORY_IS_ENOUGH
+    TEST_LEN(LEN1 _M, LEN2 _M, LEN3 _M, WIDE);
     std::cout << "|         std         |";
-    LIST_SORT_TEST(std, LEN1);
-    LIST_SORT_TEST(std, LEN2);
-    LIST_SORT_TEST(std, LEN3);
+    LIST_SORT_TEST(std, LEN1 _M);
+    LIST_SORT_TEST(std, LEN2 _M);
+    LIST_SORT_TEST(std, LEN3 _M);
     std::cout << std::endl << "|        mystl        |";
-    LIST_SORT_TEST(mystl, LEN1);
-    LIST_SORT_TEST(mystl, LEN2);
-    LIST_SORT_TEST(mystl, LEN3);
+    LIST_SORT_TEST(mystl, LEN1 _M);
+    LIST_SORT_TEST(mystl, LEN2 _M);
+    LIST_SORT_TEST(mystl, LEN3 _M);
+#else
+    TEST_LEN(LEN1 _S, LEN2 _S, LEN3 _S, WIDE);
+    std::cout << "|         std         |";
+    LIST_SORT_TEST(std, LEN1 _S);
+    LIST_SORT_TEST(std, LEN2 _S);
+    LIST_SORT_TEST(std, LEN3 _S);
+    std::cout << std::endl << "|        mystl        |";
+    LIST_SORT_TEST(mystl, LEN1 _S);
+    LIST_SORT_TEST(mystl, LEN2 _S);
+    LIST_SORT_TEST(mystl, LEN3 _S);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[------------------ End container test : list ------------------]" << std::endl;
 }
 

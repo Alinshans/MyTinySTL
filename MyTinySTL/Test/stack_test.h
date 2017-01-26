@@ -68,13 +68,15 @@ void stack_test() {
     s1.clear();
     STACK_COUT(s1);
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|         push        |";
-    CON_TEST_P1(stack<int>, push, rand(), LEN2, LEN3, LEN4);
+    CON_TEST_P1(stack<int>, push, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[----------------- End container test : stack ------------------]" << std::endl;
 }
 
