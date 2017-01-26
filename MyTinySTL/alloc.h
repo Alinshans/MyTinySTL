@@ -1,7 +1,7 @@
 #ifndef MYTINYSTL_ALLOC_H_
 #define MYTINYSTL_ALLOC_H_
 
-// 这个头文件包含一个类 alloc，代表 mystl 默认的空间配置器
+// 这个头文件包含一个类 alloc，代表 mystl 的默认空间配置器
 
 #include <cstdlib>
 #include <cstddef>
@@ -10,27 +10,32 @@
 namespace mystl {
 
 // 共用体: FreeList
-// 采用链表的方式管理内存碎片，分配与回收小内存区块
-// 维护 16 个自由链表，分别管理大小为 8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128 bytes 的区块
+// 采用链表的方式管理内存碎片，分配与回收小内存（<=4K）区块
 union FreeList {
     union FreeList* next;  // 指向下一个区块
     char data[1];          // 储存本块内存的首地址
 };
 
-enum { EAlign = 8 };        // 小型区块上调边界
-enum { EMaxBytes = 128 };   // 小型区块上限
-enum { ENFreeLists = 16 };  // free list 个数
+// 不同内存范围的上调大小
+enum { EAlign128 = 8, EAlign256 = 16, EAlign512 = 32, 
+       EAlign1K = 64, EAlign2K = 128, EAlign4K = 256 };
+
+// 小对象的内存大小
+enum { ESmallObjectBytes = 4096  };
+
+// free lists 个数
+enum { EFreeListsNumber = 56 };
 
 // 空间配置类 alloc
-// 如果内存较大，超过 128 bytes，直接调用 malloc, free
+// 如果内存较大，超过 4K，直接调用 malloc, free
 // 当内存较小时，以内存池管理，每次配置一大块内存，并维护对应的自由链表
 class alloc {
 private:
-    static char*  start_free;  // 内存池起始位置
-    static char*  end_free;    // 内存池结束位置
-    static size_t heap_size;   // 申请 heap 空间附加值大小
+    static char*  start_free;                      // 内存池起始位置
+    static char*  end_free;                        // 内存池结束位置
+    static size_t heap_size;                       // 申请 heap 空间附加值大小
 
-    static FreeList* free_list[ENFreeLists];  // 16 个自由链表
+    static FreeList* free_list[EFreeListsNumber];  // 自由链表
 
 public:
     static void* allocate(size_t n);
@@ -38,28 +43,32 @@ public:
     static void* reallocate(void* p, size_t old_size, size_t new_size);
 
 private:
+    static size_t align_bytes(size_t bytes);
     static size_t round_up(size_t bytes);
     static size_t freelist_index(size_t bytes);
+    static size_t get_blocks(size_t bytes);
     static void*  refill(size_t n);
     static char*  chunk_alloc(size_t size, size_t &nobj);
 };
 
-// alloc 静态成员变量初值设定
+// 静态成员变量初始化
 char*  alloc::start_free = nullptr;
 char*  alloc::end_free = nullptr;
 size_t alloc::heap_size = 0;
-FreeList* alloc::free_list[ENFreeLists] =
-    { nullptr,nullptr,nullptr,nullptr,
-      nullptr,nullptr,nullptr,nullptr,
-      nullptr,nullptr,nullptr,nullptr,
-      nullptr,nullptr,nullptr,nullptr };
+FreeList* alloc::free_list[EFreeListsNumber] = {
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr, 
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr, 
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr, };
 
 // 分配大小为 n 的空间， n > 0
 void* alloc::allocate(size_t n) {
     FreeList* my_free_list;
     FreeList* result;
-    // 大于 128 bytes 就调用 malloc
-    if (n > static_cast<size_t>(EMaxBytes))
+    if (n > static_cast<size_t>(ESmallObjectBytes))
         return std::malloc(n);
     my_free_list = free_list[freelist_index(n)];
     result = my_free_list;
@@ -73,39 +82,98 @@ void* alloc::allocate(size_t n) {
 
 // 释放 p 指向的大小为 n 的空间, p 不能为 0
 void alloc::deallocate(void* p, size_t n) {
-    // 大于 128 bytes 就调用 free
-    if (n > static_cast<size_t>(EMaxBytes)) {
+    if (n > static_cast<size_t>(ESmallObjectBytes)) {
         std::free(p);
         return;
     }
-    FreeList* q = static_cast<FreeList*>(p);
+    FreeList* q = (FreeList*)p;
     FreeList* my_free_list;
-    my_free_list = free_list[freelist_index(n)];  // 找到对应的自由链表
-    q->next = my_free_list;                       // 将空间回收到内存池
+    my_free_list = free_list[freelist_index(n)];
+    q->next = my_free_list;
     my_free_list = q;
 }
 
 // 重新分配空间，接受三个参数，参数一为指向新空间的指针，参数二为原来空间的大小，参数三为申请空间的大小
 void* alloc::reallocate(void* p, size_t old_size, size_t new_size) {
-    deallocate(p, old_size);  // 释放原来的空间
-    p = allocate(new_size);   // 分配新的空间
+    deallocate(p, old_size);
+    p = allocate(new_size);
     return p;
 }
 
-// 将 bytes 上调至 8 的倍数
-size_t alloc::round_up(size_t bytes) {
-    return ((bytes + EAlign - 1) & ~(EAlign - 1));
+// bytes 对应上调大小
+inline size_t alloc::align_bytes(size_t bytes) {
+    if (bytes <= 128) {
+        return EAlign128;
+    }
+    else if (bytes <= 256) {
+        return EAlign256;
+    }
+    else if (bytes <= 512) {
+        return EAlign512;
+    }
+    else if (bytes <= 1024) {
+        return EAlign1K;
+    }
+    else if (bytes <= 2048) {
+        return EAlign2K;
+    }
+    else {
+        return EAlign4K;
+    }
 }
 
-// 根据区块大小，选择第 n 个 free list 
-size_t alloc::freelist_index(size_t bytes) {
-    return ((bytes + EAlign - 1) / EAlign - 1);
+// 将 bytes 上调至对应区间大小
+inline size_t alloc::round_up(size_t bytes) {
+    return ((bytes + align_bytes(bytes) - 1) & ~(align_bytes(bytes) - 1));
+}
+
+// 根据区块大小，选择第 n 个 free lists
+inline size_t alloc::freelist_index(size_t bytes) {
+    if (bytes <= 128) {
+        return ((bytes + EAlign128 - 1) / EAlign128 - 1);
+    }
+    else if (bytes <= 256) {
+        return (15 + (bytes + EAlign256 - 129) / EAlign256);
+    }
+    else if (bytes <= 512) {
+        return (23 + (bytes + EAlign512 - 257) / EAlign512);
+    }
+    else if (bytes <= 1024) {
+        return (31 + (bytes + EAlign1K - 513) / EAlign1K);
+    }
+    else if (bytes <= 2048) {
+        return (39 + (bytes + EAlign2K - 1025) / EAlign2K);
+    }
+    else {
+        return (47 + (bytes + EAlign4K - 2049) / EAlign4K);
+    }
+}
+
+// 根据大小获取区块数目
+inline size_t alloc::get_blocks(size_t bytes) {
+    if (bytes <= 128) {
+        return 8;
+    }
+    else if (bytes <= 256) {
+        return 4;
+    }
+    /*else if (bytes <= 512) {
+        return 2;
+    }*/
+    else if (bytes <= 1024) {
+        return 2;
+    }
+    /*else if (bytes <= 2048) {
+        return 1;
+    }*/
+    else {
+        return 1;
+    }
 }
 
 // 重新填充 free list
-// 返回大小为 n 的对象，有时会适当为 free list 增加节点
 void* alloc::refill(size_t n) {
-    size_t nblock = 20;
+    size_t nblock = get_blocks(n);
     char* c = chunk_alloc(n, nblock);
     FreeList* my_free_list;
     FreeList* result, *cur, *next;
@@ -157,28 +225,28 @@ char* alloc::chunk_alloc(size_t size, size_t& nblock) {
             my_free_list = (FreeList*)start_free;
         }
         // 申请 heap 空间
-        size_t bytes_to_get = 2 * need_bytes + round_up(heap_size >> 4);
-        start_free = static_cast<char*>(std::malloc(bytes_to_get));
+        size_t bytes_to_get = (need_bytes << 1) + round_up(heap_size >> 4);
+        start_free = (char*)std::malloc(bytes_to_get);
         if (!start_free) {
             FreeList* my_free_list, *p;
             // 试着查找有无未用区块，且区块足够大的 free list
-            for (auto i = size; i <= EMaxBytes; i += EAlign) {
+            for (auto i = size; i <= ESmallObjectBytes; i += align_bytes(i)) {
                 my_free_list = free_list[freelist_index(i)];
                 p = my_free_list;
                 if (p) {
                     my_free_list = p->next;
                     start_free = (char*)p;
                     end_free = start_free + i;
-                    return chunk_alloc(size, nblock);  // 递归调用自己，修正 nblock
+                    return chunk_alloc(size, nblock);
                 }
-                end_free = nullptr;                    // 没有内存可用了
+                end_free = nullptr;
                 std::cerr << "out of memory" << std::endl; 
                 std::exit(1); 
             }
         }
         end_free = start_free + bytes_to_get;
-        heap_size += bytes_to_get;                     // 修正附加量
-        return chunk_alloc(size, nblock);              // 递归调用自己，修正 nblock
+        heap_size += bytes_to_get;
+        return chunk_alloc(size, nblock);
     }
 }
 
