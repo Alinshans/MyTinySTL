@@ -4,6 +4,8 @@ language: cpp
 sudo: required
 dist: trusty
 
+# os: osx
+
 matrix:
   include:
     - os: linux
@@ -20,8 +22,16 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.8']
+      env:
+        - COMPILER=g++-4.8
+        
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-5']
-
       env:
         - COMPILER=g++-5
 
@@ -71,12 +81,6 @@ matrix:
       env:
         - COMPILER=clang++-3.8
         
-    - os: osx
-      compiler: gcc
-      osx_image: xcode7.3
-      env:
-        - COMPILER=g++-4.8
-      
 
 before_script:
   - export CXX=$COMPILER
