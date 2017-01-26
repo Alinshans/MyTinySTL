@@ -6,6 +6,7 @@
 
 #include "iterator.h"
 #include "memory.h"
+#include "functional.h"
 
 #include <initializer_list>
 
