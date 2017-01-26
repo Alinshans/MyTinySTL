@@ -48,13 +48,19 @@ void set_test(){
     auto second = *s1.equal_range(3).second;
     std::cout << " s1.equal_range(3) : from " << first << " to " << second << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    CON_TEST_P1(set<int>, insert, rand(), LEN1, LEN2, LEN3);
+#if MEMORY_IS_ENOUGH
+    CON_TEST_P1(set<int>, insert, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#else
+    CON_TEST_P1(set<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[------------------ End container test : set -------------------]" << std::endl;
 }
 
@@ -94,13 +100,19 @@ void multiset_test() {
     auto second = *s1.equal_range(3).second;
     std::cout << " s1.equal_range(3) : from " << first << " to " << second << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    CON_TEST_P1(multiset<int>, insert, rand(), LEN1, LEN2, LEN3);
+#if MEMORY_IS_ENOUGH
+    CON_TEST_P1(multiset<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+#else
+    CON_TEST_P1(multiset<int>, insert, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[---------------- End container test : multiset ----------------]" << std::endl;
 }
 
