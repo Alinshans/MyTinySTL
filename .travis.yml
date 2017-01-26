@@ -4,6 +4,9 @@ language: cpp
 sudo: required
 dist: trusty
 
+os: osx
+osx_image: xcode7.3
+
 matrix:
   include:
     - os: linux
@@ -72,9 +75,9 @@ matrix:
         - COMPILER=clang++-3.8
         
     - os: osx
-      compiler: clang
+      compiler: gcc
       env:
-        - COMPILER=clang++-3.5
+        - COMPILER=g++-4.8
       
 
 before_script:
