@@ -59,21 +59,35 @@ void hash_set_test() {
     auto second = *hs1.equal_range(3).second;
     std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+#if MEMORY_IS_ENOUGH
+    TEST_LEN(LEN1 _M, LEN2 _M, LEN3 _M, WIDE);
     std::cout << "|         std         |";
-    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN1);
-    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN2);
-    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN3);
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN1 _M);
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN2 _M);
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN3 _M);
     std::cout << std::endl << "|        mystl        |";
-    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN1);
-    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN2);
-    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN3);
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN1 _M);
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN2 _M);
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN3 _M);
+#else
+    TEST_LEN(LEN1 _S, LEN2 _S, LEN3 _S, WIDE);
+    std::cout << "|         std         |";
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN1 _S);
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN2 _S);
+    FUN_TEST_FORMAT1(std::unordered_set<int>, insert, rand(), LEN3 _S);
+    std::cout << std::endl << "|        mystl        |";
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN1 _S);
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN2 _S);
+    FUN_TEST_FORMAT1(mystl::hash_set<int>, insert, rand(), LEN3 _S);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[---------------- End container test : hash_set ----------------]" << std::endl;
 }
 
@@ -123,21 +137,35 @@ void hash_multiset_test() {
     auto second = *hs1.equal_range(3).second;
     std::cout << " hs1.equal_range(3) : from " << first << " to " << second << std::endl;
     PASSED;
+#if PERFORMANCE_TEST_ON
     std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
-    TEST_LEN(LEN1, LEN2, LEN3, WIDE);
+#if MEMORY_IS_ENOUGH
+    TEST_LEN(LEN1 _M, LEN2 _M, LEN3 _M, WIDE);
     std::cout << "|         std         |";
-    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN1);
-    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN2);
-    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN3);
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN1 _M);
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN2 _M);
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN3 _M);
     std::cout << std::endl << "|        mystl        |";
-    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN1);
-    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN2);
-    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN3);
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN1 _M);
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN2 _M);
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN3 _M);
+#else
+    TEST_LEN(LEN1 _S, LEN2 _S, LEN3 _S, WIDE);
+    std::cout << "|         std         |";
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN1 _S);
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN2 _S);
+    FUN_TEST_FORMAT1(std::unordered_multiset<int>, insert, rand(), LEN3 _S);
+    std::cout << std::endl << "|        mystl        |";
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN1 _S);
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN2 _S);
+    FUN_TEST_FORMAT1(mystl::hash_multiset<int>, insert, rand(), LEN3 _S);
+#endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     PASSED;
+#endif
     std::cout << "[-------------- End container test : hash_multiset -------------]" << std::endl;
 }
 
