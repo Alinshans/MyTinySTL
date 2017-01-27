@@ -701,7 +701,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
 
 // 电脑内存是否够大( >= 8G )
 #ifndef MEMORY_IS_ENOUGH
-#define MEMORY_IS_ENOUGH 0
+#define MEMORY_IS_ENOUGH 1
 #endif // !MEMORY_IS_ENOUGH
 
 }    // namespace test
