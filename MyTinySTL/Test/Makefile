@@ -1,11 +1,7 @@
-CXX=g++
 CXXFLAGS =-std=c++11
 
-runtest: test.o
-	$(CXX) -o $(CXXFLAGS) test.o
-
-test.o: test.cpp
-	$(CXX) -c $(CXXFLAGS) test.cpp
+runtest: test.cpp
+	$(CXX) -O2 -o test $(CXXFLAGS) test.cpp && ./test
 
 clean:
 	rm -f *.o runtest

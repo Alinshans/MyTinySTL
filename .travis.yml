@@ -4,9 +4,7 @@ language: cpp
 sudo: required
 dist: trusty
 
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.6" CC="gcc-4.6"; fi
-- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.3"; fi
+# os: osx
 
 matrix:
   include:
@@ -15,10 +13,10 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.6']
+          packages: ['g++-4.7']
       env:
-        - COMPILER=g++-4.6
-
+        - COMPILER=g++-4.7
+        
     - os: linux
       compiler: gcc
       addons:
@@ -27,7 +25,7 @@ matrix:
           packages: ['g++-4.8']
       env:
         - COMPILER=g++-4.8
-
+        
     - os: linux
       compiler: gcc
       addons:
@@ -38,22 +36,14 @@ matrix:
         - COMPILER=g++-5
 
     - os: linux
-      compiler: clang
+      compiler: gcc
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.3']
-          packages: ['clang-3.3']
-      env:
-        - COMPILER=clang++-3.3
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.4']
-          packages: ['clang-3.4']
       env:
-        - COMPILER=clang++-3.4
+        - COMPILER=g++-6
 
     - os: linux
       compiler: clang
@@ -64,21 +54,39 @@ matrix:
       env:
         - COMPILER=clang++-3.5
 
-    - os: osx
-      compiler: gcc
-      env:
-        - COMPILER=g++-4.6
-        
-    - os: osx
+    - os: linux
       compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
+          packages: ['clang-3.6']
       env:
-        - COMPILER=clang++-3.3
-      
+        - COMPILER=clang++-3.6
+        
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
+          packages: ['clang-3.7']
+      env:
+        - COMPILER=clang++-3.7
+        
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+          packages: ['clang-3.8']
+      env:
+        - COMPILER=clang++-3.8
+        
+
 before_script:
   - export CXX=$COMPILER
-
-script:
   - cd MyTinySTL/Test
+  
+script:
   - make
   
 branches:
