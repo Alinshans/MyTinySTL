@@ -606,10 +606,12 @@ resize(size_type new_size) {
 template <class T, class Alloc, size_t BufSiz>
 inline void deque<T, Alloc, BufSiz>::
 swap(deque& rhs) {
-    mystl::swap(start_, rhs.start_);
-    mystl::swap(finish_, rhs.finish_);
-    mystl::swap(map_, rhs.map_);
-    mystl::swap(map_size_, rhs.map_size_);
+    if (this != &rhs) {
+        mystl::swap(start_, rhs.start_);
+        mystl::swap(finish_, rhs.finish_);
+        mystl::swap(map_, rhs.map_);
+        mystl::swap(map_size_, rhs.map_size_);
+    }
 }
 
 // __create_node 函数
