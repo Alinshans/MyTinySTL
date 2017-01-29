@@ -600,7 +600,8 @@ count(value_type ch, size_type index) const {
 
 // 反转 basic_string
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::reverse() {
+inline void basic_string<CharType, CharTraits, Alloc>::
+reverse() {
     for (auto i = begin(), j = end(); i < j;) {
         mystl::iter_swap(i++, --j);
     }
@@ -608,15 +609,19 @@ inline void basic_string<CharType, CharTraits, Alloc>::reverse() {
 
 // 交换两个 basic_string
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::swap(basic_string& rhs) {
-    mystl::swap(buffer_, rhs.buffer_);
-    mystl::swap(finish_, rhs.finish_);
-    mystl::swap(end_, rhs.end_);
+inline void basic_string<CharType, CharTraits, Alloc>::
+swap(basic_string& rhs) {
+    if (this != &rhs) {
+        mystl::swap(buffer_, rhs.buffer_);
+        mystl::swap(finish_, rhs.finish_);
+        mystl::swap(end_, rhs.end_);
+    }
 }
 
 // __destroy_buffer 函数
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::__destroy_buffer() {
+inline void basic_string<CharType, CharTraits, Alloc>::
+__destroy_buffer() {
     if (buffer_) {
         mystl::destroy(buffer_, finish_);
         __put_buffer();
