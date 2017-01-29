@@ -29,6 +29,7 @@ class stack {
     stack(size_type n, const value_type& value) :s_(n, value) {}
     template <class InputIterator>
     stack(InputIterator first, InputIterator last) : s_(first, last) {}
+    stack(std::initializer_list<T> ilist) :s_(ilist) {}
 
     explicit stack(const Sequence& s) :s_(s) {}
     explicit stack(Sequence&& s) :s_(std::move(s)) {}
@@ -36,8 +37,9 @@ class stack {
     stack(const stack& rhs) :s_(rhs.s_) {}
     stack(stack&& rhs) :s_(std::move(rhs.s_)) {}
 
-    stack& operator=(const stack& rhs) { s_ = rhs.s_; return *this; }
-    stack& operator=(stack&& rhs)      { s_ = std::move(rhs.s_); return *this; }
+    stack& operator=(const stack& rhs)               { s_ = rhs.s_; return *this; }
+    stack& operator=(stack&& rhs)                    { s_ = std::move(rhs.s_); return *this; }
+    stack& operator=(std::initializer_list<T> ilist) { s_ = ilist; return *this; }
 
     // 以下操作使用底层容器的操作
     bool            empty()                        const { return s_.empty(); }
@@ -58,38 +60,45 @@ class stack {
 
 // 重载比较操作符
 template <class T, class Sequence>
-bool operator==(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool 
+operator==(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return lhs == rhs;
 }
 
 template <class T, class Sequence>
-bool operator<(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool 
+operator<(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return lhs < rhs;
 }
 
 template <class T, class Sequence>
-bool operator!=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool 
+operator!=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class T, class Sequence>
-bool operator>(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool 
+operator>(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return rhs < lhs;
 }
 
 template <class T, class Sequence>
-bool operator<=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool
+operator<=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class T, class Sequence>
-bool operator>=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
+inline bool 
+operator>=(const stack<T, Sequence>& lhs, const stack<T, Sequence>& rhs) {
     return !(lhs < rhs);
 }
     
 // 重载 mystl 的 swap
 template <class T, class Sequence>
-void swap(stack<T, Sequence>& lhs, stack<T, Sequence>& rhs) {
+inline void 
+swap(stack<T, Sequence>& lhs, stack<T, Sequence>& rhs) {
     lhs.swap(rhs);
 }
 
