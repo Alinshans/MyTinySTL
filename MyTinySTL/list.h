@@ -19,7 +19,7 @@ struct __list_node {
     __list_node<T>* prev;  // 指向前一个节点
     __list_node<T>* next;  // 指向下一个节点
 
-    __list_node(T value = 0, __list_node<T>* p = nullptr, __list_node<T>* n = nullptr)
+    __list_node(T value = T(), __list_node<T>* p = nullptr, __list_node<T>* n = nullptr)
         :data(value), prev(p), next(n) {}
 };
 
@@ -240,7 +240,7 @@ list(std::initializer_list<T> ilist) {
 // 复制构造函数
 template <class T, class Alloc>
 inline list<T, Alloc>::
-list(const list& rhs) { 
+list(const list& rhs) {
     __list_initialize();
     insert(begin(), rhs.begin(), rhs.end());
 }
@@ -250,7 +250,8 @@ template <class T, class Alloc>
 inline list<T, Alloc>::
 list(list&& rhs) {
     node_ = rhs.node_;
-    rhs.node_ = nullptr;
+    rhs.node_ = __get_node();
+    rhs.node_->prev = rhs.node_->next = rhs.node_;
 }
 
 // 复制赋值运算符
@@ -264,10 +265,12 @@ operator=(const list& rhs) {
         auto last2 = rhs.end();
         while (first1 != last1 && first2 != last2)
             *first1++ = *first2++;
-        if (first2 == last2)
+        if (first2 == last2) {
             erase(first1, last1);
-        else
+        }
+        else {
             insert(last1, first2, last2);
+        }
     }
     return *this;
 }
@@ -569,7 +572,7 @@ reverse() {
 template <class T, class Alloc>
 inline typename list<T, Alloc>::link_type list<T, Alloc>::
 __get_node() {
-    return data_allocate::allocate(1);
+    return data_allocate::allocate();
 }
 
 // 释放结点空间
@@ -595,14 +598,16 @@ __create_node(const value_type& value) {
 
 // 销毁结点
 template <class T, class Alloc>
-inline void list<T, Alloc>::__destroy_node(link_type p) {
+inline void list<T, Alloc>::
+__destroy_node(link_type p) {
     mystl::destroy(&p->data);
     __put_node(p);
 }
 
 // 初始化 list
 template <class T, class Alloc>
-inline void list<T, Alloc>::__list_initialize() {
+inline void list<T, Alloc>::
+__list_initialize() {
     node_ = __get_node();
     node_->prev = node_->next = node_;
 }
