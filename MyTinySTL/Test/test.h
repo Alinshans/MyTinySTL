@@ -626,7 +626,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     std::cout << std::setw(WIDE) << t;                         \
 } while(0)
 
-#define LIST_SORT_TEST(mode, count) do {                      \
+#define LIST_SORT_DO_TEST(mode, count) do {                   \
     srand((int)time(0));                                       \
     clock_t start, end;                                        \
     mode::list<int> l;                                         \
@@ -694,6 +694,17 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     MAP_INSERT_DO_TEST(mystl, con, len1);                      \
     MAP_INSERT_DO_TEST(mystl, con, len2);                      \
     MAP_INSERT_DO_TEST(mystl, con, len3);
+
+#define LIST_SORT_TEST(len1, len2, len3)                      \
+    TEST_LEN(len1, len2, len3, WIDE);                          \
+    std::cout << "|         std         |";                    \
+    LIST_SORT_DO_TEST(std, len1);                              \
+    LIST_SORT_DO_TEST(std, len2);                              \
+    LIST_SORT_DO_TEST(std, len3);                              \
+    std::cout << std::endl << "|        mystl        |";       \
+    LIST_SORT_DO_TEST(mystl, len1);                            \
+    LIST_SORT_DO_TEST(mystl, len2);                            \
+    LIST_SORT_DO_TEST(mystl, len3);
 
 // 简单测试的宏定义
 #define TEST(testcase_name) \
