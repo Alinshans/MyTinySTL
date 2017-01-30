@@ -57,15 +57,23 @@ class map {
 
   public:
     // 构造、复制、移动函数
-    map() :t_() {}    
+    map() :t_() {}
     template <class InputIterator>
-    map(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-    
+    map(InputIterator first, InputIterator last) :t_() { t_.insert_unique(first, last); }
+    map(std::initializer_list<value_type> ilist) :t_() {
+        t_.insert_unique(ilist.begin(), ilist.end());
+    }
+
     map(const map& rhs) :t_(rhs.t_) {}
     map(map&& rhs) :t_(std::move(rhs.t_)) {}
 
     map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
     map& operator=(map&& rhs)      { t_ = std::move(rhs.t_); return *this; }
+    map& operator=(std::initializer_list<value_type> ilist) {
+        t_.clear();
+        t_.insert_unique(ilist.begin(), ilist.end());
+        return *this;
+    }
 
     // 相关接口操作
     key_compare            key_comp()      const { return t_.key_comp(); }
@@ -104,22 +112,24 @@ class map {
         t_.insert_unique(first, last);
     }
 
-    void      erase(iterator position)             { t_.erase(position); }
-    size_type erase(const key_type& k)             { return t_.erase(k); }
-    void      erase(iterator first, iterator last) { t_.erase(first, last); }
-    void      clear()                              { t_.clear(); }
+    void           erase(iterator position)             { t_.erase(position); }
+    size_type      erase(const key_type& k)             { return t_.erase(k); }
+    void           erase(iterator first, iterator last) { t_.erase(first, last); }
+    void           clear()                              { t_.clear(); }
 
     // map 相关操作
-    iterator                             find(const key_type& k)              { return t_.find(k); }
-    const_iterator                       find(const key_type& k)        const { return t_.find(k); }
-    size_type                            count(const key_type& k)       const { return t_.count(k); }
-    iterator                             lower_bound(const key_type& k)       { return t_.lower_bound(k); }
-    const_iterator                       lower_bound(const key_type& k) const { return t_.lower_bound(k); }
-    iterator                             upper_bound(const key_type& k)       { return t_.upper_bound(k); }
-    const_iterator                       upper_bound(const key_type& k) const { return t_.upper_bound(k); }
-    pair<iterator, iterator>             equal_range(const key_type& k)       { return t_.equal_range(k); }
-    pair<const_iterator, const_iterator> equal_range(const key_type& k) const { return t_.equal_range(k); }
-    void                                 swap(map& rhs)                       { t_.swap(rhs.t_); }
+    iterator       find(const key_type& k)              { return t_.find(k); }
+    const_iterator find(const key_type& k)        const { return t_.find(k); }
+    size_type      count(const key_type& k)       const { return t_.count(k); }
+    iterator       lower_bound(const key_type& k)       { return t_.lower_bound(k); }
+    const_iterator lower_bound(const key_type& k) const { return t_.lower_bound(k); }
+    iterator       upper_bound(const key_type& k)       { return t_.upper_bound(k); }
+    const_iterator upper_bound(const key_type& k) const { return t_.upper_bound(k); }
+    pair<iterator, iterator>             
+                   equal_range(const key_type& k)       { return t_.equal_range(k); }
+    pair<const_iterator, const_iterator> 
+                   equal_range(const key_type& k) const { return t_.equal_range(k); }
+    void           swap(map& rhs)                       { t_.swap(rhs.t_); }
 
   public:
     friend bool operator==(const map& lhs, const map& rhs) { return lhs.t_ == rhs.t_; }
@@ -128,38 +138,52 @@ class map {
 
 // 重载比较操作符
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator==(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool 
+operator==(const map<Key, T, Compare, Alloc>& lhs, 
+           const map<Key, T, Compare, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator<(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool 
+operator<(const map<Key, T, Compare, Alloc>& lhs,
+          const map<Key, T, Compare, Alloc>& rhs) {
     return lhs < rhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator!=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool 
+operator!=(const map<Key, T, Compare, Alloc>& lhs, 
+           const map<Key, T, Compare, Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator>(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator>(const map<Key, T, Compare, Alloc>& lhs, 
+          const map<Key, T, Compare, Alloc>& rhs) {
     return rhs < lhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator<=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator<=(const map<Key, T, Compare, Alloc>& lhs, 
+           const map<Key, T, Compare, Alloc>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator>=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator>=(const map<Key, T, Compare, Alloc>& lhs, 
+           const map<Key, T, Compare, Alloc>& rhs) {
     return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
 template <class Key, class T, class Compare, class Alloc>
-void swap(map<Key, T, Compare, Alloc>& lhs, map<Key, T, Compare, Alloc>& rhs) {
+inline void 
+swap(map<Key, T, Compare, Alloc>& lhs, 
+     map<Key, T, Compare, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
@@ -213,13 +237,21 @@ class multimap {
     // 构造、复制、移动函数
     multimap() :t_() {}
     template <class InputIterator>
-    multimap(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
-        
+    multimap(InputIterator first, InputIterator last) :t_() { t_.insert_equal(first, last); }
+    multimap(std::initializer_list<value_type> ilist) :t_() {
+        t_.insert_equal(ilist.begin(), ilist.end());
+    }
+
     multimap(const multimap& rhs) :t_(rhs.t_) {}
     multimap(multimap&& rhs) :t_(std::move(rhs.t_)) {}
 
     multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
     multimap& operator=(multimap&& rhs)      { t_ = std::move(rhs.t_); return *this; }
+    multimap& operator=(std::initializer_list<value_type> ilist) {
+        t_.clear();
+        t_.insert_equal(ilist.begin(), ilist.end());
+        return *this;
+    }
 
     // 相关接口操作
     key_compare            key_comp()      const { return t_.key_comp(); }
@@ -256,22 +288,24 @@ class multimap {
         t_.insert_equal(first, last);
     }
 
-    void erase(iterator position)             { t_.erase(position); }
-    size_type erase(const key_type& k)        { return t_.erase(k); }
-    void erase(iterator first, iterator last) { t_.erase(first, last); }
-    void clear() { t_.clear(); }
+    void           erase(iterator position)             { t_.erase(position); }
+    size_type      erase(const key_type& k)             { return t_.erase(k); }
+    void           erase(iterator first, iterator last) { t_.erase(first, last); }
+    void           clear() { t_.clear(); }
 
     // multimap 相关操作
-    iterator                             find(const key_type& k)              { return t_.find(k); }
-    const_iterator                       find(const key_type& k)        const { return t_.find(k); }
-    size_type                            count(const key_type& k)       const { return t_.count(k); }
-    iterator                             lower_bound(const key_type& k)       { return t_.lower_bound(k); }
-    const_iterator                       lower_bound(const key_type& k) const { return t_.lower_bound(k); }
-    iterator                             upper_bound(const key_type& k)       { return t_.upper_bound(k); }
-    const_iterator                       upper_bound(const key_type& k) const { return t_.upper_bound(k); }
-    pair<iterator, iterator>             equal_range(const key_type& k)       { return t_.equal_range(k); }
-    pair<const_iterator, const_iterator> equal_range(const key_type& k) const { return t_.equal_range(k); }
-    void                                 swap(multimap& rhs)                  { t_.swap(rhs.t_); }
+    iterator       find(const key_type& k)              { return t_.find(k); }
+    const_iterator find(const key_type& k)        const { return t_.find(k); }
+    size_type      count(const key_type& k)       const { return t_.count(k); }
+    iterator       lower_bound(const key_type& k)       { return t_.lower_bound(k); }
+    const_iterator lower_bound(const key_type& k) const { return t_.lower_bound(k); }
+    iterator       upper_bound(const key_type& k)       { return t_.upper_bound(k); }
+    const_iterator upper_bound(const key_type& k) const { return t_.upper_bound(k); }
+    pair<iterator, iterator>           
+                   equal_range(const key_type& k)       { return t_.equal_range(k); }
+    pair<const_iterator, const_iterator>
+                   equal_range(const key_type& k) const { return t_.equal_range(k); }
+    void           swap(multimap& rhs)                  { t_.swap(rhs.t_); }
 
   public:
     friend bool operator==(const multimap& lhs, const multimap& rhs) { return lhs.t_ == rhs.t_; }
@@ -280,44 +314,52 @@ class multimap {
 
 // 重载比较操作符
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator==(const multimap<Key, T, Compare, Alloc>& lhs,
-    const multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator==(const multimap<Key, T, Compare, Alloc>& lhs,
+           const multimap<Key, T, Compare, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator<(const multimap<Key, T, Compare, Alloc>& lhs, 
-    multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool 
+operator<(const multimap<Key, T, Compare, Alloc>& lhs, 
+          const multimap<Key, T, Compare, Alloc>& rhs) {
     return lhs < rhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator!=(const multimap<Key, T, Compare, Alloc>& lhs,
-    const multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator!=(const multimap<Key, T, Compare, Alloc>& lhs,
+           const multimap<Key, T, Compare, Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator>(const multimap<Key, T, Compare, Alloc>& lhs, 
-    const multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator>(const multimap<Key, T, Compare, Alloc>& lhs, 
+          const multimap<Key, T, Compare, Alloc>& rhs) {
     return rhs < lhs;
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator<=(const multimap<Key, T, Compare, Alloc>& lhs, 
-    const multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool
+operator<=(const multimap<Key, T, Compare, Alloc>& lhs, 
+           const multimap<Key, T, Compare, Alloc>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool operator>=(const multimap<Key, T, Compare, Alloc>& lhs, 
-    const multimap<Key, T, Compare, Alloc>& rhs) {
+inline bool 
+operator>=(const multimap<Key, T, Compare, Alloc>& lhs, 
+           const multimap<Key, T, Compare, Alloc>& rhs) {
     return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
 template <class Key, class T, class Compare, class Alloc>
-void swap(multimap<Key, T, Compare, Alloc>& lhs, multimap<Key, T, Compare, Alloc>& rhs) {
+inline void 
+swap(multimap<Key, T, Compare, Alloc>& lhs, 
+     multimap<Key, T, Compare, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
