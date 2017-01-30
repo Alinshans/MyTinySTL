@@ -51,33 +51,30 @@ class hash_map {
     explicit hash_map(size_type n) :ht_(n, hasher(), key_equal()) {}
     hash_map(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
     hash_map(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
+    
+    template <class InputIterator>
+    hash_map(InputIterator first, InputIterator last,
+             const hasher& hf = hasher(), 
+             const key_equal& keq = key_equal()) 
+        : ht_(distance(first, last), hf, keq) {
+        ht_.insert_unique(first, last);
+    }
+    hash_map(std::initializer_list<value_type> ilist,
+             const hasher& hf = hasher(),
+             const key_equal& keq = key_equal())
+        :ht_(ilist.size(), hf, keq) {
+        ht_.insert_unique(ilist.begin(), ilist.end());
+    }
 
     hash_map(const hash_map& rhs) :ht_(rhs.ht_) {}
     hash_map(hash_map&& rhs) :ht_(std::move(rhs.ht_)) {}
 
     hash_map& operator=(const hash_map& rhs) { ht_ = rhs.ht_; return *this; }
     hash_map& operator=(hash_map&& rhs)      { ht_ = std::move(rhs.ht_); return *this; }
-
-    // 全部使用 insert_unique，键值不允许重复
-    template <class InputIterator>
-    hash_map(InputIterator first, InputIterator last)
-        : ht_(100, hasher(), key_equal()) {
-        ht_.insert_unique(first, last);
-    }
-    template <class InputIterator>
-    hash_map(InputIterator first, InputIterator last, size_type n)
-        : ht_(n, hasher(), key_equal()) {
-        ht_.insert_unique(first, last);
-    }
-    template <class InputIterator>
-    hash_map(InputIterator first, InputIterator last, size_type n,
-        const hasher& hf) : ht_(n, hf, key_equal()) {
-        ht_.insert_unique(first, last);
-    }
-    template <class InputIterator>
-    hash_map(InputIterator first, InputIterator last, size_type n,
-        const hasher& hf, const key_equal& keq) : ht_(n, hf, keq) {
-        ht_.insert_unique(first, last);
+    hash_map& operator=(std::initializer_list<value_type> ilist) { 
+        ht_.clear();
+        ht_.insert_unique(ilist.begin(), ilist.end());
+        return *this;
     }
 
     // 相关接口
@@ -90,11 +87,11 @@ class hash_map {
     size_type      size()     const { return ht_.size(); }
     size_type      max_size() const { return ht_.max_size(); }
 
-    pair<iterator, bool> insert(const value_type& value) {
-        return ht_.insert_unique(value); 
+    pair<iterator, bool> insert(const value_type& value) { 
+        return ht_.insert_unique(value);
     }
     template <class InputIterator>
-    void insert(InputIterator first, InputIterator last) { 
+    void insert(InputIterator first, InputIterator last) {
         ht_.insert_unique(first, last); 
     }
     pair<iterator, bool> insert_noresize(const value_type& value) { 
@@ -111,44 +108,44 @@ class hash_map {
     }
 
     // hash_map 相关操作
-    iterator       find(const key_type& key)        { return ht_.find(key); }
-    const_iterator find(const key_type& key)  const { return ht_.find(key); }
-    size_type      count(const key_type& key) const { return ht_.count(key); }
-    pair<iterator, iterator> equal_range(const key_type& key) {
-        return ht_.equal_range(key);
-    }
-    pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
-        return ht_.equal_range(key);
-    }
-    void      reserve(size_type hint)            { ht_.reserve(hint); }
-    size_type bucket_count()               const { return ht_.bucket_count(); }
-    size_type max_bucket_count()           const { return ht_.max_bucket_count(); }
-    size_type elems_in_bucket(size_type n) const { return ht_.elems_in_bucket(n); }
-    void      swap(hash_map& rhs)                { ht_.swap(rhs.ht_); }
+    iterator       find(const key_type& key)              { return ht_.find(key); }
+    const_iterator find(const key_type& key)        const { return ht_.find(key); }
+    size_type      count(const key_type& key)       const { return ht_.count(key); }
+    pair<iterator, iterator> 
+                   equal_range(const key_type& key)       { return ht_.equal_range(key); }
+    pair<const_iterator, const_iterator>
+                   equal_range(const key_type& key) const { return ht_.equal_range(key); }
+    void           reserve(size_type hint)                { ht_.reserve(hint); }
+    size_type      bucket_count()                   const { return ht_.bucket_count(); }
+    size_type      max_bucket_count()               const { return ht_.max_bucket_count(); }
+    size_type      elems_in_bucket(size_type n)     const { return ht_.elems_in_bucket(n); }
+    void           swap(hash_map& rhs)                    { ht_.swap(rhs.ht_); }
 
   public:
-    // 重载 operator==, operator!=
       friend bool operator==(const hash_map& lhs, const hash_map& rhs) { return lhs.ht_ == rhs.ht_; }
       friend bool operator!=(const hash_map& lhs, const hash_map& rhs) { return lhs.ht_ != rhs.ht_; }
 };
 
 // 重载比较操作符
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-inline bool operator==(const hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    const hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline bool 
+operator==(const hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+           const hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-inline bool operator!=(const hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    const hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline bool 
+operator!=(const hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+           const hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-void swap(hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline void
+swap(hash_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+     hash_map<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
@@ -196,32 +193,29 @@ class hash_multimap {
     hash_multimap(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
     hash_multimap(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
 
+    template <class InputIterator>
+    hash_multimap(InputIterator first, InputIterator last, 
+                  const hasher& hf = hasher(), 
+                  const key_equal& keq = key_equal()) 
+        : ht_(distance(first, last), hf, keq) {
+        ht_.insert_equal(first, last);
+    }
+    hash_multimap(std::initializer_list<value_type> ilist,
+                  const hasher& hf = hasher(),
+                  const key_equal& keq = key_equal())
+        :ht_(ilist.size(), hf, keq) {
+        ht_.insert_equal(ilist.begin(), ilist.end());
+    }
+
     hash_multimap(const hash_multimap& rhs) :ht_(rhs.ht_) {}
     hash_multimap(hash_multimap&& rhs) :ht_(std::move(rhs.ht_)) {}
 
     hash_multimap& operator=(const hash_multimap& rhs) { ht_ = rhs.ht_; return *this; }
     hash_multimap& operator=(hash_multimap&& rhs)      { ht_ = std::move(rhs.ht_); return *this; }
-
-    // 全部使用 insert_equal，键值允许重复
-    template <class InputIterator>
-    hash_multimap(InputIterator first, InputIterator last)
-        : ht_(100, hasher(), key_equal()) {
-        ht_.insert_equal(first, last);
-    }
-    template <class InputIterator>
-    hash_multimap(InputIterator first, InputIterator last, size_type n)
-        : ht_(n, hasher(), key_equal()) {
-        ht_.insert_equal(first, last);
-    }
-    template <class InputIterator>
-    hash_multimap(InputIterator first, InputIterator last, size_type n,
-        const hasher& hf) : ht_(n, hf, key_equal()) {
-        ht_.insert_equal(first, last);
-    }
-    template <class InputIterator>
-    hash_multimap(InputIterator first, InputIterator last, size_type n,
-        const hasher& hf, const key_equal& keq) : ht_(n, hf, keq) {
-        ht_.insert_equal(first, last);
+    hash_multimap& operator=(std::initializer_list<value_type> ilist) {
+        ht_.clear();
+        ht_.insert_equal(ilist.begin(), ilist.end());
+        return *this;
     }
 
     // 相关接口
@@ -234,44 +228,35 @@ class hash_multimap {
     size_type      size()     const { return ht_.size(); }
     size_type      max_size() const { return ht_.max_size(); }
 
-    iterator insert(const value_type& value) { 
-        return ht_.insert_equal(value);
-    }
+    iterator insert(const value_type& value)                 { return ht_.insert_equal(value); }
     template <class InputIterator>
-    void insert(InputIterator first, InputIterator last) {
-        ht_.insert_equal(first, last);
-    }
-    iterator insert_noresize(const value_type& value) {
-        return ht_.insert_equal_noresize(value);
-    }
+    void     insert(InputIterator first, InputIterator last) { ht_.insert_equal(first, last); }
+    iterator insert_noresize(const value_type& value)        { return ht_.insert_equal_noresize(value); }
 
-    size_type erase(const key_type& key)           { return ht_.erase(key); }
-    void      erase(iterator it)                   { ht_.erase(it); }
-    void      erase(iterator first, iterator last) { ht_.erase(first, last); }
-    void      clear()                              { ht_.clear(); }
+    size_type erase(const key_type& key)                     { return ht_.erase(key); }
+    void      erase(iterator it)                             { ht_.erase(it); }
+    void      erase(iterator first, iterator last)           { ht_.erase(first, last); }
+    void      clear()                                        { ht_.clear(); }
 
     data_type& operator[](const key_type& key) {
         return ht_.find_or_insert(value_type(key, T())).second;
     }
 
     // hash_multimap 相关操作
-    iterator       find(const key_type& key)        { return ht_.find(key); }
-    const_iterator find(const key_type& key)  const { return ht_.find(key); }
-    size_type      count(const key_type& key) const { return ht_.count(key); }
-    pair<iterator, iterator> equal_range(const key_type& key) {
-        return ht_.equal_range(key);
-    }
-    pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
-        return ht_.equal_range(key);
-    }
-    void      reserve(size_type hint)            { ht_.reserve(hint); }
-    size_type bucket_count()               const { return ht_.bucket_count(); }
-    size_type max_bucket_count()           const { return ht_.max_bucket_count(); }
-    size_type elems_in_bucket(size_type n) const { return ht_.elems_in_bucket(n); }
-    void      swap(hash_multimap& rhs)           { ht_.swap(rhs.ht_); }
+    iterator       find(const key_type& key)              { return ht_.find(key); }
+    const_iterator find(const key_type& key)        const { return ht_.find(key); }
+    size_type      count(const key_type& key)       const { return ht_.count(key); }
+    pair<iterator, iterator>
+                   equal_range(const key_type& key)       { return ht_.equal_range(key); }
+    pair<const_iterator, const_iterator>
+                   equal_range(const key_type& key) const { return ht_.equal_range(key); }
+    void           reserve(size_type hint)                { ht_.reserve(hint); }
+    size_type      bucket_count()                   const { return ht_.bucket_count(); }
+    size_type      max_bucket_count()               const { return ht_.max_bucket_count(); }
+    size_type      elems_in_bucket(size_type n)     const { return ht_.elems_in_bucket(n); }
+    void           swap(hash_multimap& rhs)               { ht_.swap(rhs.ht_); }
 
   public:
-    // 重载 operator==, operator!=
     friend bool operator==(const hash_multimap& lhs, const hash_multimap& rhs) {
         return lhs.ht_ == rhs.ht_;
     }
@@ -282,21 +267,24 @@ class hash_multimap {
 
 // 重载比较操作符
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-inline bool operator==(const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline bool 
+operator==(const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+           const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-inline bool operator!=(const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline bool
+operator!=(const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+           const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
-void swap(hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-    hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
+inline void
+swap(hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
+     hash_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
