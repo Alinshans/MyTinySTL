@@ -157,9 +157,8 @@
     <ClInclude Include="deque.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="hashtable.h" />
-    <ClInclude Include="hash_functional.h" />
-    <ClInclude Include="hash_map.h" />
-    <ClInclude Include="hash_set.h" />
+    <ClInclude Include="unordered_map.h" />
+    <ClInclude Include="unordered_set.h" />
     <ClInclude Include="heap_algo.h" />
     <ClInclude Include="iterator.h" />
     <ClInclude Include="list.h" />
@@ -178,8 +177,8 @@
     <ClInclude Include="Test\algorithm_performance_test.h" />
     <ClInclude Include="Test\algorithm_test.h" />
     <ClInclude Include="Test\deque_test.h" />
-    <ClInclude Include="Test\hash_map_test.h" />
-    <ClInclude Include="Test\hash_set_test.h" />
+    <ClInclude Include="Test\unordered_map_test.h" />
+    <ClInclude Include="Test\unordered_set_test.h" />
     <ClInclude Include="Test\list_test.h" />
     <ClInclude Include="Test\map_test.h" />
     <ClInclude Include="Test\queue_test.h" />
