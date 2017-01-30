@@ -626,7 +626,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     std::cout << std::setw(WIDE) << t;                         \
 } while(0)
 
-#define LIST_SORT_TEST(mode, count) do {                      \
+#define LIST_SORT_DO_TEST(mode, count) do {                   \
     srand((int)time(0));                                       \
     clock_t start, end;                                        \
     mode::list<int> l;                                         \
@@ -644,7 +644,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
     std::cout << std::setw(WIDE) << t;                         \
 } while(0)
 
-#define MAP_INSERT_TEST(mode, con, count) do { \
+#define MAP_INSERT_DO_TEST(mode, con, count) do {             \
     srand((int)time(0));                                       \
     clock_t start, end;                                        \
     mode::con<int, int> c;                                     \
@@ -662,27 +662,49 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
 } while(0)
 
 // 重构重复代码
-#define CON_TEST_P1(con, fun, arg, len1, len2, len3)     \
-    TEST_LEN(len1, len2, len3, WIDE);                     \
-    std::cout << "|         std         |";               \
-    FUN_TEST_FORMAT1(std::con, fun, arg, len1);           \
-    FUN_TEST_FORMAT1(std::con, fun, arg, len2);           \
-    FUN_TEST_FORMAT1(std::con, fun, arg, len3);           \
-    std::cout << std::endl << "|        mystl        |";  \
-    FUN_TEST_FORMAT1(mystl::con, fun, arg, len1);         \
-    FUN_TEST_FORMAT1(mystl::con, fun, arg, len2);         \
+#define CON_TEST_P1(con, fun, arg, len1, len2, len3)          \
+    TEST_LEN(len1, len2, len3, WIDE);                          \
+    std::cout << "|         std         |";                    \
+    FUN_TEST_FORMAT1(std::con, fun, arg, len1);                \
+    FUN_TEST_FORMAT1(std::con, fun, arg, len2);                \
+    FUN_TEST_FORMAT1(std::con, fun, arg, len3);                \
+    std::cout << std::endl << "|        mystl        |";       \
+    FUN_TEST_FORMAT1(mystl::con, fun, arg, len1);              \
+    FUN_TEST_FORMAT1(mystl::con, fun, arg, len2);              \
     FUN_TEST_FORMAT1(mystl::con, fun, arg, len3);    
 
-#define CON_TEST_P2(con, fun, arg1, arg2, len1, len2, len3) \
-    TEST_LEN(len1, len2, len3, WIDE);                        \
-    std::cout << "|         std         |";                  \
-    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len1);       \
-    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len2);       \
-    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len3);       \
-    std::cout << std::endl << "|        mystl        |";     \
-    FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len1);     \
-    FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len2);     \
+#define CON_TEST_P2(con, fun, arg1, arg2, len1, len2, len3)   \
+    TEST_LEN(len1, len2, len3, WIDE);                          \
+    std::cout << "|         std         |";                    \
+    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len1);         \
+    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len2);         \
+    FUN_TEST_FORMAT2(std::con, fun, arg1, arg2, len3);         \
+    std::cout << std::endl << "|        mystl        |";       \
+    FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len1);       \
+    FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len2);       \
     FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len3);    
+
+#define MAP_INSERT_TEST(con, len1, len2, len3)                \
+    TEST_LEN(len1, len2, len3, WIDE);                          \
+    std::cout << "|         std         |";                    \
+    MAP_INSERT_DO_TEST(std, con, len1);                        \
+    MAP_INSERT_DO_TEST(std, con, len2);                        \
+    MAP_INSERT_DO_TEST(std, con, len3);                        \
+    std::cout << std::endl << "|        mystl        |";       \
+    MAP_INSERT_DO_TEST(mystl, con, len1);                      \
+    MAP_INSERT_DO_TEST(mystl, con, len2);                      \
+    MAP_INSERT_DO_TEST(mystl, con, len3);
+
+#define LIST_SORT_TEST(len1, len2, len3)                      \
+    TEST_LEN(len1, len2, len3, WIDE);                          \
+    std::cout << "|         std         |";                    \
+    LIST_SORT_DO_TEST(std, len1);                              \
+    LIST_SORT_DO_TEST(std, len2);                              \
+    LIST_SORT_DO_TEST(std, len3);                              \
+    std::cout << std::endl << "|        mystl        |";       \
+    LIST_SORT_DO_TEST(mystl, len1);                            \
+    LIST_SORT_DO_TEST(mystl, len2);                            \
+    LIST_SORT_DO_TEST(mystl, len3);
 
 // 简单测试的宏定义
 #define TEST(testcase_name) \
@@ -697,9 +719,9 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide) {
 #define PERFORMANCE_TEST_ON 1
 #endif // !PERFORMANCE_TEST_ON
 
-// 电脑内存是否够大( >= 8G )
+// 电脑内存是否够大
 #ifndef MEMORY_IS_ENOUGH
-#define MEMORY_IS_ENOUGH 0
+#define MEMORY_IS_ENOUGH 1
 #endif // !MEMORY_IS_ENOUGH
 
 }    // namespace test

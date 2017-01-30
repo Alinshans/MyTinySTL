@@ -7,9 +7,11 @@
 #include "iterator.h"
 #include "memory.h"
 
+#include <initializer_list>
+
 namespace mystl {
 
-// 这是一个全局函数，决定缓冲区的大小
+// 全局函数，决定缓冲区的大小
 inline size_t __deque_buf_size(size_t n, size_t sz) {
     return n == 0 ? (sz < 512 ? 512 / sz : 1) : n;
 }
@@ -17,9 +19,9 @@ inline size_t __deque_buf_size(size_t n, size_t sz) {
 // deque 的迭代器设计
 template <class T, class Ref, class Ptr, size_t BufSiz>
 struct __deque_iterator : public iterator<random_access_iterator_tag, T> {
-    typedef __deque_iterator<T, T&, T*, BufSiz>                iterator;
-    typedef __deque_iterator<T, const T&, const T*, BufSiz>    const_iterator;
-    typedef __deque_iterator                                   self;
+    typedef __deque_iterator<T, T&, T*, BufSiz>              iterator;
+    typedef __deque_iterator<T, const T&, const T*, BufSiz>  const_iterator;
+    typedef __deque_iterator                                 self;
         
     typedef T            value_type;
     typedef Ptr          pointer;
@@ -124,8 +126,8 @@ struct __deque_iterator : public iterator<random_access_iterator_tag, T> {
             cur += n;
         }
         else {  // 要跳到其他的缓冲区
-            auto node_offset = 
-                offset > 0 ? offset / static_cast<difference_type>(buffer_size())
+            auto node_offset = offset > 0 
+                ? offset / static_cast<difference_type>(buffer_size())
                 : -static_cast<difference_type>((-offset - 1) / buffer_size()) - 1;
             set_node(node + node_offset);
             cur = first + (offset - node_offset * static_cast<difference_type>(buffer_size()));
@@ -186,24 +188,25 @@ class deque {
     iterator       start_;            // 指向第一个节点
     iterator       finish_;           // 指向最后一个结点
     map_pointer    map_;              // 指向一块 map，map 中的每个元素都是一个指针，指向一个缓冲区
-    size_type      map_size_;         // map_ 内指针的数目
+    size_type      map_size_;         // map 内指针的数目
 
-    enum { __initial_map_size = 8 };  // map 的初始化大小
+    enum { __initial_map_size = 16 }; // map 的初始化大小
 
   public:
     // 构造、复制、移动、析构函数
     deque()                                     { __fill_initialize(0, value_type()); }
     explicit deque(size_type n)                 { __fill_initialize(n, value_type()); }
     deque(size_type n, const value_type& value) { __fill_initialize(n, value); }
-
     template <class InputIterator>
     deque(InputIterator first, InputIterator last);
+    deque(std::initializer_list<T> ilist);
 
     deque(const deque& rhs);
     deque(deque&& rhs);    
 
     deque& operator=(const deque& rhs);
     deque& operator=(deque&& rhs);
+    deque& operator=(std::initializer_list<T> ilist);
 
     ~deque();
 
@@ -219,9 +222,9 @@ class deque {
     const_reverse_iterator rend()   const { return reverse_iterator(begin()); }
 
     // 容量相关操作
-    bool      empty()    const { return begin() == end(); }
-    size_type size()     const { return finish_ - start_; }
-    size_type max_size() const { return static_cast<size_type>(-1); }
+    bool      empty()               const { return begin() == end(); }
+    size_type size()                const { return finish_ - start_; }
+    size_type max_size()            const { return static_cast<size_type>(-1); }
 
     // 访问元素相关操作 
     reference       operator[](size_type n)       { return start_[n]; }
@@ -306,21 +309,31 @@ class deque {
 // 构造函数
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-deque<T, Alloc, BufSiz>::deque(InputIterator first, InputIterator last) {
+inline deque<T, Alloc, BufSiz>::
+deque(InputIterator first, InputIterator last) {
     typedef typename __is_integer<InputIterator>::is_integer Integer;
     __initialize_dispatch(first, last, Integer());
 }
 
+// 使用初值列表构造
+template<class T, class Alloc, size_t BufSiz>
+inline deque<T, Alloc, BufSiz>::
+deque(std::initializer_list<T> ilist) {
+    __range_initialize(ilist.begin(), ilist.end(), mystl::forward_iterator_tag());
+}
+
 // 复制构造函数
 template <class T, class Alloc, size_t BufSiz>
-deque<T, Alloc, BufSiz>::deque(const deque& rhs) {
+inline deque<T, Alloc, BufSiz>::
+deque(const deque& rhs) {
     __map_initialize(rhs.size());
     mystl::uninitialized_copy(rhs.begin(), rhs.end(), start_);
 }
 
 // 移动构造函数
 template <class T, class Alloc, size_t BufSiz>
-deque<T, Alloc, BufSiz>::deque(deque&& rhs)
+inline deque<T, Alloc, BufSiz>::
+deque(deque&& rhs)
     :start_(std::move(rhs.start_)), finish_(std::move(rhs.finish_)),
     map_(rhs.map_), map_size_(rhs.map_size_) {
     rhs.map_ = nullptr;
@@ -329,7 +342,8 @@ deque<T, Alloc, BufSiz>::deque(deque&& rhs)
 
 // 复制赋值运算符
 template <class T, class Alloc, size_t BufSiz>
-deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(const deque& rhs) {
+inline deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::
+operator=(const deque& rhs) {
     if (this != &rhs) {
         const auto len = size();
         if (len >= rhs.size()) {
@@ -346,7 +360,8 @@ deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(const deque& rhs) {
 
 // 移动赋值运算符
 template <class T, class Alloc, size_t BufSiz>
-deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(deque&& rhs) {
+inline deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::
+operator=(deque&& rhs) {
     if (this != &rhs) {
         clear();
 
@@ -363,9 +378,17 @@ deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::operator=(deque&& rhs) {
     return *this;
 }
 
+// 使用初值列表赋值
+template<class T, class Alloc, size_t BufSiz>
+inline deque<T, Alloc, BufSiz>& deque<T, Alloc, BufSiz>::
+operator=(std::initializer_list<T> ilist) {
+    clear();
+    __range_initialize(ilist.begin(), ilist.end(), mystl::forward_iterator_tag());
+}
+
 // 析构函数
 template <class T, class Alloc, size_t BufSiz>
-deque<T, Alloc, BufSiz>::~deque() {
+inline deque<T, Alloc, BufSiz>::~deque() {
     if (map_) {
         __destroy_node(start_.node, finish_.node + 1);
         map_allocator::deallocate(map_, map_size_);
@@ -373,33 +396,37 @@ deque<T, Alloc, BufSiz>::~deque() {
     }
 }
 
-// 初始化容器
+// 给容器赋值
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::assign(size_type n, const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+assign(size_type n, const value_type& value) {
     __fill_assign(n, value);
 }
 
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::assign(size_type n) {
+inline void deque<T, Alloc, BufSiz>::
+assign(size_type n) {
     __fill_assign(n, value_type());
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::assign(InputIterator first, InputIterator last) {
+inline void deque<T, Alloc, BufSiz>::
+assign(InputIterator first, InputIterator last) {
     typedef typename __is_integer<InputIterator>::is_integer Integer;
     __assign_dispatch(first, last, Integer());
 }
 
-// 在 position 位置插入元素
+// 在 position 处插入元素
 template <class T, class Alloc, size_t BufSiz>
-typename deque<T, Alloc, BufSiz>::iterator
-deque<T, Alloc, BufSiz>::insert(iterator position, const value_type& value) {
-    if (position.cur == start_.cur) {        //如果在头部插入
+inline typename deque<T, Alloc, BufSiz>::iterator
+deque<T, Alloc, BufSiz>::
+insert(iterator position, const value_type& value) {
+    if (position.cur == start_.cur) {
         push_front(value);
         return start_;
     }
-    else if (position.cur == finish_.cur) {  //如果在尾部插入
+    else if (position.cur == finish_.cur) {
         push_back(value);
         auto tmp = finish_;
         --tmp;
@@ -411,31 +438,37 @@ deque<T, Alloc, BufSiz>::insert(iterator position, const value_type& value) {
 }
 
 template <class T, class Alloc, size_t BufSiz>
-typename deque<T, Alloc, BufSiz>::iterator deque<T, Alloc, BufSiz>::insert(iterator position) {
+inline typename deque<T, Alloc, BufSiz>::iterator 
+deque<T, Alloc, BufSiz>::
+insert(iterator position) {
     return insert(position, value_type());
 }
 
-// 在 position 位置插入 n 个元素
+// 在 position 处插入 n 个元素
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::insert(iterator position, size_type n, const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+insert(iterator position, size_type n, const value_type& value) {
     __fill_insert(position, n, value);
 }
 
-// 在 position 位置插入[first, last)内的元素
+// 在 position 处插入[first, last)内的元素
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::insert(iterator position, InputIterator first, InputIterator last) {
+inline void deque<T, Alloc, BufSiz>::
+insert(iterator position, InputIterator first, InputIterator last) {
     typedef typename __is_integer<InputIterator>::is_integer Integer;
     __insert_dispatch(position, first, last, Integer());
 }
 
-// 删除 position 位置的元素
+// 删除 position 处的元素
 template <class T, class Alloc, size_t BufSiz>
-typename deque<T, Alloc, BufSiz>::iterator deque<T, Alloc, BufSiz>::erase(iterator position) {
+inline typename deque<T, Alloc, BufSiz>::iterator 
+deque<T, Alloc, BufSiz>::
+erase(iterator position) {
     auto next = position;
     ++next;
-    auto elems_before = position - start_;                       // 清除位置之前的元素个数
-    if (static_cast<size_type>(elems_before) < (size() >> 1)) {  // 清除点之前的元素比较少
+    auto elems_before = position - start_;
+    if (static_cast<size_type>(elems_before) < (size() >> 1)) {
         mystl::copy_backward(start_, position, next);
         pop_front();
     }
@@ -448,26 +481,28 @@ typename deque<T, Alloc, BufSiz>::iterator deque<T, Alloc, BufSiz>::erase(iterat
 
 // 删除[first, last)上的元素
 template <class T, class Alloc, size_t BufSiz>
-typename deque<T, Alloc, BufSiz>::iterator deque<T, Alloc, BufSiz>::erase(iterator first, iterator last) {
-    if (first == start_ && last == finish_) {  // 清空
+typename deque<T, Alloc, BufSiz>::iterator 
+deque<T, Alloc, BufSiz>::
+erase(iterator first, iterator last) {
+    if (first == start_ && last == finish_) {
         clear();
         return finish_;
     }
     else {
-        auto len = last - first;                                             // 清除区间长度
-        auto elems_before = first - start_;                                  // 清除区间之前的元素个数
-        if (static_cast<size_type>(elems_before) < ((size() - len) >> 1)) {  // 清除区间前的元素较少
+        auto len = last - first;
+        auto elems_before = first - start_;
+        if (static_cast<size_type>(elems_before) < ((size() - len) >> 1)) {
             mystl::copy_backward(start_, first, last);
-            auto new_start = start_ + len;                                   // 新的头部
-            mystl::destroy(start_, new_start);                               // 销毁多余元素
-            __destroy_node(start_.node, new_start.node);                     // 释放缓冲区
+            auto new_start = start_ + len;
+            mystl::destroy(start_, new_start);
+            __destroy_node(start_.node, new_start.node);
             start_ = new_start;
         }
-        else {                                                      //清除区间后的元素较少
+        else {
             mystl::copy(last, finish_, first);
-            auto new_finish = finish_ - len;                        //新的尾部
-            mystl::destroy(new_finish, finish_);                    //销毁多余元素 
-            __destroy_node(new_finish.node + 1, finish_.node + 1);  // 释放缓冲区
+            auto new_finish = finish_ - len;
+            mystl::destroy(new_finish, finish_);
+            __destroy_node(new_finish.node + 1, finish_.node + 1);
             finish_ = new_finish;
         }
         return start_ + elems_before;
@@ -476,7 +511,8 @@ typename deque<T, Alloc, BufSiz>::iterator deque<T, Alloc, BufSiz>::erase(iterat
 
 // 清空 deque
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::clear() {
+inline void deque<T, Alloc, BufSiz>::
+clear() {
     // clear 会保留至少一个缓冲区
     for (map_pointer cur = start_.node + 1; cur < finish_.node; ++cur) {
         mystl::destroy(*cur, *cur + buffer_size());
@@ -497,7 +533,8 @@ void deque<T, Alloc, BufSiz>::clear() {
 
 // 在尾部插入元素
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::push_back(const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+push_back(const value_type& value) {
     if (finish_.cur != finish_.last - 1) {
         mystl::construct(finish_.cur, value);
         ++finish_.cur;
@@ -509,7 +546,8 @@ void deque<T, Alloc, BufSiz>::push_back(const value_type& value) {
 
 // 在头部插入元素
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::push_front(const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+push_front(const value_type& value) {
     if (start_.cur != start_.first) {
         mystl::construct(start_.cur - 1, value);
         --start_.cur;
@@ -521,7 +559,8 @@ void deque<T, Alloc, BufSiz>::push_front(const value_type& value) {
 
 // 弹出尾部元素
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::pop_back() {
+inline void deque<T, Alloc, BufSiz>::
+pop_back() {
     if (finish_.cur != finish_.first) {
         --finish_.cur;
         mystl::destroy(finish_.cur);
@@ -533,7 +572,8 @@ void deque<T, Alloc, BufSiz>::pop_back() {
 
 // 弹出头部元素
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::pop_front() {
+inline void deque<T, Alloc, BufSiz>::
+pop_front() {
     if (start_.cur != start_.last - 1) {
         mystl::destroy(start_.cur);
         ++start_.cur;
@@ -545,35 +585,44 @@ void deque<T, Alloc, BufSiz>::pop_front() {
 
 // 重置容器大小
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::resize(size_type new_size, const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+resize(size_type new_size, const value_type& value) {
     const auto len = size();
-    if (new_size < len)
+    if (new_size < len) {
         erase(start_ + new_size, finish_);
-    else
+    }
+    else {
         insert(finish_, new_size - len, value);
+    }
 }
 
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::resize(size_type new_size) {
+inline void deque<T, Alloc, BufSiz>::
+resize(size_type new_size) {
     resize(new_size, value_type());
 }
 
 // 交换两个 deque 容器
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::swap(deque& rhs) {
-    mystl::swap(start_, rhs.start_);
-    mystl::swap(finish_, rhs.finish_);
-    mystl::swap(map_, rhs.map_);
-    mystl::swap(map_size_, rhs.map_size_);
+inline void deque<T, Alloc, BufSiz>::
+swap(deque& rhs) {
+    if (this != &rhs) {
+        mystl::swap(start_, rhs.start_);
+        mystl::swap(finish_, rhs.finish_);
+        mystl::swap(map_, rhs.map_);
+        mystl::swap(map_size_, rhs.map_size_);
+    }
 }
 
 // __create_node 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__create_node(map_pointer nstart, map_pointer nfinish) {
+inline void deque<T, Alloc, BufSiz>::
+__create_node(map_pointer nstart, map_pointer nfinish) {
     map_pointer cur;
     try {
-        for (cur = nstart; cur <= nfinish; ++cur)
+        for (cur = nstart; cur <= nfinish; ++cur) {
             *cur = data_allocator::allocate(buffer_size());
+        }
     }
     catch (...) {
         __destroy_node(nstart, nfinish);
@@ -582,7 +631,8 @@ void deque<T, Alloc, BufSiz>::__create_node(map_pointer nstart, map_pointer nfin
 
 // __destroy_node 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__destroy_node(map_pointer nstart, map_pointer nfinish) {
+inline void deque<T, Alloc, BufSiz>::
+__destroy_node(map_pointer nstart, map_pointer nfinish) {
     for (map_pointer n = nstart; n < nfinish; ++n) {
         data_allocator::deallocate(*n, buffer_size());
     }
@@ -590,7 +640,8 @@ void deque<T, Alloc, BufSiz>::__destroy_node(map_pointer nstart, map_pointer nfi
 
 // __map_initialize 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__map_initialize(size_type nElem) {
+void deque<T, Alloc, BufSiz>::
+__map_initialize(size_type nElem) {
     auto nNode = nElem / buffer_size() + 1;    // 需要分配的缓冲区个数
     map_size_ = mystl::max(static_cast<size_type>(__initial_map_size), nNode + 2);
     map_ = map_allocator::allocate(map_size_);
@@ -613,12 +664,14 @@ void deque<T, Alloc, BufSiz>::__map_initialize(size_type nElem) {
 
 // __fill_initialize 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__fill_initialize(size_type n, const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+__fill_initialize(size_type n, const value_type& value) {
     __map_initialize(n);
     map_pointer cur;
     try {
-        for (cur = start_.node; cur < finish_.node; ++cur)
+        for (cur = start_.node; cur < finish_.node; ++cur) {
             mystl::uninitialized_fill(*cur, *cur + buffer_size(), value);
+        }
         mystl::uninitialized_fill(finish_.first, finish_.cur, value);
     }
     catch (...) {
@@ -629,9 +682,10 @@ void deque<T, Alloc, BufSiz>::__fill_initialize(size_type n, const value_type& v
 // __range_initialize 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__range_initialize(InputIterator first, 
-    InputIterator last, input_iterator_tag) {
-    __map_initialize(0);
+inline void deque<T, Alloc, BufSiz>::
+__range_initialize(InputIterator first, InputIterator last, input_iterator_tag) {
+    auto n = distance(first, last);
+    __map_initialize(n);
     try {
         for (; first != last; ++first)
             push_back(*first);
@@ -643,8 +697,8 @@ void deque<T, Alloc, BufSiz>::__range_initialize(InputIterator first,
 
 template <class T, class Alloc, size_t BufSiz>
 template <class ForwardIterator>
-void deque<T, Alloc, BufSiz>::__range_initialize(ForwardIterator first,
-    ForwardIterator last, forward_iterator_tag) {
+inline void deque<T, Alloc, BufSiz>::
+__range_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
     auto n = distance(first, last);
     __map_initialize(n);
     map_pointer cur;
@@ -665,20 +719,22 @@ void deque<T, Alloc, BufSiz>::__range_initialize(ForwardIterator first,
 // __initialize_dispatch 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class Integer>
-void deque<T, Alloc, BufSiz>::__initialize_dispatch(Integer n, Integer value, __true_type) {
+inline void deque<T, Alloc, BufSiz>::
+__initialize_dispatch(Integer n, Integer value, __true_type) {
     __fill_initialize(n, value);
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__initialize_dispatch(InputIterator first,
-    InputIterator last, __false_type) {
+inline void deque<T, Alloc, BufSiz>::
+__initialize_dispatch(InputIterator first, InputIterator last, __false_type) {
     __range_initialize(first, last, iterator_category(first));
 }
 
 // __fill_assign 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__fill_assign(size_type n, const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+__fill_assign(size_type n, const value_type& value) {
     if (n > size()) {
         mystl::fill(begin(), end(), value);
         insert(end(), n - size(), value);
@@ -692,37 +748,40 @@ void deque<T, Alloc, BufSiz>::__fill_assign(size_type n, const value_type& value
 // __assign_dispatch 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class Integer>
-void deque<T, Alloc, BufSiz>::__assign_dispatch(Integer n, Integer value, __true_type) {
+inline void deque<T, Alloc, BufSiz>::
+__assign_dispatch(Integer n, Integer value, __true_type) {
     __fill_assign(static_cast<size_type>(n), static_cast<value_type>(value));
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__assign_dispatch(InputIterator first,
-    InputIterator last, __false_type) {
+inline void deque<T, Alloc, BufSiz>::
+__assign_dispatch(InputIterator first, InputIterator last, __false_type) {
     __assign_aux(first, last, iterator_category(first));
 }
 
 // __assign_aux 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__assign_aux(InputIterator first, InputIterator last,
-    input_iterator_tag) {
+inline void deque<T, Alloc, BufSiz>::
+__assign_aux(InputIterator first, InputIterator last, input_iterator_tag) {
     auto first1 = begin();
     auto last1 = end();
     for (; first != last && first1 != last1; ++first, ++first1) {
         *first1 = *first;
     }
-    if (first1 != last1)
+    if (first1 != last1) {
         erase(first1, last1);
-    else
+    }
+    else {
         insert(end(), first, last);
+    }
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class ForwardIterator>
-void deque<T, Alloc, BufSiz>::__assign_aux(ForwardIterator first, ForwardIterator last,
-    forward_iterator_tag) {
+inline void deque<T, Alloc, BufSiz>::
+__assign_aux(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
     auto len = distance(first, last);
     if (static_cast<size_type>(len) > size()) {
         auto mid = first;
@@ -738,10 +797,11 @@ void deque<T, Alloc, BufSiz>::__assign_aux(ForwardIterator first, ForwardIterato
 // __insert_aux 函数
 template <class T, class Alloc, size_t BufSiz>
 typename deque<T, Alloc, BufSiz>::iterator
-    deque<T, Alloc, BufSiz>::__insert_aux(iterator position, const value_type& value) {
-    auto elems_before = position - start_;                       //插入点之前的元素个数
+deque<T, Alloc, BufSiz>::
+__insert_aux(iterator position, const value_type& value) {
+    auto elems_before = position - start_;
     auto value_copy = value;
-    if (static_cast<size_type>(elems_before) < (size() >> 1)) {  //如果插入点之前的元素较少
+    if (static_cast<size_type>(elems_before) < (size() >> 1)) {
         push_front(front());
         auto front1 = start_;
         ++front1;
@@ -752,7 +812,7 @@ typename deque<T, Alloc, BufSiz>::iterator
         ++pos1;
         mystl::copy(front2, pos1, front1);
     }
-    else {  //如果插入点之后的元素较少
+    else {
         push_back(back());
         auto back1 = finish_;
         --back1;
@@ -767,7 +827,8 @@ typename deque<T, Alloc, BufSiz>::iterator
 
 // __fill_insert 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__fill_insert(iterator position, size_type n, const value_type& value) {
+void deque<T, Alloc, BufSiz>::
+__fill_insert(iterator position, size_type n, const value_type& value) {
     if (position.cur == start_.cur) {
         auto new_start = __reserve_elements_at_front(n);
         try {
@@ -795,7 +856,8 @@ void deque<T, Alloc, BufSiz>::__fill_insert(iterator position, size_type n, cons
 
 // __fill_insert_aux 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__fill_insert_aux(iterator position, size_type n, const value_type& value) {
+void deque<T, Alloc, BufSiz>::
+__fill_insert_aux(iterator position, size_type n, const value_type& value) {
     const auto elems_before = position - start_;
     auto len = size();
     auto value_copy = value;
@@ -850,8 +912,8 @@ void deque<T, Alloc, BufSiz>::__fill_insert_aux(iterator position, size_type n, 
 
 template <class T, class Alloc, size_t BufSiz>
 template <class ForwardIterator>
-void deque<T, Alloc, BufSiz>::__fill_insert_aux(iterator position,
-    ForwardIterator first, ForwardIterator last, size_type n) {
+inline void deque<T, Alloc, BufSiz>::
+__fill_insert_aux(iterator position, ForwardIterator first, ForwardIterator last, size_type n) {
     const auto elems_before = position - start_;
     auto len = size();
     if (static_cast<size_type>(elems_before) < (len >> 1)) {
@@ -910,30 +972,32 @@ void deque<T, Alloc, BufSiz>::__fill_insert_aux(iterator position,
 // __insert_dispatch 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class Integer>
-void deque<T, Alloc, BufSiz>::__insert_dispatch(iterator position,
-    Integer n, Integer x, __true_type) {
-    __fill_insert(position, n, x);
+inline void deque<T, Alloc, BufSiz>::
+__insert_dispatch(iterator position, Integer n, Integer x, __true_type) {
+    __fill_insert(position, static_cast<size_type>(n), static_cast<T>(x));
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__insert_dispatch(iterator position,
-    InputIterator first, InputIterator last, __false_type) {
+inline void deque<T, Alloc, BufSiz>::
+__insert_dispatch(iterator position, InputIterator first, InputIterator last, __false_type) {
     __insert_dispatch_aux(position, first, last, iterator_category(first));
 }
 
 // __insert_dispatch_aux 函数
 template <class T, class Alloc, size_t BufSiz>
 template <class InputIterator>
-void deque<T, Alloc, BufSiz>::__insert_dispatch_aux(iterator position,
-    InputIterator first, InputIterator last, input_iterator_tag) {
+inline void deque<T, Alloc, BufSiz>::
+__insert_dispatch_aux(iterator position, InputIterator first, InputIterator last,
+                      input_iterator_tag) {
     mystl::copy(first, last, iterator(*this, position));
 }
 
 template <class T, class Alloc, size_t BufSiz>
 template <class ForwardIterator>
-void deque<T, Alloc, BufSiz>::__insert_dispatch_aux(iterator position,
-    ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
+void deque<T, Alloc, BufSiz>::
+__insert_dispatch_aux(iterator position, ForwardIterator first, ForwardIterator last,
+                      forward_iterator_tag) {
     auto n = distance(first, last);
     if (position.cur == start_.cur) {        //在头部插入
         iterator new_start = __reserve_elements_at_front(n);
@@ -955,13 +1019,15 @@ void deque<T, Alloc, BufSiz>::__insert_dispatch_aux(iterator position,
             __destroy_node(finish_.node + 1, new_finish.node + 1);
         }
     }
-    else
+    else {
         __fill_insert_aux(position, first, last, n);
+    }
 }
 
 // __push_back_aux 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__push_back_aux(const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+__push_back_aux(const value_type& value) {
     auto value_copy = value;
     __reserve_map_at_back(1);
     *(finish_.node + 1) = data_allocator::allocate(buffer_size());
@@ -977,7 +1043,8 @@ void deque<T, Alloc, BufSiz>::__push_back_aux(const value_type& value) {
 
 // __push_front_aux 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__push_front_aux(const value_type& value) {
+inline void deque<T, Alloc, BufSiz>::
+__push_front_aux(const value_type& value) {
     auto value_copy = value;
     __reserve_map_at_front(1);
     *(start_.node - 1) = data_allocator::allocate(buffer_size());
@@ -994,7 +1061,8 @@ void deque<T, Alloc, BufSiz>::__push_front_aux(const value_type& value) {
 
 // __pop_back_aux 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__pop_back_aux() {
+inline void deque<T, Alloc, BufSiz>::
+__pop_back_aux() {
     data_allocator::deallocate(finish_.first);
     finish_.set_node(finish_.node - 1);
     finish_.cur = finish_.last - 1;
@@ -1003,7 +1071,8 @@ void deque<T, Alloc, BufSiz>::__pop_back_aux() {
 
 // __pop_front_aux 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__pop_front_aux() {
+inline void deque<T, Alloc, BufSiz>::
+__pop_front_aux() {
     mystl::destroy(start_.cur);
     data_allocator::deallocate(start_.first);
     start_.set_node(start_.node + 1);
@@ -1013,7 +1082,8 @@ void deque<T, Alloc, BufSiz>::__pop_front_aux() {
 // __reserve_elements_at_back 函数
 template <class T, class Alloc, size_t BufSiz>
 typename deque<T, Alloc, BufSiz>::iterator
-    deque<T, Alloc, BufSiz>::__reserve_elements_at_back(size_type n) {
+deque<T, Alloc, BufSiz>::
+__reserve_elements_at_back(size_type n) {
     auto left = static_cast<size_type>(finish_.last - finish_.cur - 1);
     if (n > left) {
         auto new_node = (n - left + buffer_size() - 1) / buffer_size();    
@@ -1028,13 +1098,14 @@ typename deque<T, Alloc, BufSiz>::iterator
                 map_allocator::deallocate(finish_.node + j);
         }
     }
-    return finish_ + static_cast<difference_type>(n);
+    return finish_ + n;
 }
 
 // __reserve_elements_at_front 函数
 template <class T, class Alloc, size_t BufSiz>
 typename deque<T, Alloc, BufSiz>::iterator
-    deque<T, Alloc, BufSiz>::__reserve_elements_at_front(size_type n) {
+deque<T, Alloc, BufSiz>::
+__reserve_elements_at_front(size_type n) {
     auto left = static_cast<size_type>(start_.cur - start_.first);
     if (n > left) {
         auto new_node = (n - left + buffer_size() - 1) / buffer_size();
@@ -1049,42 +1120,47 @@ typename deque<T, Alloc, BufSiz>::iterator
                 map_allocator::deallocate(start_.node - j);
         }
     }
-    return start_ - static_cast<difference_type>(n);
+    return start_ - n;
 }
 
 // __reserve_map_at_back 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__reserve_map_at_back(size_type n) {
+inline void deque<T, Alloc, BufSiz>::
+__reserve_map_at_back(size_type n) {
     if ((n + 1) > (map_size_ - static_cast<size_type>(finish_.node - map_)))
         __reallocate_map(n, false);
 }
 
 // __reserve_map_at_front 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__reserve_map_at_front(size_type n) {
+inline void deque<T, Alloc, BufSiz>::
+__reserve_map_at_front(size_type n) {
     if (n > static_cast<size_type>(start_.node - map_))
         __reallocate_map(n, true);
 }
 
 // __reallocate_map 函数
 template <class T, class Alloc, size_t BufSiz>
-void deque<T, Alloc, BufSiz>::__reallocate_map(size_type node_to_add, bool add_at_front) {
-    auto old_nodes_num = static_cast<size_type>(finish_.node - start_.node + 1);
-    auto new_nodes_num = old_nodes_num + node_to_add;
+void deque<T, Alloc, BufSiz>::
+__reallocate_map(size_type node_to_add, bool add_at_front) {
+    size_type old_nodes_num = finish_.node - start_.node + 1;
+    size_type new_nodes_num = old_nodes_num + node_to_add;
     map_pointer new_start;
     if (map_size_ > 2 * new_nodes_num) {
-        new_start = map_ + static_cast<difference_type>((map_size_ - new_nodes_num) / 2) 
-            + static_cast<difference_type>(add_at_front ? node_to_add : 0);
-        if (new_start < start_.node)
+        new_start = map_ + ((map_size_ - new_nodes_num) / 2) 
+            + (add_at_front ? node_to_add : 0);
+        if (new_start < start_.node) {
             mystl::copy(start_.node, finish_.node + 1, new_start);
-        else
+        }
+        else {
             mystl::copy_backward(start_.node, finish_.node + 1, new_start + old_nodes_num);
+        }
     }
     else {
         auto new_map_size = map_size_ + mystl::max(map_size_, node_to_add) + 2;
         map_pointer new_map = map_allocator::allocate(new_map_size);
-        new_start = new_map + static_cast<difference_type>((new_map_size - new_nodes_num) / 2)
-            + static_cast<difference_type>(add_at_front ? node_to_add : 0);
+        new_start = new_map + ((new_map_size - new_nodes_num) / 2)
+            + (add_at_front ? node_to_add : 0);
         mystl::copy(start_.node, finish_.node + 1, new_start);
         map_allocator::deallocate(map_, map_size_);
         map_ = new_map;
@@ -1097,38 +1173,52 @@ void deque<T, Alloc, BufSiz>::__reallocate_map(size_type node_to_add, bool add_a
 
 // 重载比较操作符
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator==(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool 
+operator==(const deque<T, Alloc, BufSiz>& lhs, 
+           const deque<T, Alloc, BufSiz>& rhs) {
     return lhs.size() == rhs.size() && mystl::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator<(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool 
+operator<(const deque<T, Alloc, BufSiz>& lhs,
+          const deque<T, Alloc, BufSiz>& rhs) {
     return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator!=(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool 
+operator!=(const deque<T, Alloc, BufSiz>& lhs, 
+           const deque<T, Alloc, BufSiz>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator>(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool
+operator>(const deque<T, Alloc, BufSiz>& lhs,
+          const deque<T, Alloc, BufSiz>& rhs) {
     return rhs < lhs;
 }
 
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator<=(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool 
+operator<=(const deque<T, Alloc, BufSiz>& lhs, 
+           const deque<T, Alloc, BufSiz>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class T, class Alloc, size_t BufSiz>
-inline bool operator>=(const deque<T, Alloc, BufSiz>& lhs, const deque<T, Alloc, BufSiz>& rhs) {
+inline bool 
+operator>=(const deque<T, Alloc, BufSiz>& lhs,
+           const deque<T, Alloc, BufSiz>& rhs) {
     return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
 template <class T, class Alloc, size_t BufSiz>
-inline void swap(deque<T, Alloc, BufSiz>& lhs, deque<T, Alloc, BufSiz>& rhs) {
+inline void 
+swap(deque<T, Alloc, BufSiz>& lhs,
+     deque<T, Alloc, BufSiz>& rhs) {
     lhs.swap(rhs);
 }
 
