@@ -56,16 +56,6 @@ void map_test() {
     mystl::map<int, int> m8 = std::move(m4);
     mystl::map<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
     mystl::map<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
-    MAP_COUT(m1);
-    MAP_COUT(m2);
-    MAP_COUT(m3);
-    MAP_COUT(m4);
-    MAP_COUT(m5);
-    MAP_COUT(m6);
-    MAP_COUT(m7);
-    MAP_COUT(m8);
-    MAP_COUT(m9);
-    MAP_COUT(m10);
 
     MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -125,17 +115,7 @@ void multimap_test() {
     mystl::multimap<int, int> m8 = std::move(m4);
     mystl::multimap<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
     mystl::multimap<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
-    MAP_COUT(m1);
-    MAP_COUT(m2);
-    MAP_COUT(m3);
-    MAP_COUT(m4);
-    MAP_COUT(m5);
-    MAP_COUT(m6);
-    MAP_COUT(m7);
-    MAP_COUT(m8);
-    MAP_COUT(m9);
-    MAP_COUT(m10);
-
+    
     MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
     MAP_FUN_AFTER(m1, m1.insert(m1.end(), PAIR(5, 5)));
