@@ -25,7 +25,19 @@ void deque_test() {
     mystl::deque<int> d6(std::move(d2));
     mystl::deque<int> d7 = d3;
     mystl::deque<int> d8 = std::move(d3);
-    d8.~deque();
+    mystl::deque<int> d9{ 1,2,3,4,5,6,7,8,9 };
+    mystl::deque<int> d10 = { 1,2,3,4,5,6,7,8,9 };
+    COUT(d1);
+    COUT(d2);
+    COUT(d3);
+    COUT(d4);
+    COUT(d5);
+    COUT(d6);
+    COUT(d7);
+    COUT(d8);
+    COUT(d9);
+    COUT(d10);
+    d10.~deque();
 
     FUN_AFTER(d1, d1.assign(10));
     FUN_AFTER(d1, d1.assign(8, 8));
