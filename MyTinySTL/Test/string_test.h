@@ -29,6 +29,17 @@ void string_test() {
     mystl::string str9(std::move(str8));
     mystl::string str10 = str6;
     mystl::string str11 = std::move(str10);
+    STR_COUT(str1);
+    STR_COUT(str2);
+    STR_COUT(str3);
+    STR_COUT(str4);
+    STR_COUT(str5);
+    STR_COUT(str6);
+    STR_COUT(str7);
+    STR_COUT(str8);
+    STR_COUT(str9);
+    STR_COUT(str10);
+    STR_COUT(str11);
     str11.~basic_string();
 
     STR_COUT(str);
