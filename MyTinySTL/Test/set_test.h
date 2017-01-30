@@ -27,16 +27,6 @@ void set_test(){
     mystl::set<int> s8 = std::move(s4);
     mystl::set<int> s9{ 1,2,3,4,5 };
     mystl::set<int> s10 = { 1,2,3,4,5 };
-    COUT(s1);
-    COUT(s2);
-    COUT(s3);
-    COUT(s4);
-    COUT(s5);
-    COUT(s6);
-    COUT(s7);
-    COUT(s8);
-    COUT(s9);
-    COUT(s10);
 
     FUN_AFTER(s1, s1.insert(a, a + 5));
     FUN_AFTER(s1, s1.insert(5));
@@ -92,17 +82,7 @@ void multiset_test() {
     mystl::multiset<int> s8 = std::move(s4);
     mystl::multiset<int> s9{ 1,2,3,4,5 };
     mystl::multiset<int> s10 = { 1,2,3,4,5 };
-    COUT(s1);
-    COUT(s2);
-    COUT(s3);
-    COUT(s4);
-    COUT(s5);
-    COUT(s6);
-    COUT(s7);
-    COUT(s8);
-    COUT(s9);
-    COUT(s10);
-            
+
     FUN_AFTER(s1, s1.insert(a, a + 5));
     FUN_AFTER(s1, s1.insert(5));
     FUN_AFTER(s1, s1.insert(s1.end(), 5));
