@@ -147,7 +147,7 @@ void multimap_test() {
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-    MAP_INSERT_TEST(multimap, LEN1 _M, LEN2 _M, LEN3 _M);
+    MAP_INSERT_TEST(multimap, LEN1 _S, LEN2 _S, LEN3 _S);
 #else
     MAP_INSERT_TEST(multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
