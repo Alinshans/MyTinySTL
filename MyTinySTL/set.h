@@ -33,6 +33,7 @@ class set {
     typedef typename rep_type::const_reference           reference;
     typedef typename rep_type::const_reference           const_reference;
     typedef typename rep_type::const_iterator            iterator;
+    typedef typename rep_type::iterator                  rep_iterator;
     // iterator 定义为 rb_tree 的 const_iterator，表示 set 不允许进行写入操作
     typedef typename rep_type::const_iterator            const_iterator;
     typedef typename rep_type::const_reverse_iterator    reverse_iterator;
@@ -45,13 +46,21 @@ class set {
     // 构造、复制、移动函数
     set() :t_() {}
     template <class InputIterator>
-    set(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
-        
+    set(InputIterator first, InputIterator last) :t_() { t_.insert_unique(first, last); }
+    set(std::initializer_list<value_type> ilist) :t_() {
+        t_.insert_unique(ilist.begin(), ilist.end());
+    }
+
     set(const set& rhs) :t_(rhs.t_) {}
     set(set&& rhs) :t_(std::move(rhs.t_)) {}
 
     set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
     set& operator=(set&& rhs)      { t_ = std::move(rhs.t_); return *this; }
+    set& operator=(std::initializer_list<value_type> ilist) {
+        t_.clear();
+        t_.insert_unique(ilist.begin(), ilist.end());
+        return *this;
+    }
 
     // 相关接口操作
     key_compare      key_comp()      const { return t_.key_comp(); }
@@ -72,26 +81,17 @@ class set {
         return t_.insert_unique(value);
     }
     iterator insert(iterator position, const value_type& value) {
-        typedef typename rep_type::iterator rep_iterator;
-        return t_.insert_unique(reinterpret_cast<rep_iterator&>(position), value);
+        return t_.insert_unique((rep_iterator&)position, value);
     }
     template <class InputIterator>
     void insert(InputIterator first, InputIterator last) {
         t_.insert_unique(first, last);
     }
 
-    void erase(iterator position) {
-        typedef typename rep_type::iterator rep_iterator;
-        t_.erase(reinterpret_cast<rep_iterator&>(position));
-    }
-    size_type erase(const key_type& k) {
-        return t_.erase(k);
-    }
-    void erase(iterator first, iterator last) {
-        typedef typename rep_type::iterator rep_iterator;
-        t_.erase(reinterpret_cast<rep_iterator&>(first), reinterpret_cast<rep_iterator&>(last));
-    }
-    void clear() { t_.clear(); }
+    void      erase(iterator position)             { t_.erase((rep_iterator&)position); }
+    size_type erase(const key_type& k)             { return t_.erase(k); }
+    void      erase(iterator first, iterator last) { t_.erase((rep_iterator&)first, (rep_iterator&)last); }
+    void      clear()                              { t_.clear(); }
 
     // set 相关操作
     iterator                 find(const key_type& k)        const { return t_.find(k); }
@@ -108,38 +108,52 @@ class set {
 
 // 重载比较操作符
 template <class Key, class Compare, class Alloc>
-inline bool operator==(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool
+operator==(const set<Key, Compare, Alloc>& lhs, 
+           const set<Key, Compare, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator<(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool
+operator<(const set<Key, Compare, Alloc>& lhs, 
+          const set<Key, Compare, Alloc>& rhs) {
     return lhs < rhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator!=(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool
+operator!=(const set<Key, Compare, Alloc>& lhs, 
+           const set<Key, Compare, Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator>(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool
+operator>(const set<Key, Compare, Alloc>& lhs, 
+          const set<Key, Compare, Alloc>& rhs) {
     return rhs < lhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator<=(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool 
+operator<=(const set<Key, Compare, Alloc>& lhs, 
+           const set<Key, Compare, Alloc>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator>=(const set<Key, Compare, Alloc>& lhs, const set<Key, Compare, Alloc>& rhs) {
+inline bool
+operator>=(const set<Key, Compare, Alloc>& lhs,
+           const set<Key, Compare, Alloc>& rhs) {
     return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Compare, class Alloc>
-void swap(set<Key, Compare, Alloc>& lhs, set<Key, Compare, Alloc>& rhs) {
+inline void
+swap(set<Key, Compare, Alloc>& lhs,
+     set<Key, Compare, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
@@ -167,6 +181,7 @@ class multiset {
     typedef typename rep_type::const_reference           reference;
     typedef typename rep_type::const_reference           const_reference;
     typedef typename rep_type::const_iterator            iterator;
+    typedef typename rep_type::iterator                  rep_iterator;
     // iterator 定义为 rb_tree 的 const_iterator，表示 multiset 不允许进行写入操作
     typedef typename rep_type::const_iterator            const_iterator;
     typedef typename rep_type::const_reverse_iterator    reverse_iterator;
@@ -180,12 +195,20 @@ class multiset {
     multiset() :t_() {}
     template <class InputIterator>
     multiset(InputIterator first, InputIterator last) : t_() { t_.insert_equal(first, last); }
-        
+    multiset(std::initializer_list<value_type> ilist) :t_() {
+        t_.insert_equal(ilist.begin(), ilist.end());
+    }
+
     multiset(const multiset& rhs) :t_(rhs.t_) {}
     multiset(multiset&& rhs) :t_(std::move(rhs.t_)) {}
 
     multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
     multiset& operator=(multiset&& rhs)      { t_ = std::move(rhs.t_); return *this; }
+    multiset& operator=(std::initializer_list<value_type> ilist) {
+        t_.clear();
+        t_.insert_equal(ilist.begin(), ilist.end());
+        return *this;
+    }
 
     // 相关接口
     key_compare      key_comp()      const { return t_.key_comp(); }
@@ -206,26 +229,17 @@ class multiset {
         return t_.insert_equal(value);
     }
     iterator insert(iterator position, const value_type& value) {
-        typedef typename rep_type::iterator rep_iterator;
-        return t_.insert_equal(reinterpret_cast<rep_iterator&>(position), value);
+        return t_.insert_equal((rep_iterator&)position, value);
     }
     template <class InputIterator>
     void insert(InputIterator first, InputIterator last) {
         t_.insert_equal(first, last);
     }
 
-    void erase(iterator position) {
-        typedef typename rep_type::iterator rep_iterator;
-        t_.erase(reinterpret_cast<rep_iterator&>(position));
-    }
-    size_type erase(const key_type& k) {
-        return t_.erase(k);
-    }
-    void erase(iterator first, iterator last) {
-        typedef typename rep_type::iterator rep_iterator;
-        t_.erase(reinterpret_cast<rep_iterator&>(first), reinterpret_cast<rep_iterator&>(last));
-    }
-    void clear() { t_.clear(); }
+    void      erase(iterator position)             { t_.erase((rep_iterator&)position); }
+    size_type erase(const key_type& k)             { return t_.erase(k); }
+    void      erase(iterator first, iterator last) { t_.erase((rep_iterator&)first, (rep_iterator&)last); }
+    void      clear()                              { t_.clear(); }
 
     // multiset 相关操作
     iterator                 find(const key_type& k)        const { return t_.find(k); }
@@ -242,44 +256,52 @@ class multiset {
 
 // 重载比较操作符
 template <class Key, class Compare, class Alloc>
-inline bool operator==(const multiset<Key, Compare, Alloc>& lhs,
-                       const multiset<Key, Compare, Alloc>& rhs) {
+inline bool 
+operator==(const multiset<Key, Compare, Alloc>& lhs,
+           const multiset<Key, Compare, Alloc>& rhs) {
     return lhs == rhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator<(const multiset<Key, Compare, Alloc>& lhs,
-                       const multiset<Key, Compare, Alloc>& rhs) {
+inline bool 
+operator<(const multiset<Key, Compare, Alloc>& lhs,
+          const multiset<Key, Compare, Alloc>& rhs) {
     return lhs < rhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator!=(const multiset<Key, Compare, Alloc>& lhs, 
-    const multiset<Key, Compare, Alloc>& rhs) {
+inline bool 
+operator!=(const multiset<Key, Compare, Alloc>& lhs, 
+           const multiset<Key, Compare, Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator>(const multiset<Key, Compare, Alloc>& lhs, 
-    const multiset<Key, Compare, Alloc>& rhs) {
+inline bool
+operator>(const multiset<Key, Compare, Alloc>& lhs, 
+          const multiset<Key, Compare, Alloc>& rhs) {
     return rhs < lhs;
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator<=(const multiset<Key, Compare, Alloc>& lhs, 
-    const multiset<Key, Compare, Alloc>& rhs) {
+inline bool 
+operator<=(const multiset<Key, Compare, Alloc>& lhs, 
+           const multiset<Key, Compare, Alloc>& rhs) {
     return !(rhs < lhs);
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool operator>=(const multiset<Key, Compare, Alloc>& lhs,
-    const multiset<Key, Compare, Alloc>& rhs) {
+inline bool
+operator>=(const multiset<Key, Compare, Alloc>& lhs,
+           const multiset<Key, Compare, Alloc>& rhs) {
     return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Compare, class Alloc>
-void swap(multiset<Key, Compare, Alloc>& lhs, multiset<Key, Compare, Alloc>& rhs) {
+inline void 
+swap(multiset<Key, Compare, Alloc>& lhs, 
+     multiset<Key, Compare, Alloc>& rhs) {
     lhs.swap(rhs);
 }
 
