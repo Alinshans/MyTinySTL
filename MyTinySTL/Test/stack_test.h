@@ -43,6 +43,20 @@ void stack_test() {
     mystl::stack<int> s8(std::move(s2));
     mystl::stack<int> s9 = s3;
     mystl::stack<int> s10 = std::move(s3);
+    mystl::stack<int> s11{ 1,2,3,4,5 };
+    mystl::stack<int> s12 = { 1,2,3,4,5 };
+    STACK_COUT(s1);
+    STACK_COUT(s2);
+    STACK_COUT(s3);
+    STACK_COUT(s4);
+    STACK_COUT(s5);
+    STACK_COUT(s6);
+    STACK_COUT(s7);
+    STACK_COUT(s8);
+    STACK_COUT(s9);
+    STACK_COUT(s10);
+    STACK_COUT(s11);
+    STACK_COUT(s12);
 
     std::cout << " After s1 push 1,2,3,4,5 :" << std::endl;
     s1.push(1);
