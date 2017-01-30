@@ -6,7 +6,6 @@
 
 #include "algo.h"
 #include "functional.h"
-#include "hash_functional.h"
 #include "memory.h"
 #include "vector.h"
 
