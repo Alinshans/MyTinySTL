@@ -7,12 +7,12 @@
 #include "stack_test.h"
 #include "map_test.h"
 #include "set_test.h"
-#include "hash_map_test.h"
-#include "hash_set_test.h"
+#include "unordered_map_test.h"
+#include "unordered_set_test.h"
 #include "string_test.h"
 
 int main() {
-    
+
     // 运行所有简单测试、性能测试、容器测试
     RUN_ALL_TESTS();
     mystl::test::algorithm_performance_test::algorithm_performance_test();
@@ -26,10 +26,10 @@ int main() {
     mystl::test::map_test::multimap_test();
     mystl::test::set_test::set_test();
     mystl::test::set_test::multiset_test();
-    mystl::test::hash_map_test::hash_map_test();
-    mystl::test::hash_map_test::hash_multimap_test();
-    mystl::test::hash_set_test::hash_set_test();
-    mystl::test::hash_set_test::hash_multiset_test();
+    mystl::test::unordered_map_test::unordered_map_test();
+    mystl::test::unordered_map_test::unordered_multimap_test();
+    mystl::test::unordered_set_test::unordered_set_test();
+    mystl::test::unordered_set_test::unordered_multiset_test();
     mystl::test::string_test::string_test();
-}
 
+}
