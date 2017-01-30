@@ -27,16 +27,6 @@ void vector_test() {
     mystl::vector<int> v8 = std::move(v3);
     mystl::vector<int> v9{ 1,2,3,4,5,6,7,8,9 };
     mystl::vector<int> v10 = { 1,2,3,4,5,6,7,8,9 };
-    COUT(v1);
-    COUT(v2);
-    COUT(v3);
-    COUT(v4);
-    COUT(v5);
-    COUT(v6);
-    COUT(v7);
-    COUT(v8);
-    COUT(v9);
-    COUT(v10);
     v10.~vector();
                 
     FUN_AFTER(v1, v1.assign(10));

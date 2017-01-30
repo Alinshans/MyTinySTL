@@ -34,20 +34,6 @@ void unordered_map_test() {
     mystl::unordered_map<int, int> um12 = std::move(um6);
     mystl::unordered_map<int, int> um13{ PAIR(1,1),PAIR(2,3),PAIR(3,3) };
     mystl::unordered_map<int, int> um14 = { PAIR(1,1),PAIR(2,3),PAIR(3,3) };
-    MAP_COUT(um1);
-    MAP_COUT(um2);
-    MAP_COUT(um3);
-    MAP_COUT(um4);
-    MAP_COUT(um5);
-    MAP_COUT(um6);
-    MAP_COUT(um7);
-    MAP_COUT(um8);
-    MAP_COUT(um9);
-    MAP_COUT(um10);
-    MAP_COUT(um11);
-    MAP_COUT(um12);
-    MAP_COUT(um13);
-    MAP_COUT(um14);
 
     MAP_FUN_AFTER(um1, um1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(um1, um1.insert(PAIR(5, 5)));
@@ -116,20 +102,6 @@ void unordered_multimap_test() {
     mystl::unordered_multimap<int, int> um12 = std::move(um6);
     mystl::unordered_multimap<int, int> um13{ PAIR(1,1),PAIR(2,3),PAIR(3,3) };
     mystl::unordered_multimap<int, int> um14 = { PAIR(1,1),PAIR(2,3),PAIR(3,3) };
-    MAP_COUT(um1);
-    MAP_COUT(um2);
-    MAP_COUT(um3);
-    MAP_COUT(um4);
-    MAP_COUT(um5);
-    MAP_COUT(um6);
-    MAP_COUT(um7);
-    MAP_COUT(um8);
-    MAP_COUT(um9);
-    MAP_COUT(um10);
-    MAP_COUT(um11);
-    MAP_COUT(um12);
-    MAP_COUT(um13);
-    MAP_COUT(um14);
 
     MAP_FUN_AFTER(um1, um1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(um1, um1.insert(PAIR(5, 5)));
