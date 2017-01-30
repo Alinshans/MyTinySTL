@@ -66,9 +66,9 @@ void unordered_set_test() {
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-    CON_TEST_P1(unordered_set<int>, insert, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
-#else
     CON_TEST_P1(unordered_set<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+#else
+    CON_TEST_P1(unordered_set<int>, insert, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -130,9 +130,9 @@ void unordered_multiset_test() {
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-    CON_TEST_P1(unordered_multiset<int>, insert, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
-#else
     CON_TEST_P1(unordered_multiset<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+#else
+    CON_TEST_P1(unordered_multiset<int>, insert, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
