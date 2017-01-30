@@ -32,20 +32,6 @@ void unordered_set_test() {
     mystl::unordered_set<int> us12 = std::move(us6);
     mystl::unordered_set<int> us13{ 1,2,3,4,5 };
     mystl::unordered_set<int> us14 = { 1,2,3,4,5 };
-    COUT(us1);
-    COUT(us2);
-    COUT(us3);
-    COUT(us4);
-    COUT(us5);
-    COUT(us6);
-    COUT(us7);
-    COUT(us8);
-    COUT(us9);
-    COUT(us10);
-    COUT(us11);
-    COUT(us12);
-    COUT(us13);
-    COUT(us14);
 
     FUN_AFTER(us1, us1.insert(a, a + 5));
     FUN_AFTER(us1, us1.insert(5));
@@ -110,20 +96,6 @@ void unordered_multiset_test() {
     mystl::unordered_multiset<int> us12 = std::move(us6);
     mystl::unordered_multiset<int> us13{ 1,2,3,4,5 };
     mystl::unordered_multiset<int> us14 = { 1,2,3,4,5 };
-    COUT(us1);
-    COUT(us2);
-    COUT(us3);
-    COUT(us4);
-    COUT(us5);
-    COUT(us6);
-    COUT(us7);
-    COUT(us8);
-    COUT(us9);
-    COUT(us10);
-    COUT(us11);
-    COUT(us12);
-    COUT(us13);
-    COUT(us14);
 
     FUN_AFTER(us1, us1.insert(a, a + 5));
     FUN_AFTER(us1, us1.insert(5));
