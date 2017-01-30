@@ -6,6 +6,7 @@
 #include <map>
 
 #include "../map.h"
+#include "../vector.h"
 #include "test.h"
 
 namespace mystl {
@@ -46,12 +47,25 @@ void map_test() {
     for (int i = 0; i < 5; ++i)
         v.push_back(PAIR(i, i));
     mystl::map<int, int> m1;
-    mystl::map<int, int> m2(v.begin(), v.end());
+    mystl::map<int, int, mystl::greater<int>> m2;
     mystl::map<int, int> m3(v.begin(), v.end());
-    mystl::map<int, int> m4(m2);
-    mystl::map<int, int> m5(std::move(m2));
-    mystl::map<int, int> m6 = m3;
-    mystl::map<int, int> m7 = std::move(m3);
+    mystl::map<int, int> m4(v.begin(), v.end());
+    mystl::map<int, int> m5(m3);
+    mystl::map<int, int> m6(std::move(m3));
+    mystl::map<int, int> m7 = m4;
+    mystl::map<int, int> m8 = std::move(m4);
+    mystl::map<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+    mystl::map<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+    MAP_COUT(m1);
+    MAP_COUT(m2);
+    MAP_COUT(m3);
+    MAP_COUT(m4);
+    MAP_COUT(m5);
+    MAP_COUT(m6);
+    MAP_COUT(m7);
+    MAP_COUT(m8);
+    MAP_COUT(m9);
+    MAP_COUT(m10);
 
     MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -60,7 +74,7 @@ void map_test() {
     MAP_FUN_AFTER(m1, m1.erase(1));
     MAP_FUN_AFTER(m1, m1.erase(m1.begin(), m1.find(3)));
     MAP_FUN_AFTER(m1, m1.clear());
-    MAP_FUN_AFTER(m1, m1.swap(m4));
+    MAP_FUN_AFTER(m1, m1.swap(m9));
     MAP_VALUE(*m1.begin());
     MAP_VALUE(*m1.rbegin());
     FUN_VALUE(m1[1]);
@@ -83,25 +97,9 @@ void map_test() {
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-    TEST_LEN(LEN1 _M, LEN2 _M, LEN3 _M, WIDE);
-    std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, map, LEN1 _M);
-    MAP_INSERT_TEST(std, map, LEN2 _M);
-    MAP_INSERT_TEST(std, map, LEN3 _M);
-    std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, map, LEN1 _M);
-    MAP_INSERT_TEST(mystl, map, LEN2 _M);
-    MAP_INSERT_TEST(mystl, map, LEN3 _M);
+    MAP_INSERT_TEST(map, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-    TEST_LEN(LEN1 _SS, LEN2 _SS, LEN3 _SS, WIDE);
-    std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, map, LEN1 _SS);
-    MAP_INSERT_TEST(std, map, LEN2 _SS);
-    MAP_INSERT_TEST(std, map, LEN3 _SS);
-    std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, map, LEN1 _SS);
-    MAP_INSERT_TEST(mystl, map, LEN2 _SS);
-    MAP_INSERT_TEST(mystl, map, LEN3 _SS);
+    MAP_INSERT_TEST(map, LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -118,12 +116,25 @@ void multimap_test() {
     for (int i = 0; i < 5; ++i)
         v.push_back(PAIR(i, i));
     mystl::multimap<int, int> m1;
-    mystl::multimap<int, int> m2(v.begin(), v.end());
+    mystl::multimap<int, int, mystl::greater<int>> m2;
     mystl::multimap<int, int> m3(v.begin(), v.end());
-    mystl::multimap<int, int> m4(m2);
-    mystl::multimap<int, int> m5(std::move(m2));
-    mystl::multimap<int, int> m6 = m3;
-    mystl::multimap<int, int> m7 = std::move(m3);
+    mystl::multimap<int, int> m4(v.begin(), v.end());
+    mystl::multimap<int, int> m5(m3);
+    mystl::multimap<int, int> m6(std::move(m3));
+    mystl::multimap<int, int> m7 = m4;
+    mystl::multimap<int, int> m8 = std::move(m4);
+    mystl::multimap<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+    mystl::multimap<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+    MAP_COUT(m1);
+    MAP_COUT(m2);
+    MAP_COUT(m3);
+    MAP_COUT(m4);
+    MAP_COUT(m5);
+    MAP_COUT(m6);
+    MAP_COUT(m7);
+    MAP_COUT(m8);
+    MAP_COUT(m9);
+    MAP_COUT(m10);
 
     MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
     MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -132,7 +143,7 @@ void multimap_test() {
     MAP_FUN_AFTER(m1, m1.erase(1));
     MAP_FUN_AFTER(m1, m1.erase(m1.begin(), m1.find(3)));
     MAP_FUN_AFTER(m1, m1.clear());
-    MAP_FUN_AFTER(m1, m1.swap(m4));
+    MAP_FUN_AFTER(m1, m1.swap(m9));
     MAP_FUN_AFTER(m1, m1.insert(PAIR(3, 3)));
     MAP_VALUE(*m1.begin());
     MAP_VALUE(*m1.rbegin());
@@ -156,25 +167,9 @@ void multimap_test() {
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
     std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-    TEST_LEN(LEN1 _S, LEN2 _S, LEN3 _S, WIDE);
-    std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, multimap, LEN1 _S);
-    MAP_INSERT_TEST(std, multimap, LEN2 _S);
-    MAP_INSERT_TEST(std, multimap, LEN3 _S);
-    std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, multimap, LEN1 _S);
-    MAP_INSERT_TEST(mystl, multimap, LEN2 _S);
-    MAP_INSERT_TEST(mystl, multimap, LEN3 _S);
+    MAP_INSERT_TEST(multimap, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-    TEST_LEN(LEN1 _SS, LEN2 _SS, LEN3 _SS, WIDE);
-    std::cout << "|         std         |";
-    MAP_INSERT_TEST(std, multimap, LEN1 _SS);
-    MAP_INSERT_TEST(std, multimap, LEN2 _SS);
-    MAP_INSERT_TEST(std, multimap, LEN3 _SS);
-    std::cout << std::endl << "|        mystl        |";
-    MAP_INSERT_TEST(mystl, multimap, LEN1 _SS);
-    MAP_INSERT_TEST(mystl, multimap, LEN2 _SS);
-    MAP_INSERT_TEST(mystl, multimap, LEN3 _SS);
+    MAP_INSERT_TEST(multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
     std::cout << std::endl;
     std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
