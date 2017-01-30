@@ -390,6 +390,7 @@ operator=(std::initializer_list<T> ilist) {
 template <class T, class Alloc, size_t BufSiz>
 inline deque<T, Alloc, BufSiz>::~deque() {
     if (map_) {
+        clear();
         __destroy_node(start_.node, finish_.node + 1);
         map_allocator::deallocate(map_, map_size_);
         map_ = nullptr;
