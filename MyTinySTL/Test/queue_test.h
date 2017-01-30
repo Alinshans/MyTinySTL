@@ -60,18 +60,6 @@ void queue_test() {
     mystl::queue<int> q10 = std::move(q3);
     mystl::queue<int> q11{ 1,2,3,4,5 };
     mystl::queue<int> q12 = { 1,2,3,4,5 };
-    QUEUE_COUT(q1);
-    QUEUE_COUT(q2);
-    QUEUE_COUT(q3);
-    QUEUE_COUT(q4);
-    QUEUE_COUT(q5);
-    QUEUE_COUT(q6);
-    QUEUE_COUT(q7);
-    QUEUE_COUT(q8);
-    QUEUE_COUT(q9);
-    QUEUE_COUT(q10);
-    QUEUE_COUT(q11);
-    QUEUE_COUT(q12);
 
     std::cout << " After q1 push 1,2,3,4,5 :" << std::endl;
     q1.push(1);
@@ -128,18 +116,6 @@ void priority_test() {
     mystl::priority_queue<int> p10 = std::move(p3);
     mystl::priority_queue<int> p11{ 1,2,3,4,5 };
     mystl::priority_queue<int> p12 = { 1,2,3,4,5 };
-    P_QUEUE_COUT(p1);
-    P_QUEUE_COUT(p2);
-    P_QUEUE_COUT(p3);
-    P_QUEUE_COUT(p4);
-    P_QUEUE_COUT(p5);
-    P_QUEUE_COUT(p6);
-    P_QUEUE_COUT(p7);
-    P_QUEUE_COUT(p8);
-    P_QUEUE_COUT(p9);
-    P_QUEUE_COUT(p10);
-    P_QUEUE_COUT(p11);
-    P_QUEUE_COUT(p12);
 
     std::cout << " After p1 push 1,2,3,4,5 :" << std::endl;
     p1.push(1);
