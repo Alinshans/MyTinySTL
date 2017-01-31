@@ -10,9 +10,12 @@ UnitTest
   * linux, clang++3.6
   * linux, clang++3.7
   * linux, clang++3.8
-___
+  * windows, msvc 14.0 (Visual Studio 2015)
+  
+  
 ###测试框架
   在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个 `class template` 实现了一个简单的测试框架。定义了大量宏封装测试。</br>
+  
   
 ###测试内容
   * [algorithm](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_test.h) *(100%/100%)*
@@ -37,6 +40,7 @@ ___
   * [stack](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/stack_test.h) *(100%/100%)*
   * [string_test](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/string_test.h) *(100%/100%)*
   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/vector_test.h) *(100%/100%)*
+  
   
 ###测试结果
   见 [Travis CI](https://travis-ci.org/Alinshans/MyTinySTL) 和 [AppVeyor](https://ci.appveyor.com/project/Alinshans/mytinystl)
