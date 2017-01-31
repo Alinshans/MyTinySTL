@@ -190,7 +190,7 @@ class deque {
     map_pointer    map_;              // 指向一块 map，map 中的每个元素都是一个指针，指向一个缓冲区
     size_type      map_size_;         // map 内指针的数目
 
-    enum { __initial_map_size = 16 }; // map 的初始化大小
+    enum { __initial_map_size = 8 };  // map 的初始化大小
 
   public:
     // 构造、复制、移动、析构函数
@@ -391,7 +391,8 @@ template <class T, class Alloc, size_t BufSiz>
 inline deque<T, Alloc, BufSiz>::~deque() {
     if (map_) {
         clear();
-        __destroy_node(start_.node, finish_.node + 1);
+        //__destroy_node(start_.node, finish_.node + 1);
+        data_allocator::deallocate(*start_.node, buffer_size());
         map_allocator::deallocate(map_, map_size_);
         map_ = nullptr;
     }
@@ -660,7 +661,7 @@ __map_initialize(size_type nElem) {
     start_.set_node(nstart);
     finish_.set_node(nfinish);
     start_.cur = start_.first;
-    finish_.cur = finish_.first + nElem % buffer_size();
+    finish_.cur = finish_.first + (nElem % buffer_size());
 }
 
 // __fill_initialize 函数
