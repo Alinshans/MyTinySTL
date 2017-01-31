@@ -18,6 +18,8 @@ UnitTest
   
   
 ###测试内容
+  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON`, `MEMORY_IS_ENOUGH`，`PERFORMANCE_TEST_ON` 宏定义为 `1`，开启测试，`MEMORY_IS_ENOUGH` 宏定义为 `1`，增大测试量（内存消耗）。默认开启 `PERFORMANCE_TEST_ON` 关闭 `MEMORY_IS_ENOUGH`。<br>
+  测试案例如下：
   * [algorithm](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_test.h) *(100%/100%)*
   * [algorithm_performance](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_performance_test.h) *(100%/100%)*
   * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/deque_test.h) *(100%/100%)*
