@@ -1,4 +1,4 @@
-Copyright (c) 2016 Alinshans. All rights reserved.
+Copyright (c) 2016-2017 Alinshans. All rights reserved.
 
 First published on github, see https://github.com/Alinshans/MyTinySTL
 
