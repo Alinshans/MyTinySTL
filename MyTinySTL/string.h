@@ -3,9 +3,6 @@
 
 // 定义了 string, wstring 类型
 
-#include <cstring>
-#include <string>
-
 #include "basic_string.h"
 
 namespace mystl {
