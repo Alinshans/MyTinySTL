@@ -9,8 +9,9 @@
 #include "numeric.h"
 #include "set_algo.h"
 
-namespace mystl {
-    
+namespace mystl
+{
+
 } // namespace mystl
 #endif // !MYTINYSTL_ALGORITHM_H_
 
