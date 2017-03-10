@@ -33,7 +33,7 @@ class reverse_iterator {
 
   public:
     // 取出对应的正向迭代器
-    iterator_type base() const { return current; }
+    iterator_type base()  const { return current; }
 
     // 重载操作符
     reference operator*() const {  // 实际对应正向迭代器的前一个位置
@@ -94,7 +94,6 @@ inline typename reverse_iterator<Iterator>::difference_type
 }
 
 // 重载比较操作符
-
 template <class Iterator>
 inline bool operator==(const reverse_iterator<Iterator>& lhs,
     const reverse_iterator<Iterator>& rhs) {
