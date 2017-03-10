@@ -127,12 +127,6 @@ inline typename iterator_traits<Iterator>::value_type*
 }
 
 // 以下函数用于计算迭代器间的距离
-template <class InputIterator>
-inline typename iterator_traits<InputIterator>::difference_type
-    distance(InputIterator first, InputIterator last) {
-    return __distance(first, last, iterator_category(first));
-}
-
 // distance 的 input_iterator_tag 的版本
 template <class InputIterator>
 inline typename iterator_traits<InputIterator>::difference_type
@@ -148,16 +142,18 @@ inline typename iterator_traits<InputIterator>::difference_type
 // distance 的 random_access_iterator_tag 的版本
 template <class RandomAccessIterator>
 inline typename iterator_traits<RandomAccessIterator>::difference_type
-    __distance(RandomAccessIterator first, RandomAccessIterator last, random_access_iterator_tag) {
+    __distance(RandomAccessIterator first, RandomAccessIterator last, 
+               random_access_iterator_tag) {
     return last - first;
 }
 
-// 以下函数用于让迭代器前进 n 个距离
-template <class InputIterator, class Distance>
-inline void advance(InputIterator& i, Distance n) {
-    __advance(i, n, iterator_category(i));
+template <class InputIterator>
+inline typename iterator_traits<InputIterator>::difference_type
+distance(InputIterator first, InputIterator last) {
+    return __distance(first, last, iterator_category(first));
 }
 
+// 以下函数用于让迭代器前进 n 个距离
 // advance 的 input_iterator_tag 的版本
 template <class InputIterator, class Distance>
 inline void __advance(InputIterator& i, Distance n, input_iterator_tag) {
@@ -177,6 +173,11 @@ inline void __advance(BidirectionalIterator& i, Distance n, bidirectional_iterat
 template <class RandomAccessIterator, class Distance>
 inline void __advance(RandomAccessIterator& i, Distance n, random_access_iterator_tag) {
     i += n;
+}
+
+template <class InputIterator, class Distance>
+inline void advance(InputIterator& i, Distance n) {
+    __advance(i, n, iterator_category(i));
 }
 
 } // namespace mystl
