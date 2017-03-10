@@ -10,20 +10,23 @@
 #include "type_traits.h"
 #include "iterator.h"
 
-namespace mystl {
-    
+namespace mystl
+{
+
 // construct
 // 构造对象的内容
 // 版本1：接受一个指针
 // 版本2：接受一个指针和初值
 template <class T1>
-inline void construct(T1* p) {
-    new (static_cast<void*>(p)) T1();
+inline void construct(T1* p)
+{
+  new (static_cast<void*>(p)) T1();
 }
 
 template <class T1, class T2>
-inline void construct(T1* p, const T2& value) {
-    new (static_cast<void*>(p)) T1(value);
+inline void construct(T1* p, const T2& value)
+{
+  new (static_cast<void*>(p)) T1(value);
 }
 
 // destroy
@@ -31,25 +34,29 @@ inline void construct(T1* p, const T2& value) {
 // 版本1：接受一个指针
 // 版本2：接受两个迭代器，指向析构区间首尾
 template <class T>
-inline void destroy(T* pointer) {
-    pointer->~T();
+inline void destroy(T* pointer)
+{
+  pointer->~T();
 }
 
 template <class ForwardIterator>
-inline void destroy(ForwardIterator first, ForwardIterator last) {
-    __destroy(first, last, value_type(first));
+inline void destroy(ForwardIterator first, ForwardIterator last)
+{
+  __destroy(first, last, value_type(first));
 }
 
 template <class ForwardIterator, class T>
-inline void __destroy(ForwardIterator first, ForwardIterator last, T*) {
-    typedef typename __type_traits<T>::has_trivial_destructor TrivialDestructor;
-    return __destroy_aux(first, last, TrivialDestructor());
+inline void __destroy(ForwardIterator first, ForwardIterator last, T*)
+{
+  typedef typename __type_traits<T>::has_trivial_destructor TrivialDestructor;
+  return __destroy_aux(first, last, TrivialDestructor());
 }
 
 template <class ForwardIterator>
-inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type) {
-    for (; first != last; ++first)
-        destroy(&*first);
+inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type)
+{
+  for (; first != last; ++first)
+    destroy(&*first);
 }
 
 // 如果是对象有 trivial destructor，则什么也不做

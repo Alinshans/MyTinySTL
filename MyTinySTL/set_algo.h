@@ -7,7 +7,8 @@
 #include "algobase.h"
 #include "iterator.h"
 
-namespace mystl {
+namespace mystl
+{
 
 /*****************************************************************************************/
 // set_union
@@ -15,49 +16,59 @@ namespace mystl {
 /*****************************************************************************************/
 template <class InputIterator1, class InputIterator2, class OutputIterator>
 OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result) {
-    while (first1 != last1 && first2 != last2) {
-        if (*first1 < *first2) {
-            *result = *first1;
-            ++first1;
-        }
-        else if (*first2 < *first1) {
-            *result = *first2;
-            ++first2;
-        }
-        else {
-            *result = *first1;
-            ++first1;
-            ++first2;
-        }
-        ++result;
+                         InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (*first1 < *first2)
+    {
+      *result = *first1;
+      ++first1;
     }
-    // 将剩余元素拷贝到 result
-    return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
+    else if (*first2 < *first1)
+    {
+      *result = *first2;
+      ++first2;
+    }
+    else
+    {
+      *result = *first1;
+      ++first1;
+      ++first2;
+    }
+    ++result;
+  }
+  // 将剩余元素拷贝到 result
+  return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
 OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp) {
-    while (first1 != last1 && first2 != last2) {
-        if (comp(*first1, *first2)) {
-            *result = *first1;
-            ++first1;
-        }
-        else if (comp(*first2, *first1)) {
-            *result = *first2;
-            ++first2;
-        }
-        else {
-            *result = *first1;
-            ++first1;
-            ++first2;
-        }
-        ++result;
+                         InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (comp(*first1, *first2))
+    {
+      *result = *first1;
+      ++first1;
     }
-    // 将剩余元素拷贝到 result
-    return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
+    else if (comp(*first2, *first1))
+    {
+      *result = *first2;
+      ++first2;
+    }
+    else
+    {
+      *result = *first1;
+      ++first1;
+      ++first2;
+    }
+    ++result;
+  }
+  // 将剩余元素拷贝到 result
+  return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
 }
 
 /*****************************************************************************************/
@@ -66,43 +77,53 @@ OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
 /*****************************************************************************************/
 template <class InputIterator1, class InputIterator2, class OutputIterator>
 OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result) {
-    while (first1 != last1 && first2 != last2) {
-        if (*first1 < *first2) {
-            ++first1;
-        }
-        else if (*first2 < *first1) {
-            ++first2;
-        }
-        else {
-            *result = *first1;
-            ++first1;
-            ++first2;
-            ++result;
-        }
+                                InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (*first1 < *first2)
+    {
+      ++first1;
     }
-    return result;
+    else if (*first2 < *first1)
+    {
+      ++first2;
+    }
+    else
+    {
+      *result = *first1;
+      ++first1;
+      ++first2;
+      ++result;
+    }
+  }
+  return result;
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
 OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp) {
-    while (first1 != last1 && first2 != last2) {
-        if (comp(*first1, *first2)) {
-            ++first1;
-        }
-        else if (comp(*first2, *first1)) {
-            ++first2;
-        }
-        else {
-            *result = *first1;
-            ++first1;
-            ++first2;
-            ++result;
-        }    
+                                InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (comp(*first1, *first2))
+    {
+      ++first1;
     }
-    return result;
+    else if (comp(*first2, *first1))
+    {
+      ++first2;
+    }
+    else
+    {
+      *result = *first1;
+      ++first1;
+      ++first2;
+      ++result;
+    }
+  }
+  return result;
 }
 
 /*****************************************************************************************/
@@ -111,43 +132,53 @@ OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
 /*****************************************************************************************/
 template <class InputIterator1, class InputIterator2, class OutputIterator>
 OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result) {
-    while (first1 != last1 && first2 != last2) {
-        if (*first1 < *first2) {
-            *result = *first1;
-            ++first1;
-            ++result;
-        }
-        else if (*first2 < *first1) {
-            ++first2;
-        }
-        else {
-            ++first1;
-            ++first2;
-        }
+                              InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (*first1 < *first2)
+    {
+      *result = *first1;
+      ++first1;
+      ++result;
     }
-    return mystl::copy(first1, last1, result);
+    else if (*first2 < *first1)
+    {
+      ++first2;
+    }
+    else
+    {
+      ++first1;
+      ++first2;
+    }
+  }
+  return mystl::copy(first1, last1, result);
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
 OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp) {
-    while (first1 != last1 && first2 != last2) {
-        if (comp(*first1, *first2)) {
-            *result = *first1;
-            ++first1;
-            ++result;
-        }
-        else if (comp(*first2, *first1)) {
-            ++first2;
-        }
-        else {
-            ++first1;
-            ++first2;
-        }
+                              InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (comp(*first1, *first2))
+    {
+      *result = *first1;
+      ++first1;
+      ++result;
     }
-    return mystl::copy(first1, last1, result);
+    else if (comp(*first2, *first1))
+    {
+      ++first2;
+    }
+    else
+    {
+      ++first1;
+      ++first2;
+    }
+  }
+  return mystl::copy(first1, last1, result);
 }
 
 /*****************************************************************************************/
@@ -156,47 +187,57 @@ OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
 /*****************************************************************************************/
 template <class InputIterator1, class InputIterator2, class OutputIterator>
 OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result) {
-    while (first1 != last1 && first2 != last2) {
-        if (*first1 < *first2) {
-            *result = *first1;
-            ++first1;
-            ++result;
-        }
-        else if (*first2 < *first1) {
-            *result = *first2;
-            ++first2;
-            ++result;
-        }
-        else {
-            ++first1;
-            ++first2;
-        }
+                                        InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (*first1 < *first2)
+    {
+      *result = *first1;
+      ++first1;
+      ++result;
     }
-    return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
+    else if (*first2 < *first1)
+    {
+      *result = *first2;
+      ++first2;
+      ++result;
+    }
+    else
+    {
+      ++first1;
+      ++first2;
+    }
+  }
+  return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
 OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-    InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp) {
-    while (first1 != last1 && first2 != last2) {
-        if (comp(*first1, *first2)) {
-            *result = *first1;
-            ++first1;
-            ++result;
-        }
-        else if (comp(*first2, *first1)) {
-            *result = *first2;
-            ++first2;
-            ++result;
-        }
-        else {
-            ++first1;
-            ++first2;
-        }
+                                        InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+{
+  while (first1 != last1 && first2 != last2)
+  {
+    if (comp(*first1, *first2))
+    {
+      *result = *first1;
+      ++first1;
+      ++result;
     }
-    return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
+    else if (comp(*first2, *first1))
+    {
+      *result = *first2;
+      ++first2;
+      ++result;
+    }
+    else
+    {
+      ++first1;
+      ++first2;
+    }
+  }
+  return mystl::copy(first2, last2, mystl::copy(first1, last1, result));
 }
 
 } // namespace mystl

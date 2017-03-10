@@ -11,25 +11,26 @@
 #include "unordered_set_test.h"
 #include "string_test.h"
 
-int main() {
+int main()
+{
 
-    // 运行所有简单测试、性能测试、容器测试
-    RUN_ALL_TESTS();
-    mystl::test::algorithm_performance_test::algorithm_performance_test();
-    mystl::test::vector_test::vector_test();
-    mystl::test::list_test::list_test();
-    mystl::test::deque_test::deque_test();
-    mystl::test::queue_test::queue_test();
-    mystl::test::queue_test::priority_test();
-    mystl::test::stack_test::stack_test();
-    mystl::test::map_test::map_test();
-    mystl::test::map_test::multimap_test();
-    mystl::test::set_test::set_test();
-    mystl::test::set_test::multiset_test();
-    mystl::test::unordered_map_test::unordered_map_test();
-    mystl::test::unordered_map_test::unordered_multimap_test();
-    mystl::test::unordered_set_test::unordered_set_test();
-    mystl::test::unordered_set_test::unordered_multiset_test();
-    mystl::test::string_test::string_test();
+  // 运行所有简单测试、性能测试、容器测试
+  RUN_ALL_TESTS();
+  mystl::test::algorithm_performance_test::algorithm_performance_test();
+  mystl::test::vector_test::vector_test();
+  mystl::test::list_test::list_test();
+  mystl::test::deque_test::deque_test();
+  mystl::test::queue_test::queue_test();
+  mystl::test::queue_test::priority_test();
+  mystl::test::stack_test::stack_test();
+  mystl::test::map_test::map_test();
+  mystl::test::map_test::multimap_test();
+  mystl::test::set_test::set_test();
+  mystl::test::set_test::multiset_test();
+  mystl::test::unordered_map_test::unordered_map_test();
+  mystl::test::unordered_map_test::unordered_multimap_test();
+  mystl::test::unordered_set_test::unordered_set_test();
+  mystl::test::unordered_set_test::unordered_multiset_test();
+  mystl::test::string_test::string_test();
 
 }

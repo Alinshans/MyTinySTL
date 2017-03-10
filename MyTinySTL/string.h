@@ -5,10 +5,11 @@
 
 #include "basic_string.h"
 
-namespace mystl {
+namespace mystl
+{
 
-    typedef basic_string<char>       string;
-    typedef basic_string<wchar_t>    wstring;
+typedef basic_string<char>       string;
+typedef basic_string<wchar_t>    wstring;
 
 }
 #endif // !MYTINYSTL_STRING_H_
