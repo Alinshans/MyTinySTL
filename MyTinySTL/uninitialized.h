@@ -38,7 +38,7 @@ template <class IIter, class FIter>
 FIter uninitialized_copy(IIter first, IIter last, FIter result)
 {
   return mystl::__uninitialized_copy(first, last, result, 
-                                     __type_traits<typename
+                                     typename __type_traits<typename
                                      iterator_traits<IIter>::value_type
                                      >::is_POD_type());
 }
@@ -67,8 +67,8 @@ FIter __uninitialized_copy_n(FIter first, Size n, const T& x, __false_type)
 template <class FIter, class Size, class T>
 FIter uninitialized_copy_n(FIter first, Size n, const T& x)
 {
-  return mystl::__uninitialized_copy_n(first, n, x, __type_traits<typename
-                                       iterator_traits<FIter>::
+  return mystl::__uninitialized_copy_n(first, n, x, typename __type_traits<
+                                       typename iterator_traits<FIter>::
                                        value_type>::is_POD_type());
 }
 
@@ -95,8 +95,8 @@ void __uninitialized_fill(FIter first, FIter last, const T& x, __false_type)
 template <class FIter, class T>
 void  uninitialized_fill(FIter first, FIter last, const T& x)
 {
-  mystl::__uninitialized_fill(first, last, x, __type_traits<typename 
-                              iterator_traits<FIter>::
+  mystl::__uninitialized_fill(first, last, x, typename __type_traits<
+                              typename iterator_traits<FIter>::
                               value_type>::is_POD_type());
 }
 
@@ -124,8 +124,8 @@ FIter __uninitialized_fill_n(FIter first, Size n, const T& x, __false_type)
 template <class FIter, class Size, class T>
 FIter uninitialized_fill_n(FIter first, Size n, const T& x)
 {
-  return mystl::__uninitialized_fill_n(first, n, x, __type_traits<typename
-                                       iterator_traits<FIter>::
+  return mystl::__uninitialized_fill_n(first, n, x, typename __type_traits<
+                                       typename iterator_traits<FIter>::
                                        value_type>::is_POD_type());
 }
 
@@ -154,7 +154,7 @@ template <class IIter, class FIter>
 FIter uninitialized_move(IIter first, IIter last, FIter result)
 {
   return mystl::__uninitialized_move(first, last, result,
-                                     __type_traits<typename
+                                     typename __type_traits<typename
                                      iterator_traits<IIter>::value_type
                                      >::is_POD_type());
 }
@@ -184,7 +184,7 @@ template <class FIter, class Size, class T>
 FIter uninitialized_move_n(FIter first, Size n, T&& x)
 {
   return mystl::__uninitialized_move_n(first, n, std::forward<T>(x), 
-                                       __type_traits<typename
+                                       typename __type_traits<typename
                                        iterator_traits<FIter>::
                                        value_type>::is_POD_type());
 }

@@ -49,8 +49,8 @@ void __destroy_aux(FIter first, FIter last, __true_type) {}
 template <class FIter, class Ty>
 void __destroy(FIter first, FIter last, Ty*)
 {
-  return __destroy_aux(first, last,
-                       __type_traits<Ty>::has_trivial_destructor());
+  return __destroy_aux(first, last, typename __type_traits<Ty>::
+                       has_trivial_destructor());
 }
 
 template <class Ty>
