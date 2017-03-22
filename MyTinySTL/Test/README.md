@@ -1,6 +1,6 @@
-UnitTest
+单元测试
 =====
-###测试环境
+## 测试环境
   测试直接在 `Travis CI` 和 `AppVeyor` 上进行，分别在 `Linux` 和 `Windows` 上对不同编译器进行测试：
   * linux, g++-4.7
   * linux, g++-4.8
@@ -13,11 +13,11 @@ UnitTest
   * windows, msvc 14.0 (Visual Studio 2015)
   
   
-###测试框架
+## 测试框架
   在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个 `class template` 实现了一个简单的测试框架。定义了大量宏封装测试。</br>
   
   
-###测试内容
+## 测试内容
   在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON`, `MEMORY_IS_ENOUGH`，`PERFORMANCE_TEST_ON` 宏定义为 `1`，开启性能测试，`MEMORY_IS_ENOUGH` 宏定义为 `1`，增大测试数据（内存消耗）。默认开启 `PERFORMANCE_TEST_ON` 关闭 `MEMORY_IS_ENOUGH`。<br>
   测试案例如下：
   
@@ -45,6 +45,6 @@ UnitTest
   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/vector_test.h) *(100%/100%)*
   
   
-###测试结果
+## 测试结果
   见 [Travis CI](https://travis-ci.org/Alinshans/MyTinySTL) 和 [AppVeyor](https://ci.appveyor.com/project/Alinshans/mytinystl)。
   
