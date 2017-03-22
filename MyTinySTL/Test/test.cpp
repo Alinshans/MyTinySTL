@@ -1,7 +1,3 @@
-#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif // _MSC_VER
-
 #include "algorithm_performance_test.h"
 #include "algorithm_test.h"
 #include "vector_test.h"
@@ -19,7 +15,8 @@ int main()
 {
   using namespace mystl::test;
 
-  // Runs all unit test, performance test.
+  // Run all unit test and performance test.
+
   RUN_ALL_TESTS();
   algorithm_performance_test::algorithm_performance_test();
   vector_test::vector_test();
@@ -39,4 +36,3 @@ int main()
   string_test::string_test();
 
 }
-
