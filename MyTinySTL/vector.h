@@ -70,7 +70,7 @@ public:
   template <class Iter>
   vector(Iter first, Iter last)
   {
-    __vector_initialize(first, last, __is_integer<Iter>::is_integer());
+    __vector_initialize(first, last, typename __is_integer<Iter>::is_integer());
   }
 
   vector(const vector& rhs)
@@ -198,7 +198,7 @@ public:
 
   template <class Iter>
   void assign(Iter first, Iter last)
-  { __assign_dispatch(first, last, __is_integer<Iter>::is_integer()); }
+  { __assign_dispatch(first, last, typename __is_integer<Iter>::is_integer()); }
 
   void assign(std::initializer_list<value_type> il)
   { assign(il.begin(), il.end()); }
@@ -478,7 +478,7 @@ template <class T>
 template <class Iter>
 void vector<T>::insert(iterator pos, Iter first, Iter last)
 {
-  __insert_dispatch(pos, first, last, __is_integer<Iter>::is_integer());
+  __insert_dispatch(pos, first, last, typename __is_integer<Iter>::is_integer());
 }
 
 // 删除 pos 位置上的元素
