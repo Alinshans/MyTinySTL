@@ -214,7 +214,24 @@ public:
       s_.push_back(value);
       mystl::push_heap(s_.begin(), s_.end(), comp_);
     }
-    catch (...) { s_.clear(); }
+    catch (...) 
+    { 
+      s_.clear();
+      throw;
+    }
+  }
+  void push(value_type&& value)
+  {
+    try
+    {
+      s_.emplace_back(std::move(value));
+      mystl::push_heap(s_.begin(), s_.end(), comp_);
+    }
+    catch (...)
+    {
+      s_.clear();
+      throw;
+    }
   }
   void pop()
   {
@@ -226,8 +243,17 @@ public:
     catch (...) { s_.clear(); }
   }
 
-  void clear() { while (!empty())    pop(); }
-  void swap(priority_queue& rhs) { mystl::swap(s_, rhs.s_); mystl::swap(comp_, rhs.comp_); }
+  void clear() 
+  { 
+    while (!empty())    
+      pop(); 
+  }
+  void swap(priority_queue& rhs) 
+  { 
+    mystl::swap(s_, rhs.s_); 
+    mystl::swap(comp_, rhs.comp_);
+  }
+
 public:
   friend bool operator==(const priority_queue& lhs, const priority_queue& rhs)
   {

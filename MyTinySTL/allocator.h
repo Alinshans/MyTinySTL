@@ -1,18 +1,17 @@
 #ifndef MYTINYSTL_ALLOCATOR_H_
 #define MYTINYSTL_ALLOCATOR_H_
 
-// 这个头文件包含一个模板类 allocator，用于对象内存的分配与释放
+// 这个头文件包含一个模板类 allocator，用于管理对象的分配
 
 #include "alloc.h"    
+#include "construct.h"
 
 namespace mystl
 {
 
 // 模板类：allocator
-// 接受两个参数，参数一表示对象的类型，参数二表示空间配置器的类型
-// allocate   : 用于对象内存的分配，提供两个版本
-// deallocate : 用于对象内存的释放，提供两个版本
-template <class T, class Alloc>
+// 接受两个参数，参数一表示对象的类型，参数二表示空间配置器的类型，默认使用 mystl::alloc
+template <class T, class Alloc = mystl::alloc>
 class allocator
 {
 public:
@@ -27,18 +26,27 @@ public:
 public:
   static T*   allocate();
   static T*   allocate(size_type n);
+
   static void deallocate(T* ptr);
   static void deallocate(T* ptr, size_type n);
+
+  static void construct(T* ptr);
+  static void construct(T* ptr, const T& value);
+  static void construct(T* ptr, T&& value);
+
+  template <class... Args>
+  static void construct(T* ptr, Args ...args);
+
+  static void destroy(T* ptr);
+  static void destroy(T* first, T* last);
 };
 
-// allocate 第一个版本：没有参数，返回分配内存的起始位置
 template <class T, class Alloc>
 T* allocator<T, Alloc>::allocate()
 {
   return static_cast<T*>(Alloc::allocate(sizeof(T)));
 }
 
-// allocate 第二个版本：接受一个值，表示要分配的对象个数，返回分配内存的起始位置
 template <class T, class Alloc>
 T* allocator<T, Alloc>::allocate(size_type n)
 {
@@ -46,7 +54,6 @@ T* allocator<T, Alloc>::allocate(size_type n)
   return static_cast<T*>(Alloc::allocate(n * sizeof(T)));
 }
 
-// deallocate 第一个版本：接受一个指针，释放其内存，无返回值
 template <class T, class Alloc>
 void allocator<T, Alloc>::deallocate(T* ptr)
 {
@@ -54,12 +61,48 @@ void allocator<T, Alloc>::deallocate(T* ptr)
   Alloc::deallocate(ptr, sizeof(T));
 }
 
-// deallocate 第二个版本：接受一个指针和一个数值，释放 n 个对象的内存，无返回值
 template <class T, class Alloc>
 void allocator<T, Alloc>::deallocate(T* ptr, size_type n)
 {
   if (ptr == nullptr)  return;
   Alloc::deallocate(ptr, n * sizeof(T));
+}
+
+template <class T, class Alloc>
+void allocator<T, Alloc>::construct(T* ptr)
+{
+  mystl::construct(ptr);
+}
+
+template <class T, class Alloc>
+void allocator<T, Alloc>::construct(T* ptr, const T& value)
+{
+  mystl::construct(ptr, value);
+}
+
+template<class T, class Alloc>
+ void allocator<T, Alloc>::construct(T* ptr, T&& value)
+{
+  mystl::construct(ptr, std::move(value));
+}
+
+template<class T, class Alloc>
+template<class ...Args>
+ void allocator<T, Alloc>::construct(T* ptr, Args ...args)
+{
+  mystl::construct(ptr, std::forward<Args>(args)...);
+}
+
+template <class T, class Alloc>
+void allocator<T, Alloc>::destroy(T* ptr)
+{
+  mystl::destroy(ptr);
+}
+
+template <class T, class Alloc>
+void allocator<T, Alloc>::destroy(T* first, T* last)
+{
+  mystl::destroy(first, last);
 }
 
 } // namespace mystl

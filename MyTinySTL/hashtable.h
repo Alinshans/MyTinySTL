@@ -200,7 +200,7 @@ public:
   typedef Val&                           reference;
   typedef const Val&                     const_reference;
   typedef __hashtable_node<Val>          node;
-  typedef mystl::vector<node*, Alloc>    bucket_type;
+  typedef mystl::vector<node*>    bucket_type;
 
   friend struct mystl::__hashtable_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
   friend struct mystl::__hashtable_const_iterator<Val, Key, HashFcn, ExtractKey, EqualKey, Alloc>;
