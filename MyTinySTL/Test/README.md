@@ -2,7 +2,7 @@
 =====
 ## 测试环境
   测试直接在 `Travis CI` 和 `AppVeyor` 上进行，分别在 `Linux` 和 `Windows` 上对不同编译器进行测试：
-  * linux, g++-4.7
+  
   * linux, g++-4.8
   * linux, g++-5
   * linux, g++-6
