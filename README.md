@@ -14,7 +14,7 @@ MyTinySTL
   * linux
   * windows
 * 编译器
-  * GCC 4.7 
+  * G++ 4.8
   * Clang++ 3.5 
   * MSVC 14.0 
   
