@@ -355,28 +355,24 @@ public:
 
   iterator insert(const_iterator pos, const value_type& value)
   {
-    assert(cbegin() <= pos && pos <= cend());
     auto link_node = __create_node(value);
     return __link(pos, link_node->as_base());
   }
 
   iterator insert(const_iterator pos, value_type&& value)
   {
-    assert(cbegin() <= pos && pos <= cend());
     auto link_node = __create_node(std::move(value));
     return __link(pos, link_node->as_base());
   }
 
   iterator insert(const_iterator pos, size_type n, const value_type& value)
   { 
-    assert(cbegin() <= pos && pos <= cend());
     return __fill_insert(pos, n, value); 
   }
 
   template <class IIter>
   iterator insert(const_iterator pos, IIter first, IIter last)
   { 
-    assert(cbegin() <= pos && pos <= cend());
     return __insert_dispatch(pos, first, last, 
                              typename __is_integer<IIter>::is_integer()); 
   }
@@ -429,7 +425,6 @@ public:
   template <class ...Args>
   iterator emplace(const_iterator pos, Args&& ...args)
   {
-    assert(cbegin() <= pos && pos <= cend());
     auto link_node = __create_node(std::forward<Args>(args)...);
     __link_nodes(pos.node_, link_node->as_base(), link_node->as_base());
     return iterator(link_node);
@@ -544,7 +539,7 @@ template <class T>
 typename list<T>::iterator 
 list<T>::erase(const_iterator pos)
 {
-  assert(cbegin() <= pos && pos < cend());
+  assert(pos != cend());
   auto n = pos.node_;
   auto next = n->next;
   __unlink_nodes(n, n);
@@ -557,7 +552,6 @@ template <class T>
 typename list<T>::iterator 
 list<T>::erase(const_iterator first, const_iterator last)
 {
-  assert(cbegin() <= pos && pos < cend() && first <= last);
   if (first != last)
   {
     __unlink_nodes(first.node_, last.node_->prev);
@@ -613,7 +607,6 @@ void list<T>::resize(size_type new_size, const value_type& value)
 template <class T>
 void list<T>::splice(const_iterator pos, list<T>& x)
 {
-  assert(cbegin() <= pos && pos <= cend());
   assert(this != &x);
   if (!x.empty())
   {
@@ -629,7 +622,6 @@ void list<T>::splice(const_iterator pos, list<T>& x)
 template <class T>
 void list<T>::splice(const_iterator pos, list& x, const_iterator it)
 {
-  assert(cbegin() <= pos && pos <= cend());
   if (pos.node_ != it.node_ && pos.node_ != it.node_->next)
   {
     auto f = it.node_;
@@ -643,7 +635,6 @@ template <class T>
 void list<T>::splice(const_iterator pos, list& x, 
                      const_iterator first, const_iterator last)
 {
-  assert(cbegin() <= pos && pos <= cend());
   if (first != last && this != &x)
   {
     auto f = first.node_;

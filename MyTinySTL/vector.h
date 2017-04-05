@@ -505,7 +505,7 @@ template <class T>
 typename vector<T>::iterator
 vector<T>::erase(iterator first, iterator last)
 {
-  assert(first >= begin_ && last < end_ && first <= last);
+  assert(first >= begin_ && last <= end_ && first <= last);
   auto i = mystl::copy(last, end_, first);
   data_allocator::destroy(i, end_);
   end_ = end_ - (last - first);
