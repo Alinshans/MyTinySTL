@@ -13,15 +13,6 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.7']
-      env:
-        - COMPILER=g++-4.7
-        
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-4.8']
       env:
         - COMPILER=g++-4.8
