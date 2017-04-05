@@ -81,7 +81,7 @@
   #elif defined(REDBUD_GNUC) && GNUC_VERSION >= REDBUD_VERSION_CODE(4,8,0) && \
   defined(__GXX_EXPERIMENTAL_CXX0X__)
     #define REDBUD_HAS_CXX11 1
-  #elif defined(REDBUD_CLANG) && (CLANG_VERSION >= REDBUD_VERSION_CODE(3,3,0)
+  #elif defined(REDBUD_CLANG) && (CLANG_VERSION >= REDBUD_VERSION_CODE(3,3,0))
     #define REDBUD_HAS_CXX11 1
   #else 
     #define REDBUD_HAS_CXX11 0
