@@ -13,44 +13,98 @@
 namespace mystl
 {
 
-// list 的节点结构
-template <class T>
-struct __list_node
-{
-  T               data;  // 数据域
-  __list_node<T>* prev;  // 指向前一个节点
-  __list_node<T>* next;  // 指向下一个节点
+template <class T> struct __list_node;
+template <class T> struct __list_node_base;
 
-  __list_node(T value = T(), __list_node<T>* p = nullptr, __list_node<T>* n = nullptr)
-    :data(value), prev(p), next(n)
+template <class T>
+struct __node_traits
+{
+  typedef __list_node_base<T>* base_type;
+  typedef __list_node<T>*      link_type;
+};
+
+// list 的节点结构
+
+template <class T>
+struct __list_node_base
+{
+  typedef typename __node_traits<T>::base_type base_type;
+  typedef typename __node_traits<T>::link_type link_type;
+
+  base_type prev;  // 前一节点
+  base_type next;  // 下一节点
+
+  __list_node_base() { unlink(); }
+
+  link_type as_node()
   {
+    return static_cast<link_type>(_self());
+  }
+
+  void unlink()
+  {
+    prev = next = _self();
+  }
+
+  base_type _self()
+  {
+    return static_cast<base_type>(&*this);
+  }
+};
+
+template <class T>
+struct __list_node : public __list_node_base<T>
+{
+  typedef typename __node_traits<T>::base_type base_type;
+  typedef typename __node_traits<T>::link_type link_type;
+
+  T value;  // 数据域
+
+  __list_node() = default;
+  __list_node(const T& v)
+    :value(v)
+  {
+  }
+  __list_node(T&& v)
+    :value(std::move(v))
+  {
+  }
+
+  base_type as_base()
+  {
+    return static_cast<base_type>(&*this);
+  }
+  link_type _self()
+  {
+    return static_cast<link_type>(&*this);
   }
 };
 
 // list 的迭代器设计
-template <class T, class Ref, class Ptr>
-struct __list_iterator : public iterator<bidirectional_iterator_tag, T>
+template <class T>
+struct __list_iterator : public bidirectional_iterator<T>
 {
-  typedef __list_iterator<T, T&, T*>                iterator;
-  typedef __list_iterator<T, const T&, const T*>    const_iterator;
-  typedef __list_iterator<T, Ref, Ptr>              self;
+  typedef T                                    value_type;
+  typedef T*                                   pointer;
+  typedef T&                                   reference;
+  typedef typename __node_traits<T>::base_type base_type;
+  typedef typename __node_traits<T>::link_type link_type;
+  typedef __list_iterator<T>                   self;
 
-  typedef T                                         value_type;
-  typedef Ptr                                       pointer;
-  typedef Ref                                       reference;
-  typedef size_t                                    size_type;
-  typedef ptrdiff_t                                 difference_type;
+  base_type node_;  // 指向当前节点
 
-  typedef __list_node<T>*                           link_type;
-  link_type node_;  // 指向当前节点
-
-                    // 构造函数
-  __list_iterator() {}
-  __list_iterator(link_type x) :node_(x) {}
-  __list_iterator(const iterator& rhs) :node_(rhs.node_) {}
+  // 构造函数
+  __list_iterator() noexcept
+    :node_() {}
+  __list_iterator(base_type x) noexcept
+    :node_(x) {}
+  __list_iterator(link_type x) noexcept
+    :node_(x->as_base()) {}
+  __list_iterator(const __list_iterator& rhs) noexcept
+    :node_(rhs.node_) {}
 
   // 重载操作符
-  reference operator*()  const { return (*node_).data; }
+  reference operator*()  const { return node_->as_node()->value; }
   pointer   operator->() const { return &(operator*()); }
 
   self& operator++()
@@ -81,64 +135,183 @@ struct __list_iterator : public iterator<bidirectional_iterator_tag, T>
   bool operator!=(const self& rhs) const { return node_ != rhs.node_; }
 };
 
-// 模板类 list
-// 参数一代表数据类型，参数二代表空间配置器类型，缺省使用 mystl 的 alloc
-template <class T, class Alloc = mystl::alloc>
+template <class T>
+struct __list_const_iterator : public bidirectional_iterator<T>
+{
+  typedef T                                    value_type;
+  typedef const T*                             pointer;
+  typedef const T&                             reference;
+  typedef typename __node_traits<T>::base_type base_type;
+  typedef typename __node_traits<T>::link_type link_type;
+  typedef __list_const_iterator<T>             self;
+
+  base_type node_;
+
+  __list_const_iterator() noexcept
+    :node_(nullptr) {}
+  __list_const_iterator(base_type x) noexcept
+    :node_(x) {}
+  __list_const_iterator(link_type x) noexcept
+    :node_(x->as_base()) {}
+  __list_const_iterator(const __list_iterator<T>& rhs) noexcept
+    :node_(rhs.node_) {}
+  __list_const_iterator(const __list_const_iterator& rhs) noexcept
+    :node_(rhs.node_) {}
+
+  reference operator*()  const { return node_->as_node()->value; }
+  pointer   operator->() const { return &(operator*()); }
+
+  self& operator++()
+  {
+    node_ = node_->next;
+    return *this;
+  }
+  self operator++(int)
+  {
+    self tmp = *this;
+    ++*this;
+    return tmp;
+  }
+  self& operator--()
+  {
+    node_ = node_->prev;
+    return *this;
+  }
+  self operator--(int)
+  {
+    self tmp = *this;
+    --*this;
+    return tmp;
+  }
+
+  // 重载比较操作符
+  bool operator==(const self& rhs) const { return node_ == rhs.node_; }
+  bool operator!=(const self& rhs) const { return node_ != rhs.node_; }
+};
+
+// 模板类: list
+// 模板参数 T 代表数据类型
+template <class T>
 class list
 {
 public:
   // list 的嵌套型别定义
-  typedef T                                          value_type;
-  typedef Alloc                                      allocator_type;
-  typedef value_type*                                pointer;
-  typedef const value_type*                          const_pointer;
-  typedef value_type&                                reference;
-  typedef const value_type&                          const_reference;
-  typedef size_t                                     size_type;
-  typedef ptrdiff_t                                  difference_type;
+  typedef mystl::allocator<T>                      allocator_type;
+  typedef mystl::allocator<T>                      data_allocator;
+  typedef mystl::allocator<__list_node_base<T>>    base_allocator;
+  typedef mystl::allocator<__list_node<T>>         node_allocator;
 
-  typedef __list_iterator<T, T&, T*>                 iterator;
-  typedef __list_iterator<T, const T&, const T*>     const_iterator;
-  typedef mystl::reverse_iterator<iterator>          reverse_iterator;
-  typedef mystl::reverse_iterator<const_iterator>    const_reverse_iterator;
+  typedef typename allocator_type::value_type      value_type;
+  typedef typename allocator_type::pointer         pointer;
+  typedef typename allocator_type::const_pointer   const_pointer;
+  typedef typename allocator_type::reference       reference;
+  typedef typename allocator_type::const_reference const_reference;
+  typedef typename allocator_type::size_type       size_type;
+  typedef typename allocator_type::difference_type difference_type;
 
-  typedef __list_node<T>*                            link_type;
+  typedef __list_iterator<T>                       iterator;
+  typedef __list_const_iterator<T>                 const_iterator;
+  typedef mystl::reverse_iterator<iterator>        reverse_iterator;
+  typedef mystl::reverse_iterator<const_iterator>  const_reverse_iterator;
 
-  typedef mystl::allocator<__list_node<T>, Alloc>    data_allocate;
-  allocator_type get_allocator() { return allocator_type(); }
+  typedef typename __node_traits<T>::base_type     base_type;
+  typedef typename __node_traits<T>::link_type     link_type;
+
+  allocator_type get_allocator() { return node_allocator(); }
 
 private:
-  // 只用一个节点来表示整个 list
-  link_type node_;  // 指向尾端的一个空节点
+  base_type node_;  // 指向末尾节点
 
 public:
   // 构造、复制、移动、析构函数
-  list() { __list_initialize(); }
-  explicit list(size_type n);
-  list(size_type n, const T& value);
-  template <class InputIterator>
-  list(InputIterator first, InputIterator last);
-  list(std::initializer_list<T> ilist);
+  list() { node_ = __get_base_node(); node_->unlink(); }
 
-  list(const list& rhs);
-  list(list&& rhs);
+  explicit list(size_type n) 
+  { __fill_initialize(n, value_type()); }
 
-  list& operator=(const list& rhs);
-  list& operator=(list&& rhs);
-  list& operator=(std::initializer_list<T> list);
+  list(size_type n, const T& value)
+  { __fill_initialize(n, value); }
 
-  ~list();
+  template <class IIter>
+  list(IIter first, IIter last)
+  { __list_initialize(first, last, typename __is_integer<
+                      IIter>::is_integer()); }
+
+  list(std::initializer_list<T> ilist)
+  { __range_initialize(ilist.begin(), ilist.end()); }
+
+  list(const list& rhs)
+  { __range_initialize(rhs.cbegin(), rhs.cend()); }
+
+  list(list&& rhs)
+  {
+    node_ = rhs.node_;
+    rhs.node_ = __get_base_node();
+    rhs.node_->unlink();
+  }
+
+  list& operator=(const list& rhs)
+  {
+    if (this != &rhs)
+    {
+      assign(rhs.begin(), rhs.end());
+    }
+    return *this;
+  }
+
+  list& operator=(list&& rhs)
+  {
+    if (this != &rhs)
+    {
+      clear();
+      node_ = rhs.node_;
+      rhs.node_ = __get_base_node();
+      rhs.node_->unlink();
+    }
+    return *this;
+  }
+
+  list& operator=(std::initializer_list<T> ilist)
+  {
+    list<T> tmp(ilist.begin(), ilist.end());
+    *this = std::move(tmp);
+    return *this;
+  }
+
+  ~list()
+  {
+    if (node_->next != node_)
+      clear();
+  }
 
 public:
   // 迭代器相关操作
-  iterator               begin() { return node_->next; }
-  const_iterator         begin()  const { return node_->next; }
-  iterator               end() { return node_; }
-  const_iterator         end()    const { return node_; }
-  reverse_iterator       rbegin() { return reverse_iterator(end()); }
-  const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
-  reverse_iterator       rend() { return reverse_iterator(begin()); }
-  const_reverse_iterator rend()   const { return reverse_iterator(begin()); }
+  iterator               begin()         noexcept
+  { return node_->next; }
+  const_iterator         begin()   const noexcept
+  { return node_->next; }
+  iterator               end()           noexcept 
+  { return node_; }
+  const_iterator         end()     const noexcept
+  { return node_; }
+
+  reverse_iterator       rbegin()        noexcept
+  { return reverse_iterator(end()); }
+  const_reverse_iterator rbegin()  const noexcept
+  { return reverse_iterator(end()); }
+  reverse_iterator       rend()          noexcept
+  { return reverse_iterator(begin()); }
+  const_reverse_iterator rend()    const noexcept
+  { return reverse_iterator(begin()); }
+
+  const_iterator         cbegin()  const noexcept
+  { return begin(); }
+  const_iterator         cend()    const noexcept
+  { return end(); }
+  const_reverse_iterator crbegin() const noexcept
+  { return rbegin(); }
+  const_reverse_iterator crend()   const noexcept
+  { return rend(); }
 
   // 容量相关操作
   bool      empty()    const { return node_->next == node_; }
@@ -146,308 +319,278 @@ public:
   size_type max_size() const { return static_cast<size_type>(-1); }
 
   // 访问元素相关操作
-  reference       front() { return *begin(); }
-  const_reference front() const { return *begin(); }
-  reference       back() { return *(--end()); }
-  const_reference back()  const { return *(--end()); }
+  reference       front() 
+  { assert(!empty()); return *begin(); }
+
+  const_reference front() const 
+  { assert(!empty()); return *begin(); }
+
+  reference       back() 
+  { assert(!empty()); return *(--end()); }
+
+  const_reference back()  const 
+  { assert(!empty()); return *(--end()); }
 
   // 调整容器相关操作
-  void     assign(size_type n) { __fill_assign(n, value_type()); }
-  void     assign(size_type n, const value_type& value) { __fill_assign(n, value); }
-  template <class InputIterator>
-  void     assign(InputIterator first, InputIterator last);
-  void     assign(std::initializer_list<T> ilist);
-  iterator insert(iterator position) { return insert(position, value_type()); }
-  iterator insert(iterator position, const value_type& value);
-  void     insert(iterator position, size_type n, const value_type& value);
-  template <class InputIterator>
-  void     insert(iterator position, InputIterator first, InputIterator last);
-  void     insert(iterator position, std::initializer_list<T> ilist);
-  void     push_front(const value_type& value);
-  void     push_back(const value_type& value);
-  void     pop_front() { erase(begin()); }
-  void     pop_back() { iterator tmp = end(); erase(--tmp); }
-  iterator erase(iterator position);
-  iterator erase(iterator first, iterator last);
+
+  // assign
+  void     assign(size_type n) 
+  { __fill_assign(n, value_type()); }
+
+  void     assign(size_type n, const value_type& value) 
+  { __fill_assign(n, value); }
+
+  template <class IIter>
+  void     assign(IIter first, IIter last)
+  { __assign_dispatch(first, last, typename __is_integer<IIter>::is_integer()); }
+
+  void     assign(std::initializer_list<T> ilist)
+  { __assign_dispatch(ilist.begin(), ilist.end(), __false_type()); }
+
+  // insert
+  iterator insert(const_iterator pos) 
+  { 
+    return insert(pos, value_type()); 
+  }
+
+  iterator insert(const_iterator pos, const value_type& value)
+  {
+    assert(cbegin() <= pos && pos <= cend());
+    auto link_node = __create_node(value);
+    return __link(pos, link_node->as_base());
+  }
+
+  iterator insert(const_iterator pos, value_type&& value)
+  {
+    assert(cbegin() <= pos && pos <= cend());
+    auto link_node = __create_node(std::move(value));
+    return __link(pos, link_node->as_base());
+  }
+
+  iterator insert(const_iterator pos, size_type n, const value_type& value)
+  { 
+    assert(cbegin() <= pos && pos <= cend());
+    return __fill_insert(pos, n, value); 
+  }
+
+  template <class IIter>
+  iterator insert(const_iterator pos, IIter first, IIter last)
+  { 
+    assert(cbegin() <= pos && pos <= cend());
+    return __insert_dispatch(pos, first, last, 
+                             typename __is_integer<IIter>::is_integer()); 
+  }
+
+  iterator insert(const_iterator pos, std::initializer_list<T> ilist)
+  { 
+    return insert(pos, ilist.begin(), ilist.end());
+  }
+
+  // push_front / push_back
+  void     push_front(const value_type& value)
+  {
+    auto link_node = __create_node(value);
+    __link_nodes_at_front(link_node->as_base(), link_node->as_base());
+  }
+
+  void     push_front(value_type&& value)
+  {
+    auto link_node = __create_node(std::move(value));
+    __link_nodes_at_front(link_node->as_base(), link_node->as_base());
+  }
+
+  void     push_back(const value_type& value)
+  {
+    auto link_node = __create_node(value);
+    __link_nodes_at_back(link_node->as_base(), link_node->as_base());
+  }
+
+  void     push_back(value_type&& value)
+  {
+    auto link_node = __create_node(std::move(value));
+    __link_nodes_at_back(link_node->as_base(), link_node->as_base());
+  }
+
+  // emplace_front / emplace_back / emplace
+  template <class ...Args>
+  void     emplace_front(Args&& ...args)
+  {
+    auto link_node = __create_node(std::forward<Args>(args)...);
+    __link_nodes_at_front(link_node->as_base(), link_node->as_base());
+  }
+
+  template <class ...Args>
+  void     emplace_back(Args&& ...args)
+  {
+    auto link_node = __create_node(std::forward<Args>(args)...);
+    __link_nodes_at_back(link_node->as_base(), link_node->as_base());
+  }
+
+  template <class ...Args>
+  iterator emplace(const_iterator pos, Args&& ...args)
+  {
+    assert(cbegin() <= pos && pos <= cend());
+    auto link_node = __create_node(std::forward<Args>(args)...);
+    __link_nodes(pos.node_, link_node->as_base(), link_node->as_base());
+    return iterator(link_node);
+  }
+
+  // pop_front / pop_back
+  void     pop_front() 
+  {
+    auto n = node_->next;
+    __unlink_nodes(n, n);
+    __destroy_node(n->as_node());
+  }
+
+  void     pop_back() 
+  { 
+    auto n = node_->prev;
+    __unlink_nodes(n, n);
+    __destroy_node(n->as_node());
+  }
+
+  // erase / clear
+  iterator erase(const_iterator pos);
+  iterator erase(const_iterator first, const_iterator last);
+
   void     clear();
 
+  // resize
   void     resize(size_type new_size) { resize(new_size, value_type()); }
   void     resize(size_type new_size, const value_type& value);
+
   void     swap(list& rhs) { mystl::swap(node_, rhs.node_); }
 
   // list 相关操作
-  void splice(iterator position, list& x);
-  void splice(iterator position, list&, iterator i);
-  void splice(iterator position, list& x, iterator first, iterator last);
-  void remove(const value_type& value);
-  template <class Predicate>
-  void remove_if(Predicate pred);
-  void unique();
-  void merge(list& x);
-  void sort();
+
+  void splice(const_iterator pos, list& other);
+  void splice(const_iterator pos, list& other, const_iterator it);
+  void splice(const_iterator pos, list& other, const_iterator first, const_iterator last);
+
+  void remove(const value_type& value)
+  { remove_if([&](const value_type& v) {return v == value; }); }
+  template <class UnaryPredicate>
+  void remove_if(UnaryPredicate pred);
+
+  void unique()
+  { unique(mystl::equal_to<T>()); }
+  template <class BinaryPredicate>
+  void unique(BinaryPredicate pred);
+
+  void merge(list& x)
+  { merge(x, mystl::less<T>()); }
+  template <class Compare>
+  void merge(list& x, Compare comp);
+
+  void sort()
+  { __sort(begin(), end(), size(), mystl::less<T>()); }
   template <class Compared>
-  void sort(Compared comp);
+  void sort(Compared comp)
+  { __sort(begin(), end(), size(), comp); }
+
   void reverse();
 
 private:
-  // list 的私有成员函数
+  // helper functions
+
+  // create / destroy node
+  base_type __get_base_node();
   link_type __get_node();
-  void      __put_node(link_type p);
-  link_type __create_node(const value_type& value);
+  template <class ...Args>
+  link_type __create_node(Args&& ...agrs);
   void      __destroy_node(link_type p);
-  void      __list_initialize();
-  void      __link_nodes(link_type p, link_type first, link_type last);
-  void      __link_nodes_at_front(link_type first, link_type last);
-  void      __link_nodes_at_back(link_type first, link_type last);
-  void      __unlink_nodes(link_type f, link_type l);
+
+  // initialize
+  template <class Integer>
+  void      __list_initialize(Integer n, const value_type& x, __true_type);
+  template <class Iter>
+  void      __list_initialize(Iter first, Iter last, __false_type);
+  void      __fill_initialize(size_type n, const value_type& x);
+  template <class IIter>
+  void      __range_initialize(IIter first, IIter last);
+
+  // link / unlink
+  iterator  __link(const_iterator pos, base_type node);
+  void      __link_nodes(base_type p, base_type first, base_type last);
+  void      __link_nodes_at_front(base_type first, base_type last);
+  void      __link_nodes_at_back(base_type first, base_type last);
+  void      __unlink_nodes(base_type f, base_type l);
+
+  // assign
   void      __fill_assign(size_type n, const value_type& value);
   template <class Integer>
-  void      __assign_dispatch(Integer n, Integer value, __true_type);
-  template <class InputIterator>
-  void      __assign_dispatch(InputIterator first, InputIterator last, __false_type);
-  void      __fill_insert(iterator position, size_type n, const value_type& value);
+  void      __assign_dispatch(Integer n, const value_type& value, __true_type);
+  template <class IIter>
+  void      __assign_dispatch(IIter first, IIter last, __false_type);
+
+  // insert
+  iterator  __fill_insert(const_iterator pos, size_type n, const value_type& value);
   template <class Integer>
-  void      __insert_dispatch(iterator position, Integer n, Integer value, __true_type);
-  template <class InputIterator>
-  void      __insert_dispatch(iterator position, InputIterator first, InputIterator last, __false_type);
+  iterator  __insert_dispatch(const_iterator pos, Integer n, const value_type& value, __true_type);
+  template <class IIter>
+  iterator  __insert_dispatch(const_iterator pos, IIter first, IIter last, __false_type);
+
+  // sort
   template <class Compared>
   iterator  __sort(iterator first, iterator last, size_type n, Compared comp);
-  void      __splice(iterator position, list& l, iterator first, iterator last);
+
 };
 
 /*****************************************************************************************/
 
-// 构造函数
-template <class T, class Alloc>
-inline list<T, Alloc>::
-list(size_type n)
+// 删除 pos 处的元素
+template <class T>
+typename list<T>::iterator 
+list<T>::erase(const_iterator pos)
 {
-  __list_initialize();
-  insert(end(), n, value_type());
+  assert(cbegin() <= pos && pos < cend());
+  auto n = pos.node_;
+  auto next = n->next;
+  __unlink_nodes(n, n);
+  __destroy_node(n->as_node());
+  return iterator(next);
 }
 
-template <class T, class Alloc>
-inline list<T, Alloc>::
-list(size_type n, const T& value)
+// 删除 [first, last) 内的元素
+template <class T>
+typename list<T>::iterator 
+list<T>::erase(const_iterator first, const_iterator last)
 {
-  __list_initialize();
-  insert(end(), n, value);
-}
-
-template <class T, class Alloc>
-template <class InputIterator>
-inline list<T, Alloc>::
-list(InputIterator first, InputIterator last)
-{
-  __list_initialize();
-  insert(end(), first, last);
-}
-
-template<class T, class Alloc>
-inline list<T, Alloc>::
-list(std::initializer_list<T> ilist)
-{
-  __list_initialize();
-  insert(end(), ilist.begin(), ilist.end());
-}
-
-// 复制构造函数
-template <class T, class Alloc>
-inline list<T, Alloc>::
-list(const list& rhs)
-{
-  __list_initialize();
-  insert(begin(), rhs.begin(), rhs.end());
-}
-
-// 移动构造函数
-template <class T, class Alloc>
-inline list<T, Alloc>::
-list(list&& rhs)
-{
-  node_ = rhs.node_;
-  rhs.node_ = __get_node();
-  rhs.node_->prev = rhs.node_->next = rhs.node_;
-}
-
-// 复制赋值运算符
-template <class T, class Alloc>
-inline list<T, Alloc>& list<T, Alloc>::
-operator=(const list& rhs)
-{
-  if (this != &rhs)
+  assert(cbegin() <= pos && pos < cend() && first <= last);
+  if (first != last)
   {
-    auto first1 = begin();
-    auto last1 = end();
-    auto first2 = rhs.begin();
-    auto last2 = rhs.end();
-    while (first1 != last1 && first2 != last2)
-      *first1++ = *first2++;
-    if (first2 == last2)
+    __unlink_nodes(first.node_, last.node_->prev);
+    while (first != last)
     {
-      erase(first1, last1);
+      auto cur = first.node_;
+      ++first;
+      __destroy_node(cur->as_node());
     }
-    else
+
+  }
+  return iterator(last.node_);
+}
+
+// 清空 list
+template <class T>
+void list<T>::clear()
+{
+  if (node_->next != node_)
+  {
+    auto cur = node_->next;
+    node_->unlink();
+    for (base_type next; cur != node_; cur = next)
     {
-      insert(last1, first2, last2);
+      next = cur->next;
+      __destroy_node(cur->as_node());
     }
   }
-  return *this;
-}
-
-// 移动赋值运算符
-template <class T, class Alloc>
-inline list<T, Alloc>& list<T, Alloc>::
-operator=(list&& rhs)
-{
-  if (this != &rhs)
-  {
-    clear();
-    node_ = rhs.node_;
-    rhs.node_ = nullptr;
-  }
-  return *this;
-}
-
-// 使用初值列表赋值
-template<class T, class Alloc>
-inline list<T, Alloc>& list<T, Alloc>::
-operator=(std::initializer_list<T> ilist)
-{
-  list tmp(ilist.begin(), ilist.end());
-  *this = std::move(tmp);
-  return *this;
-}
-
-// 析构函数
-template <class T, class Alloc>
-inline list<T, Alloc>::~list()
-{
-  if (node_)
-  {
-    clear();
-    __put_node(node_);
-    node_ = nullptr;
-  }
-}
-
-// 初始化容器
-template <class T, class Alloc>
-template <class InputIterator>
-inline void list<T, Alloc>::
-assign(InputIterator first, InputIterator last)
-{
-  typedef typename __is_integer<InputIterator>::is_integer Integer;
-  __assign_dispatch(first, last, Integer());
-}
-
-// 使用初值列表赋值给容器
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-assign(std::initializer_list<T> ilist)
-{
-  assign(ilist.begin(), ilist.end());
-}
-
-// 在 position 处插入元素
-template <class T, class Alloc>
-inline typename list<T, Alloc>::iterator list<T, Alloc>::
-insert(iterator position, const value_type& value)
-{
-  auto tmp = __create_node(value);
-  if (position == begin())
-  {
-    __link_nodes_at_front(tmp, tmp);
-    return tmp;
-  }
-  else if (position == end())
-  {
-    __link_nodes_at_back(tmp, tmp);
-    return tmp;
-  }
-  else
-  {
-    __link_nodes(position.node_, tmp, tmp);
-  }
-  return tmp;
-}
-
-// 在 position 处插入 n 个元素
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-insert(iterator position, size_type n, const value_type& value)
-{
-  __fill_insert(position, n, value);
-}
-
-// 在 position 处插入 [first, last)区间内的元素
-template <class T, class Alloc>
-template <class InputIterator>
-inline void list<T, Alloc>::
-insert(iterator position, InputIterator first, InputIterator last)
-{
-  typedef typename __is_integer<InputIterator>::is_integer Integer;
-  __insert_dispatch(position, first, last, Integer());
-}
-
-// 在 position 处插入初值列表
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-insert(iterator position, std::initializer_list<T> ilist)
-{
-  insert(position, ilist.begin(), ilist.end());
-}
-
-// 在头部插入元素
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-push_front(const value_type& value)
-{
-  auto tmp = __create_node(value);
-  __link_nodes_at_front(tmp, tmp);
-}
-
-// 在尾部插入元素
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-push_back(const value_type& value)
-{
-  auto tmp = __create_node(value);
-  __link_nodes_at_back(tmp, tmp);
-}
-
-// 删除 position 处的元素
-template <class T, class Alloc>
-inline typename list<T, Alloc>::iterator list<T, Alloc>::
-erase(iterator position)
-{
-  link_type prev_node = position.node_->prev;
-  link_type next_node = position.node_->next;
-  link_type this_node = position.node_;
-  prev_node->next = next_node;
-  next_node->prev = prev_node;
-  __destroy_node(this_node);
-  return iterator(next_node);
-}
-
-// 删除[first, last)内的元素
-template <class T, class Alloc>
-inline typename list<T, Alloc>::iterator list<T, Alloc>::
-erase(iterator first, iterator last)
-{
-  while (first != last)
-  {
-    auto cur = first;
-    ++first;
-    erase(cur);
-  }
-  return last;
 }
 
 // 重置容器大小
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-resize(size_type new_size, const value_type& value)
+template <class T>
+void list<T>::resize(size_type new_size, const value_type& value)
 {
   auto i = begin();
   size_type len = 0;
@@ -457,237 +600,257 @@ resize(size_type new_size, const value_type& value)
     ++len;
   }
   if (len == new_size)
-    erase(i, end());
+  {
+    erase(i, node_);
+  }
   else
-    insert(end(), new_size - len, value);
+  {
+    insert(node_, new_size - len, value);
+  }
 }
 
-// 清空 list
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-clear()
+// 将 list x 接合于 pos 之前
+template <class T>
+void list<T>::splice(const_iterator pos, list<T>& x)
 {
-  if (!empty())
+  assert(cbegin() <= pos && pos <= cend());
+  assert(this != &x);
+  if (!x.empty())
   {
-    link_type cur = node_->next;
-    node_->prev = node_;
-    node_->next = node_;
-    for (link_type next; cur != node_; cur = next)
+    auto f = x.node_->next;
+    auto l = x.node_->prev;
+    x.__unlink_nodes(f, l);
+    __link_nodes(pos.node_, f, l);
+    x.node_->unlink();
+  }
+}
+
+// 将 it 所指的节点接合于 pos 之前
+template <class T>
+void list<T>::splice(const_iterator pos, list& x, const_iterator it)
+{
+  assert(cbegin() <= pos && pos <= cend());
+  if (pos.node_ != it.node_ && pos.node_ != it.node_->next)
+  {
+    auto f = it.node_;
+    x.__unlink_nodes(f, f);
+    __link_nodes(pos.node_, f, f);
+  }
+}
+
+// 将 list x 的 [first, last) 内的节点接合于 pos 之前
+template <class T>
+void list<T>::splice(const_iterator pos, list& x, 
+                     const_iterator first, const_iterator last)
+{
+  assert(cbegin() <= pos && pos <= cend());
+  if (first != last && this != &x)
+  {
+    auto f = first.node_;
+    auto l = last.node_->prev;
+    x.__unlink_nodes(f, l);
+    __link_nodes(pos.node_, f, l);
+  }
+}
+
+// 将另一元操作 pred 为 true 的所有元素移除
+template <class T>
+template <class UnaryPredicate>
+void list<T>::remove_if(UnaryPredicate pred)
+{
+  auto f = begin();
+  auto l = end();
+  for (auto next = f; f != l; f = next)
+  {
+    ++next;
+    if (pred(*f))
     {
-      next = cur->next;
-      __destroy_node(cur);
+      erase(f);
     }
   }
 }
 
-// 将 list x 接合于 position 之前
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-splice(iterator position, list& x)
+// 移除 list 中满足 pred 为 true 重复元素
+template <class T>
+template <class BinaryPredicate>
+void list<T>::unique(BinaryPredicate pred)
 {
-  if (this != &x && !x.empty())
+  auto i = begin();
+  auto e = end();
+  auto j = i;
+  ++j;
+  while (j != e)
   {
-    __splice(position, x, x.begin(), x.end());
-  }
-}
-
-// 将 first 所指的元素接合于 position 之前
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-splice(iterator position, list& x, iterator first)
-{
-  if (first != x.end())
-  {
-    iterator last = first;
-    ++last;
-    if (this != &x || (position != first && position != last))
+    if (pred(*i, *j))
     {
-      __splice(position, x, first, last);
-    }
-  }
-}
-
-// 将 [first, last) 内的所有元素接合于 position 之前
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-splice(iterator position, list& x, iterator first, iterator last)
-{
-  if (first != last && (this != &x || position != last))
-  {
-    __splice(position, x, first, last);
-  }
-}
-
-// 将数值为 value 的所有元素移除
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-remove(const value_type& value)
-{
-  auto first = begin();
-  auto last = end();
-  while (first != last)
-  {
-    auto next = first;
-    ++next;
-    if (*first == value)
-      erase(first);
-    first = next;
-  }
-}
-
-// 将另一元操作 unary_pred 为 true 的所有元素移除
-template <class T, class Alloc>
-template <class Predicate>
-inline void list<T, Alloc>::
-remove_if(Predicate unary_pred)
-{
-  auto first = begin();
-  auto last = end();
-  while (first != last)
-  {
-    auto next = first;
-    ++next;
-    if (unary_pred(*first))
-      erase(first);
-    first = next;
-  }
-}
-
-// 移除数值连续相同的元素
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-unique()
-{
-  auto first = begin();
-  auto last = end();
-  if (first == last)
-    return;
-  auto next = first;
-  while (++next != last)
-  {
-    if (*first == *next)
-      erase(next);
-    else
-      first = next;
-    next = first;
-  }
-}
-
-// 与另一个 list 合并，两个 list 应保证有序
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-merge(list<T, Alloc>& x)
-{
-  auto first1 = begin();
-  auto last1 = end();
-  auto first2 = x.begin();
-  auto last2 = x.end();
-  while (first1 != last1 && first2 != last2)
-  {
-    if (*first2 < *first1)
-    {
-      auto next = first2;
-      __splice(first1, x, first2, ++next);
-      first2 = next;
+      erase(j);
     }
     else
     {
-      ++first1;
+      i = j;
     }
+    j = i;
+    ++j;
   }
-  if (first2 != last2)
-    __splice(last1, x, first2, last2);
 }
 
-// 将 list 按升序排列
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-sort()
+// 与另一个 list 合并，按照 comp 为 true 的顺序
+template <class T>
+template <class Compare>
+void list<T>::merge(list& x, Compare comp)
 {
-  __sort(begin(), end(), size(), mystl::less<T>());
-}
-
-// 将 list 按二元谓词 comp 排序
-template <class T, class Alloc>
-template <class Compared>
-inline void list<T, Alloc>::
-sort(Compared comp)
-{
-  __sort(begin(), end(), size(), comp);
+  if (this != &x)
+  {
+    auto f1 = begin();
+    auto l1 = end();
+    auto f2 = x.begin();
+    auto l2 = x.end();
+    while (f1 != l1 && f2 != l2)
+    {
+      if (comp(*f2, *f1))
+      {
+        auto n = f2;
+        ++n;
+        for (; n != l2 && comp(*n, *f1); ++n)
+          ;
+        auto f = f2.node_;
+        auto l = n.node_->prev;
+        f2 = n;
+        x.__unlink_nodes(f, l);
+        __link_nodes(f1.node_, f, l);
+        ++f1;
+      }
+      else
+      {
+        ++f1;
+      }
+    }
+    splice(l1, x);
+  }
 }
 
 // 将 list 反转
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-reverse()
+template <class T>
+void list<T>::reverse()
 {
   if (node_->next == node_ || node_->next->next == node_)
+  {  // size() <= 1
     return;
-  auto first = begin();
-  ++first;
-  while (first != end())
-  {
-    auto old = first;
-    ++first;
-    __splice(begin(), *this, old, first);
   }
+  auto i = begin();
+  auto e = end();
+  while (i.node_ != e.node_)
+  {
+    mystl::swap(i.node_->prev, i.node_->next);
+    i.node_ = i.node_->prev;
+  }
+  mystl::swap(e.node_->prev, e.node_->next);
 }
 
-// 获取结点空间
-template <class T, class Alloc>
-inline typename list<T, Alloc>::link_type list<T, Alloc>::
-__get_node()
+// 获取基层节点
+template <class T>
+typename list<T>::base_type 
+list<T>::__get_base_node()
 {
-  return data_allocate::allocate();
+  return base_allocator::allocate(1);
 }
 
-// 释放结点空间
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-__put_node(link_type p)
+// 获取节点
+template <class T>
+typename list<T>::link_type 
+list<T>::__get_node()
 {
-  data_allocate::deallocate(p);
+  return node_allocator::allocate(1);
 }
 
 // 创建结点
-template <class T, class Alloc>
-inline typename list<T, Alloc>::link_type list<T, Alloc>::
-__create_node(const value_type& value)
+template <class T>
+template <class ...Args>
+typename list<T>::link_type 
+list<T>::__create_node(Args&& ...args)
 {
   auto p = __get_node();
   try
   {
-    mystl::construct(p, __list_node<T>(value));
+    data_allocator::construct(&p->value, std::forward<Args>(args)...);
   }
   catch (...)
   {
-    data_allocate::deallocate(p);
+    data_allocator::destroy(&p->value);
+    node_allocator::deallocate(p);
   }
   return p;
 }
 
 // 销毁结点
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-__destroy_node(link_type p)
+template <class T>
+void list<T>::__destroy_node(link_type p)
 {
-  mystl::destroy(&p->data);
-  __put_node(p);
+  data_allocator::destroy(&p->value);
+  node_allocator::deallocate(p);
 }
 
 // 初始化 list
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-__list_initialize()
+template <class T>
+template <class Integer>
+void list<T>::__list_initialize(Integer n, const value_type& x, __true_type)
 {
-  node_ = __get_node();
-  node_->prev = node_->next = node_;
+  __fill_initialize(static_cast<size_type>(n), x);
 }
 
-// 在 pos 处连接 [first, last] 结点
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-__link_nodes(link_type pos, link_type first, link_type last)
+template <class T>
+template <class Iter>
+void list<T>::__list_initialize(Iter first, Iter last, __false_type)
+{
+  __range_initialize(first, last);
+}
+
+template <class T>
+void list<T>::__fill_initialize(size_type n, const value_type& x)
+{
+  node_ = __get_base_node();
+  node_->unlink();
+  for (; n > 0; --n)
+  {
+    push_back(x);
+  }
+}
+
+template <class T>
+template <class IIter>
+void list<T>::__range_initialize(IIter first, IIter last)
+{
+  node_ = __get_base_node();
+  node_->unlink();
+  for (; first != last; ++first)
+  {
+    push_back(*first);
+  }
+}
+
+// 在 pos 处连接一个节点
+template<class T>
+typename list<T>::iterator 
+list<T>::__link(const_iterator pos, base_type link_node)
+{
+  if (pos == node_->next)
+  {
+    __link_nodes_at_front(link_node, link_node);
+  }
+  else if (pos == node_)
+  {
+    __link_nodes_at_back(link_node, link_node);
+  }
+  else
+  {
+    __link_nodes(pos.node_, link_node, link_node);
+  }
+  return iterator(link_node);
+}
+
+// 在 pos 处连接 [first, last] 的结点
+template <class T>
+void list<T>::__link_nodes(base_type pos, base_type first, base_type last)
 {
   pos->prev->next = first;
   first->prev = pos->prev;
@@ -696,9 +859,8 @@ __link_nodes(link_type pos, link_type first, link_type last)
 }
 
 // 在头部连接 [first, last] 结点
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-__link_nodes_at_front(link_type first, link_type last)
+template <class T>
+void list<T>::__link_nodes_at_front(base_type first, base_type last)
 {
   first->prev = node_;
   last->next = node_->next;
@@ -707,9 +869,8 @@ __link_nodes_at_front(link_type first, link_type last)
 }
 
 // 在尾部连接 [first, last] 结点
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-__link_nodes_at_back(link_type first, link_type last)
+template <class T>
+void list<T>::__link_nodes_at_back(base_type first, base_type last)
 {
   last->next = node_;
   first->prev = node_->prev;
@@ -718,18 +879,16 @@ __link_nodes_at_back(link_type first, link_type last)
 }
 
 // 与 [first, last] 的结点断开连接
-template<class T, class Alloc>
-inline void list<T, Alloc>::
-__unlink_nodes(link_type first, link_type last)
+template <class T>
+void list<T>::__unlink_nodes(base_type first, base_type last)
 {
   first->prev->next = last->next;
   last->next->prev = first->prev;
 }
 
 // 填充元素
-template <class T, class Alloc>
-void list<T, Alloc>::
-__fill_assign(size_type n, const value_type& value)
+template <class T>
+void list<T>::__fill_assign(size_type n, const value_type& value)
 {
   auto i = begin();
   auto e = end();
@@ -738,215 +897,252 @@ __fill_assign(size_type n, const value_type& value)
     *i = value;
   }
   if (n > 0)
+  {
     insert(e, n, value);
+  }
   else
+  {
     erase(i, e);
+  }
 }
 
 // 赋值元素
-template <class T, class Alloc>
+template <class T>
 template <class Integer>
-inline void list<T, Alloc>::
-__assign_dispatch(Integer n, Integer value, __true_type)
+void list<T>::__assign_dispatch(Integer n, const value_type& value, __true_type)
 {
-  __fill_assign(static_cast<size_type>(n), static_cast<T>(value));
+  __fill_assign(static_cast<size_type>(n), value);
 }
 
-template <class T, class Alloc>
-template <class InputIterator>
-void list<T, Alloc>::
-__assign_dispatch(InputIterator first2, InputIterator last2,
-                  __false_type)
+template <class T>
+template <class IIter>
+void list<T>::__assign_dispatch(IIter f2, IIter l2, __false_type)
 {
-  auto first1 = begin();
-  auto last1 = end();
-  for (; first1 != last1 && first2 != last2; ++first1, ++first2)
+  auto f1 = begin();
+  auto l1 = end();
+  for (; f1 != l1 && f2 != l2; ++f1, ++f2)
   {
-    *first1 = *first2;
+    *f1 = *f2;
   }
-  if (first2 == last2)
-    erase(first1, last1);
+  if (f2 == l2)
+  {
+    erase(f1, l1);
+  }
   else
-    insert(last1, first2, last2);
+  {
+    insert(l1, f2, l2);
+  }
 }
 
-// 在 position 处插入 n 个元素
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-__fill_insert(iterator position, size_type n, const value_type& value)
+// 插入 n 个元素
+template <class T>
+typename list<T>::iterator 
+list<T>::__fill_insert(const_iterator pos, size_type n, const value_type& value)
 {
-  for (; n > 0; --n)
+  iterator r(pos.node_);
+  if (n != 0)
   {
-    insert(position, value);
+    auto node = __create_node(value);
+    node->prev = nullptr;
+    r = iterator(node);
+    auto end = r;
+    try
+    {
+      for (--n; n != 0; --n, ++end)
+      {
+        auto next = __create_node(value);
+        end.node_->next = next->as_base();  // link node
+        next->prev = end.node_;
+      }
+    }
+    catch (...)
+    {
+      while (true)
+      {
+        auto prev = end.node_->prev;
+        __destroy_node(end.node_->as_node());
+        if (!prev)
+          break;
+        end = iterator(prev);
+      }
+      throw;
+    }
+    __link_nodes(pos.node_, r.node_, end.node_);
   }
+  return r;
 }
 
 // 插入元素
-template <class T, class Alloc>
+template <class T>
 template <class Integer>
-inline void list<T, Alloc>::
-__insert_dispatch(iterator position, Integer n, Integer value, __true_type)
+typename list<T>::iterator 
+list<T>::__insert_dispatch(const_iterator pos, Integer n, const value_type& value, __true_type)
 {
-  __fill_insert(position, static_cast<size_type>(n), static_cast<T>(value));
+  return __fill_insert(pos, static_cast<size_type>(n), value);
 }
 
-// 在 position 处插入 [first, last) 的元素
-template <class T, class Alloc>
-template <class InputIterator>
-inline void list<T, Alloc>::
-__insert_dispatch(iterator position, InputIterator first, InputIterator last, __false_type)
+// 在 pos 处插入 [first, last) 的元素
+template <class T>
+template <class IIter>
+typename list<T>::iterator 
+list<T>::__insert_dispatch(const_iterator pos, IIter first, IIter last, __false_type)
 {
-  for (; first != last; ++first)
+  iterator r(pos.node_);
+  if (first != last)
   {
-    insert(position, *first);
+    auto node = __create_node(*first);
+    node->prev = nullptr;
+    r = iterator(node);
+    auto end = r;
+    try
+    {
+      for (++first; first != last; ++first, ++end)
+      {
+        auto next = __create_node(*first);
+        end.node_->next = next->as_base();  // link node
+        next->prev = end.node_;
+      }
+    }
+    catch (...)
+    {
+      while (true)
+      {
+        auto prev = end.node_->prev;
+        __destroy_node(end.node_->as_node());
+        if (!prev)
+          break;
+        end = iterator(prev);
+      }
+      throw;
+    }
+    __link_nodes(pos.node_, r.node_, end.node_);
   }
+  return r;
 }
 
-// 对 list 排序
-template<class T, class Alloc>
+// 对 list 进行归并排序，返回一个迭代器指向区间最小元素的位置
+template <class T>
 template<class Compared>
-typename list<T, Alloc>::iterator list<T, Alloc>::
-__sort(iterator first1, iterator last2, size_type n, Compared comp)
+typename list<T>::iterator 
+list<T>::__sort(iterator f1, iterator l2, size_type n, Compared comp)
 {
   if (n < 2)
-    return first1;
+    return f1;
 
   if (n == 2)
   {
-    if (comp(*--last2, *first1))
+    if (comp(*--l2, *f1))
     {
-      link_type first = last2.node_;
-      __unlink_nodes(first, first);
-      __link_nodes(first1.node_, first, first);
-      return last2;
+      auto ln = l2.node_;
+      __unlink_nodes(ln, ln);
+      __link_nodes(f1.node_, ln, ln);
+      return l2;
     }
-    return first1;
+    return f1;
   }
 
   auto n2 = n / 2;
-  auto last1 = first1;
-  advance(last1, n2);
-  auto result = first1 = __sort(first1, last1, n2, comp);
-  auto first2 = last1 = __sort(last1, last2, n - n2, comp);
-  if (comp(*first2, *first1))
+  auto l1 = f1;
+  mystl::advance(l1, n2);
+  auto result = f1 = __sort(f1, l1, n2, comp);  // 前半段的最小位置
+  auto f2 = l1 = __sort(l1, l2, n - n2, comp);  // 后半段的最小位置
+
+  // 把较小的一段区间移到前面
+  if (comp(*f2, *f1))
   {
-    auto mid = first2;
-    ++mid;
-    for (; mid != last2 && comp(*mid, *first1); ++mid) {}
-    link_type first = first2.node_;
-    link_type last = mid.node_->prev;
-    result = first2;
-    last1 = first2 = mid;
-    __unlink_nodes(first, last);
-    mid = first1;
-    ++mid;
-    __link_nodes(first1.node_, first, last);
-    first1 = mid;
+    auto m = f2;
+    ++m;
+    for (; m != l2 && comp(*m, *f1); ++m)
+      ;
+    auto f = f2.node_;
+    auto l = m.node_->prev;
+    result = f2;
+    l1 = f2 = m;
+    __unlink_nodes(f, l);
+    m = f1;
+    ++m;
+    __link_nodes(f1.node_, f, l);
+    f1 = m;
   }
   else
   {
-    ++first1;
+    ++f1;
   }
 
-  while (first1 != last1 && first2 != last2)
+  // 合并两段有序区间
+  while (f1 != l1 && f2 != l2)
   {
-    if (comp(*first2, *first1))
+    if (comp(*f2, *f1))
     {
-      auto mid = first2;
-      ++mid;
-      for (; mid != last2 && comp(*mid, *first1); ++mid) {}
-      link_type first = first2.node_;
-      link_type last = mid.node_->prev;
-      if (last1 == first2)
-        last1 = mid;
-      first2 = mid;
-      __unlink_nodes(first, last);
-      mid = first1;
-      ++mid;
-      __link_nodes(first1.node_, first, last);
-      first1 = mid;
+      auto m = f2;
+      ++m;
+      for (; m != l2 && comp(*m, *f1); ++m)
+        ;
+      auto f = f2.node_;
+      auto l = m.node_->prev;
+      if (l1 == f2)
+        l1 = m;
+      f2 = m;
+      __unlink_nodes(f, l);
+      m = f1;
+      ++m;
+      __link_nodes(f1.node_, f, l);
+      f1 = m;
     }
     else
     {
-      ++first1;
+      ++f1;
     }
   }
   return result;
 }
 
-// 将 [first, last) 内的所有元素移到 position 之前
-template <class T, class Alloc>
-inline void list<T, Alloc>::
-__splice(iterator position, list& l, iterator first, iterator last)
-{
-  // 将[first, last)从原来的位置移出
-  first.node_->prev->next = last.node_;
-  last.node_->prev->next = position.node_;
-  position.node_->prev->next = first.node_;
-  // 将[first, last)接合到新的位置
-  link_type tmp = position.node_->prev;
-  position.node_->prev = last.node_->prev;
-  last.node_->prev = first.node_->prev;
-  first.node_->prev = tmp;
-}
-
 // 重载比较操作符
-template <class T, class Alloc>
-inline bool
-operator==(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator==(const list<T>& lhs, const list<T>& rhs)
 {
-  typedef typename list<T, Alloc>::const_iterator const_iterator;
-  const_iterator first1 = lhs.begin();
-  const_iterator first2 = rhs.begin();
-  const_iterator last1 = lhs.end();
-  const_iterator last2 = rhs.end();
-  while (first1 != last1 && first2 != last2 && *first1 == *first2)
-  {
-    ++first1;
-    ++first2;
-  }
-  return first1 == last1 && first2 == last2;
+  auto f1 = lhs.cbegin();
+  auto f2 = rhs.cbegin();
+  auto l1 = lhs.cend();
+  auto l2 = rhs.cend();
+  for (; f1 != l1 && f2 != l2 && *f1 == *f2; ++f1, ++f2)
+    ;
+  return f1 == l1 && f2 == l2;
 }
 
-template <class T, class Alloc>
-inline bool
-operator<(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator<(const list<T>& lhs, const list<T>& rhs)
 {
-  return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  return mystl::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
 }
 
-template <class T, class Alloc>
-inline bool
-operator!=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator!=(const list<T>& lhs, const list<T>& rhs)
 {
   return !(lhs == rhs);
 }
 
-template <class T, class Alloc>
-inline bool
-operator>(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator>(const list<T>& lhs, const list<T>& rhs)
 {
   return rhs < lhs;
 }
 
-template <class T, class Alloc>
-inline bool
-operator<=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator<=(const list<T>& lhs, const list<T>& rhs)
 {
   return !(rhs < lhs);
 }
 
-template <class T, class Alloc>
-inline bool
-operator>=(const list<T, Alloc>& lhs, const list<T, Alloc>& rhs)
+template <class T>
+bool operator>=(const list<T>& lhs, const list<T>& rhs)
 {
   return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
-template <class T, class Alloc>
-inline void
-swap(list<T, Alloc>& lhs, list<T, Alloc>& rhs)
+template <class T>
+void swap(list<T>& lhs, list<T>& rhs)
 {
   lhs.swap(rhs);
 }
