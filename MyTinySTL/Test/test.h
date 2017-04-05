@@ -12,40 +12,15 @@
 #include <sstream>
 #include <vector>
 
+#include "Lib/redbud/io/color.h"
+
 namespace mystl
 {
 namespace test
 {
 
-#if defined(_WIN32) || defined(WIN32) || defined(WIN64)
-#include <Windows.h>
-inline std::ostream& red(std::ostream &os)
-{
-  HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
-  return os;
-}
-inline std::ostream& green(std::ostream &os)
-{
-  HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-  return os;
-}
-
-#elif defined(__linux__) || defined(__unix__) || defined(__unix) || defined(__APPLE__) || defined(__MACH__)
-#include <unistd.h>
-inline std::ostream& red(std::ostream &os)
-{
-  std::cout << "\033[91m";
-  return os;
-}
-inline std::ostream& green(std::ostream &os)
-{
-  std::cout << "\033[92m";
-  return os;
-}
-
-#endif
+#define green redbud::io::hfg::green
+#define red   redbud::io::hfg::red
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4244)
