@@ -695,11 +695,12 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
 
 // 简单测试的宏定义
 #define TEST(testcase_name) \
-    MYTINYSTL_TEST_(testcase_name)
+  MYTINYSTL_TEST_(testcase_name)
 
 // 运行所有测试案例
 #define RUN_ALL_TESTS() \
-    mystl::test::UnitTest::GetInstance()->Run()
+  std::cout << redbud::io::state::manual; \
+  mystl::test::UnitTest::GetInstance()->Run()
 
 // 是否开启性能测试
 #ifndef PERFORMANCE_TEST_ON
