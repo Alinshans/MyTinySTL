@@ -30,23 +30,23 @@ class vector
 {
 public:
   // vector 的嵌套型别定义
-  typedef T                                        value_type;
-  typedef mystl::alloc                             allocator_type;
-  typedef value_type*                              pointer;
-  typedef const value_type*                        const_pointer;
-  typedef value_type&                              reference;
-  typedef const value_type&                        const_reference;
-  typedef size_t                                   size_type;
-  typedef ptrdiff_t                                difference_type;
+  typedef mystl::allocator<T>                      allocator_type;
+  typedef mystl::allocator<T>                      data_allocator;
+
+  typedef typename allocator_type::value_type      value_type;
+  typedef typename allocator_type::pointer         pointer;
+  typedef typename allocator_type::const_pointer   const_pointer;
+  typedef typename allocator_type::reference       reference;
+  typedef typename allocator_type::const_reference const_reference;
+  typedef typename allocator_type::size_type       size_type;
+  typedef typename allocator_type::difference_type difference_type;
 
   typedef value_type*                              iterator;
   typedef const value_type*                        const_iterator;
   typedef mystl::reverse_iterator<iterator>        reverse_iterator;
   typedef mystl::reverse_iterator<const_iterator>  const_reverse_iterator;
 
-  typedef mystl::allocator<T>                      data_allocator;
-
-  allocator_type get_allocator() { return allocator_type(); }
+  allocator_type get_allocator() { return data_allocator(); }
 
 private:
   iterator begin_;  // 表示目前使用空间的头部
@@ -64,6 +64,7 @@ public:
 
   explicit vector(size_type n)
   { __fill_initialize(n, value_type()); }
+
   vector(size_type n, const value_type& value)
   { __fill_initialize(n, value); }
 
@@ -77,8 +78,9 @@ public:
   {
     __range_initialize(rhs.begin_, rhs.end_);
   }
-  vector(vector&& rhs) :
-    begin_(rhs.begin_),
+
+  vector(vector&& rhs) 
+    :begin_(rhs.begin_),
     end_(rhs.end_),
     cap_(rhs.cap_)
   {
@@ -96,12 +98,12 @@ public:
   vector& operator=(vector&& rhs);
   vector& operator=(std::initializer_list<T> ilist)
   {
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     __range_initialize(ilist.begin(), ilist.end());
     return *this;
   }
 
-  ~vector() { __destroy_and_deallocate(begin_, end_, cap_ - begin_); }
+  ~vector() { __destroy(begin_, end_, cap_ - begin_); }
 
 public:
 
@@ -226,7 +228,9 @@ public:
 
   void     resize(size_type new_size) { return resize(new_size, value_type()); }
   void     resize(size_type new_size, const value_type& value);
+
   void     reverse() { mystl::reverse(begin(), end()); }
+
   void     swap(vector& rhs);
 
 private:
@@ -234,7 +238,7 @@ private:
 
   // initialize
   template <class Integer>
-  void __vector_initialize(Integer n, Integer value, __true_type);
+  void __vector_initialize(Integer n, const value_type& value, __true_type);
 
   template <class Iter>
   void __vector_initialize(Iter first, Iter last, __false_type);
@@ -245,7 +249,7 @@ private:
   void __range_initialize(Iter first, Iter last);
 
   // destroy and deallocate
-  void __destroy_and_deallocate(iterator first, iterator last, size_type n);
+  void __destroy(iterator first, iterator last, size_type n);
 
   // calculate the growth size
   size_type __growth_size(size_type add_size);
@@ -299,7 +303,7 @@ vector<T>& vector<T>::operator=(const vector& rhs)
     const auto len = rhs.size();
     if (len > capacity())
     {  // 如果要赋值的 vector 大小超过原 vector 容量大小
-      __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+      __destroy(begin_, end_, cap_ - begin_);
       __range_initialize(rhs.begin(), rhs.end());
     }
     else if (size() >= len)
@@ -324,7 +328,7 @@ vector<T>& vector<T>::operator=(vector&& rhs)
 {
   if (this != &rhs)
   {
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     begin_ = rhs.begin_;
     end_ = rhs.end_;
     cap_ = rhs.cap_;
@@ -486,7 +490,7 @@ template <class T>
 typename vector<T>::iterator
 vector<T>::erase(iterator pos)
 {
-  assert(pos >= begin_ && pos <= end_);
+  assert(pos >= begin_ && pos < end_);
   if (pos + 1 != end_)
   {
     mystl::copy(pos + 1, end_, pos);
@@ -501,7 +505,7 @@ template <class T>
 typename vector<T>::iterator
 vector<T>::erase(iterator first, iterator last)
 {
-  assert(first >= begin_ && last <= end_ && first <= last);
+  assert(first >= begin_ && last < end_ && first <= last);
   auto i = mystl::copy(last, end_, first);
   data_allocator::destroy(i, end_);
   end_ = end_ - (last - first);
@@ -541,9 +545,9 @@ void vector<T>::swap(vector<T>& rhs)
 template <class T>
 template <class Integer>
 void vector<T>::
-__vector_initialize(Integer n, Integer value, __true_type)
+__vector_initialize(Integer n, const value_type& value, __true_type)
 {
-  __fill_initialize(static_cast<size_type>(n), static_cast<T>(value));
+  __fill_initialize(static_cast<size_type>(n), value);
 }
 
 template <class T>
@@ -578,10 +582,10 @@ __range_initialize(Iter first, Iter last)
   cap_ = begin_ + init_size;
 }
 
-// __destroy_and_deallocate 函数
+// __destroy 函数
 template <class T>
 void vector<T>::
-__destroy_and_deallocate(iterator first, iterator last, size_type n)
+__destroy(iterator first, iterator last, size_type n)
 {
   data_allocator::destroy(first, last);
   data_allocator::deallocate(first, n);
@@ -628,7 +632,7 @@ __fill_assign(size_type n, const value_type& value)
 {
   if (n > capacity())
   {
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     __fill_initialize(n, value);
   }
   else if (n > size())
@@ -671,7 +675,7 @@ __range_assign(FIter first, FIter last, forward_iterator_tag)
   auto len = static_cast<size_type>(distance(first, last));
   if (len > capacity())
   {  // 如果区间长度大于容器容量
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     __range_initialize(first, last);
   }
   else if (size() >= len)
@@ -710,7 +714,7 @@ __reallocate_and_emplace(iterator pos, Args&& ...args)
   }
   catch (...)
   {
-    __destroy_and_deallocate(new_begin, new_end, new_size);
+    __destroy(new_begin, new_end, new_size);
     throw;
   }
   data_allocator::deallocate(begin_, cap_ - begin_);
@@ -737,7 +741,7 @@ __reallocate_and_insert(iterator pos, const value_type& value)
   }
   catch (...)
   {
-    __destroy_and_deallocate(new_begin, new_end, new_size);
+    __destroy(new_begin, new_end, new_size);
     throw;
   }
   data_allocator::deallocate(begin_, cap_ - begin_);
@@ -803,10 +807,10 @@ __fill_insert(iterator pos, size_type n, const value_type& value)
     }
     catch (...)
     {
-      __destroy_and_deallocate(new_begin, new_end, new_size);
+      __destroy(new_begin, new_end, new_size);
       throw;
     }
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     begin_ = new_begin;
     end_ = new_end;
     cap_ = begin_ + new_size;
@@ -869,10 +873,10 @@ __range_insert(iterator pos, FIter first, FIter last, forward_iterator_tag)
     }
     catch (...)
     {
-      __destroy_and_deallocate(new_begin, new_end, new_size);
+      __destroy(new_begin, new_end, new_size);
       throw;
     }
-    __destroy_and_deallocate(begin_, end_, cap_ - begin_);
+    __destroy(begin_, end_, cap_ - begin_);
     begin_ = new_begin;
     end_ = new_end;
     cap_ = begin_ + new_size;
