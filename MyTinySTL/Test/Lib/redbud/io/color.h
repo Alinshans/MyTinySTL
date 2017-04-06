@@ -150,7 +150,7 @@ inline int get_iword()
 }
 
 // Determines whether the terminal color of this system can be modified.
-inline bool is_mutable()
+inline bool is_modifiable()
 {
 #if defined(REDBUD_LINUX) || defined(REDBUD_OSX)
   static constexpr const char* terms[] = {
@@ -326,7 +326,7 @@ operator<<(std::ostream& os, const T& value)
 {
   const std::streambuf* buf = os.rdbuf();
   return (os.iword(details::get_iword()) ||
-          details::is_mutable() &&
+          details::is_modifiable() &&
           details::is_terminal(os.rdbuf()))
     ? details::set_color(os, value)
     : os;
