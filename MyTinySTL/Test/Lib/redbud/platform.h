@@ -4,7 +4,7 @@
 // 
 // Header File : redbud/platform.h
 //
-// This file contains some preprocessing macros related to the platform
+// This file contains some preprocessing macros related to the platform.
 // ============================================================================
 
 #ifndef ALINSHANS_REDBUD_PLATFORM_H_
@@ -57,14 +57,14 @@
 #define REDBUD_VERSION \
   REDBUD_STRING(REDBUD_MAJOR.REDBUD_MINOR.REDBUD_PATCH)
 
-#define REDBUD_VERSION_CODE(x,y,z) \
+#define _VERSION_CODE(x,y,z) \
   (((x)*100000) + ((y)*100) + (z))
 
 #define GNUC_VERSION \
-  REDBUD_VERSION_CODE(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+  _VERSION_CODE(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 
 #define CLANG_VERSION \
-  REDBUD_VERSION_CODE(__clang_major__, __clang_minor__, __clang_patchlevel__)
+  _VERSION_CODE(__clang_major__, __clang_minor__, __clang_patchlevel__)
 
 // ----------------------------------------------------------------------------
 // redbud API
@@ -75,13 +75,14 @@
 
 // ----------------------------------------------------------------------------
 // C++11 required
+
 #ifndef REDBUD_HAS_CXX11
   #if defined(REDBUD_MSVC) && (REDBUD_MSVC >= 1900)
     #define REDBUD_HAS_CXX11 1
-  #elif defined(REDBUD_GNUC) && GNUC_VERSION >= REDBUD_VERSION_CODE(4,8,0) && \
+  #elif defined(REDBUD_GNUC) && (GNUC_VERSION >= _VERSION_CODE(4,8,0)) && \
   defined(__GXX_EXPERIMENTAL_CXX0X__)
     #define REDBUD_HAS_CXX11 1
-  #elif defined(REDBUD_CLANG) && (CLANG_VERSION >= REDBUD_VERSION_CODE(3,3,0))
+  #elif defined(REDBUD_CLANG) && (CLANG_VERSION >= _VERSION_CODE(3,3,0))
     #define REDBUD_HAS_CXX11 1
   #else 
     #define REDBUD_HAS_CXX11 0

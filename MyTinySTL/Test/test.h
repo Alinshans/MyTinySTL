@@ -19,8 +19,8 @@ namespace mystl
 namespace test
 {
 
-#define green redbud::io::hfg::green
-#define red   redbud::io::hfg::red
+#define green redbud::io::state::manual << redbud::io::hfg::green
+#define red   redbud::io::state::manual << redbud::io::hfg::red
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4244)
@@ -699,7 +699,6 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
 
 // 运行所有测试案例
 #define RUN_ALL_TESTS() \
-  std::cout << redbud::io::state::manual; \
   mystl::test::UnitTest::GetInstance()->Run()
 
 // 是否开启性能测试
