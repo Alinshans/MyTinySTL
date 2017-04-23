@@ -157,6 +157,7 @@
     <ClInclude Include="deque.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="hashtable.h" />
+    <ClInclude Include="Test\Lib\rang\include\rang.hpp" />
     <ClInclude Include="Test\Lib\redbud\io\color.h" />
     <ClInclude Include="Test\Lib\redbud\platform.h" />
     <ClInclude Include="unordered_map.h" />
