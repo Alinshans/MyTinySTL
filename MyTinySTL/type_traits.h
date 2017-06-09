@@ -6,7 +6,7 @@
 namespace mystl
 {
 
-// 以下两个空结构体只是为了让模板推导机制返回一个类型
+// 让模板推导机制返回一个类型
 struct __true_type 
 {
   static constexpr bool value = true;
@@ -328,7 +328,7 @@ template<> struct __char_type<wchar_t>
 /*****************************************************************************************/
 // type traits
 
-// remove_reference / remove_reference_t
+// remove_reference
 template <class T>
 struct remove_reference
 {
@@ -347,18 +347,12 @@ struct remove_reference<T&&>
   typedef T type;
 };
 
-template <class T>
-using remove_reference_t = typename remove_reference<T>::type;
-
-// is_lvalue_reference / is_lvalue_reference_v
+// is_lvalue_reference
 template <class T>
 struct is_lvalue_reference : __false_type {};
 
 template <class T>
 struct is_lvalue_reference<T&> : __true_type {};
-
-template <class T>
-constexpr bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
 
 } // namespace mystl
 #endif // !MYTINYSTL_TYPE_TRAITS_H_

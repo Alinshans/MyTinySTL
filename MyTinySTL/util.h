@@ -8,22 +8,22 @@
 namespace mystl
 {
 
-template <class T>
-constexpr mystl::remove_reference_t<T>&& move(T&& arg) noexcept
+template <class T> inline constexpr 
+typename mystl::remove_reference<T>::type&& move(T&& arg) noexcept
 {
-  return static_cast<mystl::remove_reference_t<T>&&>(arg);
+  return static_cast<typename mystl::remove_reference<T>::type&&>(arg);
 }
 
-template <class T>
-constexpr T&& forward(mystl::remove_reference_t<T>& arg) noexcept
+template <class T> inline constexpr 
+T&& forward(typename mystl::remove_reference<T>::type& arg) noexcept
 {
   return static_cast<T&&>(arg);
 }
 
-template <class T>
-constexpr T&& forward(mystl::remove_reference_t<T>&& arg) noexcept
+template <class T> inline constexpr 
+T&& forward(typename mystl::remove_reference<T>::type&& arg) noexcept
 {
-  static_assert(!mystl::is_lvalue_reference_v<T>, "bad forward");
+  static_assert(!mystl::is_lvalue_reference<T>::value, "bad forward");
   return static_cast<T&&>(arg);
 }
 
