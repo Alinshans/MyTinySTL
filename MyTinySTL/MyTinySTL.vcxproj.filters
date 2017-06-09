@@ -156,6 +156,9 @@
     <ClInclude Include="astring.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\test.cpp">

@@ -7,6 +7,7 @@
 #include "iterator.h"
 #include "memory.h"
 #include "functional.h"
+#include "util.h"
 
 #include <initializer_list>
 
@@ -66,7 +67,7 @@ struct __list_node : public __list_node_base<T>
   {
   }
   __list_node(T&& v)
-    :value(std::move(v))
+    :value(mystl::move(v))
   {
   }
 
@@ -274,7 +275,7 @@ public:
   list& operator=(std::initializer_list<T> ilist)
   {
     list<T> tmp(ilist.begin(), ilist.end());
-    *this = std::move(tmp);
+    *this = mystl::move(tmp);
     return *this;
   }
 
@@ -361,7 +362,7 @@ public:
 
   iterator insert(const_iterator pos, value_type&& value)
   {
-    auto link_node = __create_node(std::move(value));
+    auto link_node = __create_node(mystl::move(value));
     return __link(pos, link_node->as_base());
   }
 
@@ -391,7 +392,7 @@ public:
 
   void     push_front(value_type&& value)
   {
-    auto link_node = __create_node(std::move(value));
+    auto link_node = __create_node(mystl::move(value));
     __link_nodes_at_front(link_node->as_base(), link_node->as_base());
   }
 
@@ -403,7 +404,7 @@ public:
 
   void     push_back(value_type&& value)
   {
-    auto link_node = __create_node(std::move(value));
+    auto link_node = __create_node(mystl::move(value));
     __link_nodes_at_back(link_node->as_base(), link_node->as_base());
   }
 
@@ -411,21 +412,21 @@ public:
   template <class ...Args>
   void     emplace_front(Args&& ...args)
   {
-    auto link_node = __create_node(std::forward<Args>(args)...);
+    auto link_node = __create_node(mystl::forward<Args>(args)...);
     __link_nodes_at_front(link_node->as_base(), link_node->as_base());
   }
 
   template <class ...Args>
   void     emplace_back(Args&& ...args)
   {
-    auto link_node = __create_node(std::forward<Args>(args)...);
+    auto link_node = __create_node(mystl::forward<Args>(args)...);
     __link_nodes_at_back(link_node->as_base(), link_node->as_base());
   }
 
   template <class ...Args>
   iterator emplace(const_iterator pos, Args&& ...args)
   {
-    auto link_node = __create_node(std::forward<Args>(args)...);
+    auto link_node = __create_node(mystl::forward<Args>(args)...);
     __link_nodes(pos.node_, link_node->as_base(), link_node->as_base());
     return iterator(link_node);
   }
@@ -763,7 +764,7 @@ list<T>::__create_node(Args&& ...args)
   auto p = __get_node();
   try
   {
-    data_allocator::construct(&p->value, std::forward<Args>(args)...);
+    data_allocator::construct(&p->value, mystl::forward<Args>(args)...);
   }
   catch (...)
   {

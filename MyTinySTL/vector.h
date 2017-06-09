@@ -6,6 +6,7 @@
 
 #include "iterator.h"
 #include "memory.h"
+#include "util.h"
 
 #include <cassert>
 
@@ -374,19 +375,19 @@ void vector<T>::emplace(iterator pos, Args&& ...args)
   assert(pos >= begin_ && pos <= end_);
   if (end_ != cap_ && pos == end_)
   {
-    data_allocator::construct(end_, std::forward<Args>(args)...);
+    data_allocator::construct(end_, mystl::forward<Args>(args)...);
     ++end_;
   }
   else if (end_ != cap_)
   {
-    data_allocator::construct(end_, std::move(*(end_ - 1)));
+    data_allocator::construct(end_, mystl::move(*(end_ - 1)));
     ++end_;
     mystl::copy_backward(pos, end_ - 2, end_ - 1);
-    data_allocator::construct(pos, std::forward<Args>(args)...);
+    data_allocator::construct(pos, mystl::forward<Args>(args)...);
   }
   else
   {
-    __reallocate_and_emplace(pos, std::forward<Args>(args)...);
+    __reallocate_and_emplace(pos, mystl::forward<Args>(args)...);
   }
 }
 
@@ -397,12 +398,12 @@ void vector<T>::emplace_back(Args&& ...args)
 {
   if (end_ < cap_)
   {
-    data_allocator::construct(end_, std::forward<Args>(args)...);
+    data_allocator::construct(end_, mystl::forward<Args>(args)...);
     ++end_;
   }
   else
   {
-    __reallocate_and_emplace(end_, std::forward<Args>(args)...);
+    __reallocate_and_emplace(end_, mystl::forward<Args>(args)...);
   }
 }
 
@@ -424,7 +425,7 @@ void vector<T>::push_back(const_reference value)
 template <class T>
 void vector<T>::push_back(value_type&& value)
 {
-  emplace_back(std::move(value));
+  emplace_back(mystl::move(value));
 }
 
 // 弹出尾部元素
@@ -461,7 +462,7 @@ insert(iterator pos, const value_type& value)
     ++end_;
     auto value_copy = value;
     mystl::copy_backward(pos, end_ - 2, end_ - 1);
-    *pos = std::move(value_copy);
+    *pos = mystl::move(value_copy);
   }
   else
   {
@@ -705,7 +706,7 @@ __reallocate_and_emplace(iterator pos, Args&& ...args)
   try
   {
     new_end = mystl::uninitialized_move(begin_, pos, new_begin);
-    data_allocator::construct(new_end, std::forward<Args>(args)...);
+    data_allocator::construct(new_end, mystl::forward<Args>(args)...);
     ++new_end;
     if (pos != end_)
     {

@@ -6,6 +6,7 @@
 
 #include "iterator.h"
 #include "memory.h"
+#include "util.h"
 
 #include <initializer_list>
 
@@ -361,7 +362,7 @@ deque(const deque& rhs)
 template <class T, class Alloc, size_t BufSiz>
 inline deque<T, Alloc, BufSiz>::
 deque(deque&& rhs)
-  :start_(std::move(rhs.start_)), finish_(std::move(rhs.finish_)),
+  :start_(mystl::move(rhs.start_)), finish_(mystl::move(rhs.finish_)),
   map_(rhs.map_), map_size_(rhs.map_size_)
 {
   rhs.map_ = nullptr;

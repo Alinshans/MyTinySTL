@@ -191,6 +191,7 @@
     <ClInclude Include="tempbuf.h" />
     <ClInclude Include="type_traits.h" />
     <ClInclude Include="uninitialized.h" />
+    <ClInclude Include="util.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@
 // 功能与用法与 map 和 multimap 类似，不同的是使用 hashtable 作为底层机制
 
 #include "hashtable.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -71,10 +72,10 @@ public:
   }
 
   unordered_map(const unordered_map& rhs) :ht_(rhs.ht_) {}
-  unordered_map(unordered_map&& rhs) :ht_(std::move(rhs.ht_)) {}
+  unordered_map(unordered_map&& rhs) :ht_(mystl::move(rhs.ht_)) {}
 
   unordered_map& operator=(const unordered_map& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_map& operator=(unordered_map&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+  unordered_map& operator=(unordered_map&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
   unordered_map& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
@@ -229,10 +230,10 @@ public:
   }
 
   unordered_multimap(const unordered_multimap& rhs) :ht_(rhs.ht_) {}
-  unordered_multimap(unordered_multimap&& rhs) :ht_(std::move(rhs.ht_)) {}
+  unordered_multimap(unordered_multimap&& rhs) :ht_(mystl::move(rhs.ht_)) {}
 
   unordered_multimap& operator=(const unordered_multimap& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_multimap& operator=(unordered_multimap&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+  unordered_multimap& operator=(unordered_multimap&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
   unordered_multimap& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();

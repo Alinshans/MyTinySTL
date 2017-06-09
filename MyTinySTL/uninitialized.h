@@ -9,6 +9,7 @@
 #include "construct.h"
 #include "iterator.h"
 #include "type_traits.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -145,7 +146,7 @@ FIter __uninitialized_move(IIter first, IIter last, FIter result, __false_type)
   FIter cur = result;
   for (; first != last; ++first, ++cur)
   {
-    mystl::construct(&*cur, std::move(*first));
+    mystl::construct(&*cur, mystl::move(*first));
   }
   return cur;
 }
@@ -166,7 +167,7 @@ FIter uninitialized_move(IIter first, IIter last, FIter result)
 template <class FIter, class Size, class T>
 FIter __uninitialized_move_n(FIter first, Size n, T&& x, __true_type)
 {
-  return mystl::copy_n(first, n, std::forward<T>(x));
+  return mystl::copy_n(first, n, mystl::forward<T>(x));
 }
 
 template <class FIter, class Size, class T>
@@ -175,7 +176,7 @@ FIter __uninitialized_move_n(FIter first, Size n, T&& x, __false_type)
   auto cur = first;
   for (; n > 0; --n, ++cur)
   {
-    mystl::construct(&*cur, std::forward<T>(x));
+    mystl::construct(&*cur, mystl::forward<T>(x));
   }
   return cur;
 }
@@ -183,7 +184,7 @@ FIter __uninitialized_move_n(FIter first, Size n, T&& x, __false_type)
 template <class FIter, class Size, class T>
 FIter uninitialized_move_n(FIter first, Size n, T&& x)
 {
-  return mystl::__uninitialized_move_n(first, n, std::forward<T>(x), 
+  return mystl::__uninitialized_move_n(first, n, mystl::forward<T>(x), 
                                        typename __type_traits<typename
                                        iterator_traits<FIter>::
                                        value_type>::is_POD_type());
