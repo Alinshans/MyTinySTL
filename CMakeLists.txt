@@ -12,9 +12,7 @@ message(STATUS "The version of this project is: ${MyTinySTL_VERSION}")
 # build type
 set(CMAKE_BUILD_TYPE release)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall")
 	# set(EXTRA_CXX_FLAGS -Weffc++ -Wswitch-default -Wfloat-equal -Wconversion -Wsign-conversion)
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0")
