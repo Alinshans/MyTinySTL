@@ -78,7 +78,7 @@ before_script:
   
 script:
   - mkdir build && cd ./build
-  - cmake .
+  - cmake ..
   - make
   - cd ../bin && ./test
   

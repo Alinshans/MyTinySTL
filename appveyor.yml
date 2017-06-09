@@ -14,7 +14,7 @@ build:
   project: MyTinySTL.sln
   
 test_script:
-  - cmd: cd Test\Release
-  - cmd: test.exe
+  - cmd: cd x64\Release\MyTinySTL
+  - cmd: MyTinySTL.exe
   
 
