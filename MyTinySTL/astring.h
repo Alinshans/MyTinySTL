@@ -1,5 +1,5 @@
-#ifndef MYTINYSTL_STRING_H_
-#define MYTINYSTL_STRING_H_
+#ifndef MYTINYSTL_ASTRING_H_
+#define MYTINYSTL_ASTRING_H_
 
 // 定义了 string, wstring 类型
 
@@ -12,5 +12,5 @@ typedef basic_string<char>       string;
 typedef basic_string<wchar_t>    wstring;
 
 }
-#endif // !MYTINYSTL_STRING_H_
+#endif // !MYTINYSTL_ASTRING_H_
 

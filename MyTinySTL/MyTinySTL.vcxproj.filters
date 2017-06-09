@@ -102,9 +102,6 @@
     <ClInclude Include="basic_string.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="string.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="unordered_set.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -155,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="..\Test\Lib\redbud\io\color.h">
       <Filter>Test\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="astring.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
