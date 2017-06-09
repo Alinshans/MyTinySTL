@@ -728,7 +728,6 @@ template <class T>
 void vector<T>::
 __reallocate_and_insert(iterator pos, const value_type& value)
 {
-  const auto old_size = size();
   const auto new_size = __growth_size(1);
   auto new_begin = data_allocator::allocate(new_size);
   auto new_end = new_begin;

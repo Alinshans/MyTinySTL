@@ -324,10 +324,9 @@ template <typename T>
 inline details::color_return_t<T> 
 operator<<(std::ostream& os, const T& value)
 {
-  const std::streambuf* buf = os.rdbuf();
   return (os.iword(details::get_iword()) ||
-          details::is_modifiable() &&
-          details::is_terminal(os.rdbuf()))
+         (details::is_modifiable() &&
+         details::is_terminal(os.rdbuf())))
     ? details::set_color(os, value)
     : os;
 }
