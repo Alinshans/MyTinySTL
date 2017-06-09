@@ -9,6 +9,7 @@
 #include "functional.h"
 #include "heap_algo.h"
 #include "vector.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -39,13 +40,13 @@ public:
   queue(std::initializer_list<T> ilist) :s_(ilist.begin(), ilist.end()) {}
 
   queue(const Sequence& s) :s_(s) {}
-  queue(Sequence&& s) :s_(std::move(s)) {}
+  queue(Sequence&& s) :s_(mystl::move(s)) {}
 
   queue(const queue& rhs) :s_(rhs.s_) {}
-  queue(queue&& rhs) :s_(std::move(rhs.s_)) {}
+  queue(queue&& rhs) :s_(mystl::move(rhs.s_)) {}
 
   queue& operator=(const queue& rhs) { s_ = rhs.s_; return *this; }
-  queue& operator=(queue&& rhs) { s_ = std::move(rhs.s_); return *this; }
+  queue& operator=(queue&& rhs) { s_ = mystl::move(rhs.s_); return *this; }
   queue& operator=(std::initializer_list<T> ilist) { s_ = ilist; return *this; }
 
   // 以下操作使用底层容器的操作
@@ -164,7 +165,7 @@ public:
   {
     mystl::make_heap(s_.begin(), s_.end(), comp_);
   }
-  priority_queue(Sequence&& s) :s_(std::move(s))
+  priority_queue(Sequence&& s) :s_(mystl::move(s))
   {
     mystl::make_heap(s_.begin(), s_.end(), comp_);
   }
@@ -173,7 +174,7 @@ public:
   {
     mystl::make_heap(s_.begin(), s_.end(), comp_);
   }
-  priority_queue(priority_queue&& rhs) :s_(std::move(rhs.s_)), comp_(rhs.comp_)
+  priority_queue(priority_queue&& rhs) :s_(mystl::move(rhs.s_)), comp_(rhs.comp_)
   {
     mystl::make_heap(s_.begin(), s_.end(), comp_);
   }
@@ -187,7 +188,7 @@ public:
   }
   priority_queue& operator=(priority_queue&& rhs)
   {
-    s_ = std::move(rhs.s_);
+    s_ = mystl::move(rhs.s_);
     comp_ = rhs.comp_;
     mystl::make_heap(s_.begin(), s_.end(), comp_);
     return *this;
@@ -224,7 +225,7 @@ public:
   {
     try
     {
-      s_.emplace_back(std::move(value));
+      s_.emplace_back(mystl::move(value));
       mystl::push_heap(s_.begin(), s_.end(), comp_);
     }
     catch (...)

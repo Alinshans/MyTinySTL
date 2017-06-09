@@ -5,6 +5,7 @@
 
 #include "alloc.h"    
 #include "construct.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -83,14 +84,14 @@ void allocator<T, Alloc>::construct(T* ptr, const T& value)
 template<class T, class Alloc>
  void allocator<T, Alloc>::construct(T* ptr, T&& value)
 {
-  mystl::construct(ptr, std::move(value));
+  mystl::construct(ptr, mystl::move(value));
 }
 
 template<class T, class Alloc>
 template<class ...Args>
  void allocator<T, Alloc>::construct(T* ptr, Args ...args)
 {
-  mystl::construct(ptr, std::forward<Args>(args)...);
+  mystl::construct(ptr, mystl::forward<Args>(args)...);
 }
 
 template <class T, class Alloc>

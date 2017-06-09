@@ -6,6 +6,7 @@
 // multimap : 键值允许重复的 map
 
 #include "rb_tree.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -70,10 +71,10 @@ public:
   }
 
   map(const map& rhs) :t_(rhs.t_) {}
-  map(map&& rhs) :t_(std::move(rhs.t_)) {}
+  map(map&& rhs) :t_(mystl::move(rhs.t_)) {}
 
   map& operator=(const map& rhs) { t_ = rhs.t_; return *this; }
-  map& operator=(map&& rhs) { t_ = std::move(rhs.t_); return *this; }
+  map& operator=(map&& rhs) { t_ = mystl::move(rhs.t_); return *this; }
   map& operator=(std::initializer_list<value_type> ilist)
   {
     t_.clear();
@@ -264,10 +265,10 @@ public:
   }
 
   multimap(const multimap& rhs) :t_(rhs.t_) {}
-  multimap(multimap&& rhs) :t_(std::move(rhs.t_)) {}
+  multimap(multimap&& rhs) :t_(mystl::move(rhs.t_)) {}
 
   multimap& operator=(const multimap& rhs) { t_ = rhs.t_; return *this; }
-  multimap& operator=(multimap&& rhs) { t_ = std::move(rhs.t_); return *this; }
+  multimap& operator=(multimap&& rhs) { t_ = mystl::move(rhs.t_); return *this; }
   multimap& operator=(std::initializer_list<value_type> ilist)
   {
     t_.clear();

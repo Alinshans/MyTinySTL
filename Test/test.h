@@ -707,6 +707,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
 #endif // !PERFORMANCE_TEST_ON
 
 // 电脑内存是否够大
+// 不要随便开启这个选项，除非你确保你的内存有 16G/32G 这么大，并且可用内存还很多
 #ifndef MEMORY_IS_ENOUGH
 #define MEMORY_IS_ENOUGH 0
 #endif // !MEMORY_IS_ENOUGH

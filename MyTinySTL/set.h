@@ -6,6 +6,7 @@
 // multiset : 键值允许重复的 set
 
 #include "rb_tree.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -55,10 +56,10 @@ public:
   }
 
   set(const set& rhs) :t_(rhs.t_) {}
-  set(set&& rhs) :t_(std::move(rhs.t_)) {}
+  set(set&& rhs) :t_(mystl::move(rhs.t_)) {}
 
   set& operator=(const set& rhs) { t_ = rhs.t_; return *this; }
-  set& operator=(set&& rhs) { t_ = std::move(rhs.t_); return *this; }
+  set& operator=(set&& rhs) { t_ = mystl::move(rhs.t_); return *this; }
   set& operator=(std::initializer_list<value_type> ilist)
   {
     t_.clear();
@@ -216,10 +217,10 @@ public:
   }
 
   multiset(const multiset& rhs) :t_(rhs.t_) {}
-  multiset(multiset&& rhs) :t_(std::move(rhs.t_)) {}
+  multiset(multiset&& rhs) :t_(mystl::move(rhs.t_)) {}
 
   multiset& operator=(const multiset& rhs) { t_ = rhs.t_; return *this; }
-  multiset& operator=(multiset&& rhs) { t_ = std::move(rhs.t_); return *this; }
+  multiset& operator=(multiset&& rhs) { t_ = mystl::move(rhs.t_); return *this; }
   multiset& operator=(std::initializer_list<value_type> ilist)
   {
     t_.clear();

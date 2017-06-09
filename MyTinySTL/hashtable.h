@@ -8,6 +8,7 @@
 #include "functional.h"
 #include "memory.h"
 #include "vector.h"
+#include "util.h"
 
 #include <initializer_list>
 
@@ -242,7 +243,7 @@ public:
   hashtable(hashtable&& rhs)
     :hash_(rhs.hash_), equal_(rhs.equal_), get_key_(rhs.get_key_), element_nums_(rhs.element_nums_)
   {
-    buckets_ = std::move(rhs.buckets_);
+    buckets_ = mystl::move(rhs.buckets_);
     rhs.element_nums_ = 0;
   }
 
@@ -366,7 +367,7 @@ operator=(hashtable&& rhs)
     hash_ = rhs.hash_;
     equal_ = rhs.equal_;
     get_key_ = rhs.get_key_;
-    buckets_ = std::move(rhs.buckets_);
+    buckets_ = mystl::move(rhs.buckets_);
     element_nums_ = rhs.element_nums_;
     rhs.element_nums_ = 0;
   }

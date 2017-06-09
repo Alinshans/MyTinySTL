@@ -1,15 +1,20 @@
 #ifndef MYTINYSTL_TYPE_TRAITS_H_
 #define MYTINYSTL_TYPE_TRAITS_H_
 
-// 这个头文件用于类型萃取
-// 定义了三个类型萃取的模板 __type_traits, __is_integer, __char_type
+// 这个头文件用于提取类型信息
 
 namespace mystl
 {
 
 // 以下两个空结构体只是为了让模板推导机制返回一个类型
-struct __true_type {};
-struct __false_type {};
+struct __true_type 
+{
+  static constexpr bool value = true;
+};
+struct __false_type 
+{
+  static constexpr bool value = false;
+};
 
 /*****************************************************************************************/
 // __type_tarits
@@ -319,6 +324,41 @@ template<> struct __char_type<wchar_t>
 {
   typedef wchar_type      value_type;
 };
+
+/*****************************************************************************************/
+// type traits
+
+// remove_reference / remove_reference_t
+template <class T>
+struct remove_reference
+{
+  typedef T type;
+};
+
+template <class T>
+struct remove_reference<T&>
+{
+  typedef T type;
+};
+
+template <class T>
+struct remove_reference<T&&>
+{
+  typedef T type;
+};
+
+template <class T>
+using remove_reference_t = typename remove_reference<T>::type;
+
+// is_lvalue_reference / is_lvalue_reference_v
+template <class T>
+struct is_lvalue_reference : __false_type {};
+
+template <class T>
+struct is_lvalue_reference<T&> : __true_type {};
+
+template <class T>
+constexpr bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
 
 } // namespace mystl
 #endif // !MYTINYSTL_TYPE_TRAITS_H_

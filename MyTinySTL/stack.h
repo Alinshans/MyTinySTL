@@ -5,6 +5,7 @@
 // stack : 栈
 
 #include "deque.h"    
+#include "util.h"
 
 namespace mystl
 {
@@ -34,13 +35,13 @@ public:
   stack(std::initializer_list<T> ilist) :s_(ilist) {}
 
   explicit stack(const Sequence& s) :s_(s) {}
-  explicit stack(Sequence&& s) :s_(std::move(s)) {}
+  explicit stack(Sequence&& s) :s_(mystl::move(s)) {}
 
   stack(const stack& rhs) :s_(rhs.s_) {}
-  stack(stack&& rhs) :s_(std::move(rhs.s_)) {}
+  stack(stack&& rhs) :s_(mystl::move(rhs.s_)) {}
 
   stack& operator=(const stack& rhs) { s_ = rhs.s_; return *this; }
-  stack& operator=(stack&& rhs) { s_ = std::move(rhs.s_); return *this; }
+  stack& operator=(stack&& rhs) { s_ = mystl::move(rhs.s_); return *this; }
   stack& operator=(std::initializer_list<T> ilist) { s_ = ilist; return *this; }
 
   // 以下操作使用底层容器的操作

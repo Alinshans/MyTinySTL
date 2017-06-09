@@ -5,6 +5,7 @@
 // 功能与用法与 set 和 multiset 类似，不同的是使用 hashtable 作为底层机制
 
 #include "hashtable.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -69,10 +70,10 @@ public:
   }
 
   unordered_set(const unordered_set& rhs) :ht_(rhs.ht_) {}
-  unordered_set(unordered_set&& rhs) :ht_(std::move(rhs.ht_)) {}
+  unordered_set(unordered_set&& rhs) :ht_(mystl::move(rhs.ht_)) {}
 
   unordered_set& operator=(const unordered_set& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_set& operator=(unordered_set&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+  unordered_set& operator=(unordered_set&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
   unordered_set& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
@@ -216,10 +217,10 @@ public:
   }
 
   unordered_multiset(const unordered_multiset& rhs) :ht_(rhs.ht_) {}
-  unordered_multiset(unordered_multiset&& rhs) :ht_(std::move(rhs.ht_)) {}
+  unordered_multiset(unordered_multiset&& rhs) :ht_(mystl::move(rhs.ht_)) {}
 
   unordered_multiset& operator=(const unordered_multiset& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_multiset& operator=(unordered_multiset&& rhs) { ht_ = std::move(rhs.ht_); return *this; }
+  unordered_multiset& operator=(unordered_multiset&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
   unordered_multiset& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();

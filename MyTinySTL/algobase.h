@@ -9,6 +9,7 @@
 #include "iterator.h"
 #include "pair.h"
 #include "type_traits.h"
+#include "util.h"
 
 namespace mystl
 {
@@ -64,9 +65,9 @@ const T& min(const T& lhs, const T& rhs, Compare comp)
 template <class T>
 void swap(T& lhs, T& rhs)
 {
-  auto tmp(std::move(lhs));
-  lhs = std::move(rhs);
-  rhs = std::move(tmp);
+  auto tmp(mystl::move(lhs));
+  lhs = mystl::move(rhs);
+  rhs = mystl::move(tmp);
 }
 
 /*****************************************************************************************/
