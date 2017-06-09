@@ -75,10 +75,12 @@ matrix:
 
 before_script:
   - export CXX=$COMPILER
-  - cd MyTinySTL/Test
   
 script:
+  - mkdir build && cd ./build
+  - cmake .
   - make
+  - cd ../bin && ./test
   
 branches:
   only:

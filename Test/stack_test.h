@@ -5,7 +5,7 @@
 
 #include <stack>
 
-#include "../stack.h"
+#include "../MyTinySTL/stack.h"
 #include "test.h"
 
 namespace mystl

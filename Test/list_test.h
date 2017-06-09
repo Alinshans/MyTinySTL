@@ -5,7 +5,7 @@
 
 #include <list>
 
-#include "../list.h"
+#include "../MyTinySTL/list.h"
 #include "test.h"
 
 namespace mystl

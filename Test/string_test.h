@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "../string.h"
+#include "../MyTinySTL/string.h"
 #include "test.h"
 
 namespace mystl

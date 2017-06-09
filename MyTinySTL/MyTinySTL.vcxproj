@@ -147,6 +147,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\algorithm_performance_test.h" />
+    <ClInclude Include="..\Test\algorithm_test.h" />
+    <ClInclude Include="..\Test\deque_test.h" />
+    <ClInclude Include="..\Test\Lib\redbud\io\color.h" />
+    <ClInclude Include="..\Test\Lib\redbud\platform.h" />
+    <ClInclude Include="..\Test\list_test.h" />
+    <ClInclude Include="..\Test\map_test.h" />
+    <ClInclude Include="..\Test\queue_test.h" />
+    <ClInclude Include="..\Test\set_test.h" />
+    <ClInclude Include="..\Test\stack_test.h" />
+    <ClInclude Include="..\Test\string_test.h" />
+    <ClInclude Include="..\Test\test.h" />
+    <ClInclude Include="..\Test\unordered_map_test.h" />
+    <ClInclude Include="..\Test\unordered_set_test.h" />
+    <ClInclude Include="..\Test\vector_test.h" />
     <ClInclude Include="algo.h" />
     <ClInclude Include="algobase.h" />
     <ClInclude Include="algorithm.h" />
@@ -157,8 +172,6 @@
     <ClInclude Include="deque.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="hashtable.h" />
-    <ClInclude Include="Test\Lib\redbud\io\color.h" />
-    <ClInclude Include="Test\Lib\redbud\platform.h" />
     <ClInclude Include="unordered_map.h" />
     <ClInclude Include="unordered_set.h" />
     <ClInclude Include="heap_algo.h" />
@@ -176,25 +189,12 @@
     <ClInclude Include="stack.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="tempbuf.h" />
-    <ClInclude Include="Test\algorithm_performance_test.h" />
-    <ClInclude Include="Test\algorithm_test.h" />
-    <ClInclude Include="Test\deque_test.h" />
-    <ClInclude Include="Test\unordered_map_test.h" />
-    <ClInclude Include="Test\unordered_set_test.h" />
-    <ClInclude Include="Test\list_test.h" />
-    <ClInclude Include="Test\map_test.h" />
-    <ClInclude Include="Test\queue_test.h" />
-    <ClInclude Include="Test\set_test.h" />
-    <ClInclude Include="Test\stack_test.h" />
-    <ClInclude Include="Test\string_test.h" />
-    <ClInclude Include="Test\test.h" />
-    <ClInclude Include="Test\vector_test.h" />
     <ClInclude Include="type_traits.h" />
     <ClInclude Include="uninitialized.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Test\test.cpp" />
+    <ClCompile Include="..\Test\test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

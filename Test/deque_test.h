@@ -5,7 +5,7 @@
 
 #include <deque>
 
-#include "../deque.h"
+#include "../MyTinySTL/deque.h"
 #include "test.h"
 
 namespace mystl

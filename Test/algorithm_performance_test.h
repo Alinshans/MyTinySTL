@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-#include "../algorithm.h"
+#include "../MyTinySTL/algorithm.h"
 #include "test.h"
 
 namespace mystl
