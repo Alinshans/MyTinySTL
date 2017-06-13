@@ -57,9 +57,6 @@
     <ClInclude Include="algo.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="reverse_iterator.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="algorithm.h">
       <Filter>include</Filter>
     </ClInclude>

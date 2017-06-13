@@ -28,14 +28,14 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
 }
 
 template <class RandomAccessIterator, class Distance>
-inline void
+void
 __push_heap(RandomAccessIterator first, RandomAccessIterator last, Distance*)
 {
   mystl::__push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
 }
 
 template <class RandomAccessIterator>
-inline void
+void
 push_heap(RandomAccessIterator first, RandomAccessIterator last)
 {
   // 新元素应该已置于底部容器的最尾端
@@ -58,7 +58,7 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
 }
 
 template <class RandomAccessIterator, class Compared, class Distance>
-inline void
+void
 __push_heap(RandomAccessIterator first, RandomAccessIterator last,
             Distance*, Compared comp)
 {
@@ -67,7 +67,7 @@ __push_heap(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class RandomAccessIterator, class Compared>
-inline void
+void
 push_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
 {
   mystl::__push_heap(first, last, distance_type(first), comp);
@@ -101,7 +101,7 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex, Distance len,
 }
 
 template <class RandomAccessIterator, class T, class Distance>
-inline void
+void
 __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
            RandomAccessIterator result, T value, Distance*)
 {
@@ -111,7 +111,7 @@ __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class RandomAccessIterator>
-inline void
+void
 pop_heap(RandomAccessIterator first, RandomAccessIterator last)
 {
   mystl::__pop_heap(first, last - 1, last - 1, *(last - 1), distance_type(first));
@@ -142,7 +142,7 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
 }
 
 template <class RandomAccessIterator, class T, class Distance, class Compared>
-inline void
+void
 __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
            RandomAccessIterator result, T value, Distance*, Compared comp)
 {
@@ -151,7 +151,7 @@ __pop_heap(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class RandomAccessIterator, class Compared>
-inline void
+void
 pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
 {
   mystl::__pop_heap(first, last - 1, last - 1, *(last - 1),
@@ -204,7 +204,7 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last, Distance
 }
 
 template <class RandomAccessIterator>
-inline void
+void
 make_heap(RandomAccessIterator first, RandomAccessIterator last)
 {
   mystl::__make_heap(first, last, distance_type(first));;
@@ -230,7 +230,7 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class RandomAccessIterator, class Compared>
-inline void
+void
 make_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
 {
   mystl::__make_heap(first, last, distance_type(first), comp);

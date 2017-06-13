@@ -70,42 +70,42 @@ public:
 
 // 重载比较操作符
 template <class T, class Sequence>
-inline bool
+bool
 operator==(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class T, class Sequence>
-inline bool
+bool
 operator!=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return !(lhs == rhs);
 }
 
 template <class T, class Sequence>
-inline bool
+bool
 operator<(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return lhs < rhs;
 }
 
 template <class T, class Sequence>
-inline bool
+bool
 operator>(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return rhs < lhs;
 }
 
 template <class T, class Sequence>
-inline bool
+bool
 operator<=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return !(rhs < lhs);
 }
 
 template <class T, class Sequence>
-inline bool
+bool
 operator>=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 {
   return !(lhs < rhs);
@@ -113,7 +113,7 @@ operator>=(const queue<T, Sequence>& lhs, const queue<T, Sequence>& rhs)
 
 // 重载 mystl 的 swap
 template <class T, class Sequence>
-inline void
+void
 swap(queue<T, Sequence>& lhs, queue<T, Sequence>& rhs)
 {
   lhs.swap(rhs);
@@ -215,8 +215,8 @@ public:
       s_.push_back(value);
       mystl::push_heap(s_.begin(), s_.end(), comp_);
     }
-    catch (...) 
-    { 
+    catch (...)
+    {
       s_.clear();
       throw;
     }
@@ -244,14 +244,14 @@ public:
     catch (...) { s_.clear(); }
   }
 
-  void clear() 
-  { 
-    while (!empty())    
-      pop(); 
+  void clear()
+  {
+    while (!empty())
+      pop();
   }
-  void swap(priority_queue& rhs) 
-  { 
-    mystl::swap(s_, rhs.s_); 
+  void swap(priority_queue& rhs)
+  {
+    mystl::swap(s_, rhs.s_);
     mystl::swap(comp_, rhs.comp_);
   }
 
@@ -268,7 +268,7 @@ public:
 
 // 重载比较操作符
 template <class T, class Sequence, class Compare>
-inline bool
+bool
 operator==(priority_queue<T, Sequence, Compare>& lhs,
            priority_queue<T, Sequence, Compare>& rhs)
 {
@@ -276,7 +276,7 @@ operator==(priority_queue<T, Sequence, Compare>& lhs,
 }
 
 template <class T, class Sequence, class Compare>
-inline bool
+bool
 operator!=(priority_queue<T, Sequence, Compare>& lhs,
            priority_queue<T, Sequence, Compare>& rhs)
 {
@@ -285,7 +285,7 @@ operator!=(priority_queue<T, Sequence, Compare>& lhs,
 
 // 重载 mystl 的 swap
 template <class T, class Sequence, class Compare>
-inline void
+void
 swap(priority_queue<T, Sequence, Compare>& lhs, priority_queue<T, Sequence, Compare>& rhs)
 {
   lhs.swap(rhs);

@@ -71,11 +71,11 @@ struct negate :public unarg_function<T, T>
 
 // 加法的证同元素
 template <class T>
-inline T identity_element(plus<T>) { return T(0); }
+T identity_element(plus<T>) { return T(0); }
 
 // 乘法的证同元素
 template <class T>
-inline T identity_element(multiplies<T>) { return T(1); }
+T identity_element(multiplies<T>) { return T(1); }
 
 // 函数对象：等于
 template <class T>
@@ -188,7 +188,7 @@ template <class Key>
 struct hash {};
 
 // 针对 char* 和 const char* 的特化版本
-inline size_t __hash_string(const char* s)
+size_t __hash_string(const char* s)
 {
   size_t h = 0;
   for (; *s; ++s)
