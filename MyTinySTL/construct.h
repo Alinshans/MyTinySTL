@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_CONSTRUCT_H_
+﻿#ifndef MYTINYSTL_CONSTRUCT_H_
 #define MYTINYSTL_CONSTRUCT_H_
 
 // 这个头文件包含两个函数 construct，destroy

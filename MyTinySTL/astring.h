@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_ASTRING_H_
+﻿#ifndef MYTINYSTL_ASTRING_H_
 #define MYTINYSTL_ASTRING_H_
 
 // 定义了 string, wstring 类型

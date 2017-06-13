@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_RB_TREE_H_
+﻿#ifndef MYTINYSTL_RB_TREE_H_
 #define MYTINYSTL_RB_TREE_H_
 
 // 这个头文件包含一个模板类 rb_tree

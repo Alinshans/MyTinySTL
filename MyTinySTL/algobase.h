@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_ALGOBASE_H_
+﻿#ifndef MYTINYSTL_ALGOBASE_H_
 #define MYTINYSTL_ALGOBASE_H_
 
 // 这个头文件包含了 mystl 的基本算法
