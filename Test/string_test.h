@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_STRING_TEST_H_
+﻿#ifndef MYTINYSTL_STRING_TEST_H_
 #define MYTINYSTL_STRING_TEST_H_
 
 // string test : 测试 string 的接口和 insert 的性能

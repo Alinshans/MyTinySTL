@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_FUNCTIONAL_H_
+﻿#ifndef MYTINYSTL_FUNCTIONAL_H_
 #define MYTINYSTL_FUNCTIONAL_H_
 
 // 这个头文件包含了 mystl 的函数对象

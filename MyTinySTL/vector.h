@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_VECTOR_H_
+﻿#ifndef MYTINYSTL_VECTOR_H_
 #define MYTINYSTL_VECTOR_H_
 
 // 这个头文件包含一个模板类 vector

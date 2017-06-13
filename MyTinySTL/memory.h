@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_MEMORY_H_
+﻿#ifndef MYTINYSTL_MEMORY_H_
 #define MYTINYSTL_MEMORY_H_
 
 // 这个头文件负责更高级的动态内存管理

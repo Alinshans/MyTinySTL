@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_TEMPBUF_H_
+﻿#ifndef MYTINYSTL_TEMPBUF_H_
 #define MYTINYSTL_TEMPBUF_H_
 
 // 这个头文件用于临时缓冲区的申请与释放，包含一个模板类和一些全局函数

@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_UTIL_H_
+﻿#ifndef MYTINYSTL_UTIL_H_
 #define MYTINYSTL_UTIL_H_
 
 // 这个文件包含一些通用工具

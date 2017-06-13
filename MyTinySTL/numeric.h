@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_NUMERIC_H_
+﻿#ifndef MYTINYSTL_NUMERIC_H_
 #define MYTINYSTL_NUMERIC_H_
 
 // 这个头文件包含了 mystl 的数值算法

@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_ALLOC_H_
+﻿#ifndef MYTINYSTL_ALLOC_H_
 #define MYTINYSTL_ALLOC_H_
 
 // 这个头文件包含一个类 alloc，代表 mystl 的默认空间配置器

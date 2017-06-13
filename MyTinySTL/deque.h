@@ -1,4 +1,4 @@
-#ifndef MYTINYSTL_DEQUE_H_
+﻿#ifndef MYTINYSTL_DEQUE_H_
 #define MYTINYSTL_DEQUE_H_
 
 // 这个头文件包含了一个模板类 deque
