@@ -6,7 +6,7 @@ MyTinySTL
 |[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl)|[![Release](http://i1.buimg.com/594413/09544a84b6c8976e.png)](https://github.com/Alinshans/MyTinySTL/releases)|
 
 ## 简介
-   基于 `C++11` 的 `tinySTL`，并使用中文文档与中文注释，作为新手练习用途。实现了大部分 STL 中的容器与函数，但仍存在许多不足与 bug 。如发现错误，还请在 `Issues` 中指出，欢迎 `Fork` 和 `Pull requests` 改善代码，谢谢！<br>
+   基于 `C++11` 的 `tinySTL`，并使用中文文档与中文注释，作为新手练习用途。实现了大部分 STL 中的容器与函数，但仍存在许多不足与 bug 。如发现错误，还请在 [`Issues`](https://github.com/Alinshans/MyTinySTL/issues) 中指出，欢迎 `Fork` 和 [`Pull requests`](https://github.com/Alinshans/MyTinySTL/pulls) 改善代码，谢谢！
 
 ## 支持
 
@@ -39,7 +39,8 @@ $ cd ../bin && ./stltest
 ```
 
   * windows
-  使用 `vs2015`（或 `vs2017`）打开 `MyTinySTL.sln`，配置 `Relase` 模式，（Ctrl + F5）开始执行。
+  1. git clone 或 [Download ZIP](https://github.com/Alinshans/MyTinySTL/archive/master.zip)
+  2. 使用 `vs2015`（或 `vs2017`）打开 `MyTinySTL.sln`，配置成 `Release` 模式，（Ctrl + F5）开始执行。
   
 ## 文档
   见 [Wiki](https://github.com/Alinshans/MyTinySTL/wiki)
