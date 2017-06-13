@@ -355,6 +355,7 @@ __find_end(BidirectionalIterator1 first1, BidirectionalIterator1 last1,
 }
 
 template <class ForwardIterator1, class ForwardIterator2>
+ForwardIterator1
 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
          ForwardIterator2 first2, ForwardIterator2 last2)
 {
@@ -421,6 +422,7 @@ __find_end(BidirectionalIterator1 first1, BidirectionalIterator1 last1,
 }
 
 template <class ForwardIterator1, class ForwardIterator2, class Compared>
+ForwardIterator1
 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
          ForwardIterator2 first2, ForwardIterator2 last2, Compared comp)
 {
@@ -572,6 +574,7 @@ __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T>
+ForwardIterator
 lower_bound(ForwardIterator first, ForwardIterator last, const T& value)
 {
   return mystl::__lower_bound(first, last, value, iterator_category(first));
@@ -633,6 +636,7 @@ __lower_bound(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T, class Compared>
+ForwardIterator
 lower_bound(ForwardIterator first, ForwardIterator last, const T& value, Compared comp)
 {
   return mystl::__lower_bound(first, last, value, iterator_category(first), comp);
@@ -698,6 +702,7 @@ __upper_bound(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T>
+ForwardIterator
 upper_bound(ForwardIterator first, ForwardIterator last, const T& value)
 {
   return mystl::__upper_bound(first, last, value, iterator_category(first));
@@ -759,6 +764,7 @@ __upper_bound(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T, class Compared>
+ForwardIterator
 upper_bound(ForwardIterator first, ForwardIterator last, const T& value, Compared comp)
 {
   return mystl::__upper_bound(first, last, value, iterator_category(first), comp);
@@ -855,6 +861,7 @@ __equal_range(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T>
+mystl::pair<ForwardIterator, ForwardIterator>
 equal_range(ForwardIterator first, ForwardIterator last, const T& value)
 {
   return mystl::__equal_range(first, last, value, iterator_category(first));
@@ -929,6 +936,7 @@ __equal_range(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class ForwardIterator, class T, class Compared>
+mystl::pair<ForwardIterator, ForwardIterator>
 equal_range(ForwardIterator first, ForwardIterator last, const T& value, Compared comp)
 {
   return mystl::__equal_range(first, last, value, iterator_category(first), comp);
@@ -1084,6 +1092,7 @@ bool is_sorted(ForwardIterator first, ForwardIterator last, Compared comp)
 // 找出三个值的中间值
 /*****************************************************************************************/
 template <class T>
+const T& median(const T& left, const T& mid, const T& right)
 {
   if (left < mid)
     if (mid < right)        // left < mid < right
@@ -1102,6 +1111,7 @@ template <class T>
 
 // 重载版本使用函数对象 comp 代替比较操作
 template <class T, class Compared>
+const T& median(const T& left, const T& mid, const T& right, Compared comp)
 {
   if (comp(left, mid))
     if (comp(mid, right))
@@ -1383,6 +1393,7 @@ void __reverse(RandomAccessIterator first, RandomAccessIterator last,
 }
 
 template <class BidirectionalIterator>
+void reverse(BidirectionalIterator first, BidirectionalIterator last)
 {
   mystl::__reverse(first, last, iterator_category(first));
 }
@@ -1561,6 +1572,7 @@ __rotate(RandomAccessIterator first, RandomAccessIterator middle,
 }
 
 template <class ForwardIterator>
+ForwardIterator
 rotate(ForwardIterator first, ForwardIterator middle, ForwardIterator last)
 {
   if (first == middle)
@@ -1885,6 +1897,7 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
 }
 
 template <class BidirectionalIterator, class T>
+void
 __inplace_merge_aux(BidirectionalIterator first, BidirectionalIterator middle,
                     BidirectionalIterator last, T*)
 {
@@ -1902,6 +1915,7 @@ __inplace_merge_aux(BidirectionalIterator first, BidirectionalIterator middle,
 }
 
 template <class BidirectionalIterator>
+void
 inplace_merge(BidirectionalIterator first, BidirectionalIterator middle,
               BidirectionalIterator last)
 {
@@ -2026,6 +2040,7 @@ void __merge_adaptive(BidirectionalIterator first, BidirectionalIterator middle,
 }
 
 template <class BidirectionalIterator, class T, class Compared>
+void
 __inplace_merge_aux(BidirectionalIterator first, BidirectionalIterator middle,
                     BidirectionalIterator last, T*, Compared comp)
 {
@@ -2043,6 +2058,7 @@ __inplace_merge_aux(BidirectionalIterator first, BidirectionalIterator middle,
 }
 
 template <class BidirectionalIterator, class Compared>
+void
 inplace_merge(BidirectionalIterator first, BidirectionalIterator middle,
               BidirectionalIterator last, Compared comp)
 {
@@ -2120,6 +2136,7 @@ __partial_sort_copy(InputIterator first, InputIterator last,
 }
 
 template <class InputIterator, class RandomAccessIterator>
+RandomAccessIterator
 partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last)
 {
@@ -2158,6 +2175,7 @@ __partial_sort_copy(InputIterator first, InputIterator last,
 }
 
 template <class InputIterator, class RandomAccessIterator, class Compared>
+RandomAccessIterator
 partial_sort_copy(InputIterator first, InputIterator last,
                   RandomAccessIterator result_first, RandomAccessIterator result_last,
                   Compared comp)
@@ -2229,6 +2247,7 @@ constexpr static size_t kSmallSectionSize = 128;  // 小型区间的大小，在
 
                                                   // 用于控制分割恶化的情况
 template <class Size>
+Size __lg(Size n)
 {  // 找出使得 2^k <= n 时，k 的最大值
   Size k = 0;
   for (; n > 1; n >>= 1)  ++k;
@@ -2300,6 +2319,7 @@ void __unguarded_insertion_sort(RandomAccessIterator first, RandomAccessIterator
 
 // 辅助函数 __linear_insert
 template <class RandomAccessIterator>
+void __linear_insert(RandomAccessIterator first, RandomAccessIterator last)
 {
   auto value = *last;
   if (value < *first)
@@ -2341,6 +2361,7 @@ void __final_insertion_sort(RandomAccessIterator first, RandomAccessIterator las
 }
 
 template <class RandomAccessIterator>
+void sort(RandomAccessIterator first, RandomAccessIterator last)
 {
   if (first != last)
   {
@@ -2419,6 +2440,7 @@ void __unguarded_insertion_sort(RandomAccessIterator first, RandomAccessIterator
 
 // 辅助函数 __linear_insert
 template <class RandomAccessIterator, class Compared>
+void
 __linear_insert(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
 {
   auto value = *last;
@@ -2461,6 +2483,7 @@ void __final_insertion_sort(RandomAccessIterator first, RandomAccessIterator las
 }
 
 template <class RandomAccessIterator, class Compared>
+void sort(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
 {
   if (first != last)
   {
@@ -2555,6 +2578,7 @@ __unique_copy(InputIterator first, InputIterator last,
 }
 
 template <class InputIterator, class OutputIterator>
+OutputIterator
 unique_copy(InputIterator first, InputIterator last, OutputIterator result)
 {
   if (first == last)
@@ -2599,6 +2623,7 @@ __unique_copy(InputIterator first, InputIterator last,
 }
 
 template <class InputIterator, class OutputIterator, class Compared>
+OutputIterator
 unique_copy(InputIterator first, InputIterator last, OutputIterator result, Compared comp)
 {
   if (first == last)

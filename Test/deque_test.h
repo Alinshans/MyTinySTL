@@ -45,6 +45,9 @@ void deque_test()
   FUN_AFTER(d1, d1.insert(d1.begin(), a, a + 5));
   FUN_AFTER(d1, d1.erase(d1.begin()));
   FUN_AFTER(d1, d1.erase(d1.begin(), d1.begin() + 4));
+  FUN_AFTER(d1, d1.emplace_back(8));
+  FUN_AFTER(d1, d1.emplace_front(8));
+  FUN_AFTER(d1, d1.emplace(d1.begin() + 1, 9));
   FUN_AFTER(d1, d1.push_front(1));
   FUN_AFTER(d1, d1.push_back(2));
   FUN_AFTER(d1, d1.pop_back());
