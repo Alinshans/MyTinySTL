@@ -116,7 +116,7 @@ public:
 
 // 重载比较操作符
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator==(const set<Key, Compare, Alloc>& lhs,
            const set<Key, Compare, Alloc>& rhs)
 {
@@ -124,7 +124,7 @@ operator==(const set<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator<(const set<Key, Compare, Alloc>& lhs,
   const set<Key, Compare, Alloc>& rhs)
 {
@@ -132,7 +132,7 @@ operator<(const set<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator!=(const set<Key, Compare, Alloc>& lhs,
            const set<Key, Compare, Alloc>& rhs)
 {
@@ -140,7 +140,7 @@ operator!=(const set<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator>(const set<Key, Compare, Alloc>& lhs,
           const set<Key, Compare, Alloc>& rhs)
 {
@@ -148,7 +148,7 @@ operator>(const set<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator<=(const set<Key, Compare, Alloc>& lhs,
            const set<Key, Compare, Alloc>& rhs)
 {
@@ -156,7 +156,7 @@ operator<=(const set<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator>=(const set<Key, Compare, Alloc>& lhs,
            const set<Key, Compare, Alloc>& rhs)
 {
@@ -165,7 +165,7 @@ operator>=(const set<Key, Compare, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class Compare, class Alloc>
-inline void
+ void
 swap(set<Key, Compare, Alloc>& lhs,
      set<Key, Compare, Alloc>& rhs)
 {
@@ -277,7 +277,7 @@ public:
 
 // 重载比较操作符
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator==(const multiset<Key, Compare, Alloc>& lhs,
            const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -285,7 +285,7 @@ operator==(const multiset<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator<(const multiset<Key, Compare, Alloc>& lhs,
   const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -293,7 +293,7 @@ operator<(const multiset<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator!=(const multiset<Key, Compare, Alloc>& lhs,
            const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -301,7 +301,7 @@ operator!=(const multiset<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator>(const multiset<Key, Compare, Alloc>& lhs,
           const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -309,7 +309,7 @@ operator>(const multiset<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator<=(const multiset<Key, Compare, Alloc>& lhs,
            const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -317,7 +317,7 @@ operator<=(const multiset<Key, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Compare, class Alloc>
-inline bool
+ bool
 operator>=(const multiset<Key, Compare, Alloc>& lhs,
            const multiset<Key, Compare, Alloc>& rhs)
 {
@@ -326,7 +326,7 @@ operator>=(const multiset<Key, Compare, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class Compare, class Alloc>
-inline void
+ void
 swap(multiset<Key, Compare, Alloc>& lhs,
      multiset<Key, Compare, Alloc>& rhs)
 {

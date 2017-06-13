@@ -218,21 +218,21 @@ private:
 // 构造函数
 template<class CharType, class CharTraits, class Alloc>
 template<class InputIterator>
-inline basic_string<CharType, CharTraits, Alloc>::
+basic_string<CharType, CharTraits, Alloc>::
 basic_string(InputIterator first, InputIterator last)
 {
   __copy_from(first, 0, last - first);
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>::
+basic_string<CharType, CharTraits, Alloc>::
 basic_string(const basic_string& other, size_type count)
 {
   __copy_from(other.data(), 0, count);
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>::
+basic_string<CharType, CharTraits, Alloc>::
 basic_string(const basic_string& other, size_type index, size_type count)
 {
   __copy_from(other.data(), index, count);
@@ -240,7 +240,7 @@ basic_string(const basic_string& other, size_type index, size_type count)
 
 // 复制赋值操作符
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>&
+basic_string<CharType, CharTraits, Alloc>&
 basic_string<CharType, CharTraits, Alloc>::
 operator=(const basic_string& rhs)
 {
@@ -253,7 +253,7 @@ operator=(const basic_string& rhs)
 
 // 移动赋值操作符
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>&
+basic_string<CharType, CharTraits, Alloc>&
 basic_string<CharType, CharTraits, Alloc>::
 operator=(basic_string&& rhs)
 {
@@ -274,7 +274,7 @@ operator=(basic_string&& rhs)
 
 // 减少不用的空间
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 shrink_to_fit()
 {
   if (finish_ < end_)
@@ -379,7 +379,7 @@ insert(iterator pos, InputIterator first, InputIterator last)
 
 // 删除 [first, last) 的元素
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::iterator
+typename basic_string<CharType, CharTraits, Alloc>::iterator
 basic_string<CharType, CharTraits, Alloc>::
 erase(iterator first, iterator last)
 {
@@ -396,7 +396,7 @@ erase(iterator first, iterator last)
 
 // 清空全部元素
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 clear()
 {
   mystl::destroy(buffer_, finish_);
@@ -405,7 +405,7 @@ clear()
 
 // 在尾部添加字符串前 count 个字符
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 add_back(const_pointer str, size_type count)
 {
   insert(end(), str, str + count);
@@ -413,7 +413,7 @@ add_back(const_pointer str, size_type count)
 
 // 在头部添加字符串前 count 个字符
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 add_front(const_pointer str, size_type count)
 {
   insert(begin(), str, str + count);
@@ -421,7 +421,7 @@ add_front(const_pointer str, size_type count)
 
 // 比较两个 basic_string，小于返回一个负数，大于返回一个正数，等于返回 0
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::difference_type
+typename basic_string<CharType, CharTraits, Alloc>::difference_type
 basic_string<CharType, CharTraits, Alloc>::
 compare(const basic_string& other) const
 {
@@ -441,7 +441,7 @@ compare(const basic_string& other) const
 
 // 返回从下标 index 开始到末尾的子串
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 basic_string<CharType, CharTraits, Alloc>::
 substr(size_type index)
 {
@@ -450,7 +450,7 @@ substr(size_type index)
 
 // 返回下标从 index 开始长度为 count 的子串
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 basic_string<CharType, CharTraits, Alloc>::
 substr(size_type index, size_type count)
 {
@@ -460,7 +460,7 @@ substr(size_type index, size_type count)
 
 // 移除值为 ch 的元素
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 remove(value_type ch)
 {
   for (auto it = begin(); it != end();)
@@ -479,7 +479,7 @@ remove(value_type ch)
 // 移除令一元操作为 true 的元素
 template<class CharType, class CharTraits, class Alloc>
 template <class UnaryPredicate>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 remove_if(UnaryPredicate up)
 {
   for (auto it = begin(); it != end();)
@@ -497,7 +497,7 @@ remove_if(UnaryPredicate up)
 
 // 将值为 ch 的元素替换为 rch
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 replace(value_type ch, value_type rch)
 {
   for (auto it = begin(); it != end(); ++it)
@@ -510,7 +510,7 @@ replace(value_type ch, value_type rch)
 // 将令一元操作为 true 的元素替换为 rch
 template<class CharType, class CharTraits, class Alloc>
 template <class UnaryPredicate>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 replace_if(UnaryPredicate up, value_type rch)
 {
   for (auto it = begin(); it != end(); ++it)
@@ -522,7 +522,7 @@ replace_if(UnaryPredicate up, value_type rch)
 
 // 查找字符为 ch 的元素，若找到返回其下标，否则返回 end_pos
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 find(value_type ch) const
 {
@@ -531,7 +531,7 @@ find(value_type ch) const
 
 // 从下标 index 开始查找字符为 ch 的元素，若找到返回其下标，否则返回 end_pos
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 find(value_type ch, size_type index) const
 {
@@ -545,7 +545,7 @@ find(value_type ch, size_type index) const
 
 // 查找字符串 str，若找到返回起始位置的下标，否则返回 end_pos
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 find(const_pointer str) const
 {
@@ -554,7 +554,7 @@ find(const_pointer str) const
 
 // 从下标 index 开始查找字符串 str，若找到返回起始位置的下标，否则返回 end_pos
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 find(const_pointer str, size_type index) const
 {
@@ -578,7 +578,7 @@ find(const_pointer str, size_type index) const
 
 // 查找一个 basic_string，若找到返回起始位置的下标，否则返回 end_pos
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 find(const basic_string& str) const
 {
@@ -587,7 +587,7 @@ find(const basic_string& str) const
 
 // 反向查找字符为 ch 的元素，与 find 类似
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 rfind(value_type ch) const
 {
@@ -596,7 +596,7 @@ rfind(value_type ch) const
 
 // 从下标 index 开始反向查找值为 ch 的元素，与 find 类似
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 rfind(value_type ch, size_type index) const
 {
@@ -610,7 +610,7 @@ rfind(value_type ch, size_type index) const
 
 // 反向查找字符串 str，与 find 类似
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 rfind(const_pointer str) const
 {
@@ -619,7 +619,7 @@ rfind(const_pointer str) const
 
 // 从下标 index 开始反向查找字符串 str，与 find 类似
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 rfind(const_pointer str, size_type index) const
 {
@@ -643,7 +643,7 @@ rfind(const_pointer str, size_type index) const
 
 // 反向查找一个 basic_string，与 find 类似
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 rfind(const basic_string& str) const
 {
@@ -652,7 +652,7 @@ rfind(const basic_string& str) const
 
 // 返回字符为 ch 的元素出现的次数
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 count(value_type ch) const
 {
@@ -661,7 +661,7 @@ count(value_type ch) const
 
 // 返回从下标 index 开始字符为 ch 的元素出现的次数
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 count(value_type ch, size_type index) const
 {
@@ -676,7 +676,7 @@ count(value_type ch, size_type index) const
 
 // 反转 basic_string
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 reverse()
 {
   for (auto i = begin(), j = end(); i < j;)
@@ -687,7 +687,7 @@ reverse()
 
 // 交换两个 basic_string
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 swap(basic_string& rhs)
 {
   if (this != &rhs)
@@ -700,7 +700,7 @@ swap(basic_string& rhs)
 
 // __destroy_buffer 函数
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 __destroy_buffer()
 {
   if (buffer_)
@@ -715,7 +715,7 @@ __destroy_buffer()
 
 // __get_str 函数
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::pointer
+typename basic_string<CharType, CharTraits, Alloc>::pointer
 basic_string<CharType, CharTraits, Alloc>::
 __get_str()
 {
@@ -726,7 +726,7 @@ __get_str()
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::const_pointer
+typename basic_string<CharType, CharTraits, Alloc>::const_pointer
 basic_string<CharType, CharTraits, Alloc>::
 __get_str() const
 {
@@ -738,7 +738,7 @@ __get_str() const
 
 // __get_strlen 函数
 template<class CharType, class CharTraits, class Alloc>
-inline typename basic_string<CharType, CharTraits, Alloc>::size_type
+typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 __get_strlen(const_pointer str) const
 {
@@ -748,7 +748,7 @@ __get_strlen(const_pointer str) const
 
 // __initialize_string 函数
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 __initialize_string(size_type n, value_type ch)
 {
   const auto len = mystl::max(__init_size(), n);
@@ -759,7 +759,7 @@ __initialize_string(size_type n, value_type ch)
 
 // __copy_from 函数
 template<class CharType, class CharTraits, class Alloc>
-inline void basic_string<CharType, CharTraits, Alloc>::
+void basic_string<CharType, CharTraits, Alloc>::
 __copy_from(const_pointer src, size_type pos, size_type count)
 {
   const auto len = mystl::max(__init_size(), count);
@@ -810,7 +810,7 @@ __reallocate_and_copy(iterator pos, const_iterator first, const_iterator last)
 
 // 重载 operator>>
 template<class CharType, class CharTraits, class Alloc>
-inline std::istream&
+std::istream&
 operator >> (std::istream& is, basic_string<CharType, CharTraits, Alloc>& str)
 {
   CharType* buf = new CharType[4096];
@@ -823,7 +823,7 @@ operator >> (std::istream& is, basic_string<CharType, CharTraits, Alloc>& str)
 
 // 重载 operator<<
 template<class CharType, class CharTraits, class Alloc>
-inline std::ostream&
+std::ostream&
 operator<<(std::ostream& os, const basic_string<CharType, CharTraits, Alloc>& str)
 {
   for (auto it : str)
@@ -833,7 +833,7 @@ operator<<(std::ostream& os, const basic_string<CharType, CharTraits, Alloc>& st
 
 // 重载 operator+
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
           const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -843,7 +843,7 @@ operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 operator+(const CharType* lhs,
           const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -853,7 +853,7 @@ operator+(const CharType* lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
           const CharType* rhs)
 {
@@ -863,7 +863,7 @@ operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 operator+(const CharType& ch,
           const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -873,7 +873,7 @@ operator+(const CharType& ch,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline basic_string<CharType, CharTraits, Alloc>
+basic_string<CharType, CharTraits, Alloc>
 operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
           const CharType& ch)
 {
@@ -884,7 +884,7 @@ operator+(const basic_string<CharType, CharTraits, Alloc>& lhs,
 
 // 重载比较操作符
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator==(const basic_string<CharType, CharTraits, Alloc>& lhs,
            const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -892,7 +892,7 @@ operator==(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator!=(const basic_string<CharType, CharTraits, Alloc>& lhs,
            const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -900,7 +900,7 @@ operator!=(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator<(const basic_string<CharType, CharTraits, Alloc>& lhs,
   const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -908,7 +908,7 @@ operator<(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator<=(const basic_string<CharType, CharTraits, Alloc>& lhs,
            const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -916,7 +916,7 @@ operator<=(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator>(const basic_string<CharType, CharTraits, Alloc>& lhs,
           const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -924,7 +924,7 @@ operator>(const basic_string<CharType, CharTraits, Alloc>& lhs,
 }
 
 template<class CharType, class CharTraits, class Alloc>
-inline bool
+bool
 operator>=(const basic_string<CharType, CharTraits, Alloc>& lhs,
            const basic_string<CharType, CharTraits, Alloc>& rhs)
 {
@@ -933,7 +933,7 @@ operator>=(const basic_string<CharType, CharTraits, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template<class CharType, class CharTraits, class Alloc>
-inline void
+void
 swap(basic_string<CharType, CharTraits, Alloc>& lhs,
      basic_string<CharType, CharTraits, Alloc>& rhs)
 {

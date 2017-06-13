@@ -193,6 +193,8 @@ public:
   const_pointer data() const noexcept { return begin_; }
 
   // 修改容器相关操作
+
+  // assign
   void assign(size_type n)
   { __fill_assign(n, value_type()); }
 
@@ -206,32 +208,38 @@ public:
   void assign(std::initializer_list<value_type> il)
   { assign(il.begin(), il.end()); }
 
+  // emplace / emplace_back
   template <class... Args>
   void emplace(iterator pos, Args&& ...args);
 
   template <class... Args>
   void emplace_back(Args&& ...args);
 
+  // push_back / pop_back
   void push_back(const_reference value);
   void push_back(value_type&& value);
 
   void pop_back();
 
+  // insert
   iterator insert(iterator pos);
   iterator insert(iterator pos, const value_type& value);
   void     insert(iterator pos, size_type n, const value_type& value);
   template <class Iter>
   void     insert(iterator pos, Iter first, Iter last);
 
+  // erase / clear
   iterator erase(iterator pos);
   iterator erase(iterator first, iterator last);
   void     clear() { erase(begin(), end()); }
 
+  // resize / reverse
   void     resize(size_type new_size) { return resize(new_size, value_type()); }
   void     resize(size_type new_size, const value_type& value);
 
   void     reverse() { mystl::reverse(begin(), end()); }
 
+  // swap
   void     swap(vector& rhs);
 
 private:

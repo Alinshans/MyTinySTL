@@ -27,10 +27,13 @@ void deque_test()
   mystl::deque<int> d4(a, a + 5);
   mystl::deque<int> d5(d2);
   mystl::deque<int> d6(std::move(d2));
-  mystl::deque<int> d7 = d3;
-  mystl::deque<int> d8 = std::move(d3);
+  mystl::deque<int> d7;
+  d7 = d3;
+  mystl::deque<int> d8;
+  d8 = std::move(d3);
   mystl::deque<int> d9{ 1,2,3,4,5,6,7,8,9 };
-  mystl::deque<int> d10 = { 1,2,3,4,5,6,7,8,9 };
+  mystl::deque<int> d10;
+  d10 = { 1,2,3,4,5,6,7,8,9 };
   d10.~deque();
 
   FUN_AFTER(d1, d1.assign(10));
@@ -42,13 +45,18 @@ void deque_test()
   FUN_AFTER(d1, d1.insert(d1.begin(), a, a + 5));
   FUN_AFTER(d1, d1.erase(d1.begin()));
   FUN_AFTER(d1, d1.erase(d1.begin(), d1.begin() + 4));
+  FUN_AFTER(d1, d1.emplace_back(8));
+  FUN_AFTER(d1, d1.emplace_front(8));
+  FUN_AFTER(d1, d1.emplace(d1.begin() + 1, 9));
   FUN_AFTER(d1, d1.push_front(1));
   FUN_AFTER(d1, d1.push_back(2));
   FUN_AFTER(d1, d1.pop_back());
   FUN_AFTER(d1, d1.pop_front());
+  FUN_AFTER(d1, d1.shrink_to_fit());
   FUN_AFTER(d1, d1.resize(5));
   FUN_AFTER(d1, d1.resize(8, 8));
   FUN_AFTER(d1, d1.clear());
+  FUN_AFTER(d1, d1.shrink_to_fit());
   FUN_AFTER(d1, d1.swap(d4));
   FUN_VALUE(*(d1.begin()));
   FUN_VALUE(*(d1.end() - 1));

@@ -149,7 +149,7 @@ public:
 
 // 重载比较操作符
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator==(const map<Key, T, Compare, Alloc>& lhs,
            const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -157,7 +157,7 @@ operator==(const map<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator<(const map<Key, T, Compare, Alloc>& lhs,
   const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -165,7 +165,7 @@ operator<(const map<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator!=(const map<Key, T, Compare, Alloc>& lhs,
            const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -173,7 +173,7 @@ operator!=(const map<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator>(const map<Key, T, Compare, Alloc>& lhs,
           const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -181,7 +181,7 @@ operator>(const map<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator<=(const map<Key, T, Compare, Alloc>& lhs,
            const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -189,7 +189,7 @@ operator<=(const map<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator>=(const map<Key, T, Compare, Alloc>& lhs,
            const map<Key, T, Compare, Alloc>& rhs)
 {
@@ -198,7 +198,7 @@ operator>=(const map<Key, T, Compare, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class T, class Compare, class Alloc>
-inline void
+void
 swap(map<Key, T, Compare, Alloc>& lhs,
      map<Key, T, Compare, Alloc>& rhs)
 {
@@ -340,7 +340,7 @@ public:
 
 // 重载比较操作符
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator==(const multimap<Key, T, Compare, Alloc>& lhs,
            const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -348,7 +348,7 @@ operator==(const multimap<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator<(const multimap<Key, T, Compare, Alloc>& lhs,
   const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -356,7 +356,7 @@ operator<(const multimap<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator!=(const multimap<Key, T, Compare, Alloc>& lhs,
            const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -364,7 +364,7 @@ operator!=(const multimap<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator>(const multimap<Key, T, Compare, Alloc>& lhs,
           const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -372,7 +372,7 @@ operator>(const multimap<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator<=(const multimap<Key, T, Compare, Alloc>& lhs,
            const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -380,7 +380,7 @@ operator<=(const multimap<Key, T, Compare, Alloc>& lhs,
 }
 
 template <class Key, class T, class Compare, class Alloc>
-inline bool
+bool
 operator>=(const multimap<Key, T, Compare, Alloc>& lhs,
            const multimap<Key, T, Compare, Alloc>& rhs)
 {
@@ -389,7 +389,7 @@ operator>=(const multimap<Key, T, Compare, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class T, class Compare, class Alloc>
-inline void
+void
 swap(multimap<Key, T, Compare, Alloc>& lhs,
      multimap<Key, T, Compare, Alloc>& rhs)
 {

@@ -183,7 +183,6 @@
     <ClInclude Include="pair.h" />
     <ClInclude Include="queue.h" />
     <ClInclude Include="rb_tree.h" />
-    <ClInclude Include="reverse_iterator.h" />
     <ClInclude Include="set.h" />
     <ClInclude Include="set_algo.h" />
     <ClInclude Include="stack.h" />

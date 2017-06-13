@@ -154,7 +154,7 @@ struct __rb_tree_iterator :public __rb_tree_iterator_base
 
 // 以下四个全局函数，用于调整 rb tree 节点的位置与颜色
 // 左旋，参数一为左旋点，参数二为根节点
-inline void
+void
 __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 {
   auto y = x->right;
@@ -179,7 +179,7 @@ __rb_tree_rotate_left(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 }
 
 // 右旋，参数一为右旋点，参数二为根节点
-inline void
+void
 __rb_tree_rotate_right(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 {
   auto y = x->left;
@@ -204,7 +204,7 @@ __rb_tree_rotate_right(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 }
 
 // 重新使 rb tree 平衡，参数一为新增节点，参数二为根节点
-inline void
+void
 __rb_tree_rebalance(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 {
   x->color = __rb_tree_red;                                 // 新增节点为红色
@@ -259,7 +259,7 @@ __rb_tree_rebalance(__rb_tree_node_base* x, __rb_tree_node_base*& root)
 }
 
 // 因删除节点而要使 rb tree 重新平衡，参数一为要删除的节点，参数二为根节点，参数三为最小节点，参数四为最大节点
-inline __rb_tree_node_base*
+__rb_tree_node_base*
 __rb_tree_rebalance_for_erase(__rb_tree_node_base* z,
                               __rb_tree_node_base*& root,
                               __rb_tree_node_base*& leftmost,
@@ -575,7 +575,7 @@ private:
 
 // 复制构造函数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 rb_tree(const rb_tree& rhs)
 {
   __rb_tree_initialize();
@@ -592,7 +592,7 @@ rb_tree(const rb_tree& rhs)
 
 // 移动构造函数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 rb_tree(rb_tree&& rhs)
 {
   __rb_tree_initialize();
@@ -613,7 +613,7 @@ rb_tree(rb_tree&& rhs)
 
 // 复制赋值操作符
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 operator=(const rb_tree& rhs)
 {
@@ -636,7 +636,7 @@ operator=(const rb_tree& rhs)
 
 // 移动赋值操作符
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 operator=(rb_tree&& rhs)
 {
@@ -664,7 +664,7 @@ operator=(rb_tree&& rhs)
 
 // 插入新值，节点键值允许重复
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 insert_equal(const value_type& value)
 {
@@ -735,7 +735,7 @@ insert_equal(iterator position, const value_type& value)
 // 插入[first, last)区间内的值，键值允许重复
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 template <class InputIterator>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 insert_equal(InputIterator first, InputIterator last)
 {
   for (; first != last; ++first)
@@ -746,7 +746,7 @@ insert_equal(InputIterator first, InputIterator last)
 
 // 插入新值，节点键值不允许重复，返回一个 pair，若插入成功，pair 的第二参数为 true，否则为 false
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
+mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 insert_unique(const value_type& value)
 {
@@ -779,7 +779,7 @@ insert_unique(const value_type& value)
 
 // 从 position 开始插入新值，节点键值不允许重复
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 insert_unique(iterator position, const value_type& value)
 {
@@ -834,7 +834,7 @@ insert_unique(iterator position, const value_type& value)
 // 插入[first, last)内的值，键值不允许重复
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 template <class InputIterator>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 insert_unique(InputIterator first, InputIterator last)
 {
   for (; first != last; ++first)
@@ -845,7 +845,7 @@ insert_unique(InputIterator first, InputIterator last)
 
 // 删除 position 位置的节点
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 erase(iterator position)
 {
   auto y = reinterpret_cast<link_type>(
@@ -857,7 +857,7 @@ erase(iterator position)
 
 // 删除与 x 键值相等的元素，返回删除的个数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 erase(const key_type& x)
 {
@@ -869,7 +869,7 @@ erase(const key_type& x)
 
 // 删除[first, last)区间内的元素
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 erase(iterator first, iterator last)
 {
   if (first == begin() && last == end())
@@ -885,7 +885,7 @@ erase(iterator first, iterator last)
 
 // 清空 rb tree
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 clear()
 {
   if (node_count_)
@@ -901,7 +901,7 @@ clear()
 
 // 返回节点比较的函数对象
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline Compare rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+Compare rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 key_comp() const
 {
   return key_compare;
@@ -909,7 +909,7 @@ key_comp() const
 
 // 查找键值为 k 的节点，返回指向它的迭代器
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 find(const key_type& k)
 {
@@ -931,7 +931,7 @@ find(const key_type& k)
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 find(const key_type& k) const
 {
@@ -954,7 +954,7 @@ find(const key_type& k) const
 
 // 查找键值为 k 的节点出现的次数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 count(const key_type& k) const
 {
@@ -965,7 +965,7 @@ count(const key_type& k) const
 
 // 键值不小于 k 的第一个位置
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 lower_bound(const key_type& k)
 {
@@ -986,7 +986,7 @@ lower_bound(const key_type& k)
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 lower_bound(const key_type& k) const
 {
@@ -1008,7 +1008,7 @@ lower_bound(const key_type& k) const
 
 // 键值不小于 k 的最后一个位置
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 upper_bound(const key_type& k)
 {
@@ -1029,7 +1029,7 @@ upper_bound(const key_type& k)
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 upper_bound(const key_type& k) const
 {
@@ -1051,7 +1051,7 @@ upper_bound(const key_type& k) const
 
 // 查找与键值 k 相等的区间，返回一个 pair 分别指向相等区间的首尾
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
+mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
   typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
   equal_range(const key_type& k)
@@ -1060,7 +1060,7 @@ inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::ite
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
+mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
   typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator>
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
   equal_range(const key_type& k) const
@@ -1070,7 +1070,7 @@ inline mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::con
 
 // 交换 rb tree
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 swap(rb_tree& rhs)
 {
   if (this != &rhs)
@@ -1083,7 +1083,7 @@ swap(rb_tree& rhs)
 
 // 创建一个结点
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __create_node(const value_type& x)
 {
@@ -1101,7 +1101,7 @@ __create_node(const value_type& x)
 
 // 复制一个结点
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __clone_node(link_type x)
 {
@@ -1114,7 +1114,7 @@ __clone_node(link_type x)
 
 // 销毁一个结点
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __destroy_node(link_type p)
 {
   mystl::destroy(&p->value);
@@ -1123,7 +1123,7 @@ __destroy_node(link_type p)
 
 // 初始化容器
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __rb_tree_initialize()
 {
   header_ = __get_node();
@@ -1136,7 +1136,7 @@ __rb_tree_initialize()
 
 // __copy 函数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __copy(link_type x, link_type p)
 {
@@ -1207,7 +1207,7 @@ __insert(base_ptr x_, base_ptr y_, const value_type& value)
 
 // __erase 函数
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
 __erase(link_type x)
 {
   while (x != nullptr)
@@ -1221,7 +1221,7 @@ __erase(link_type x)
 
 // 重载比较操作符
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
            const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1229,7 +1229,7 @@ operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator<(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
   const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1237,7 +1237,7 @@ operator<(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator!=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
            const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1245,7 +1245,7 @@ operator!=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator>(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
           const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1253,7 +1253,7 @@ operator>(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator<=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
            const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1261,7 +1261,7 @@ operator<=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 }
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline bool
+bool
 operator>=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
            const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
@@ -1270,7 +1270,7 @@ operator>=(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-inline void
+void
 swap(rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& lhs,
      rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& rhs)
 {
