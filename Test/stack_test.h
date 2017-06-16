@@ -15,13 +15,6 @@ namespace test
 namespace stack_test
 {
 
-// stack 的遍历输出
-#define STACK_COUT(s) do {              \
-    std::string s_name = #s;             \
-    std::cout << " " << s_name << " :";  \
-    stack_print(s);                      \
-} while(0)
-
 void stack_print(mystl::stack<int> s)
 {
   while (!s.empty())
@@ -31,6 +24,20 @@ void stack_print(mystl::stack<int> s)
   }
   std::cout << std::endl;
 }
+
+// stack 的遍历输出
+#define STACK_COUT(s) do {                       \
+    std::string s_name = #s;                     \
+    std::cout << " " << s_name << " :";          \
+    stack_print(s);                              \
+} while(0)
+
+#define STACK_FUN_AFTER(con, fun) do {           \
+  std::string fun_name = #fun;                   \
+  std::cout << " After " << fun_name << " :\n";  \
+  fun;                                           \
+  STACK_COUT(con);                               \
+} while(0)
 
 void stack_test()
 {
@@ -47,18 +54,21 @@ void stack_test()
   mystl::stack<int> s6(std::move(d1));
   mystl::stack<int> s7(s2);
   mystl::stack<int> s8(std::move(s2));
-  mystl::stack<int> s9 = s3;
-  mystl::stack<int> s10 = std::move(s3);
+  mystl::stack<int> s9;
+  s9 = s3;
+  mystl::stack<int> s10;
+  s10 = std::move(s3);
   mystl::stack<int> s11{ 1,2,3,4,5 };
-  mystl::stack<int> s12 = { 1,2,3,4,5 };
+  mystl::stack<int> s12;
+  s12 = { 1,2,3,4,5 };
+  s12.~stack();
 
-  std::cout << " After s1 push 1,2,3,4,5 :" << std::endl;
-  s1.push(1);
-  s1.push(2);
-  s1.push(3);
-  s1.push(4);
-  s1.push(5);
-  STACK_COUT(s1);
+  STACK_FUN_AFTER(s1, s1.push(1));
+  STACK_FUN_AFTER(s1, s1.push(2));
+  STACK_FUN_AFTER(s1, s1.push(3));
+  STACK_FUN_AFTER(s1, s1.pop());
+  STACK_FUN_AFTER(s1, s1.emplace(4));
+  STACK_FUN_AFTER(s1, s1.emplace(5));
   std::cout << std::boolalpha;
   FUN_VALUE(s1.empty());
   std::cout << std::noboolalpha;
@@ -66,16 +76,10 @@ void stack_test()
   FUN_VALUE(s1.top());
   while (!s1.empty())
   {
-    std::cout << " After s1.pop():" << std::endl;
-    s1.pop();
-    STACK_COUT(s1);
+    STACK_FUN_AFTER(s1, s1.pop());
   }
-  std::cout << " After s1.swap(s4) :" << std::endl;
-  s1.swap(s4);
-  STACK_COUT(s1);
-  std::cout << " After s1.clear() :" << std::endl;
-  s1.clear();
-  STACK_COUT(s1);
+  STACK_FUN_AFTER(s1, s1.swap(s4));
+  STACK_FUN_AFTER(s1, s1.clear());
   PASSED;
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;

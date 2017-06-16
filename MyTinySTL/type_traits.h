@@ -328,6 +328,13 @@ template<> struct __char_type<wchar_t>
 /*****************************************************************************************/
 // type traits
 
+// is_same
+template <class T, class U>
+struct is_same : mystl::__false_type {};
+
+template <class T>
+struct is_same<T, T> : mystl::__true_type {};
+
 // remove_reference
 template <class T>
 struct remove_reference

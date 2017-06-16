@@ -15,20 +15,6 @@ namespace test
 namespace queue_test
 {
 
-//  queue 的遍历输出
-#define QUEUE_COUT(q) do { \
-    std::string q_name = #q; \
-    std::cout << " " << q_name << " :"; \
-    queue_print(q); \
-} while(0)
-
-// priority_queue 的遍历输出
-#define P_QUEUE_COUT(p) do { \
-    std::string p_name = #p; \
-    std::cout << " " << p_name << " :"; \
-    p_queue_print(p); \
-} while(0)
-
 void queue_print(mystl::queue<int> q)
 {
   while (!q.empty())
@@ -49,6 +35,34 @@ void p_queue_print(mystl::priority_queue<int> p)
   std::cout << std::endl;
 }
 
+//  queue 的遍历输出
+#define QUEUE_COUT(q) do {                       \
+    std::string q_name = #q;                     \
+    std::cout << " " << q_name << " :";          \
+    queue_print(q);                              \
+} while(0)
+
+// priority_queue 的遍历输出
+#define P_QUEUE_COUT(p) do {                     \
+    std::string p_name = #p;                     \
+    std::cout << " " << p_name << " :";          \
+    p_queue_print(p);                            \
+} while(0)
+
+#define QUEUE_FUN_AFTER(con, fun) do {           \
+  std::string fun_name = #fun;                   \
+  std::cout << " After " << fun_name << " :\n";  \
+  fun;                                           \
+  QUEUE_COUT(con);                               \
+} while(0)
+
+#define P_QUEUE_FUN_AFTER(con, fun) do {         \
+  std::string fun_name = #fun;                   \
+  std::cout << " After " << fun_name << " :\n";  \
+  fun;                                           \
+  P_QUEUE_COUT(con);                             \
+} while(0)
+
 void queue_test()
 {
   std::cout << "[===============================================================]" << std::endl;
@@ -64,18 +78,21 @@ void queue_test()
   mystl::queue<int> q6(std::move(d1));
   mystl::queue<int> q7(q2);
   mystl::queue<int> q8(std::move(q2));
-  mystl::queue<int> q9 = q3;
-  mystl::queue<int> q10 = std::move(q3);
+  mystl::queue<int> q9;
+  q9 = q3;
+  mystl::queue<int> q10;
+  q10 = std::move(q3);
   mystl::queue<int> q11{ 1,2,3,4,5 };
-  mystl::queue<int> q12 = { 1,2,3,4,5 };
+  mystl::queue<int> q12;
+  q12 = { 1,2,3,4,5 };
+  q12.~queue();
 
-  std::cout << " After q1 push 1,2,3,4,5 :" << std::endl;
-  q1.push(1);
-  q1.push(2);
-  q1.push(3);
-  q1.push(4);
-  q1.push(5);
-  QUEUE_COUT(q1);
+  QUEUE_FUN_AFTER(q1, q1.push(1));
+  QUEUE_FUN_AFTER(q1, q1.push(2));
+  QUEUE_FUN_AFTER(q1, q1.push(3));
+  QUEUE_FUN_AFTER(q1, q1.pop());
+  QUEUE_FUN_AFTER(q1, q1.emplace(4));
+  QUEUE_FUN_AFTER(q1, q1.emplace(5));
   std::cout << std::boolalpha;
   FUN_VALUE(q1.empty());
   std::cout << std::noboolalpha;
@@ -84,16 +101,10 @@ void queue_test()
   FUN_VALUE(q1.back());
   while (!q1.empty())
   {
-    std::cout << " After q1.pop():" << std::endl;
-    q1.pop();
-    QUEUE_COUT(q1);
+    QUEUE_FUN_AFTER(q1, q1.pop());
   }
-  std::cout << " After q1.swap(q4) :" << std::endl;
-  q1.swap(q4);
-  QUEUE_COUT(q1);
-  std::cout << " After q1.clear() :" << std::endl;
-  q1.clear();
-  QUEUE_COUT(q1);
+  QUEUE_FUN_AFTER(q1, q1.swap(q4));
+  QUEUE_FUN_AFTER(q1, q1.clear());
   PASSED;
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
@@ -122,18 +133,21 @@ void priority_test()
   mystl::priority_queue<int> p6(std::move(v1));
   mystl::priority_queue<int> p7(p2);
   mystl::priority_queue<int> p8(std::move(p2));
-  mystl::priority_queue<int> p9 = p3;
-  mystl::priority_queue<int> p10 = std::move(p3);
+  mystl::priority_queue<int> p9;
+  p9 = p3;
+  mystl::priority_queue<int> p10;
+  p10 = std::move(p3);
   mystl::priority_queue<int> p11{ 1,2,3,4,5 };
-  mystl::priority_queue<int> p12 = { 1,2,3,4,5 };
+  mystl::priority_queue<int> p12;
+  p12 = { 1,2,3,4,5 };
 
-  std::cout << " After p1 push 1,2,3,4,5 :" << std::endl;
-  p1.push(1);
-  p1.push(2);
-  p1.push(3);
-  p1.push(4);
-  p1.push(5);
-  P_QUEUE_COUT(p1);
+  P_QUEUE_FUN_AFTER(p1, p1.push(1));
+  P_QUEUE_FUN_AFTER(p1, p1.push(5));
+  P_QUEUE_FUN_AFTER(p1, p1.push(3));
+  P_QUEUE_FUN_AFTER(p1, p1.pop());
+  P_QUEUE_FUN_AFTER(p1, p1.emplace(7));
+  P_QUEUE_FUN_AFTER(p1, p1.emplace(2));
+  P_QUEUE_FUN_AFTER(p1, p1.emplace(8));
   std::cout << std::boolalpha;
   FUN_VALUE(p1.empty());
   std::cout << std::noboolalpha;
@@ -141,16 +155,10 @@ void priority_test()
   FUN_VALUE(p1.top());
   while (!p1.empty())
   {
-    std::cout << " After p1.pop():" << std::endl;
-    p1.pop();
-    P_QUEUE_COUT(p1);
+    P_QUEUE_FUN_AFTER(p1, p1.pop());
   }
-  std::cout << " After p1.swap(p4) :" << std::endl;
-  p1.swap(p4);
-  P_QUEUE_COUT(p1);
-  std::cout << " After p1.clear() :" << std::endl;
-  p1.clear();
-  P_QUEUE_COUT(p1);
+  P_QUEUE_FUN_AFTER(p1, p1.swap(p4));
+  P_QUEUE_FUN_AFTER(p1, p1.clear());
   PASSED;
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
