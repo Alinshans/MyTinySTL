@@ -20,11 +20,6 @@ namespace mystl
 #define MYTINYSTL_DEQUE_MAP_SIZE 8
 #endif // !MYTINYSTL_DEQUE_MAP_SIZE
 
-// deque 每个 buffer 的大小
-#ifndef MYTINYSTL_DEQUE_BUF_SIZE
-#define MYTINYSTL_DEQUE_BUF_SIZE 512
-#endif // !MYTINYSTL_DEQUE_BUF_SIZE
-
 template <class T>
 struct __deque_buf_size
 {
