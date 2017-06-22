@@ -26,12 +26,12 @@ MyTinySTL
 
   * linux/osx
   1. git clone
-```shell
+```bash
 $ git clone git@github.com:Alinshans/MyTinySTL.git
 $ cd MyTinySTL
 ```
   2. 构建并运行
-```shell
+```bash
 $ mkdir build && cd build
 $ cmake ..
 $ make
@@ -48,4 +48,53 @@ $ cd ../bin && ./stltest
 ## 测试
   见 [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test)
 
-  
+---
+
+## Introduction
+
+This is a `tinySTL` based on `C++11`, which is my first project for practice. I use the Chinese documents and annotations for convenience, maybe there will be an English version later, but now I have no time to do that yet. I have achieved the vast majority of the containers and functions of `STL`, and there may be some deficiencies and bugs. If you find that, please point out that in [`Issues`](https://github.com/Alinshans/MyTinySTL/issues), or make a [`Pull requests`](https://github.com/Alinshans/MyTinySTL/pulls) to improve it, thinks!
+
+## Supported
+
+* os
+  * linux
+  * windows
+  * osx
+* complier
+  * gcc 4.8 or later
+  * clang 3.5 or later
+  * msvc 14.0 or later
+
+## Required
+
+* cmake 2.8 (if you build with gcc/clang)
+
+## Run test
+
+* linux/osx
+
+1. git clone
+```bash
+$ git clone git@github.com:Alinshans/MyTinySTL.git
+$ cd MyTinySTL
+```
+2. build and run
+```bash
+$ mkdir build && cd build
+$ cmake ..
+$ make
+$ cd ../bin && ./stltest
+```
+
+* windows
+
+1. git clone or [Download ZIP](https://github.com/Alinshans/MyTinySTL/archive/master.zip)
+2. use `vs2015`(or `vs2017`) open the file `MyTinySTL.sln`, configured in `Release`, run this project(Ctrl + F5).
+
+## Documents
+
+See [Wiki](https://github.com/Alinshans/MyTinySTL/wiki)
+
+## Test
+
+See [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test)
