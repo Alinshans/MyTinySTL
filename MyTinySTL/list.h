@@ -770,6 +770,7 @@ list<T>::__create_node(Args&& ...args)
   {
     data_allocator::destroy(&p->value);
     node_allocator::deallocate(p);
+    throw;
   }
   return p;
 }

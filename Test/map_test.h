@@ -56,10 +56,13 @@ void map_test()
   mystl::map<int, int> m4(v.begin(), v.end());
   mystl::map<int, int> m5(m3);
   mystl::map<int, int> m6(std::move(m3));
-  mystl::map<int, int> m7 = m4;
-  mystl::map<int, int> m8 = std::move(m4);
+  mystl::map<int, int> m7;
+  m7 = m4;
+  mystl::map<int, int> m8;
+  m8 = std::move(m4);
   mystl::map<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
-  mystl::map<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+  mystl::map<int, int> m10;
+  m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
 
   MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
   MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -80,10 +83,10 @@ void map_test()
   FUN_VALUE(m1.count(1));
   MAP_VALUE(*m1.find(3));
   MAP_VALUE(*m1.lower_bound(3));
-  MAP_VALUE(*m1.upper_bound(3));
-  auto first = *m1.equal_range(3).first;
-  auto second = *m1.equal_range(3).second;
-  std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
+  MAP_VALUE(*m1.upper_bound(2));
+  auto first = *m1.equal_range(2).first;
+  auto second = *m1.equal_range(2).second;
+  std::cout << " m1.equal_range(2) : from pair<" << first.first << ", " << first.second
     << "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
   PASSED;
 #if PERFORMANCE_TEST_ON
@@ -116,10 +119,13 @@ void multimap_test()
   mystl::multimap<int, int> m4(v.begin(), v.end());
   mystl::multimap<int, int> m5(m3);
   mystl::multimap<int, int> m6(std::move(m3));
-  mystl::multimap<int, int> m7 = m4;
-  mystl::multimap<int, int> m8 = std::move(m4);
+  mystl::multimap<int, int> m7;
+  m7 = m4;
+  mystl::multimap<int, int> m8;
+  m8 = std::move(m4);
   mystl::multimap<int, int> m9{ PAIR(1,1),PAIR(3,2),PAIR(2,3) };
-  mystl::multimap<int, int> m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
+  mystl::multimap<int, int> m10;
+  m10 = { PAIR(1,1),PAIR(3,2),PAIR(2,3) };
 
   MAP_FUN_AFTER(m1, m1.insert(v.begin(), v.end()));
   MAP_FUN_AFTER(m1, m1.insert(PAIR(5, 5)));
@@ -141,10 +147,10 @@ void multimap_test()
   FUN_VALUE(m1.count(3));
   MAP_VALUE(*m1.find(3));
   MAP_VALUE(*m1.lower_bound(3));
-  MAP_VALUE(*m1.upper_bound(3));
-  auto first = *m1.equal_range(3).first;
-  auto second = *m1.equal_range(3).second;
-  std::cout << " m1.equal_range(3) : from pair<" << first.first << ", " << first.second
+  MAP_VALUE(*m1.upper_bound(2));
+  auto first = *m1.equal_range(2).first;
+  auto second = *m1.equal_range(2).second;
+  std::cout << " m1.equal_range(2) : from pair<" << first.first << ", " << first.second
     << "> to pair<" << second.first << ", " << second.second << ">" << std::endl;
   PASSED;
 #if PERFORMANCE_TEST_ON

@@ -15,7 +15,7 @@ namespace mystl
 // 参数一代表键值类型，参数二代表键值比较方式，缺省使用 mystl 的 less 
 // 参数三代表空间配置器类型，缺省使用 mystl 的 alloc
 // 键值与实值相同，键值不允许重复，以 rb_tree 作为底层机制，元素会根据键值大小自动排序
-template <class Key, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
+template <class Key, class Compare = mystl::less<Key>>
 class set
 {
 public:
@@ -26,7 +26,7 @@ public:
 
 private:
   // 以 rb_tree 作为底层机制
-  typedef rb_tree<key_type, value_type, mystl::identity<value_type>, key_compare, Alloc>  rep_type;
+  typedef rb_tree<value_type, key_compare>  rep_type;
   rep_type t_;  // 以 rb_tree 表现 set
 
 public:
@@ -115,59 +115,59 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator==(const set<Key, Compare, Alloc>& lhs,
-           const set<Key, Compare, Alloc>& rhs)
+operator==(const set<Key, Compare>& lhs,
+           const set<Key, Compare>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator<(const set<Key, Compare, Alloc>& lhs,
-  const set<Key, Compare, Alloc>& rhs)
+operator<(const set<Key, Compare>& lhs,
+  const set<Key, Compare>& rhs)
 {
   return lhs < rhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator!=(const set<Key, Compare, Alloc>& lhs,
-           const set<Key, Compare, Alloc>& rhs)
+operator!=(const set<Key, Compare>& lhs,
+           const set<Key, Compare>& rhs)
 {
   return !(lhs == rhs);
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator>(const set<Key, Compare, Alloc>& lhs,
-          const set<Key, Compare, Alloc>& rhs)
+operator>(const set<Key, Compare>& lhs,
+          const set<Key, Compare>& rhs)
 {
   return rhs < lhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator<=(const set<Key, Compare, Alloc>& lhs,
-           const set<Key, Compare, Alloc>& rhs)
+operator<=(const set<Key, Compare>& lhs,
+           const set<Key, Compare>& rhs)
 {
   return !(rhs < lhs);
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator>=(const set<Key, Compare, Alloc>& lhs,
-           const set<Key, Compare, Alloc>& rhs)
+operator>=(const set<Key, Compare>& lhs,
+           const set<Key, Compare>& rhs)
 {
   return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  void
-swap(set<Key, Compare, Alloc>& lhs,
-     set<Key, Compare, Alloc>& rhs)
+swap(set<Key, Compare>& lhs,
+     set<Key, Compare>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -176,7 +176,7 @@ swap(set<Key, Compare, Alloc>& lhs,
 
 // 模板类 multiset
 // 允许键值重复的 set
-template <class Key, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
+template <class Key, class Compare = mystl::less<Key>>
 class multiset
 {
 public:
@@ -187,7 +187,7 @@ public:
 
 private:
   // 以 rb_tree 作为底层机制
-  typedef rb_tree<key_type, value_type, mystl::identity<value_type>, key_compare, Alloc>  rep_type;
+  typedef rb_tree<value_type, key_compare>  rep_type;
   rep_type t_;  // 以 rb_tree 表现 multiset
 
 public:
@@ -276,59 +276,59 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator==(const multiset<Key, Compare, Alloc>& lhs,
-           const multiset<Key, Compare, Alloc>& rhs)
+operator==(const multiset<Key, Compare>& lhs,
+           const multiset<Key, Compare>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator<(const multiset<Key, Compare, Alloc>& lhs,
-  const multiset<Key, Compare, Alloc>& rhs)
+operator<(const multiset<Key, Compare>& lhs,
+  const multiset<Key, Compare>& rhs)
 {
   return lhs < rhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator!=(const multiset<Key, Compare, Alloc>& lhs,
-           const multiset<Key, Compare, Alloc>& rhs)
+operator!=(const multiset<Key, Compare>& lhs,
+           const multiset<Key, Compare>& rhs)
 {
   return !(lhs == rhs);
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator>(const multiset<Key, Compare, Alloc>& lhs,
-          const multiset<Key, Compare, Alloc>& rhs)
+operator>(const multiset<Key, Compare>& lhs,
+          const multiset<Key, Compare>& rhs)
 {
   return rhs < lhs;
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator<=(const multiset<Key, Compare, Alloc>& lhs,
-           const multiset<Key, Compare, Alloc>& rhs)
+operator<=(const multiset<Key, Compare>& lhs,
+           const multiset<Key, Compare>& rhs)
 {
   return !(rhs < lhs);
 }
 
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  bool
-operator>=(const multiset<Key, Compare, Alloc>& lhs,
-           const multiset<Key, Compare, Alloc>& rhs)
+operator>=(const multiset<Key, Compare>& lhs,
+           const multiset<Key, Compare>& rhs)
 {
   return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
-template <class Key, class Compare, class Alloc>
+template <class Key, class Compare>
  void
-swap(multiset<Key, Compare, Alloc>& lhs,
-     multiset<Key, Compare, Alloc>& rhs)
+swap(multiset<Key, Compare>& lhs,
+     multiset<Key, Compare>& rhs)
 {
   lhs.swap(rhs);
 }

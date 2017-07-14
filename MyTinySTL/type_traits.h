@@ -3,6 +3,8 @@
 
 // 这个头文件用于提取类型信息
 
+#include "pair.h"
+
 namespace mystl
 {
 
@@ -328,13 +330,6 @@ template<> struct __char_type<wchar_t>
 /*****************************************************************************************/
 // type traits
 
-// is_same
-template <class T, class U>
-struct is_same : mystl::__false_type {};
-
-template <class T>
-struct is_same<T, T> : mystl::__true_type {};
-
 // remove_reference
 template <class T>
 struct remove_reference
@@ -353,6 +348,74 @@ struct remove_reference<T&&>
 {
   typedef T type;
 };
+
+// remove_const
+template <class T>
+struct remove_const
+{
+  typedef T type;
+};
+
+template <class T>
+struct remove_const<const T>
+{
+  typedef T type;
+};
+
+// remove_volatile
+template <class T>
+struct remove_volatile
+{
+  typedef T type;
+};
+
+template <class T>
+struct remove_volatile<volatile T>
+{
+  typedef T type;
+};
+
+// remove_cv
+template <class T>
+struct remove_cv
+{
+  typedef typename mystl::remove_volatile<
+    typename mystl::remove_const<T>::type>::type type;
+};
+
+// enable_if
+template <bool, class T = void>
+struct enable_if {};
+
+template <class T>
+struct enable_if<true, T>
+{
+  typedef T type;
+};
+
+// is_same
+template <class T, class U>
+struct is_same : mystl::__false_type {};
+
+template <class T>
+struct is_same<T, T> : mystl::__true_type {};
+
+// is_pair
+template <class T>
+struct is_pair : mystl::__false_type {};
+
+template <class T1, class T2>
+struct is_pair<mystl::pair<T1, T2>> : mystl::__true_type {};
+
+// is_pointer
+template <class T>
+struct __is_pointer : mystl::__false_type {};
+
+template <class T>
+struct __is_pointer<T*> : mystl::__true_type {};
+
+template <class T>
+struct is_pointer : __is_pointer<typename mystl::remove_cv<T>::type> {};
 
 // is_lvalue_reference
 template <class T>

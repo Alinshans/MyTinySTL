@@ -15,13 +15,12 @@ namespace mystl
 // 参数一代表键值类型，参数二代表实值类型，参数三代表键值的比较方式，缺省使用 mystl 的 less
 // 参数四代表空间配置器的类型，缺省使用 mystl 的 alloc
 // 每个元素都是 pair，拥有键值与实值，不允许有重复的键值，使用 rb_tree 作为底层机制
-template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
+template <class Key, class T, class Compare = mystl::less<Key>>
 class map
 {
 public:
   // map 的嵌套型别定义
   typedef Key                   key_type;
-  typedef T                     data_type;
   typedef T                     mapped_type;
   typedef pair<const Key, T>    value_type;  // 元素型别是一对 pair，含键值/实值
   typedef Compare               key_compare;
@@ -29,7 +28,7 @@ public:
   // 定义一个 functor，用来进行元素比较
   class value_compare : public binary_function <value_type, value_type, bool>
   {
-    friend class map<Key, T, Compare, Alloc>;
+    friend class map<Key, T, Compare>;
   private:
     Compare comp;
     value_compare(Compare c) : comp(c) {}
@@ -42,7 +41,7 @@ public:
 
 private:
   // 以 rb_tree 作为底层机制
-  typedef rb_tree<key_type, value_type, mystl::selectfirst<value_type>, key_compare, Alloc>  rep_type;
+  typedef rb_tree<value_type, key_compare>  rep_type;
   rep_type t_;    // 用 rb_tree 表现 map
 
 public:
@@ -62,7 +61,7 @@ public:
 
 public:
   // 构造、复制、移动函数
-  map() :t_() {}
+  map() = default;
   template <class InputIterator>
   map(InputIterator first, InputIterator last) : t_() { t_.insert_unique(first, last); }
   map(std::initializer_list<value_type> ilist) :t_()
@@ -148,59 +147,59 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator==(const map<Key, T, Compare, Alloc>& lhs,
-           const map<Key, T, Compare, Alloc>& rhs)
+operator==(const map<Key, T, Compare>& lhs,
+           const map<Key, T, Compare>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator<(const map<Key, T, Compare, Alloc>& lhs,
-  const map<Key, T, Compare, Alloc>& rhs)
+operator<(const map<Key, T, Compare>& lhs,
+  const map<Key, T, Compare>& rhs)
 {
   return lhs < rhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator!=(const map<Key, T, Compare, Alloc>& lhs,
-           const map<Key, T, Compare, Alloc>& rhs)
+operator!=(const map<Key, T, Compare>& lhs,
+           const map<Key, T, Compare>& rhs)
 {
   return !(lhs == rhs);
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator>(const map<Key, T, Compare, Alloc>& lhs,
-          const map<Key, T, Compare, Alloc>& rhs)
+operator>(const map<Key, T, Compare>& lhs,
+          const map<Key, T, Compare>& rhs)
 {
   return rhs < lhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator<=(const map<Key, T, Compare, Alloc>& lhs,
-           const map<Key, T, Compare, Alloc>& rhs)
+operator<=(const map<Key, T, Compare>& lhs,
+           const map<Key, T, Compare>& rhs)
 {
   return !(rhs < lhs);
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator>=(const map<Key, T, Compare, Alloc>& lhs,
-           const map<Key, T, Compare, Alloc>& rhs)
+operator>=(const map<Key, T, Compare>& lhs,
+           const map<Key, T, Compare>& rhs)
 {
   return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 void
-swap(map<Key, T, Compare, Alloc>& lhs,
-     map<Key, T, Compare, Alloc>& rhs)
+swap(map<Key, T, Compare>& lhs,
+     map<Key, T, Compare>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -209,13 +208,12 @@ swap(map<Key, T, Compare, Alloc>& lhs,
 
 // 模板类 multimap
 // 键值允许重复的 map
-template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
+template <class Key, class T, class Compare = mystl::less<Key>>
 class multimap
 {
 public:
   // multimap 的型别定义
   typedef Key                   key_type;
-  typedef T                     data_type;
   typedef T                     mapped_type;
   typedef pair<const Key, T>    value_type;  // 元素型别是一对 pair，含键值/实值
   typedef Compare               key_compare;
@@ -223,7 +221,7 @@ public:
   // 定义一个 functor，用来进行元素比较
   class value_compare : public binary_function <value_type, value_type, bool>
   {
-    friend class multimap<Key, T, Compare, Alloc>;
+    friend class multimap<Key, T, Compare>;
   private:
     Compare comp;
     value_compare(Compare c) : comp(c) {}
@@ -236,7 +234,7 @@ public:
 
 private:
   // 用 rb_tree 作为底层机制
-  typedef rb_tree<key_type, value_type, mystl::selectfirst<value_type>, key_compare, Alloc>  rep_type;
+  typedef rb_tree<value_type, key_compare>  rep_type;
   rep_type t_;  // 用 rb_tree 表现 multimap
 
 public:
@@ -339,59 +337,59 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator==(const multimap<Key, T, Compare, Alloc>& lhs,
-           const multimap<Key, T, Compare, Alloc>& rhs)
+operator==(const multimap<Key, T, Compare>& lhs,
+           const multimap<Key, T, Compare>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator<(const multimap<Key, T, Compare, Alloc>& lhs,
-  const multimap<Key, T, Compare, Alloc>& rhs)
+operator<(const multimap<Key, T, Compare>& lhs,
+  const multimap<Key, T, Compare>& rhs)
 {
   return lhs < rhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator!=(const multimap<Key, T, Compare, Alloc>& lhs,
-           const multimap<Key, T, Compare, Alloc>& rhs)
+operator!=(const multimap<Key, T, Compare>& lhs,
+           const multimap<Key, T, Compare>& rhs)
 {
   return !(lhs == rhs);
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator>(const multimap<Key, T, Compare, Alloc>& lhs,
-          const multimap<Key, T, Compare, Alloc>& rhs)
+operator>(const multimap<Key, T, Compare>& lhs,
+          const multimap<Key, T, Compare>& rhs)
 {
   return rhs < lhs;
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator<=(const multimap<Key, T, Compare, Alloc>& lhs,
-           const multimap<Key, T, Compare, Alloc>& rhs)
+operator<=(const multimap<Key, T, Compare>& lhs,
+           const multimap<Key, T, Compare>& rhs)
 {
   return !(rhs < lhs);
 }
 
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 bool
-operator>=(const multimap<Key, T, Compare, Alloc>& lhs,
-           const multimap<Key, T, Compare, Alloc>& rhs)
+operator>=(const multimap<Key, T, Compare>& lhs,
+           const multimap<Key, T, Compare>& rhs)
 {
   return !(lhs < rhs);
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class Compare, class Alloc>
+template <class Key, class T, class Compare>
 void
-swap(multimap<Key, T, Compare, Alloc>& lhs,
-     multimap<Key, T, Compare, Alloc>& rhs)
+swap(multimap<Key, T, Compare>& lhs,
+     multimap<Key, T, Compare>& rhs)
 {
   lhs.swap(rhs);
 }
