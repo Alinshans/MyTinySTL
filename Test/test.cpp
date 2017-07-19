@@ -10,7 +10,7 @@
 #include "unordered_map_test.h"
 #include "unordered_set_test.h"
 #include "string_test.h"
-#include <memory>
+
 int main()
 {
   using namespace mystl::test;
