@@ -82,11 +82,11 @@ struct __rb_tree_value_traits
 {
   static constexpr bool __is_map = mystl::is_pair<T>::value;
 
-  typedef typename __rb_tree_value_traits_imp<T, __is_map> value_traits_type;
+  typedef __rb_tree_value_traits_imp<T, __is_map> value_traits_type;
 
-  typedef typename value_traits_type::key_type             key_type;
-  typedef typename value_traits_type::mapped_type          mapped_type;
-  typedef typename value_traits_type::value_type           value_type;
+  typedef typename value_traits_type::key_type    key_type;
+  typedef typename value_traits_type::mapped_type mapped_type;
+  typedef typename value_traits_type::value_type  value_type;
 
   template <class Ty>
   static const key_type& get_key(const Ty& value)
@@ -242,10 +242,8 @@ struct __rb_tree_node_base
 template <class T>
 struct __rb_tree_node :public __rb_tree_node_base<T>
 {
-  typedef __rb_tree_node_base<T> base;
-
-  using base::base_ptr;
-  using base::node_ptr;
+  typedef typename __rb_tree_node_base<T>::base_ptr base_ptr;
+  typedef typename __rb_tree_node_base<T>::node_ptr node_ptr;
 
   T value;  // 节点值
 
@@ -274,11 +272,9 @@ struct __rb_tree_iterator_base :public iterator<bidirectional_iterator_tag, T>
   // 使迭代器前进
   void inc()
   {
-    if (node->right)
-    {  // 如果有右子节点
-      node = node->right;
-      while (node->left)
-        node = node->left;
+    if (node->right != nullptr)
+    { 
+      node = __rb_tree_min(node->right);
     }
     else
     {  // 如果没有右子节点
@@ -300,12 +296,9 @@ struct __rb_tree_iterator_base :public iterator<bidirectional_iterator_tag, T>
     {  // 如果 node 为 header
       node = node->right;  // 指向整棵树的 max 节点
     }
-    else if (node->left)
-    {  // 如果有左子节点
-      auto y = node->left;
-      while (y->right)
-        y = y->right;
-      node = y;
+    else if (node->left != nullptr)
+    {
+      node = __rb_tree_max(node->left);
     }
     else
     {  // 非 header 节点，也无左子节点
@@ -353,24 +346,24 @@ struct __rb_tree_iterator :public __rb_tree_iterator_base<T>
 
   self& operator++()
   {
-    inc();
+    this->inc();
     return *this;
   }
   self operator++(int)
   {
     self tmp(*this);
-    inc();
+    this->inc();
     return tmp;
   }
   self& operator--()
   {
-    dec();
+    this->dec();
     return *this;
   }
   self operator--(int)
   {
     self tmp(*this);
-    dec();
+    this->dec();
     return tmp;
   }
 };
@@ -405,24 +398,24 @@ struct __rb_tree_const_iterator :public __rb_tree_iterator_base<T>
 
   self& operator++()
   {
-    inc();
+    this->inc();
     return *this;
   }
   self operator++(int)
   {
     self tmp(*this);
-    inc();
+    this->inc();
     return tmp;
   }
   self& operator--()
   {
-    dec();
+    this->dec();
     return *this;
   }
   self operator--(int)
   {
     self tmp(*this);
-    dec();
+    this->dec();
     return tmp;
   }
 };
@@ -479,16 +472,16 @@ NodePtr __rb_tree_next(NodePtr node) noexcept
   return node->parent;
 }
 
+/*---------------------------------------*\
+|       p                         p       |
+|      / \                       / \      |
+|     x   d    rotate left      y   d     |
+|    / \       ===========>    / \        |
+|   a   y                     x   c       |
+|      / \                   / \          |
+|     b   c                 a   b         |
+\*---------------------------------------*/
 // 左旋，参数一为左旋点，参数二为根节点
-//
-//       p                         p 
-//      / \                       / \
-//     x   d    rotate left      y   d
-//    / \       ===========>    / \
-//   a   y                     x   c
-//      / \                   / \
-//     b   c                 a   b
-
 template <class NodePtr>
 void __rb_tree_rotate_left(NodePtr x, NodePtr& root) noexcept
 {
@@ -515,16 +508,16 @@ void __rb_tree_rotate_left(NodePtr x, NodePtr& root) noexcept
   x->parent = y;
 }
 
+/*----------------------------------------*\
+|     p                         p          |
+|    / \                       / \         |
+|   d   x      rotate right   d   y        |
+|      / \     ===========>      / \       |
+|     y   a                     b   x      |
+|    / \                           / \     |
+|   b   c                         c   a    |
+\*----------------------------------------*/
 // 右旋，参数一为右旋点，参数二为根节点
-//
-//     p                         p 
-//    / \                       / \
-//   d   x      rotate right   d   y
-//      / \     ===========>      / \
-//     y   a                     b   x
-//    / \                           / \
-//   b   c                         c   a
-
 template <class NodePtr>
 void __rb_tree_rotate_right(NodePtr x, NodePtr& root) noexcept
 {
@@ -1585,25 +1578,26 @@ __insert_value_at(base_ptr x, Val&& value, bool add_to_left)
 {
   node_ptr node = __create_node(tree_traits::get_value(value));
   node->parent = x;
+  auto base_node = node->get_base_ptr();
   if (x == header_)
   {
-    root() = node;
-    leftmost() = node;
-    rightmost() = node;
+    root() = base_node;
+    leftmost() = base_node;
+    rightmost() = base_node;
   }
   else if (add_to_left)
   {
-    x->left = node;
+    x->left = base_node;
     if (leftmost() == x)
-      leftmost() = node;
+      leftmost() = base_node;
   }
   else
   {
-    x->right = node;
+    x->right = base_node;
     if (rightmost() == x)
-      rightmost() = node;
+      rightmost() = base_node;
   }
-  __rb_tree_insert_rebalance(node->get_base_ptr(), root());
+  __rb_tree_insert_rebalance(base_node, root());
   ++node_count_;
   return iterator(node);
 }
@@ -1617,25 +1611,26 @@ _rb_tree<T, Compare>::
 __insert_node_at(base_ptr x, NodePtr node, bool add_to_left)
 {
   node->parent = x;
+  auto base_node = node->get_base_ptr();
   if (x == header_)
   {
-    root() = node;
-    leftmost() = node;
-    rightmost() = node;
+    root() = base_node;
+    leftmost() = base_node;
+    rightmost() = base_node;
   }
   else if (add_to_left)
   {
-    x->left = node;
+    x->left = base_node;
     if (leftmost() == x)
-      leftmost() = node;
+      leftmost() = base_node;
   }
   else
   {
-    x->right = node;
+    x->right = base_node;
     if (rightmost() == x)
-      rightmost() = node;
+      rightmost() = base_node;
   }
-  __rb_tree_insert_rebalance(node->get_base_ptr(), root());
+  __rb_tree_insert_rebalance(base_node, root());
   ++node_count_;
   return iterator(node);
 }

@@ -4,7 +4,6 @@
 // 这个头文件包含了 mystl 的基本算法
 
 #include <cstring>
-#include <utility>
 
 #include "iterator.h"
 #include "pair.h"
@@ -59,18 +58,6 @@ const T& min(const T& lhs, const T& rhs, Compare comp)
 }
 
 /*****************************************************************************************/
-// swap
-// 交换两个对象的值
-/*****************************************************************************************/
-template <class T>
-void swap(T& lhs, T& rhs)
-{
-  auto tmp(mystl::move(lhs));
-  lhs = mystl::move(rhs);
-  rhs = mystl::move(tmp);
-}
-
-/*****************************************************************************************/
 // iter_swap
 // 将两个迭代器所指对象对调
 /*****************************************************************************************/
@@ -112,7 +99,7 @@ __copy(RAIter first, RAIter last, OIter result, random_access_iterator_tag)
 template <class T>
 T* __copy_t(const T* first, const T* last, T* result, __true_type)
 {
-  memmove(result, first, sizeof(T) * (last - first));
+  std::memmove(result, first, sizeof(T) * (last - first));
   return result + (last - first);
 }
 
@@ -165,14 +152,14 @@ OIter copy(IIter first, IIter last, OIter result)
 // char* 的特化版本
 char* copy(const char* first, const char* last, char* result)
 {
-  memmove(result, first, last - first);
+  std::memmove(result, first, last - first);
   return result + (last - first);
 }
 
 // wchar_t* 的特化版本
 wchar_t* copy(const wchar_t* first, const wchar_t* last, wchar_t* result)
 {
-  memmove(result, first, sizeof(wchar_t) * (last - first));
+  std::memmove(result, first, sizeof(wchar_t) * (last - first));
   return result + (last - first);
 }
 
@@ -262,7 +249,7 @@ copy_n(IIter first, Size n, OIter result)
 mystl::pair<const char*, char*>
 copy_n(const char* first, size_t n, char* result)
 {
-  memmove(result, first, n);
+  std::memmove(result, first, n);
   return mystl::make_pair(first + n, result + n);
 }
 
@@ -270,7 +257,7 @@ copy_n(const char* first, size_t n, char* result)
 mystl::pair<const wchar_t*, wchar_t*>
 copy_n(const wchar_t* first, size_t n, wchar_t* result)
 {
-  memmove(result, first, sizeof(wchar_t) * n);
+  std::memmove(result, first, sizeof(wchar_t) * n);
   return mystl::make_pair(first + n, result + n);
 }
 
@@ -318,19 +305,19 @@ void fill(FIter first, FIter last, const T& value)
 void fill(unsigned char* first, unsigned char* last, const unsigned char& c)
 {
   unsigned char tmp = c;
-  memset(first, tmp, last - first);
+  std::memset(first, tmp, last - first);
 }
 
 void fill(signed char* first, signed char* last, const signed char& c)
 {
   signed char tmp = c;
-  memset(first, static_cast<unsigned char>(tmp), last - first);
+  std::memset(first, static_cast<unsigned char>(tmp), last - first);
 }
 
 void fill(char* first, char* last, const char& c)
 {
   char tmp = c;
-  memset(first, static_cast<unsigned char>(tmp), last - first);
+  std::memset(first, static_cast<unsigned char>(tmp), last - first);
 }
 
 /*****************************************************************************************/
@@ -393,7 +380,7 @@ bool lexicographical_compare(const unsigned char* first1,
   const auto len1 = last1 - first1;
   const auto len2 = last2 - first2;
   // 先比较相同长度的部分
-  const auto result = memcmp(first1, first2, mystl::min(len1, len2));
+  const auto result = std::memcmp(first1, first2, mystl::min(len1, len2));
   // 若相等，长度较长的比较大
   return result != 0 ? result < 0 : len1 < len2;
 }
