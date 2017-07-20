@@ -16,9 +16,9 @@ namespace mystl
 {
 
 // deque map 初始化的大小
-#ifndef MYTINYSTL_DEQUE_MAP_SIZE
-#define MYTINYSTL_DEQUE_MAP_SIZE 8
-#endif // !MYTINYSTL_DEQUE_MAP_SIZE
+#ifndef DEQUE_MAP_INIT_SIZE
+#define DEQUE_MAP_INIT_SIZE 2
+#endif
 
 template <class T>
 struct __deque_buf_size
@@ -517,18 +517,17 @@ void deque<T>::resize(size_type new_size, const value_type& value)
 template <class T>
 void deque<T>::shrink_to_fit() noexcept
 {
-  const size_type map_size = finish_.node - start_.node;
-  if (map_size_ > map_size)
+  auto old_cap = map_size_ * buffer_size;
+  auto new_cap = old_cap / 2;
+
+  if (new_cap < buffer_size * DEQUE_MAP_INIT_SIZE)
+    new_cap = buffer_size * DEQUE_MAP_INIT_SIZE;
+
+  if ((empty() && new_cap <= old_cap) ||
+    (size() <= new_cap && new_cap <= old_cap))
   {
-    // 只释放多余的缓冲区空间
-    for (map_pointer node = map_; node < start_.node; ++node)
-    {
-      data_allocator::deallocate(*node, buffer_size);
-    }
-    for (map_pointer node = finish_.node + 1; node <= map_ + map_size; ++node)
-    {
-      data_allocator::deallocate(*node, buffer_size);
-    }
+    deque tmp(begin(), end());
+    swap(tmp);
   }
 }
 
@@ -797,7 +796,7 @@ void deque<T>::
 __map_initialize(size_type nElem)
 {
   const auto nNode = nElem / buffer_size + 1;  // 需要分配的缓冲区个数
-  map_size_ = mystl::max(static_cast<size_type>(MYTINYSTL_DEQUE_MAP_SIZE), nNode + 2);
+  map_size_ = mystl::max(static_cast<size_type>(DEQUE_MAP_INIT_SIZE), nNode + 2);
   map_ = map_allocator::allocate(map_size_);
   // 让 nstart 和 nfinish 都指向 map_ 最中央的区域，方便向头尾扩充
   map_pointer nstart = map_ + (map_size_ - nNode) / 2;
