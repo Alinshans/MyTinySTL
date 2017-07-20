@@ -24,20 +24,25 @@ struct pair
   // 构造、复制、移动、赋值函数
   pair() = default;
 
-  pair(const pair& rhs)
-    :first(rhs.first), second(rhs.second) {}
-  pair(pair&& rhs)
-    :first(mystl::move(rhs.first)), second(mystl::move(rhs.second)) {}
-
   pair(const T1& a, const T2& b) 
-    :first(a), second(b) {}
+    : first(a), second(b) {}
+
+  pair(const pair& rhs)
+    : first(rhs.first), second(rhs.second) {}
+  pair(pair&& rhs)
+    : first(mystl::move(rhs.first)), second(mystl::move(rhs.second)) {}
 
   template <class U1, class U2>
   pair(U1&& a, U2&& b)
-    :first(a), second(b) {}
+    : first(a), second(b) {}
 
   template <class U1, class U2>
-  pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
+  pair(const pair<U1, U2>& p) 
+    : first(p.first), second(p.second) {}
+
+  template <class U1, class U2>
+  pair(pair<U1, U2>&& p)
+    : first(mystl::move(p.first)), second(mystl::move(p.second)) {}
 
   pair& operator=(const pair& rhs)
   {
@@ -56,6 +61,22 @@ struct pair
       first = mystl::move(rhs.first);
       second = mystl::move(rhs.second);
     }
+    return *this;
+  }
+
+  template <class U1, class U2>
+  pair& operator=(const pair<U1, U2>& other)
+  {
+    first = other.first;
+    second = other.second;
+    return *this;
+  }
+
+  template <class U1, class U2>
+  pair& operator=(pair<U1, U2>&& other)
+  {
+    first = mystl::move(other.first);
+    second = mystl::move(other.second);
     return *this;
   }
 
@@ -108,16 +129,16 @@ bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 
 // 重载 mystl 的 swap
 template <class T1, class T2>
-void swap(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
+void swap(pair<T1, T2>& lhs, pair<T1, T2>& rhs)
 {
   lhs.swap(rhs);
 }
 
-// 一个全局函数，让两个数据成为一个 pair
+// 全局函数，让两个数据成为一个 pair
 template <class T1, class T2>
-pair<T1, T2> make_pair(const T1& first, const T2& second)
+pair<T1, T2> make_pair(T1&& first, T2&& second)
 {
-  return pair<T1, T2>(first, second);
+  return pair<T1, T2>(mystl::forward<T1>(first), mystl::forward<T2>(second));
 }
 
 } // namespace mystl
