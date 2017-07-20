@@ -3,6 +3,7 @@
 
 // 这个头文件包含一个结构体模板 pair，其中储存了一对数据类型
 
+#include "algobase.h"
 #include "util.h"
 
 namespace mystl
