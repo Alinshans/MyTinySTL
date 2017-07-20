@@ -26,17 +26,16 @@ enum
   EAlign512 = 32,
   EAlign1024 = 64, 
   EAlign2048 = 128, 
-  EAlign4096 = 256
 };
 
 // 小对象的内存大小
-enum { ESmallObjectBytes = 4096 };
+enum { ESmallObjectBytes = 2048 };
 
 // free lists 个数
-enum { EFreeListsNumber = 56 };
+enum { EFreeListsNumber = 48 };
 
 // 空间配置类 alloc
-// 如果内存较大，超过 4K，直接调用 std::malloc, std::free
+// 如果内存较大，超过 2048 bytes，直接调用 std::malloc, std::free
 // 当内存较小时，以内存池管理，每次配置一大块内存，并维护对应的自由链表
 class alloc
 {
@@ -73,8 +72,8 @@ FreeList* alloc::free_list[EFreeListsNumber] = {
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
-  nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
-  nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr, };
+  nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr
+  };
 
 // 分配大小为 n 的空间， n > 0
 inline void* alloc::allocate(size_t n)
@@ -102,7 +101,7 @@ inline void alloc::deallocate(void* p, size_t n)
     std::free(p);
     return;
   }
-  FreeList* q = (FreeList*)p;
+  FreeList* q = reinterpret_cast<FreeList*>(p);
   FreeList* my_free_list;
   my_free_list = free_list[__freelist_index(n)];
   q->next = my_free_list;
@@ -122,24 +121,11 @@ inline size_t alloc::__align(size_t bytes)
 {
   if (bytes <= 512)
   {
-    if (bytes <= 256)
-    {
-      if (bytes <= 128)       
-        return EAlign128;
-      return EAlign256;
-    }
-    return EAlign512;
+    return bytes <= 256
+      ? bytes <= 128 ? EAlign128 : EAlign256
+      : EAlign512;
   }
-  else
-  {
-    if (bytes <= 2048)
-    {
-      if(bytes <= 1024)
-        return EAlign1024;
-      return EAlign2048;
-    }
-    return EAlign4096;
-  }
+  return bytes <= 1024 ? EAlign1024 : EAlign2048;
 }
 
 // 将 bytes 上调至对应区间大小
@@ -153,45 +139,27 @@ inline size_t alloc::__freelist_index(size_t bytes)
 {
   if (bytes <= 512)
   {
-    if (bytes <= 256)
-    {
-      if (bytes <= 128)
-        return ((bytes + EAlign128 - 1) / EAlign128 - 1);
-      return (15 + (bytes + EAlign256 - 129) / EAlign256);
-    }
-    return (23 + (bytes + EAlign512 - 257) / EAlign512);
+    return bytes <= 256
+      ? bytes <= 128 
+        ? ((bytes + EAlign128 - 1) / EAlign128 - 1) 
+        : (15 + (bytes + EAlign256 - 129) / EAlign256)
+      : (23 + (bytes + EAlign512 - 257) / EAlign512);
   }
-  else
-  {
-    if (bytes <= 2048)
-    {
-      if (bytes <= 1024)
-        return (31 + (bytes + EAlign1024 - 513) / EAlign1024);
-      return (39 + (bytes + EAlign2048 - 1025) / EAlign2048);
-    }
-    return (47 + (bytes + EAlign4096 - 2049) / EAlign4096);
-  }
+  return bytes <= 1024
+    ? (31 + (bytes + EAlign1024 - 513) / EAlign1024)
+    : (39 + (bytes + EAlign2048 - 1025) / EAlign2048);
 }
 
 // 根据大小获取区块数目
 inline size_t alloc::__get_blocks(size_t bytes)
 {
-  if (bytes <= 128)
+  if (bytes <= 512)
   {
-    return 8;
+    return bytes <= 256
+      ? bytes <= 128 ? 8 : 4
+      : 2;
   }
-  else if (bytes <= 256)
-  {
-    return 4;
-  }
-  else if (bytes <= 1024)
-  {
-    return 2;
-  }
-  else
-  {
-    return 1;
-  }
+  return bytes <= 1024 ? 2 : 1;
 }
 
 // 重新填充 free list
