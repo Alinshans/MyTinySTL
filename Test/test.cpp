@@ -16,7 +16,7 @@ int main()
   using namespace mystl::test;
 
   std::cout.sync_with_stdio(false);
-  
+
   // Run all unit test and performance test.
 
   RUN_ALL_TESTS();

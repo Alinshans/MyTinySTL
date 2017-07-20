@@ -36,7 +36,7 @@ public:
   static void construct(T* ptr, T&& value);
 
   template <class... Args>
-  static void construct(T* ptr, Args ...args);
+  static void construct(T* ptr, Args&& ...args);
 
   static void destroy(T* ptr);
   static void destroy(T* first, T* last);
@@ -89,7 +89,7 @@ template<class T, class Alloc>
 
 template<class T, class Alloc>
 template<class ...Args>
- void allocator<T, Alloc>::construct(T* ptr, Args ...args)
+ void allocator<T, Alloc>::construct(T* ptr, Args&& ...args)
 {
   mystl::construct(ptr, mystl::forward<Args>(args)...);
 }
