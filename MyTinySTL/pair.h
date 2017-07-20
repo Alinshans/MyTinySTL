@@ -3,6 +3,8 @@
 
 // 这个头文件包含一个结构体模板 pair，其中储存了一对数据类型
 
+#include "util.h"
+
 namespace mystl
 {
 
@@ -18,56 +20,103 @@ struct pair
   T1 first;   // 保存第一个数据
   T2 second;  // 保存第二个数据
 
-              // 构造函数
-  pair() :first(T1()), second(T2()) {}
-  pair(const T1& a, const T2& b) :first(a), second(b) {}
+  // 构造、复制、移动、赋值函数
+  pair() = default;
+
+  pair(const pair& rhs)
+    :first(rhs.first), second(rhs.second) {}
+  pair(pair&& rhs)
+    :first(mystl::move(rhs.first)), second(mystl::move(rhs.second)) {}
+
+  pair(const T1& a, const T2& b) 
+    :first(a), second(b) {}
+
+  template <class U1, class U2>
+  pair(U1&& a, U2&& b)
+    :first(a), second(b) {}
 
   template <class U1, class U2>
   pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
+
+  pair& operator=(const pair& rhs)
+  {
+    if (this != &rhs)
+    {
+      first = rhs.first;
+      second = rhs.second;
+    }
+    return *this;
+  }
+
+  pair& operator=(pair&& rhs)
+  {
+    if (this != &rhs)
+    {
+      first = mystl::move(rhs.first);
+      second = mystl::move(rhs.second);
+    }
+    return *this;
+  }
+
+  ~pair() = default;
+
+  void swap(pair& other)
+  {
+    mystl::swap(first, other.first);
+    mystl::swap(second, other.second);
+  }
+
 };
 
 // 重载比较操作符 
 template <class T1, class T2>
-bool operator==(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator==(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return x.first == y.first && x.second == y.second;
+  return lhs.first == rhs.first && lhs.second == rhs.second;
 }
 
 template <class T1, class T2>
-bool operator<(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return x.first < y.first || (!(y.first < x.first) && x.second < y.second);
+  return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
 }
 
 template <class T1, class T2>
-bool operator!=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator!=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return !(x == y);
+  return !(lhs == rhs);
 }
 
 template <class T1, class T2>
-bool operator>(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator>(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return y < x;
+  return rhs < lhs;
 }
 
 template <class T1, class T2>
-bool operator<=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator<=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return !(y < x);
+  return !(rhs < lhs);
 }
 
 template <class T1, class T2>
-bool operator>=(const pair<T1, T2>& x, const pair<T1, T2>& y)
+bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
 {
-  return !(x < y);
+  return !(lhs < rhs);
+}
+
+// 重载 mystl 的 swap
+template <class T1, class T2>
+void swap(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs)
+{
+  lhs.swap(rhs);
 }
 
 // 一个全局函数，让两个数据成为一个 pair
 template <class T1, class T2>
-pair<T1, T2> make_pair(const T1& x, const T2& y)
+pair<T1, T2> make_pair(const T1& first, const T2& second)
 {
-  return pair<T1, T2>(x, y);
+  return pair<T1, T2>(first, second);
 }
 
 } // namespace mystl

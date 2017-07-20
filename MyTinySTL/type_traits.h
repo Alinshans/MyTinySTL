@@ -3,8 +3,6 @@
 
 // 这个头文件用于提取类型信息
 
-#include "pair.h"
-
 namespace mystl
 {
 
@@ -401,6 +399,12 @@ template <class T>
 struct is_same<T, T> : mystl::__true_type {};
 
 // is_pair
+
+// --- forward declaration begin
+template <class T1, class T2>
+struct pair;
+// --- forward declaration end
+
 template <class T>
 struct is_pair : mystl::__false_type {};
 
