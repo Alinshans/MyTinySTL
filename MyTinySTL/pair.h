@@ -61,7 +61,7 @@ struct pair
 
   // implicit constructiable for other type
   template <class Other1, class Other2,
-    typename = typename std::enable_if<
+    typename std::enable_if<
     std::is_constructible<Ty1, Other1>::value &&
     std::is_constructible<Ty2, Other2>::value &&
     std::is_convertible<Other1&&, Ty1>::value &&
