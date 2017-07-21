@@ -26,7 +26,7 @@ public:
   typedef typename Container::size_type       size_type;
   typedef typename Container::reference       reference;
   typedef typename Container::const_reference const_reference;
-  static_assert(mystl::is_same<T, value_type>::value,
+  static_assert(std::is_same<T, value_type>::value,
                 "the value_type of Container should be same with T.");
 private:
   container_type c_;  // 用底层容器表现 queue
@@ -142,7 +142,7 @@ public:
   typedef typename Container::size_type       size_type;
   typedef typename Container::reference       reference;
   typedef typename Container::const_reference const_reference;
-  static_assert(mystl::is_same<T, value_type>::value,
+  static_assert(std::is_same<T, value_type>::value,
                 "the value_type of Container should be same with T.");
 
 private:

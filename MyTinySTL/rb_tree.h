@@ -58,9 +58,9 @@ struct __rb_tree_value_traits_imp
 template <class T>
 struct __rb_tree_value_traits_imp<T, true>
 {
-  typedef typename mystl::remove_cv<typename T::first_type>::type key_type;
-  typedef typename T::second_type                                 mapped_type;
-  typedef T                                                       value_type;
+  typedef typename std::remove_cv<typename T::first_type>::type key_type;
+  typedef typename T::second_type                               mapped_type;
+  typedef T                                                     value_type;
 
   static constexpr bool __is_map = true;
 
@@ -172,35 +172,35 @@ struct __rb_tree_traits
   template <class V>
   static const key_type& get_key(const V& value)
   {
-    return __get_key(value, mystl::is_pointer<V>{});
+    return __get_key(value, std::is_pointer<V>{});
   }
 
   template <class V>
   static const value_type& get_value(const V& value)
   {
-    return __get_value(value, mystl::is_pointer<V>{});
+    return __get_value(value, std::is_pointer<V>{});
   }
 
   template <class V>
-  static const key_type& __get_key(const V& value, mystl::__true_type)
+  static const key_type& __get_key(const V& value, std::true_type)
   {
     return __rb_tree_node_traits<value_type>::get_key(value);
   }
 
   template <class V>
-  static const key_type& __get_key(const V& value, mystl::__false_type)
+  static const key_type& __get_key(const V& value, std::false_type)
   {
     return __rb_tree_value_traits<value_type>::get_key(value);
   }
 
   template <class V>
-  static const value_type& __get_value(const V& value, mystl::__true_type)
+  static const value_type& __get_value(const V& value, std::true_type)
   {
     return __rb_tree_node_traits<value_type>::get_value(value);
   }
 
   template <class V>
-  static const value_type& __get_value(const V& value, mystl::__false_type)
+  static const value_type& __get_value(const V& value, std::false_type)
   {
     return __rb_tree_value_traits<value_type>::get_value(value);
   }
@@ -823,8 +823,8 @@ public:
 
 private:
   // 用以下三个数据表现 rb tree
-  size_type   node_count_;  // rb tree 的节点数目
   base_ptr    header_;      // 特殊节点，与根节点互为对方的父节点
+  size_type   node_count_;  // 节点数
   key_compare key_comp_;    // 节点键值比较的准则
 
 private:
@@ -1056,9 +1056,9 @@ _rb_tree(const _rb_tree& rhs)
 template <class T, class Compare>
 _rb_tree<T, Compare>::
 _rb_tree(_rb_tree&& rhs)
-  :header_(mystl::move(rhs.header_)), 
-  key_comp_(rhs.key_comp_),
-  node_count_(rhs.node_count_)
+  :header_(mystl::move(rhs.header_)),
+  node_count_(rhs.node_count_),
+  key_comp_(rhs.key_comp_)
 {
   rhs.__reset();
 }
