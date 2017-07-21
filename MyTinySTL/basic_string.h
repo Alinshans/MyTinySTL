@@ -703,7 +703,7 @@ template<class CharType, class CharTraits, class Alloc>
 void basic_string<CharType, CharTraits, Alloc>::
 __destroy_buffer()
 {
-  if (buffer_)
+  if (buffer_ != nullptr)
   {
     mystl::destroy(buffer_, finish_);
     __put_buffer();

@@ -258,7 +258,7 @@ public:
 
   ~deque()
   {
-    if (map_)
+    if (map_ != nullptr)
     {
       clear();
       data_allocator::deallocate(*start_.node, buffer_size);
