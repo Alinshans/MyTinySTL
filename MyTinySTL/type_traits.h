@@ -6,17 +6,22 @@
 namespace mystl
 {
 
-// 让模板推导机制返回一个类型
-struct __true_type 
+// helper struct
+
+template <class T, T v>
+struct __integral_constant
 {
-  static constexpr bool value = true;
-};
-struct __false_type 
-{
-  static constexpr bool value = false;
+  static constexpr T value = v;
 };
 
+template <bool b>
+using __bool_constant = __integral_constant<bool, b>;
+
+typedef __bool_constant<true>  __true_type;
+typedef __bool_constant<false> __false_type;
+
 /*****************************************************************************************/
+
 // __type_tarits
 // 型别萃取
 template <class type>
@@ -328,76 +333,6 @@ template<> struct __char_type<wchar_t>
 /*****************************************************************************************/
 // type traits
 
-// remove_reference
-template <class T>
-struct remove_reference
-{
-  typedef T type;
-};
-
-template <class T>
-struct remove_reference<T&>
-{
-  typedef T type;
-};
-
-template <class T>
-struct remove_reference<T&&>
-{
-  typedef T type;
-};
-
-// remove_const
-template <class T>
-struct remove_const
-{
-  typedef T type;
-};
-
-template <class T>
-struct remove_const<const T>
-{
-  typedef T type;
-};
-
-// remove_volatile
-template <class T>
-struct remove_volatile
-{
-  typedef T type;
-};
-
-template <class T>
-struct remove_volatile<volatile T>
-{
-  typedef T type;
-};
-
-// remove_cv
-template <class T>
-struct remove_cv
-{
-  typedef typename mystl::remove_volatile<
-    typename mystl::remove_const<T>::type>::type type;
-};
-
-// enable_if
-template <bool, class T = void>
-struct enable_if {};
-
-template <class T>
-struct enable_if<true, T>
-{
-  typedef T type;
-};
-
-// is_same
-template <class T, class U>
-struct is_same : mystl::__false_type {};
-
-template <class T>
-struct is_same<T, T> : mystl::__true_type {};
-
 // is_pair
 
 // --- forward declaration begin
@@ -411,23 +346,10 @@ struct is_pair : mystl::__false_type {};
 template <class T1, class T2>
 struct is_pair<mystl::pair<T1, T2>> : mystl::__true_type {};
 
-// is_pointer
-template <class T>
-struct __is_pointer : mystl::__false_type {};
-
-template <class T>
-struct __is_pointer<T*> : mystl::__true_type {};
-
-template <class T>
-struct is_pointer : __is_pointer<typename mystl::remove_cv<T>::type> {};
-
-// is_lvalue_reference
-template <class T>
-struct is_lvalue_reference : __false_type {};
-
-template <class T>
-struct is_lvalue_reference<T&> : __true_type {};
-
 } // namespace mystl
+
+// use standard header for type_traits
+#include <type_traits>
+
 #endif // !MYTINYSTL_TYPE_TRAITS_H_
 
