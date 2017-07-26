@@ -28,9 +28,20 @@ template <class IIter, class FIter>
 FIter __uninitialized_copy(IIter first, IIter last, FIter result, __false_type)
 {
   auto cur = result;
-  for (; first != last; ++first, ++cur)
+  size_t n = 0;
+  try
   {
-    mystl::construct(&*cur, *first);
+    for (; first != last; ++first, ++cur, ++n)
+    {
+      mystl::construct(&*cur, *first);
+    }
+  }
+  catch (...)
+  {
+    if (n != 0)
+      --cur;
+    for (size_t i = 0; i < n; ++i, --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
@@ -49,26 +60,37 @@ FIter uninitialized_copy(IIter first, IIter last, FIter result)
 // 把[first, first + n)上的内容复制到以 result 为起始处的空间，返回复制结束的位置
 /*****************************************************************************************/
 template <class FIter, class Size, class T>
-FIter __uninitialized_copy_n(FIter first, Size n, const T& x, __true_type)
+FIter __uninitialized_copy_n(FIter first, Size n, const T& value, __true_type)
 {
-  return mystl::copy_n(first, n, x);
+  return mystl::copy_n(first, n, value);
 }
 
 template <class FIter, class Size, class T>
-FIter __uninitialized_copy_n(FIter first, Size n, const T& x, __false_type)
+FIter __uninitialized_copy_n(FIter first, Size n, const T& value, __false_type)
 {
   auto cur = first;
-  for (; n > 0; --n, ++cur)
+  Size n2 = 0;
+  try
   {
-    mystl::construct(&*cur, x);
+    for (; n2 < n; ++n2, ++cur)
+    {
+      mystl::construct(&*cur, value);
+    }
+  }
+  catch (...)
+  {
+    if (n2 != 0)
+      --cur;
+    for (size_t i = 0; i < n2; ++i, --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
 
 template <class FIter, class Size, class T>
-FIter uninitialized_copy_n(FIter first, Size n, const T& x)
+FIter uninitialized_copy_n(FIter first, Size n, const T& value)
 {
-  return mystl::__uninitialized_copy_n(first, n, x, typename __type_traits<
+  return mystl::__uninitialized_copy_n(first, n, value, typename __type_traits<
                                        typename iterator_traits<FIter>::
                                        value_type>::is_POD_type());
 }
@@ -78,25 +100,36 @@ FIter uninitialized_copy_n(FIter first, Size n, const T& x)
 // 在[first, last)区间内填充元素值
 /*****************************************************************************************/
 template <class FIter, class T>
-void __uninitialized_fill(FIter first, FIter last, const T& x, __true_type)
+void __uninitialized_fill(FIter first, FIter last, const T& value, __true_type)
 {
-  mystl::fill(first, last, x);
+  mystl::fill(first, last, value);
 }
 
 template <class FIter, class T>
-void __uninitialized_fill(FIter first, FIter last, const T& x, __false_type)
+void __uninitialized_fill(FIter first, FIter last, const T& value, __false_type)
 {
   auto cur = first;
-  for (; cur != last; ++cur)
+  size_t n = 0;
+  try
   {
-    mystl::construct(&*cur, x);
+    for (; cur != last; ++cur)
+    {
+      mystl::construct(&*cur, value);
+    }
+  }
+  catch (...)
+  {
+    if (n != 0)
+      --cur;
+    for (size_t i = 0; i < n; ++i, --cur)
+      mystl::destroy(&*cur);
   }
 }
 
 template <class FIter, class T>
-void  uninitialized_fill(FIter first, FIter last, const T& x)
+void  uninitialized_fill(FIter first, FIter last, const T& value)
 {
-  mystl::__uninitialized_fill(first, last, x, typename __type_traits<
+  mystl::__uninitialized_fill(first, last, value, typename __type_traits<
                               typename iterator_traits<FIter>::
                               value_type>::is_POD_type());
 }
@@ -106,26 +139,37 @@ void  uninitialized_fill(FIter first, FIter last, const T& x)
 // 从 first 位置开始，填充 n 个元素值，返回填充结束的位置
 /*****************************************************************************************/
 template <class FIter, class Size, class T>
-FIter __uninitialized_fill_n(FIter first, Size n, const T& x, __true_type)
+FIter __uninitialized_fill_n(FIter first, Size n, const T& value, __true_type)
 {
-  return mystl::fill_n(first, n, x);
+  return mystl::fill_n(first, n, value);
 }
 
 template <class FIter, class Size, class T>
-FIter __uninitialized_fill_n(FIter first, Size n, const T& x, __false_type)
+FIter __uninitialized_fill_n(FIter first, Size n, const T& value, __false_type)
 {
   auto cur = first;
-  for (; n > 0; --n, ++cur)
+  Size n2 = 0;
+  try
   {
-    mystl::construct(&*cur, x);
+    for (; n2 < n; ++n2, ++cur)
+    {
+      mystl::construct(&*cur, value);
+    }
+  }
+  catch (...)
+  {
+    if (n2 != 0)
+      --cur;
+    for (size_t i = 0; i < n2; ++i, --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
 
 template <class FIter, class Size, class T>
-FIter uninitialized_fill_n(FIter first, Size n, const T& x)
+FIter uninitialized_fill_n(FIter first, Size n, const T& value)
 {
-  return mystl::__uninitialized_fill_n(first, n, x, typename __type_traits<
+  return mystl::__uninitialized_fill_n(first, n, value, typename __type_traits<
                                        typename iterator_traits<FIter>::
                                        value_type>::is_POD_type());
 }
@@ -144,9 +188,20 @@ template <class IIter, class FIter>
 FIter __uninitialized_move(IIter first, IIter last, FIter result, __false_type)
 {
   FIter cur = result;
-  for (; first != last; ++first, ++cur)
+  size_t n = 0;
+  try
   {
-    mystl::construct(&*cur, mystl::move(*first));
+    for (; first != last; ++first, ++cur, ++n)
+    {
+      mystl::construct(&*cur, mystl::move(*first));
+    }
+  }
+  catch (...)
+  {
+    if (n != 0)
+      --cur;
+    for (size_t i = 0; i < n; ++i, --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
@@ -165,26 +220,37 @@ FIter uninitialized_move(IIter first, IIter last, FIter result)
 // 把[first, first + n)上的内容移动到以 result 为起始处的空间，返回移动结束的位置
 /*****************************************************************************************/
 template <class FIter, class Size, class T>
-FIter __uninitialized_move_n(FIter first, Size n, T&& x, __true_type)
+FIter __uninitialized_move_n(FIter first, Size n, T&& value, __true_type)
 {
-  return mystl::copy_n(first, n, mystl::forward<T>(x));
+  return mystl::copy_n(first, n, mystl::forward<T>(value));
 }
 
 template <class FIter, class Size, class T>
-FIter __uninitialized_move_n(FIter first, Size n, T&& x, __false_type)
+FIter __uninitialized_move_n(FIter first, Size n, T&& value, __false_type)
 {
   auto cur = first;
-  for (; n > 0; --n, ++cur)
+  Size n2 = 0;
+  try
   {
-    mystl::construct(&*cur, mystl::forward<T>(x));
+    for (; n2 < n; ++n2, ++cur)
+    {
+      mystl::construct(&*cur, mystl::forward<T>(value));
+    }
+  }
+  catch (...)
+  {
+    if (n2 != 0)
+      --cur;
+    for (size_t i = 0; i < n2; ++i, --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
 
 template <class FIter, class Size, class T>
-FIter uninitialized_move_n(FIter first, Size n, T&& x)
+FIter uninitialized_move_n(FIter first, Size n, T&& value)
 {
-  return mystl::__uninitialized_move_n(first, n, mystl::forward<T>(x), 
+  return mystl::__uninitialized_move_n(first, n, mystl::forward<T>(value), 
                                        typename __type_traits<typename
                                        iterator_traits<FIter>::
                                        value_type>::is_POD_type());
