@@ -9,7 +9,7 @@ namespace mystl
 {
 
 // 结构体模板 : pair
-// 有两个模板参数分别表示两个数据的类型
+// 两个模板参数分别表示两个数据的类型
 // 用 first 和 second 来分别取出第一个数据和第二个数据
 template <class Ty1, class Ty2>
 struct pair

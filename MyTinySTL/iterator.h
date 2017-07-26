@@ -5,6 +5,8 @@
 
 #include <cstddef>
 
+#include "type_traits.h"
+
 namespace mystl
 {
 
@@ -15,62 +17,7 @@ struct forward_iterator_tag : public input_iterator_tag {};
 struct bidirectional_iterator_tag : public forward_iterator_tag {};
 struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
-// input_iterator
-template <class T>
-struct input_iterator
-{
-  typedef input_iterator_tag                   iterator_category;
-  typedef T                                    value_type;
-  typedef T*                                   pointer;
-  typedef T&                                   reference;
-  typedef ptrdiff_t                            difference_type;
-};
-
-// output_iterator
-template <class T>
-struct output_iterator
-{
-  typedef output_iterator_tag                  iterator_category;
-  typedef T                                    value_type;
-  typedef T*                                   pointer;
-  typedef T&                                   reference;
-  typedef ptrdiff_t                            difference_type;
-};
-
-// forward_iterator
-template <class T>
-struct forward_iterator
-{
-  typedef forward_iterator_tag                 iterator_category;
-  typedef T                                    value_type;
-  typedef T*                                   pointer;
-  typedef T&                                   reference;
-  typedef ptrdiff_t                            difference_type;
-};
-
-// bidirectional_iterator
-template <class T>
-struct bidirectional_iterator
-{
-  typedef bidirectional_iterator_tag           iterator_category;
-  typedef T                                    value_type;
-  typedef T*                                   pointer;
-  typedef T&                                   reference;
-  typedef ptrdiff_t                            difference_type;
-};
-
-// random_access_iterator
-template <class T>
-struct random_access_iterator
-{
-  typedef random_access_iterator_tag           iterator_category;
-  typedef T                                    value_type;
-  typedef T*                                   pointer;
-  typedef T&                                   reference;
-  typedef ptrdiff_t                            difference_type;
-};
-
-// iterator 泛型模板
+// iterator 模板
 template <class Category, class T, class Distance = ptrdiff_t,
   class Pointer = T*, class Reference = T&>
   struct iterator
@@ -82,9 +29,24 @@ template <class Category, class T, class Distance = ptrdiff_t,
   typedef Distance                             difference_type;
 };
 
-// 以下函数用于萃取迭代器的特性
+// iterator traits
+
+template <class T>
+struct __has_iterator_cat
+{
+private:
+  struct __two { char a; char b; };
+  template <class U> static __two test(...);
+  template <class U> static char test(typename U::iterator_category* = 0);
+public:
+  static const bool value = sizeof(test<T>(0)) == sizeof(char);
+};
+
+template <class Iterator, bool>
+struct __iterator_traits_impl {};
+
 template <class Iterator>
-struct iterator_traits
+struct __iterator_traits_impl<Iterator, true>
 {
   typedef typename Iterator::iterator_category iterator_category;
   typedef typename Iterator::value_type        value_type;
@@ -92,6 +54,22 @@ struct iterator_traits
   typedef typename Iterator::reference         reference;
   typedef typename Iterator::difference_type   difference_type;
 };
+
+template <class Iterator, bool>
+struct __iterator_traits {};
+
+template <class Iterator>
+struct __iterator_traits<Iterator, true>
+  : public __iterator_traits_impl<Iterator,
+  std::is_convertible<typename Iterator::iterator_category, input_iterator_tag>::value ||
+  std::is_convertible<typename Iterator::iterator_category, output_iterator_tag>::value>
+{
+};
+
+// 萃取迭代器的特性
+template <class Iterator>
+struct iterator_traits 
+  : public __iterator_traits<Iterator, __has_iterator_cat<Iterator>::value> {};
 
 // 针对原生指针的偏特化版本
 template <class T>
@@ -114,9 +92,43 @@ struct iterator_traits<const T*>
   typedef ptrdiff_t                            difference_type;
 };
 
+template <class T, class U, bool = __has_iterator_cat<iterator_traits<T>>::value>
+struct __has_iterator_cat_of
+  : public __bool_constant<std::is_convertible<
+  typename iterator_traits<T>::iterator_category, U>::value>
+{
+};
+
+// 萃取某种迭代器
+template <class T, class U>
+struct __has_iterator_cat_of<T, U, false> : public __false_type {};
+
+template <class Iter>
+struct __is_input_iterator : public __has_iterator_cat_of<Iter, input_iterator_tag> {};
+
+template <class Iter>
+struct __is_output_iterator : public __has_iterator_cat_of<Iter, output_iterator_tag> {};
+
+template <class Iter>
+struct __is_forward_iterator : public __has_iterator_cat_of<Iter, forward_iterator_tag> {};
+
+template <class Iter>
+struct __is_bidirectional_iterator : public __has_iterator_cat_of<Iter, bidirectional_iterator_tag> {};
+
+template <class Iter>
+struct __is_random_access_iterator : public __has_iterator_cat_of<Iter, random_access_iterator_tag> {};
+
+template <class Iterator>
+struct __is_iterator :
+  public __bool_constant<__is_input_iterator<Iterator>::value ||
+  __is_output_iterator<Iterator>::value>
+{
+};
+
+
 // 萃取某个迭代器的 category
 template <class Iterator>
-inline typename iterator_traits<Iterator>::iterator_category
+typename iterator_traits<Iterator>::iterator_category
 iterator_category(const Iterator&)
 {
   typedef typename iterator_traits<Iterator>::iterator_category Category;

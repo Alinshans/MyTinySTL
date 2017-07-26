@@ -25,17 +25,18 @@ enum
   EAlign256 = 16, 
   EAlign512 = 32,
   EAlign1024 = 64, 
-  EAlign2048 = 128, 
+  EAlign2048 = 128,
+  EAlign4096 = 256
 };
 
 // 小对象的内存大小
-enum { ESmallObjectBytes = 2048 };
+enum { ESmallObjectBytes = 4096 };
 
 // free lists 个数
-enum { EFreeListsNumber = 48 };
+enum { EFreeListsNumber = 56 };
 
 // 空间配置类 alloc
-// 如果内存较大，超过 2048 bytes，直接调用 std::malloc, std::free
+// 如果内存较大，超过 4096 bytes，直接调用 std::malloc, std::free
 // 当内存较小时，以内存池管理，每次配置一大块内存，并维护对应的自由链表
 class alloc
 {
@@ -67,6 +68,7 @@ char*  alloc::end_free = nullptr;
 size_t alloc::heap_size = 0;
 
 FreeList* alloc::free_list[EFreeListsNumber] = {
+  nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
   nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
@@ -125,7 +127,9 @@ inline size_t alloc::__align(size_t bytes)
       ? bytes <= 128 ? EAlign128 : EAlign256
       : EAlign512;
   }
-  return bytes <= 1024 ? EAlign1024 : EAlign2048;
+  return bytes <= 2048
+    ? bytes <= 1024 ? EAlign1024 : EAlign2048
+    : EAlign4096;
 }
 
 // 将 bytes 上调至对应区间大小
@@ -145,9 +149,11 @@ inline size_t alloc::__freelist_index(size_t bytes)
         : (15 + (bytes + EAlign256 - 129) / EAlign256)
       : (23 + (bytes + EAlign512 - 257) / EAlign512);
   }
-  return bytes <= 1024
-    ? (31 + (bytes + EAlign1024 - 513) / EAlign1024)
-    : (39 + (bytes + EAlign2048 - 1025) / EAlign2048);
+  return bytes <= 2048
+    ? bytes <= 1024 
+      ? (31 + (bytes + EAlign1024 - 513) / EAlign1024)
+      : (39 + (bytes + EAlign2048 - 1025) / EAlign2048)
+    : (47 + (bytes + EAlign4096 - 2049) / EAlign4096);
 }
 
 // 根据大小获取区块数目

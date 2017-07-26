@@ -3,6 +3,9 @@
 
 // 这个头文件用于提取类型信息
 
+// use standard header for type_traits
+#include <type_traits>
+
 namespace mystl
 {
 
@@ -341,15 +344,12 @@ struct pair;
 // --- forward declaration end
 
 template <class T>
-struct is_pair : mystl::__false_type {};
+struct __is_pair : mystl::__false_type {};
 
 template <class T1, class T2>
-struct is_pair<mystl::pair<T1, T2>> : mystl::__true_type {};
+struct __is_pair<mystl::pair<T1, T2>> : mystl::__true_type {};
 
 } // namespace mystl
-
-// use standard header for type_traits
-#include <type_traits>
 
 #endif // !MYTINYSTL_TYPE_TRAITS_H_
 
