@@ -80,7 +80,7 @@ struct __rb_tree_value_traits_imp<T, true>
 template <class T>
 struct __rb_tree_value_traits
 {
-  static constexpr bool __is_map = mystl::is_pair<T>::value;
+  static constexpr bool __is_map = mystl::__is_pair<T>::value;
 
   typedef __rb_tree_value_traits_imp<T, __is_map> value_traits_type;
 

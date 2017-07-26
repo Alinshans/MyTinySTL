@@ -83,7 +83,7 @@ struct __list_node : public __list_node_base<T>
 
 // list 的迭代器设计
 template <class T>
-struct __list_iterator : public bidirectional_iterator<T>
+struct __list_iterator : public iterator<bidirectional_iterator_tag, T>
 {
   typedef T                                    value_type;
   typedef T*                                   pointer;
@@ -137,7 +137,7 @@ struct __list_iterator : public bidirectional_iterator<T>
 };
 
 template <class T>
-struct __list_const_iterator : public bidirectional_iterator<T>
+struct __list_const_iterator : public iterator<bidirectional_iterator_tag, T>
 {
   typedef T                                    value_type;
   typedef const T*                             pointer;
