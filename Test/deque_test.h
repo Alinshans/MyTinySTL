@@ -36,12 +36,12 @@ void deque_test()
   d10 = { 1,2,3,4,5,6,7,8,9 };
   d10.~deque();
 
-  FUN_AFTER(d1, d1.assign(10));
+  FUN_AFTER(d1, d1.assign(5, 1));
   FUN_AFTER(d1, d1.assign(8, 8));
   FUN_AFTER(d1, d1.assign(a, a + 5));
-  FUN_AFTER(d1, d1.insert(d1.begin()));
+  FUN_AFTER(d1, d1.assign({ 1,2,3,4,5 }));
   FUN_AFTER(d1, d1.insert(d1.end(), 6));
-  FUN_AFTER(d1, d1.insert(d1.end(), 2, 7));
+  FUN_AFTER(d1, d1.insert(d1.end() - 1, 2, 7));
   FUN_AFTER(d1, d1.insert(d1.begin(), a, a + 5));
   FUN_AFTER(d1, d1.erase(d1.begin()));
   FUN_AFTER(d1, d1.erase(d1.begin(), d1.begin() + 4));
@@ -75,8 +75,12 @@ void deque_test()
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
-  std::cout << "|       insert        |";
-  CON_TEST_P2(deque<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  std::cout << "|     push_front      |";
+  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  std::cout << std::endl;
+  std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
+  std::cout << "|     push_back       |";
+  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;
