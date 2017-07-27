@@ -170,6 +170,7 @@
     <ClInclude Include="basic_string.h" />
     <ClInclude Include="construct.h" />
     <ClInclude Include="deque.h" />
+    <ClInclude Include="exceptdef.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="hashtable.h" />
     <ClInclude Include="unordered_map.h" />
