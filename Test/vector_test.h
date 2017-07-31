@@ -34,13 +34,11 @@ void vector_test()
   v10 = { 1,2,3,4,5,6,7,8,9 };
   v10.~vector();
 
-  FUN_AFTER(v1, v1.assign(10));
   FUN_AFTER(v1, v1.assign(8, 8));
   FUN_AFTER(v1, v1.assign(a, a + 5));
   FUN_AFTER(v1, v1.emplace(v1.begin(), 0));
   FUN_AFTER(v1, v1.emplace_back(6));
   FUN_AFTER(v1, v1.push_back(6));
-  FUN_AFTER(v1, v1.insert(v1.begin()));
   FUN_AFTER(v1, v1.insert(v1.end(), 7));
   FUN_AFTER(v1, v1.insert(v1.begin() + 3, 2, 3));
   FUN_AFTER(v1, v1.insert(v1.begin(), a, a + 5));
