@@ -4,13 +4,12 @@
 // 这个头文件包含了一个模板类 deque
 // deque: 双端队列
 
+#include <initializer_list>
+
 #include "iterator.h"
 #include "memory.h"
 #include "util.h"
-
-#include <cassert>
-
-#include <initializer_list>
+#include "exceptdef.h"
 
 namespace mystl
 {
@@ -330,35 +329,44 @@ public:
   // 访问元素相关操作 
   reference       operator[](size_type n)
   {
-    assert(n < size());
+    MYSTL_DEBUG(n < size());
     return begin_[n];
   }
   const_reference operator[](size_type n) const
   {
-    assert(n < size());
+    MYSTL_DEBUG(n < size());
     return begin_[n];
   }
-  reference       at(size_type n)       { return (*this)[n]; }
-  const_reference at(size_type n) const { return (*this)[n]; }
+
+  reference       at(size_type n)      
+  { 
+    THROW_OUT_OF_RANGE_IF(!(n < size()), "deque<T>::at() subscript out of range");
+    return (*this)[n];
+  }
+  const_reference at(size_type n) const
+  {
+    THROW_OUT_OF_RANGE_IF(!(n < size()), "deque<T>::at() subscript out of range");
+    return (*this)[n]; 
+  }
 
   reference       front()
   {
-    assert(!empty());
+    MYSTL_DEBUG(!empty());
     return *begin();
   }
   const_reference front() const
   {
-    assert(!empty());
+    MYSTL_DEBUG(!empty());
     return *begin();
   }
   reference       back()
   {
-    assert(!empty());
+    MYSTL_DEBUG(!empty());
     return *(end() - 1);
   }
   const_reference back() const
   {
-    assert(!empty());
+    MYSTL_DEBUG(!empty());
     return *(end() - 1);
   }
 
@@ -455,8 +463,8 @@ private:
 
   // reallocate
   void        __require_capacity(size_type n, bool front);
-  void        __reallocate_map_at_front(size_type n, size_type need);
-  void        __reallocate_map_at_back(size_type n, size_type need);
+  void        __reallocate_map_at_front(size_type need);
+  void        __reallocate_map_at_back(size_type need);
 
 };
 
@@ -642,6 +650,7 @@ void deque<T>::push_back(const value_type& value)
 template <class T>
 void deque<T>::pop_front()
 {
+  MYSTL_DEBUG(!empty());
   if (begin_.cur != begin_.last - 1)
   {
     data_allocator::destroy(begin_.cur);
@@ -659,6 +668,7 @@ void deque<T>::pop_front()
 template <class T>
 void deque<T>::pop_back()
 {
+  MYSTL_DEBUG(!empty());
   if (end_.cur != end_.first)
   {
     --end_.cur;
@@ -838,7 +848,7 @@ deque<T>::__create_map_and_set_nil(size_type size)
 {
   map_pointer mp = nullptr;
   mp = map_allocator::allocate(size);
-  for (int i = 0; i < size; ++i)
+  for (size_type i = 0; i < size; ++i)
     *(mp + i) = nullptr;
   return mp;
 }
@@ -1290,7 +1300,7 @@ void deque<T>::__require_capacity(size_type n, bool front)
     const size_type need_buffer = (n - (begin_.cur - begin_.first)) / buffer_size + 1;
     if (need_buffer > static_cast<size_type>(begin_.node - map_))
     {
-      __reallocate_map_at_front(n, need_buffer);
+      __reallocate_map_at_front(need_buffer);
       return;
     }
     __create_buffer(begin_.node - need_buffer, begin_.node - 1);
@@ -1300,7 +1310,7 @@ void deque<T>::__require_capacity(size_type n, bool front)
     const size_type need_buffer = (n - (end_.last - end_.cur - 1)) / buffer_size + 1;
     if (need_buffer > static_cast<size_type>((map_ + map_size_) - end_.node - 1))
     {
-      __reallocate_map_at_back(n, need_buffer);
+      __reallocate_map_at_back(need_buffer);
       return;
     }
     __create_buffer(end_.node + 1, end_.node + need_buffer);
@@ -1309,7 +1319,7 @@ void deque<T>::__require_capacity(size_type n, bool front)
 
 // __reallocate_map_at_front 函数
 template <class T>
-void deque<T>::__reallocate_map_at_front(size_type n, size_type need_buffer)
+void deque<T>::__reallocate_map_at_front(size_type need_buffer)
 {
   const size_type new_map_size = mystl::max(map_size_ << 1,
                                             map_size_ + need_buffer + DEQUE_MAP_INIT_SIZE);
@@ -1321,10 +1331,9 @@ void deque<T>::__reallocate_map_at_front(size_type n, size_type need_buffer)
   auto begin = new_map + (new_map_size - new_buffer) / 2;
   auto mid = begin + need_buffer;
   auto end = mid + old_buffer;
-  for (; begin != mid; ++begin)
-    *begin = data_allocator::allocate(buffer_size);
-  for (auto begin2 = begin_.node; begin != end; ++begin, ++begin2)
-    *begin = *begin2;
+  __create_buffer(begin, mid - 1);
+  for (auto begin1 = mid, begin2 = begin_.node; begin1 != end; ++begin1, ++begin2)
+    *begin1 = *begin2;
 
   // 更新数据
   map_allocator::deallocate(map_, map_size_);
@@ -1336,7 +1345,7 @@ void deque<T>::__reallocate_map_at_front(size_type n, size_type need_buffer)
 
 // __reallocate_map_at_back 函数
 template <class T>
-void deque<T>::__reallocate_map_at_back(size_type n, size_type need_buffer)
+void deque<T>::__reallocate_map_at_back(size_type need_buffer)
 {
   const size_type new_map_size = mystl::max(map_size_ << 1,
                                             map_size_ + need_buffer + DEQUE_MAP_INIT_SIZE);
@@ -1348,10 +1357,9 @@ void deque<T>::__reallocate_map_at_back(size_type n, size_type need_buffer)
   auto begin = new_map + ((new_map_size - new_buffer) / 2);
   auto mid = begin + old_buffer;
   auto end = mid + need_buffer;
-  for (auto begin2 = begin_.node; begin != mid; ++begin, ++begin2)
-    *begin = *begin2;
-  for (; begin != end; ++begin)
-    *begin = data_allocator::allocate(buffer_size);
+  for (auto begin1 = begin, begin2 = begin_.node; begin1 != mid; ++begin1, ++begin2)
+    *begin1 = *begin2;
+  __create_buffer(mid, end - 1);
 
   // 更新数据
   map_allocator::deallocate(map_, map_size_);
