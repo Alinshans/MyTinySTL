@@ -6,8 +6,6 @@
 #include <cstring>
 
 #include "iterator.h"
-#include "pair.h"
-#include "type_traits.h"
 #include "util.h"
 
 namespace mystl
@@ -71,10 +69,11 @@ void iter_swap(FIter1 lhs, FIter2 rhs)
 // copy
 // 把 [first, last)区间内的元素拷贝到 [result, result + (last - first))内
 /*****************************************************************************************/
-// __copy 的 input_iterator_tag 版本
-template <class IIter, class OIter>
-OIter
-__copy(IIter first, IIter last, OIter result, input_iterator_tag)
+template <class InputIter, class OutputIter>
+OutputIter unchecked_copy_cat(InputIter first, 
+                              InputIter last,
+                              OutputIter result, 
+                              mystl::input_iterator_tag)
 {
   for (; first != last; ++first, ++result)
   {
@@ -83,10 +82,11 @@ __copy(IIter first, IIter last, OIter result, input_iterator_tag)
   return result;
 }
 
-// __copy 的 random_access_iterator_tag 版本
-template <class RAIter, class OIter>
-OIter
-__copy(RAIter first, RAIter last, OIter result, random_access_iterator_tag)
+template <class RandomIter, class OutputIter>
+OutputIter unchecked_copy_cat(RandomIter first,
+                              RandomIter last,
+                              OutputIter result,
+                              mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n, ++first, ++result)
   {
@@ -95,114 +95,100 @@ __copy(RAIter first, RAIter last, OIter result, random_access_iterator_tag)
   return result;
 }
 
-// __copy_t : 指针所指对象具备 trivial assignment operator
-template <class T>
-T* __copy_t(const T* first, const T* last, T* result, __true_type)
+template <class InputIter, class OutputIter>
+OutputIter unchecked_copy(InputIter first, InputIter last, OutputIter result)
 {
-  std::memmove(result, first, sizeof(T) * (last - first));
-  return result + (last - first);
+  return unchecked_copy_cat(first, last, result, iterator_category(first));
 }
 
-// __copy_t : 指针所指对象具备 non-trivial assignment operator
-template <class T>
-T* __copy_t(const T* first, const T* last, T* result, __false_type)
+template <class Tp, class Up>
+typename std::enable_if<
+  std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+  std::is_trivially_copy_assignable<Up>::value,
+  Up*>::type
+unchecked_copy(Tp* first, Tp* last, Up* result)
 {
-  return __copy(first, last, result, random_access_iterator_tag());
+  const size_t n = static_cast<size_t>(last - first);
+  if (n != 0)
+    std::memmove(result, first, n * sizeof(Up));
+  return result + n;
 }
 
-// 根据类型性质分派不同函数
-// __copy_dispatch 的泛化版本
-template <class IIter, class OIter>
-struct __copy_dispatch
+template <class InputIter, class OutputIter>
+OutputIter copy(InputIter first, InputIter last, OutputIter result)
 {
-  OIter operator()(IIter first, IIter last, OIter result)
-  {
-    return __copy(first, last, result, iterator_category(first));
-  }
-};
-
-// __copy_dispatch 的偏特化版本，两个参数都是 T* 形式
-template <class T>
-struct __copy_dispatch<T*, T*>
-{
-  T* operator()(T* first, T* last, T* result)
-  {
-    typedef typename __type_traits<T>::has_trivial_assignment_operator Trivial;
-    return __copy_t(first, last, result, Trivial());
-  }
-};
-
-// __copy_dispatch的偏特化版本，第一个参数是 const T* 形式，第二个参数是 T* 形式
-template <class T>
-struct __copy_dispatch<const T*, T*>
-{
-  T* operator()(const T* first, const T* last, T* result)
-  {
-    typedef typename __type_traits<T>::has_trivial_assignment_operator Trivial;
-    return __copy_t(first, last, result, Trivial());
-  }
-};
-
-template <class IIter, class OIter>
-OIter copy(IIter first, IIter last, OIter result)
-{
-  return __copy_dispatch<IIter, OIter>()(first, last, result);
-}
-
-// char* 的特化版本
-char* copy(const char* first, const char* last, char* result)
-{
-  std::memmove(result, first, last - first);
-  return result + (last - first);
-}
-
-// wchar_t* 的特化版本
-wchar_t* copy(const wchar_t* first, const wchar_t* last, wchar_t* result)
-{
-  std::memmove(result, first, sizeof(wchar_t) * (last - first));
-  return result + (last - first);
+  return unchecked_copy(first, last, result);
 }
 
 /*****************************************************************************************/
 // copy_backward
 // 将 [first, last)区间内的元素拷贝到 [result - (last - first), result)内
 /*****************************************************************************************/
-// __copy_backward 的 bidirectional_iterator_tag 版本
-template <class BIter1, class BIter2>
-BIter2 __copy_backward(BIter1 first, BIter1 last, BIter2 result,
-                       bidirectional_iterator_tag)
+// unchecked_copy_backward_cat 的 bidirectional_iterator_tag 版本
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2 
+unchecked_copy_backward_cat(BidirectionalIter1 first,
+                            BidirectionalIter1 last,
+                            BidirectionalIter2 result,
+                            mystl::bidirectional_iterator_tag)
 {
   while (first != last)
-  {
     *--result = *--last;
-  }
   return result;
 }
 
-// __copy_backward 的 random_access_iterator_tag 版本
-template <class BIter1, class BIter2>
-BIter2 __copy_backward(BIter1 first, BIter1 last, BIter2 result,
-                       random_access_iterator_tag)
+// unchecked_copy_backward_cat 的 random_access_iterator_tag 版本
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2 
+unchecked_copy_backward_cat(BidirectionalIter1 first,
+                            BidirectionalIter1 last,
+                            BidirectionalIter2 result,
+                            mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n)
-  {
     *--result = *--last;
+  return result;
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2 
+unchecked_copy_backward(BidirectionalIter1 first, 
+                        BidirectionalIter1 last,
+                        BidirectionalIter2 result)
+{
+  return unchecked_copy_backward_cat(first, last, result,
+                                     iterator_category(first));
+}
+
+template <class Tp, class Up>
+typename std::enable_if<
+  std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+  std::is_trivially_copy_assignable<Up>::value,
+  Up*>::type
+unchecked_copy_backward(Tp* first, Tp* last, Up* result)
+{
+  const size_t n = static_cast<size_t>(last - first);
+  if (n != 0)
+  {
+    result -= n;
+    std::memmove(result, first, n * sizeof(Up));
   }
   return result;
 }
 
-template <class BIter1, class BIter2>
-BIter2 copy_backward(BIter1 first, BIter1 last, BIter2 result)
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2 
+copy_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIter2 result)
 {
-  return __copy_backward(first, last, result, iterator_category(first));
+  return unchecked_copy_backward(first, last, result);
 }
 
 /*****************************************************************************************/
 // copy_if
 // 把[first, last)内满足一元操作 unary_pred 的元素拷贝到以 result 为起始的位置上
 /*****************************************************************************************/
-template <class IIter, class OIter, class UnaryPredicate>
-OIter copy_if(IIter first, IIter last, OIter result, UnaryPredicate unary_pred)
+template <class InputIter, class OutputIter, class UnaryPredicate>
+OutputIter copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred)
 {
   for (; first != last; ++first)
   {
@@ -217,32 +203,30 @@ OIter copy_if(IIter first, IIter last, OIter result, UnaryPredicate unary_pred)
 // 把 [first, first + n)区间上的元素拷贝到 [result, result + n)上
 // 返回一个 pair 分别指向拷贝结束的尾部
 /*****************************************************************************************/
-// __copy_n 的 input_iterator_tag 版本
-template <class IIter, class Size, class OIter>
-mystl::pair<IIter, OIter>
-__copy_n(IIter first, Size n, OIter result, input_iterator_tag)
+template <class InputIter, class Size, class OutputIter>
+mystl::pair<InputIter, OutputIter>
+unchecked_copy_n(InputIter first, Size n, OutputIter result, mystl::input_iterator_tag)
 {
   for (; n > 0; --n, ++first, ++result)
   {
     *result = *first;
   }
-  return mystl::pair<IIter, OIter>(first, result);
+  return mystl::pair<InputIter, OutputIter>(first, result);
 }
 
-// __copy_n 的 random_access_iterator_tag 版本
-template <class IIter, class Size, class OIter>
-mystl::pair<IIter, OIter>
-__copy_n(IIter first, Size n, OIter result, random_access_iterator_tag)
+template <class RandomIter, class Size, class OutputIter>
+mystl::pair<RandomIter, OutputIter>
+unchecked_copy_n(RandomIter first, Size n, OutputIter result, mystl::random_access_iterator_tag)
 {
   auto last = first + n;
-  return mystl::pair<IIter, OIter>(last, mystl::copy(first, last, result));
+  return mystl::pair<RandomIter, OutputIter>(last, mystl::copy(first, last, result));
 }
 
-template <class IIter, class Size, class OIter>
-mystl::pair<IIter, OIter> 
-copy_n(IIter first, Size n, OIter result)
+template <class InputIter, class Size, class OutputIter>
+mystl::pair<InputIter, OutputIter> 
+copy_n(InputIter first, Size n, OutputIter result)
 {
-  return __copy_n(first, n, result, iterator_category(first));
+  return unchecked_copy_n(first, n, result, iterator_category(first));
 }
 
 // char* 的特化版本
@@ -262,11 +246,127 @@ copy_n(const wchar_t* first, size_t n, wchar_t* result)
 }
 
 /*****************************************************************************************/
+// move
+// 把 [first, last)区间内的元素移动到 [result, result + (last - first))内
+/*****************************************************************************************/
+template <class InputIter, class OutputIter>
+OutputIter unchecked_move_cat(InputIter first,
+                              InputIter last,
+                              OutputIter result,
+                              mystl::input_iterator_tag)
+{
+  for (; first != last; ++first, ++result)
+  {
+    *result = mystl::move(*first);
+  }
+  return result;
+}
+
+template <class RandomIter, class OutputIter>
+OutputIter unchecked_move_cat(RandomIter first,
+                              RandomIter last,
+                              OutputIter result,
+                              mystl::random_access_iterator_tag)
+{
+  for (auto n = last - first; n > 0; --n, ++first, ++result)
+  {
+    *result = mystl::move(*first);
+  }
+  return result;
+}
+
+template <class InputIter, class OutputIter>
+OutputIter unchecked_move(InputIter first, InputIter last, OutputIter result)
+{
+  return unchecked_move_cat(first, last, result, iterator_category(first));
+}
+
+template <class Tp, class Up>
+typename std::enable_if<
+  std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+  std::is_trivially_move_assignable<Up>::value,
+  Up*>::type
+  unchecked_move(Tp* first, Tp* last, Up* result)
+{
+  const size_t n = static_cast<size_t>(last - first);
+  if (n != 0)
+    std::memmove(result, first, n * sizeof(Up));
+  return result + n;
+}
+
+template <class InputIter, class OutputIter>
+OutputIter move(InputIter first, InputIter last, OutputIter result)
+{
+  return unchecked_move(first, last, result);
+}
+
+/*****************************************************************************************/
+// move_backward
+// 将 [first, last)区间内的元素移动到 [result - (last - first), result)内
+/*****************************************************************************************/
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2
+unchecked_move_backward_cat(BidirectionalIter1 first,
+                            BidirectionalIter1 last,
+                            BidirectionalIter2 result,
+                            mystl::bidirectional_iterator_tag)
+{
+  while (first != last)
+    *--result = mystl::move(*--last);
+  return result;
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2
+unchecked_move_backward_cat(BidirectionalIter1 first,
+                            BidirectionalIter1 last,
+                            BidirectionalIter2 result,
+                            mystl::random_access_iterator_tag)
+{
+  for (auto n = last - first; n > 0; --n)
+    *--result = mystl::move(*--last);
+  return result;
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2
+unchecked_move_backward(BidirectionalIter1 first,
+                        BidirectionalIter1 last,
+                        BidirectionalIter2 result)
+{
+  return unchecked_move_backward_cat(first, last, result,
+                                     iterator_category(first));
+}
+
+template <class Tp, class Up>
+typename std::enable_if<
+  std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+  std::is_trivially_move_assignable<Up>::value,
+  Up*>::type
+unchecked_move_backward(Tp* first, Tp* last, Up* result)
+{
+  const size_t n = static_cast<size_t>(last - first);
+  if (n != 0)
+  {
+    result -= n;
+    std::memmove(result, first, n * sizeof(Up));
+  }
+  return result;
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter2
+move_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIter2 result)
+{
+  return unchecked_move_backward(first, last, result);
+}
+
+/*****************************************************************************************/
 // equal
 // 比较第一序列在 [first, last)区间上的元素值是否和第二序列相等
 /*****************************************************************************************/
-template <class IIter1, class IIter2>
-bool equal(IIter1 first1, IIter1 last1, IIter2 first2)
+template <class InputIter1, class InputIter2>
+bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2)
 {
   for (; first1 != last1; ++first1, ++first2)
   {
@@ -277,8 +377,8 @@ bool equal(IIter1 first1, IIter1 last1, IIter2 first2)
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class IIter1, class IIter2, class Compared>
-bool equal(IIter1 first1, IIter1 last1, IIter2 first2, Compared comp)
+template <class InputIter1, class InputIter2, class Compared>
+bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compared comp)
 {
   for (; first1 != last1; ++first1, ++first2)
   {
@@ -324,8 +424,8 @@ void fill(char* first, char* last, const char& c)
 // fill_n
 // 从 first 位置开始填充 n 个新值
 /*****************************************************************************************/
-template <class OIter, class Size, class T>
-OIter fill_n(OIter first, Size n, const T& value)
+template <class OutputIter, class Size, class T>
+OutputIter fill_n(OutputIter first, Size n, const T& value)
 {
   for (; n > 0; --n, ++first)
   {
@@ -342,9 +442,9 @@ OIter fill_n(OIter first, Size n, const T& value)
 // (3)如果到达 last2 而尚未到达 last1 返回 false
 // (4)如果同时到达 last1 和 last2 返回 false
 /*****************************************************************************************/
-template <class IIter1, class IIter2>
-bool lexicographical_compare(IIter1 first1, IIter1 last1,
-                             IIter2 first2, IIter2 last2)
+template <class InputIter1, class InputIter2>
+bool lexicographical_compare(InputIter1 first1, InputIter1 last1,
+                             InputIter2 first2, InputIter2 last2)
 {
   for (; first1 != last1 && first2 != last2; ++first1, ++first2)
   {
@@ -357,9 +457,9 @@ bool lexicographical_compare(IIter1 first1, IIter1 last1,
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class IIter1, class IIter2, class Compred>
-bool lexicographical_compare(IIter1 first1, IIter1 last1,
-                             IIter2 first2, IIter2 last2, Compred comp)
+template <class InputIter1, class InputIter2, class Compred>
+bool lexicographical_compare(InputIter1 first1, InputIter1 last1,
+                             InputIter2 first2, InputIter2 last2, Compred comp)
 {
   for (; first1 != last1 && first2 != last2; ++first1, ++first2)
   {
@@ -389,29 +489,29 @@ bool lexicographical_compare(const unsigned char* first1,
 // mismatch
 // 平行比较两个序列，找到第一处失配的元素，返回一对迭代器，分别指向两个序列中失配的元素
 /*****************************************************************************************/
-template <class IIter1, class IIter2>
-mystl::pair<IIter1, IIter2> 
-mismatch(IIter1 first1, IIter1 last1, IIter2 first2)
+template <class InputIter1, class InputIter2>
+mystl::pair<InputIter1, InputIter2> 
+mismatch(InputIter1 first1, InputIter1 last1, InputIter2 first2)
 {
   while (first1 != last1 && *first1 == *first2)
   {
     ++first1;
     ++first2;
   }
-  return mystl::pair<IIter1, IIter2>(first1, first2);
+  return mystl::pair<InputIter1, InputIter2>(first1, first2);
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class IIter1, class IIter2, class Compred>
-mystl::pair<IIter1, IIter2> 
-mismatch(IIter1 first1, IIter1 last1, IIter2 first2, Compred comp)
+template <class InputIter1, class InputIter2, class Compred>
+mystl::pair<InputIter1, InputIter2> 
+mismatch(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compred comp)
 {
   while (first1 != last1 && comp(*first1, *first2))
   {
     ++first1;
     ++first2;
   }
-  return mystl::pair<IIter1, IIter2>(first1, first2);
+  return mystl::pair<InputIter1, InputIter2>(first1, first2);
 }
 
 } // namespace mystl

@@ -28,6 +28,11 @@ namespace test
 #endif // __transfer
 #endif // _MSC_VER
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4389)
+#endif // _MSC_VER
+
 namespace algorithm_test
 {
 
@@ -1148,6 +1153,11 @@ TEST(upper_bound_test)
 }
 
 } // namespace algorithm_test
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
 } // namespace test
 } // namespace mystl
 #endif // !MYTINYSTL_ALGORITHM_TEST_H_
