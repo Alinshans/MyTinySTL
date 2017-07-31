@@ -3,9 +3,9 @@
 
 // 这个头文件包含一个类 alloc，代表 mystl 的默认空间配置器
 
-#include <cstdlib>
+#include <new>
+
 #include <cstddef>
-#include <iostream>
 
 namespace mystl
 {
@@ -83,7 +83,7 @@ inline void* alloc::allocate(size_t n)
   FreeList* my_free_list;
   FreeList* result;
   if (n > static_cast<size_t>(ESmallObjectBytes))
-    return std::malloc(n);
+    return ::operator new(n);
   my_free_list = free_list[__freelist_index(n)];
   result = my_free_list;
   if (result == nullptr)
@@ -100,7 +100,7 @@ inline void alloc::deallocate(void* p, size_t n)
 {
   if (n > static_cast<size_t>(ESmallObjectBytes))
   {
-    std::free(p);
+    ::operator delete(p);
     return;
   }
   FreeList* q = reinterpret_cast<FreeList*>(p);
@@ -205,6 +205,7 @@ char* alloc::__chunk_alloc(size_t size, size_t& nblock)
   char* result;
   size_t need_bytes = size * nblock;
   size_t pool_bytes = end_free - start_free;
+
   // 如果内存池剩余大小完全满足需求量，返回它
   if (pool_bytes >= need_bytes)
   {
@@ -212,6 +213,7 @@ char* alloc::__chunk_alloc(size_t size, size_t& nblock)
     start_free += need_bytes;
     return result;
   }
+
   // 如果内存池剩余大小不能完全满足需求量，但至少可以分配一个或一个以上的区块，就返回它
   else if (pool_bytes >= size)
   {
@@ -221,23 +223,31 @@ char* alloc::__chunk_alloc(size_t size, size_t& nblock)
     start_free += need_bytes;
     return result;
   }
+
   // 如果内存池剩余大小连一个区块都无法满足
   else
   {
     if (pool_bytes > 0)
-    {  // 如果内存池还有剩余，把剩余的空间加入到 free list 中
+    { // 如果内存池还有剩余，把剩余的空间加入到 free list 中
       FreeList* my_free_list = free_list[__freelist_index(pool_bytes)];
       ((FreeList*)start_free)->next = my_free_list;
       my_free_list = (FreeList*)start_free;
     }
     // 申请 heap 空间
     size_t bytes_to_get = (need_bytes << 1) + __round_up(heap_size >> 4);
-    start_free = (char*)std::malloc(bytes_to_get);
-    if (!start_free)
+    try
     {
+      start_free = (char*)::operator new(bytes_to_get);
+    }
+    catch (...)
+    {
+      start_free = nullptr;
+    }
+    if (start_free == nullptr)
+    { // heap 空间也不够
       FreeList* my_free_list, *p;
       // 试着查找有无未用区块，且区块足够大的 free list
-      for (auto i = size; i <= ESmallObjectBytes; i += __align(i))
+      for (size_t i = size; i <= ESmallObjectBytes; i += __align(i))
       {
         my_free_list = free_list[__freelist_index(i)];
         p = my_free_list;
@@ -248,10 +258,10 @@ char* alloc::__chunk_alloc(size_t size, size_t& nblock)
           end_free = start_free + i;
           return __chunk_alloc(size, nblock);
         }
-        end_free = nullptr;
-        std::cerr << "out of memory" << std::endl;
-        std::exit(1);
       }
+      std::printf("out of memory");
+      end_free = nullptr;
+      throw std::bad_alloc();
     }
     end_free = start_free + bytes_to_get;
     heap_size += bytes_to_get;
