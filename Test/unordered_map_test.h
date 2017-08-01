@@ -88,7 +88,7 @@ void unordered_map_test()
 void unordered_multimap_test()
 {
   std::cout << "[===============================================================]" << std::endl;
-  std::cout << "[-------------- Run container test : unordered_multimap -------------]" << std::endl;
+  std::cout << "[----------- Run container test : unordered_multimap -----------]" << std::endl;
   std::cout << "[-------------------------- API test ---------------------------]" << std::endl;
   mystl::vector<PAIR> v;
   for (int i = 0; i < 5; ++i)
@@ -151,7 +151,7 @@ void unordered_multimap_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;
 #endif
-  std::cout << "[-------------- End container test : unordered_multimap -------------]" << std::endl;
+  std::cout << "[----------- End container test : unordered_multimap -----------]" << std::endl;
 }
 
 } // namespace unordered_map_test
