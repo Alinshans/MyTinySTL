@@ -26,7 +26,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.5.0")
 		message(FATAL_ERROR "required Clang 3.5 or later")
 	else()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	endif()
 endif()
 

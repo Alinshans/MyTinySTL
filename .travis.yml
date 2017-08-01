@@ -1,8 +1,8 @@
 language: cpp
 
-# Ubuntu 14.04 Trusty support
+# ubuntu 16.04 version
 sudo: required
-dist: trusty
+dist: xenial
 
 # os: osx
 
