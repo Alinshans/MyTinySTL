@@ -1,26 +1,28 @@
 单元测试
 =====
-## 测试环境
-  测试直接在 `Travis CI` 和 `AppVeyor` 上进行，分别在 `Linux` 和 `Windows` 上对不同编译器进行测试：
+## 测试环境 (Test environment)
+  测试直接在 `Travis CI` 和 `AppVeyor` 上构建并运行，已在以下环境中做过测试：
   
-  * linux, g++-4.8
+  Tests were built and run directly on `Tracis CI` and `AppVeyor` and had been tested in the following environments:
+
   * linux, g++-5
   * linux, g++-6
-  * linux, clang++3.5
-  * linux, clang++3.6
-  * linux, clang++3.7
-  * linux, clang++3.8
-  * windows, msvc 14.0 (Visual Studio 2015)
+  * linux, g++-7
+  * osx, g++-5
+  * osx, clang++
+  * windows, msvc 14.0 (VS2015)
   
+## 测试框架 (Test frame)
+  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个类实现了一个简单的测试框架，并定义了大量宏来封装测试过程。</br>
+  In this file [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h), I used two class to implement a simple test framework, and defined a lot of macros to package testing process.
   
-## 测试框架
-  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个 `class template` 实现了一个简单的测试框架。定义了大量宏封装测试。</br>
-  
-  
-## 测试内容
-  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON`, `MEMORY_IS_ENOUGH`，`PERFORMANCE_TEST_ON` 宏定义为 `1`，开启性能测试，`MEMORY_IS_ENOUGH` 宏定义为 `1`，增大测试数据（内存消耗）。默认开启 `PERFORMANCE_TEST_ON` 关闭 `MEMORY_IS_ENOUGH`。<br>
-  测试案例如下：
-  
+## 测试内容 (Test content)
+  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON` 和 `MEMORY_IS_ENOUGH`。`PERFORMANCE_TEST_ON` 宏定义为 `1`，开启性能测试，`MEMORY_IS_ENOUGH` 宏定义为 `1`，增大测试数据（更多内存消耗）。默认 `PERFORMANCE_TEST_ON` 为 `1`， `MEMORY_IS_ENOUGH` 为 `0`。<br>
+  In this file [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h), I defined two marcos: `PERFORMANCE_TEST_ON` and `MEMORY_IS_ENOUGH`. If `PERFORMANCE_TEST_ON` is defined as `1`, it will run the performance test, if `MEMORY_IS_ENOUGH` is defined as `1`, it will take larger test data(which will consume more memory). By default, `PERFORMANCE_TEST_ON` is `1` and `MEMORY_IS_ENOUGH` is `0`.
+
+  测试案例如下：<br>
+  The test cases are as follows:
+
   * [algorithm](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_test.h) *(100%/100%)*
   * [algorithm_performance](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/algorithm_performance_test.h) *(100%/100%)*
   * [deque](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/deque_test.h) *(100%/100%)*
@@ -45,6 +47,8 @@
   * [vector](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/vector_test.h) *(100%/100%)*
   
   
-## 测试结果
+## 测试结果 (Test result)
   见 [Travis CI](https://travis-ci.org/Alinshans/MyTinySTL) 和 [AppVeyor](https://ci.appveyor.com/project/Alinshans/mytinystl)。
+
+  See [Travis CI](https://travis-ci.org/Alinshans/MyTinySTL) and [AppVeyor](https://ci.appveyor.com/project/Alinshans/mytinystl).
   
