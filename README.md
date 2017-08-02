@@ -15,12 +15,12 @@ MyTinySTL
   * windows
   * osx
 * 编译器
-  * GCC 4.8
-  * Clang 3.5 
-  * MSVC 14.0 
+  * g++ 5.4 或以上
+  * clang++ 3.5 或以上
+  * msvc 14.0 或以上
 
 ## 需要
-  * cmake 2.8 (使用g++/clang编译)
+  * cmake 2.8 (使用g++/clang++编译)
 
 ## 运行
 
@@ -43,10 +43,10 @@ $ cd ../bin && ./stltest
   2. 使用 `vs2015`（或 `vs2017`）打开 `MyTinySTL.sln`，配置成 `Release` 模式，（Ctrl + F5）开始执行。
   
 ## 文档
-  见 [Wiki](https://github.com/Alinshans/MyTinySTL/wiki)
+  见 [Wiki](https://github.com/Alinshans/MyTinySTL/wiki)。
 
 ## 测试
-  见 [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test)
+  见 [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test)。
 
 ---
 
@@ -61,13 +61,13 @@ This is a `tinySTL` based on `C++11`, which is my first project for practice. I 
   * windows
   * osx
 * complier
-  * gcc 4.8 or later
-  * clang 3.5 or later
+  * g++ 5.4 or later
+  * clang++ 3.5 or later
   * msvc 14.0 or later
 
 ## Required
 
-* cmake 2.8 (if you build with gcc/clang)
+* cmake 2.8 (if you build with g++/clang++)
 
 ## Run test
 
@@ -93,8 +93,8 @@ $ cd ../bin && ./stltest
 
 ## Documents
 
-See [Wiki](https://github.com/Alinshans/MyTinySTL/wiki)
+See [Wiki](https://github.com/Alinshans/MyTinySTL/wiki).
 
 ## Test
 
-See [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test)
+See [Test](https://github.com/Alinshans/MyTinySTL/tree/master/Test).
