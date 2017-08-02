@@ -4,8 +4,6 @@ language: cpp
 sudo: required
 dist: trusty
 
-# os: osx
-
 matrix:
   include:
     - os: linux
@@ -37,51 +35,31 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
-          packages: ['clang-3.5']
-      env:
-        - MATRIX_EVAL="CC=clang-3.5 && CXX=clang++-3.5"
-
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
-          packages: ['clang-3.6']
-      env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
-        
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
-          packages: ['clang-3.7']
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-        
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8']
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-        
     - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
-      
+    
+    - os: osx
+      osx_image: xcode5
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
+    - os: osx
+      osx_image: xcode6
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
+    - os: osx
+      osx_image: xcode7
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
     - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
         
 before_script:
   - eval "${MATRIX_EVAL}"
