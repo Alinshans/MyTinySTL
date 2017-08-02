@@ -1,8 +1,8 @@
 language: cpp
 
-# ubuntu 16.04 version
+# ubuntu 14.04 version
 sudo: required
-dist: xenial
+dist: trusty
 
 # os: osx
 
@@ -77,6 +77,11 @@ matrix:
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+      
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
         
 before_script:
   - eval "${MATRIX_EVAL}"
