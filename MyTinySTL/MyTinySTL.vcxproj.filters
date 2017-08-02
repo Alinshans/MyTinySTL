@@ -45,9 +45,6 @@
     <ClInclude Include="algobase.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="pair.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="heap_algo.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -154,6 +151,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="util.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="exceptdef.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -39,7 +39,7 @@ public:
 public:
   // 末尾位置的值，例:
   // if (str.find('a') != str.end_pos) { /* do something */ }
-  static constexpr size_type    end_pos = -1;
+  static constexpr size_type end_pos = static_cast<size_type>(-1);
 
 private:
   iterator buffer_;  // 储存字符串的起始位置

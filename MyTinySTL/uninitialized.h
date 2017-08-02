@@ -16,100 +16,100 @@ namespace mystl
 
 /*****************************************************************************************/
 // uninitialized_copy
-// 把[first, last)上的内容复制到以 result 为起始处的空间，返回复制结束的位置
+// 把 [first, last) 上的内容复制到以 result 为起始处的空间，返回复制结束的位置
 /*****************************************************************************************/
-template <class IIter, class FIter>
-FIter __uninitialized_copy(IIter first, IIter last, FIter result, __true_type)
+template <class InputIter, class ForwardIter>
+ForwardIter 
+unchecked_uninit_copy(InputIter first, InputIter last, ForwardIter result, std::true_type)
 {
   return mystl::copy(first, last, result);
 }
 
-template <class IIter, class FIter>
-FIter __uninitialized_copy(IIter first, IIter last, FIter result, __false_type)
+template <class InputIter, class ForwardIter>
+ForwardIter
+unchecked_uninit_copy(InputIter first, InputIter last, ForwardIter result, std::false_type)
 {
   auto cur = result;
-  size_t n = 0;
   try
   {
-    for (; first != last; ++first, ++cur, ++n)
+    for (; first != last; ++first, ++cur)
     {
       mystl::construct(&*cur, *first);
     }
   }
   catch (...)
   {
-    if (n != 0)
-      --cur;
-    for (size_t i = 0; i < n; ++i, --cur)
-      mystl::destroy(&*cur);
+    for (; result != cur; ++result)
+      mystl::destroy(&*result);
   }
   return cur;
 }
 
-template <class IIter, class FIter>
-FIter uninitialized_copy(IIter first, IIter last, FIter result)
+template <class InputIter, class ForwardIter>
+ForwardIter uninitialized_copy(InputIter first, InputIter last, ForwardIter result)
 {
-  return mystl::__uninitialized_copy(first, last, result, 
-                                     typename __type_traits<typename
-                                     iterator_traits<IIter>::value_type
-                                     >::is_POD_type());
+  return mystl::unchecked_uninit_copy(first, last, result, 
+                                     std::is_trivially_copy_assignable<
+                                     typename iterator_traits<ForwardIter>::
+                                     value_type>{});
 }
 
 /*****************************************************************************************/
 // uninitialized_copy_n
-// 把[first, first + n)上的内容复制到以 result 为起始处的空间，返回复制结束的位置
+// 把 [first, first + n) 上的内容复制到以 result 为起始处的空间，返回复制结束的位置
 /*****************************************************************************************/
-template <class FIter, class Size, class T>
-FIter __uninitialized_copy_n(FIter first, Size n, const T& value, __true_type)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter 
+unchecked_uninit_copy_n(InputIter first, Size n, ForwardIter result, std::true_type)
 {
-  return mystl::copy_n(first, n, value);
+  return mystl::copy_n(first, n, result).second;
 }
 
-template <class FIter, class Size, class T>
-FIter __uninitialized_copy_n(FIter first, Size n, const T& value, __false_type)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter
+unchecked_uninit_copy_n(InputIter first, Size n, ForwardIter result, std::false_type)
 {
-  auto cur = first;
-  Size n2 = 0;
+  auto cur = result;
   try
   {
-    for (; n2 < n; ++n2, ++cur)
+    for (; n > 0; --n, ++cur, ++first)
     {
-      mystl::construct(&*cur, value);
+      mystl::construct(&*cur, *first);
     }
   }
   catch (...)
   {
-    if (n2 != 0)
-      --cur;
-    for (size_t i = 0; i < n2; ++i, --cur)
-      mystl::destroy(&*cur);
+    for (; result != cur; ++result)
+      mystl::destroy(&*result);
   }
   return cur;
 }
 
-template <class FIter, class Size, class T>
-FIter uninitialized_copy_n(FIter first, Size n, const T& value)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter uninitialized_copy_n(InputIter first, Size n, ForwardIter result)
 {
-  return mystl::__uninitialized_copy_n(first, n, value, typename __type_traits<
-                                       typename iterator_traits<FIter>::
-                                       value_type>::is_POD_type());
+  return mystl::unchecked_uninit_copy_n(first, n, result,
+                                        std::is_trivially_copy_assignable<
+                                        typename iterator_traits<InputIter>::
+                                        value_type>{});
 }
 
 /*****************************************************************************************/
 // uninitialized_fill
-// 在[first, last)区间内填充元素值
+// 在 [first, last) 区间内填充元素值
 /*****************************************************************************************/
-template <class FIter, class T>
-void __uninitialized_fill(FIter first, FIter last, const T& value, __true_type)
+template <class ForwardIter, class T>
+void 
+unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, std::true_type)
 {
   mystl::fill(first, last, value);
 }
 
-template <class FIter, class T>
-void __uninitialized_fill(FIter first, FIter last, const T& value, __false_type)
+template <class ForwardIter, class T>
+void 
+unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, std::false_type)
 {
   auto cur = first;
-  size_t n = 0;
   try
   {
     for (; cur != last; ++cur)
@@ -119,141 +119,138 @@ void __uninitialized_fill(FIter first, FIter last, const T& value, __false_type)
   }
   catch (...)
   {
-    if (n != 0)
-      --cur;
-    for (size_t i = 0; i < n; ++i, --cur)
-      mystl::destroy(&*cur);
+    for (;first != cur; ++first)
+      mystl::destroy(&*first);
   }
 }
 
-template <class FIter, class T>
-void  uninitialized_fill(FIter first, FIter last, const T& value)
+template <class ForwardIter, class T>
+void  uninitialized_fill(ForwardIter first, ForwardIter last, const T& value)
 {
-  mystl::__uninitialized_fill(first, last, value, typename __type_traits<
-                              typename iterator_traits<FIter>::
-                              value_type>::is_POD_type());
+  mystl::unchecked_uninit_fill(first, last, value, 
+                               std::is_trivially_copy_assignable<
+                               typename iterator_traits<ForwardIter>::
+                               value_type>{});
 }
 
 /*****************************************************************************************/
 // uninitialized_fill_n
 // 从 first 位置开始，填充 n 个元素值，返回填充结束的位置
 /*****************************************************************************************/
-template <class FIter, class Size, class T>
-FIter __uninitialized_fill_n(FIter first, Size n, const T& value, __true_type)
+template <class ForwardIter, class Size, class T>
+ForwardIter 
+unchecked_uninit_fill_n(ForwardIter first, Size n, const T& value, std::true_type)
 {
   return mystl::fill_n(first, n, value);
 }
 
-template <class FIter, class Size, class T>
-FIter __uninitialized_fill_n(FIter first, Size n, const T& value, __false_type)
+template <class ForwardIter, class Size, class T>
+ForwardIter 
+unchecked_uninit_fill_n(ForwardIter first, Size n, const T& value, std::false_type)
 {
   auto cur = first;
-  Size n2 = 0;
   try
   {
-    for (; n2 < n; ++n2, ++cur)
+    for (; n > 0; --n, ++cur)
     {
       mystl::construct(&*cur, value);
     }
   }
   catch (...)
   {
-    if (n2 != 0)
-      --cur;
-    for (size_t i = 0; i < n2; ++i, --cur)
-      mystl::destroy(&*cur);
+    for (; first != cur; ++first)
+      mystl::destroy(&*first);
   }
   return cur;
 }
 
-template <class FIter, class Size, class T>
-FIter uninitialized_fill_n(FIter first, Size n, const T& value)
+template <class ForwardIter, class Size, class T>
+ForwardIter uninitialized_fill_n(ForwardIter first, Size n, const T& value)
 {
-  return mystl::__uninitialized_fill_n(first, n, value, typename __type_traits<
-                                       typename iterator_traits<FIter>::
-                                       value_type>::is_POD_type());
+  return mystl::unchecked_uninit_fill_n(first, n, value, 
+                                        std::is_trivially_copy_assignable<
+                                        typename iterator_traits<ForwardIter>::
+                                        value_type>{});
 }
 
 /*****************************************************************************************/
 // uninitialized_move
 // 把[first, last)上的内容移动到以 result 为起始处的空间，返回移动结束的位置
 /*****************************************************************************************/
-template <class IIter, class FIter>
-FIter __uninitialized_move(IIter first, IIter last, FIter result, __true_type)
+template <class InputIter, class ForwardIter>
+ForwardIter 
+unchecked_uninit_move(InputIter first, InputIter last, ForwardIter result, std::true_type)
 {
-  return mystl::copy(first, last, result);
+  return mystl::move(first, last, result);
 }
 
-template <class IIter, class FIter>
-FIter __uninitialized_move(IIter first, IIter last, FIter result, __false_type)
+template <class InputIter, class ForwardIter>
+ForwardIter 
+unchecked_uninit_move(InputIter first, InputIter last, ForwardIter result, std::false_type)
 {
-  FIter cur = result;
-  size_t n = 0;
+  ForwardIter cur = result;
   try
   {
-    for (; first != last; ++first, ++cur, ++n)
+    for (; first != last; ++first, ++cur)
     {
       mystl::construct(&*cur, mystl::move(*first));
     }
   }
   catch (...)
   {
-    if (n != 0)
-      --cur;
-    for (size_t i = 0; i < n; ++i, --cur)
-      mystl::destroy(&*cur);
+    mystl::destroy(result, cur);
   }
   return cur;
 }
 
-template <class IIter, class FIter>
-FIter uninitialized_move(IIter first, IIter last, FIter result)
+template <class InputIter, class ForwardIter>
+ForwardIter uninitialized_move(InputIter first, InputIter last, ForwardIter result)
 {
-  return mystl::__uninitialized_move(first, last, result,
-                                     typename __type_traits<typename
-                                     iterator_traits<IIter>::value_type
-                                     >::is_POD_type());
+  return mystl::unchecked_uninit_move(first, last, result,
+                                      std::is_trivially_move_assignable<
+                                      typename iterator_traits<InputIter>::
+                                      value_type>{});
 }
 
 /*****************************************************************************************/
 // uninitialized_move_n
 // 把[first, first + n)上的内容移动到以 result 为起始处的空间，返回移动结束的位置
 /*****************************************************************************************/
-template <class FIter, class Size, class T>
-FIter __uninitialized_move_n(FIter first, Size n, T&& value, __true_type)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter 
+unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result, std::true_type)
 {
-  return mystl::copy_n(first, n, mystl::forward<T>(value));
+  return mystl::move(first, first + n, result);
 }
 
-template <class FIter, class Size, class T>
-FIter __uninitialized_move_n(FIter first, Size n, T&& value, __false_type)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter
+unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result, std::false_type)
 {
-  auto cur = first;
-  Size n2 = 0;
+  auto cur = result;
   try
   {
-    for (; n2 < n; ++n2, ++cur)
+    for (; n > 0; --n, ++first, ++cur)
     {
-      mystl::construct(&*cur, mystl::forward<T>(value));
+      mystl::construct(&*cur, mystl::move(*first));
     }
   }
   catch (...)
   {
-    if (n2 != 0)
-      --cur;
-    for (size_t i = 0; i < n2; ++i, --cur)
-      mystl::destroy(&*cur);
+    for (; result != cur; ++result)
+      mystl::destroy(&*result);
+    throw;
   }
   return cur;
 }
 
-template <class FIter, class Size, class T>
-FIter uninitialized_move_n(FIter first, Size n, T&& value)
+template <class InputIter, class Size, class ForwardIter>
+ForwardIter uninitialized_move_n(InputIter first, Size n, ForwardIter result)
 {
-  return mystl::__uninitialized_move_n(first, n, mystl::forward<T>(value), 
-                                       typename __type_traits<typename
-                                       iterator_traits<FIter>::
-                                       value_type>::is_POD_type());
+  return mystl::unchecked_uninit_move_n(first, n, result,
+                                        std::is_trivially_move_assignable<
+                                        typename iterator_traits<InputIter>::
+                                        value_type>{});
 }
 
 } // namespace mystl

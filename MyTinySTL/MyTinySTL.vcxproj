@@ -100,7 +100,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
@@ -170,6 +170,7 @@
     <ClInclude Include="basic_string.h" />
     <ClInclude Include="construct.h" />
     <ClInclude Include="deque.h" />
+    <ClInclude Include="exceptdef.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="hashtable.h" />
     <ClInclude Include="unordered_map.h" />
@@ -180,7 +181,6 @@
     <ClInclude Include="map.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="numeric.h" />
-    <ClInclude Include="pair.h" />
     <ClInclude Include="queue.h" />
     <ClInclude Include="rb_tree.h" />
     <ClInclude Include="set.h" />

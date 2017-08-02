@@ -13,6 +13,15 @@
 namespace mystl
 {
 
+template <typename _Tp>
+constexpr _Tp* address_of(_Tp& value) noexcept
+{
+  return &value;
+}
+
+template <typename _Tp>
+const _Tp* address_of(const _Tp&&) = delete;
+
 // 模板类: auto_ptr
 // 一个具有严格对象所有权的小型智能指针
 template <class T>

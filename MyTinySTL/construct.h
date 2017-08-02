@@ -6,7 +6,6 @@
 // destroy   : 负责对象的析构
 
 #include <new>
-#include <utility>
 
 #include "type_traits.h"
 #include "iterator.h"
@@ -14,7 +13,7 @@
 namespace mystl
 {
 
-// construct 构造对象的内容
+// construct 构造对象
 
 template <class Ty>
 void construct(Ty* ptr)
@@ -36,21 +35,14 @@ void construct(Ty* ptr, Args&&... args)
 
 // destroy 将对象析构
 
-template <class FIter>
-void __destroy_aux(FIter first, FIter last, __false_type)
+template <class ForwardIter>
+void destroy_cat(ForwardIter , ForwardIter , std::true_type) {}
+
+template <class ForwardIter>
+void destroy_cat(ForwardIter first, ForwardIter last, std::false_type)
 {
   for (; first != last; ++first)
     destroy(&*first);
-}
-
-template <class FIter>
-void __destroy_aux(FIter first, FIter last, __true_type) {}
-
-template <class FIter, class Ty>
-void __destroy(FIter first, FIter last, Ty*)
-{
-  return __destroy_aux(first, last, typename __type_traits<Ty>::
-                       has_trivial_destructor());
 }
 
 template <class Ty>
@@ -59,10 +51,11 @@ void destroy(Ty* pointer)
   pointer->~Ty();
 }
 
-template <class FIter>
-void destroy(FIter first, FIter last)
+template <class ForwardIter>
+void destroy(ForwardIter first, ForwardIter last)
 {
-  __destroy(first, last, value_type(first));
+  destroy_cat(first, last, std::is_trivially_destructible<
+              typename iterator_traits<ForwardIter>::value_type>{});
 }
 
 } // namespace mystl

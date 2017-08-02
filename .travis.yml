@@ -1,10 +1,8 @@
 language: cpp
 
-# Ubuntu 14.04 Trusty support
+# ubuntu 14.04 version
 sudo: required
 dist: trusty
-
-# os: osx
 
 matrix:
   include:
@@ -13,18 +11,9 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.8']
-      env:
-        - COMPILER=g++-4.8
-        
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-5']
       env:
-        - COMPILER=g++-5
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 
     - os: linux
       compiler: gcc
@@ -34,47 +23,47 @@ matrix:
           packages: ['g++-6']
 
       env:
-        - COMPILER=g++-6
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
     - os: linux
-      compiler: clang
+      compiler: gcc
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5']
-          packages: ['clang-3.5']
-      env:
-        - COMPILER=clang++-3.5
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
-          packages: ['clang-3.6']
       env:
-        - COMPILER=clang++-3.6
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.7']
-          packages: ['clang-3.7']
+    - os: osx
+      osx_image: xcode8
       env:
-        - COMPILER=clang++-3.7
-        
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8']
+        - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+    
+    - os: osx
+      osx_image: xcode5
       env:
-        - COMPILER=clang++-3.8
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
         
-
+    - os: osx
+      osx_image: xcode6
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
+    - os: osx
+      osx_image: xcode7
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+        
+        
 before_script:
-  - export CXX=$COMPILER
+  - eval "${MATRIX_EVAL}"
+  - $CXX --version
   
 script:
   - mkdir build && cd ./build
