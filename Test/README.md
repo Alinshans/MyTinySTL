@@ -1,4 +1,4 @@
-单元测试
+单元测试 (Unit test)
 =====
 ## 测试环境 (Test environment)
   测试直接在 `Travis CI` 和 `AppVeyor` 上构建并运行，已在以下环境中做过测试：
