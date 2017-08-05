@@ -11,16 +11,15 @@ namespace mystl
 {
 
 // 模板类 unordered_map
-// 参数一代表键值类型，参数二代表实值类型，参数三代表哈希函数，缺省使用 mystl 的 hash
-// 参数四代表键值比较方式，缺省使用 mystl 的 equal_to
+// 参数一代表键值类型，参数二代表实值类型，参数三代表哈希函数，缺省使用 mystl::hash
+// 参数四代表键值比较方式，缺省使用 mystl::equal_to
 // 使用方法与 map 类似，使用 hashtable 作为底层机制，所以 unordered_map 内的元素不会自动排序
-template <class Key, class T, class HashFcn = mystl::hash<Key>,
-  class EqualKey = mystl::equal_to<Key>>
+template <class Key, class T, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
   class unordered_map
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<mystl::pair<const Key, T>, Key, HashFcn, EqualKey>  rep_type;
+  typedef hashtable<mystl::pair<const Key, T>, Hash, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -127,7 +126,7 @@ public:
   void           reserve(size_type hint) { ht_.reserve(hint); }
   size_type      bucket_count()                   const { return ht_.bucket_count(); }
   size_type      max_bucket_count()               const { return ht_.max_bucket_count(); }
-  size_type      elems_in_bucket(size_type n)     const { return ht_.elems_in_bucket(n); }
+  size_type      bucket_size(size_type n)     const { return ht_.bucket_size(n); }
   void           swap(unordered_map& rhs) { ht_.swap(rhs.ht_); }
 
 public:
@@ -142,27 +141,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_map<Key, T, HashFcn, EqualKey>& lhs,
-           const unordered_map<Key, T, HashFcn, EqualKey>& rhs)
+operator==(const unordered_map<Key, T, Hash, EqualKey>& lhs,
+           const unordered_map<Key, T, Hash, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_map<Key, T, HashFcn, EqualKey>& lhs,
-           const unordered_map<Key, T, HashFcn, EqualKey>& rhs)
+operator!=(const unordered_map<Key, T, Hash, EqualKey>& lhs,
+           const unordered_map<Key, T, Hash, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline void
-swap(unordered_map<Key, T, HashFcn, EqualKey>& lhs,
-     unordered_map<Key, T, HashFcn, EqualKey>& rhs)
+swap(unordered_map<Key, T, Hash, EqualKey>& lhs,
+     unordered_map<Key, T, Hash, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -171,13 +170,12 @@ swap(unordered_map<Key, T, HashFcn, EqualKey>& lhs,
 
 // 模板类 unordered_multimap
 // 键值允许重复，其它与 unordered_map 相同
-template <class Key, class T, class HashFcn = mystl::hash<Key>,
-  class EqualKey = mystl::equal_to<Key>>
+template <class Key, class T, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
   class unordered_multimap
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<pair<const Key, T>, Key, HashFcn, EqualKey>  rep_type;
+  typedef hashtable<pair<const Key, T>, Hash, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -275,7 +273,7 @@ public:
   void           reserve(size_type hint) { ht_.reserve(hint); }
   size_type      bucket_count()                   const { return ht_.bucket_count(); }
   size_type      max_bucket_count()               const { return ht_.max_bucket_count(); }
-  size_type      elems_in_bucket(size_type n)     const { return ht_.elems_in_bucket(n); }
+  size_type      bucket_size(size_type n)     const { return ht_.bucket_size(n); }
   void           swap(unordered_multimap& rhs) { ht_.swap(rhs.ht_); }
 
 public:
@@ -290,27 +288,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
-           const unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
+operator==(const unordered_multimap<Key, T, Hash, EqualKey>& lhs,
+           const unordered_multimap<Key, T, Hash, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
-           const unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
+operator!=(const unordered_multimap<Key, T, Hash, EqualKey>& lhs,
+           const unordered_multimap<Key, T, Hash, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class T, class Hash, class EqualKey, class Alloc>
 inline void
-swap(unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
-     unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
+swap(unordered_multimap<Key, T, Hash, EqualKey>& lhs,
+     unordered_multimap<Key, T, Hash, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }

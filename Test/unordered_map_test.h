@@ -59,9 +59,9 @@ void unordered_map_test()
   MAP_FUN_AFTER(um1, um1.reserve(1000));
   FUN_VALUE(um1.size());
   FUN_VALUE(um1.bucket_count());
-  FUN_VALUE(um1.elems_in_bucket(1));
-  FUN_VALUE(um1.elems_in_bucket(2));
-  FUN_VALUE(um1.elems_in_bucket(3));
+  FUN_VALUE(um1.bucket_size(1));
+  FUN_VALUE(um1.bucket_size(2));
+  FUN_VALUE(um1.bucket_size(3));
   FUN_VALUE(um1.count(1));
   MAP_VALUE(*um1.find(3));
   auto first = *um1.equal_range(3).first;
@@ -128,9 +128,9 @@ void unordered_multimap_test()
   MAP_FUN_AFTER(um1, um1.reserve(1000));
   FUN_VALUE(um1.size());
   FUN_VALUE(um1.bucket_count());
-  FUN_VALUE(um1.elems_in_bucket(1));
-  FUN_VALUE(um1.elems_in_bucket(2));
-  FUN_VALUE(um1.elems_in_bucket(3));
+  FUN_VALUE(um1.bucket_size(1));
+  FUN_VALUE(um1.bucket_size(2));
+  FUN_VALUE(um1.bucket_size(3));
   FUN_VALUE(um1.count(1));
   MAP_VALUE(*um1.find(3));
   auto first = *um1.equal_range(3).first;

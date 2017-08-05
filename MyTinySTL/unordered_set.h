@@ -11,16 +11,14 @@ namespace mystl
 {
 
 // 模板类 unordered_set
-// 参数一代表实值类型，参数二代表哈希函数，缺省使用 mystl 的 hash
-// 参数三代表键值比较方式，缺省使用 mystl 的 equal_to
+// 参数一代表键值类型，参数二代表哈希函数，缺省使用 mystl::hash，参数三代表键值比较方式，缺省使用 mystl::equal_to
 // 使用方法与 set 类似，以 hashtable 作为底层机制，所以 unordered_set 中的元素不会自动排序
-template <class Value, class HashFcn = mystl::hash<Value>,
-  class EqualKey = mystl::equal_to<Value>>
+template <class Key, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
   class unordered_set
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<Value, Value, HashFcn, EqualKey>  rep_type;
+  typedef hashtable<Key, Hash, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -116,7 +114,7 @@ public:
   void      reserve(size_type hint) { ht_.reserve(hint); }
   size_type bucket_count()                   const { return ht_.bucket_count(); }
   size_type max_bucket_count()               const { return ht_.max_bucket_count(); }
-  size_type elems_in_bucket(size_type n)     const { return ht_.elems_in_bucket(n); }
+  size_type bucket_size(size_type n)     const { return ht_.bucket_size(n); }
   void      swap(unordered_set& rhs) { ht_.swap(rhs.ht_); }
 
 public:
@@ -131,27 +129,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_set<Value, HashFcn, EqualKey>& lhs,
-           const unordered_set<Value, HashFcn, EqualKey>& rhs)
+operator==(const unordered_set<Key, Hash, EqualKey>& lhs,
+           const unordered_set<Key, Hash, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_set<Value, HashFcn, EqualKey>& lhs,
-           const unordered_set<Value, HashFcn, EqualKey>& rhs)
+operator!=(const unordered_set<Key, Hash, EqualKey>& lhs,
+           const unordered_set<Key, Hash, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline void
-swap(unordered_set<Value, HashFcn, EqualKey>& lhs,
-     unordered_set<Value, HashFcn, EqualKey>& rhs)
+swap(unordered_set<Key, Hash, EqualKey>& lhs,
+     unordered_set<Key, Hash, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -160,13 +158,13 @@ swap(unordered_set<Value, HashFcn, EqualKey>& lhs,
 
 // 模板类 unordered_multiset
 // 键值允许重复，其它与 unordered_set 相同
-template <class Value, class HashFcn = mystl::hash<Value>,
-  class EqualKey = mystl::equal_to<Value>>
+template <class Key, class Hash = mystl::hash<Key>,
+  class EqualKey = mystl::equal_to<Key>>
   class unordered_multiset
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<Value, Value, HashFcn, EqualKey>  rep_type;
+  typedef hashtable<Key, Hash, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -251,7 +249,7 @@ public:
   void      reserve(size_type hint) { ht_.reserve(hint); }
   size_type bucket_count()                            const { return ht_.bucket_count(); }
   size_type max_bucket_count()                        const { return ht_.max_bucket_count(); }
-  size_type elems_in_bucket(size_type n)              const { return ht_.elems_in_bucket(n); }
+  size_type bucket_size(size_type n)              const { return ht_.bucket_size(n); }
   void      swap(unordered_multiset& rhs) { ht_.swap(rhs.ht_); }
 
 public:
@@ -266,27 +264,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_multiset<Value, HashFcn, EqualKey>& lhs,
-           const unordered_multiset<Value, HashFcn, EqualKey>& rhs)
+operator==(const unordered_multiset<Key, Hash, EqualKey>& lhs,
+           const unordered_multiset<Key, Hash, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_multiset<Value, HashFcn, EqualKey>& lhs,
-           const unordered_multiset<Value, HashFcn, EqualKey>& rhs)
+operator!=(const unordered_multiset<Key, Hash, EqualKey>& lhs,
+           const unordered_multiset<Key, Hash, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Value, class HashFcn, class EqualKey, class Alloc>
+template <class Key, class Hash, class EqualKey, class Alloc>
 inline void
-swap(unordered_multiset<Value, HashFcn, EqualKey>& lhs,
-     unordered_multiset<Value, HashFcn, EqualKey>& rhs)
+swap(unordered_multiset<Key, Hash, EqualKey>& lhs,
+     unordered_multiset<Key, Hash, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }

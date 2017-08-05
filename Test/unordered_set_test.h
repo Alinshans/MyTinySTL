@@ -56,9 +56,9 @@ void unordered_set_test()
   FUN_AFTER(us1, us1.reserve(1000));
   FUN_VALUE(us1.size());
   FUN_VALUE(us1.bucket_count());
-  FUN_VALUE(us1.elems_in_bucket(1));
-  FUN_VALUE(us1.elems_in_bucket(2));
-  FUN_VALUE(us1.elems_in_bucket(3));
+  FUN_VALUE(us1.bucket_size(1));
+  FUN_VALUE(us1.bucket_size(2));
+  FUN_VALUE(us1.bucket_size(3));
   FUN_VALUE(us1.count(1));
   FUN_VALUE(*us1.find(3));
   auto first = *us1.equal_range(3).first;
@@ -121,9 +121,9 @@ void unordered_multiset_test()
   FUN_AFTER(us1, us1.reserve(1000));
   FUN_VALUE(us1.size());
   FUN_VALUE(us1.bucket_count());
-  FUN_VALUE(us1.elems_in_bucket(1));
-  FUN_VALUE(us1.elems_in_bucket(2));
-  FUN_VALUE(us1.elems_in_bucket(3));
+  FUN_VALUE(us1.bucket_size(1));
+  FUN_VALUE(us1.bucket_size(2));
+  FUN_VALUE(us1.bucket_size(3));
   FUN_VALUE(us1.count(1));
   FUN_VALUE(*us1.find(3));
   auto first = *us1.equal_range(3).first;
