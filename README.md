@@ -1,9 +1,6 @@
 MyTinySTL
-=========
-
-| linux   |  windows  | osx | release  | license|
-|:-------:|:---------:|:--------:|:-----:|:----:|
-|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl)|[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL)|[![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Alinshans/MyTinySTL/releases)|[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)|
+=====
+[![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL) [![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl) [![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Alinshans/MyTinySTL/releases) [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![Chat](https://img.shields.io/badge/chat-gitter-FF6EB4.svg)](https://gitter.im/alinshans/MyTinySTL)
 
 ## 简介
    基于 `C++11` 的 `tinySTL`，并使用中文文档与中文注释，作为新手练习用途。实现了大部分 STL 中的容器与函数，但仍存在许多不足与 bug 。如发现错误，还请在 [`Issues`](https://github.com/Alinshans/MyTinySTL/issues) 中指出，欢迎 `Fork` 和 [`Pull requests`](https://github.com/Alinshans/MyTinySTL/pulls) 改善代码，谢谢！
