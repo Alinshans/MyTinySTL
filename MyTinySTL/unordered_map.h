@@ -12,16 +12,15 @@ namespace mystl
 
 // 模板类 unordered_map
 // 参数一代表键值类型，参数二代表实值类型，参数三代表哈希函数，缺省使用 mystl 的 hash
-// 参数四代表键值比较方式，缺省使用 mystl 的 equal_to，参数五代表空间配置器类型，缺省使用 mystl 的 alloc
+// 参数四代表键值比较方式，缺省使用 mystl 的 equal_to
 // 使用方法与 map 类似，使用 hashtable 作为底层机制，所以 unordered_map 内的元素不会自动排序
 template <class Key, class T, class HashFcn = mystl::hash<Key>,
-  class EqualKey = mystl::equal_to<Key>, class Alloc = mystl::alloc>
+  class EqualKey = mystl::equal_to<Key>>
   class unordered_map
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<mystl::pair<const Key, T>, Key, HashFcn,
-    mystl::selectfirst<mystl::pair<const Key, T>>, EqualKey, Alloc>  rep_type;
+  typedef hashtable<mystl::pair<const Key, T>, Key, HashFcn, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -145,16 +144,16 @@ public:
 // 重载比较操作符
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-           const unordered_map<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+operator==(const unordered_map<Key, T, HashFcn, EqualKey>& lhs,
+           const unordered_map<Key, T, HashFcn, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-           const unordered_map<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+operator!=(const unordered_map<Key, T, HashFcn, EqualKey>& lhs,
+           const unordered_map<Key, T, HashFcn, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
@@ -162,8 +161,8 @@ operator!=(const unordered_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
 // 重载 mystl 的 swap
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline void
-swap(unordered_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-     unordered_map<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+swap(unordered_map<Key, T, HashFcn, EqualKey>& lhs,
+     unordered_map<Key, T, HashFcn, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -173,13 +172,12 @@ swap(unordered_map<Key, T, HashFcn, EqualKey, Alloc>& lhs,
 // 模板类 unordered_multimap
 // 键值允许重复，其它与 unordered_map 相同
 template <class Key, class T, class HashFcn = mystl::hash<Key>,
-  class EqualKey = mystl::equal_to<Key>, class Alloc = mystl::alloc>
+  class EqualKey = mystl::equal_to<Key>>
   class unordered_multimap
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<pair<const Key, T>, Key, HashFcn,
-    mystl::selectfirst<pair<const Key, T>>, EqualKey, Alloc>  rep_type;
+  typedef hashtable<pair<const Key, T>, Key, HashFcn, EqualKey>  rep_type;
   rep_type ht_;
 
 public:
@@ -294,16 +292,16 @@ public:
 // 重载比较操作符
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline bool
-operator==(const unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-           const unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+operator==(const unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
+           const unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline bool
-operator!=(const unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-           const unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+operator!=(const unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
+           const unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
 {
   return lhs != rhs;
 }
@@ -311,8 +309,8 @@ operator!=(const unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
 // 重载 mystl 的 swap
 template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
 inline void
-swap(unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& lhs,
-     unordered_multimap<Key, T, HashFcn, EqualKey, Alloc>& rhs)
+swap(unordered_multimap<Key, T, HashFcn, EqualKey>& lhs,
+     unordered_multimap<Key, T, HashFcn, EqualKey>& rhs)
 {
   lhs.swap(rhs);
 }
