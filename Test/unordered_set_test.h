@@ -28,8 +28,8 @@ void unordered_set_test()
   mystl::unordered_set<int> us4(520, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_set<int> us5(a, a + 5);
   mystl::unordered_set<int> us6(a, a + 5);
-  mystl::unordered_set<int> us7(a, a + 5, mystl::hash<int>());
-  mystl::unordered_set<int> us8(a, a + 5, mystl::hash<int>(), mystl::equal_to<int>());
+  mystl::unordered_set<int> us7(a, a + 5, 100, mystl::hash<int>());
+  mystl::unordered_set<int> us8(a, a + 5, 100, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_set<int> us9(us5);
   mystl::unordered_set<int> us10(std::move(us5));
   mystl::unordered_set<int> us11 = us6;
@@ -93,8 +93,8 @@ void unordered_multiset_test()
   mystl::unordered_multiset<int> us4(520, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_multiset<int> us5(a, a + 5);
   mystl::unordered_multiset<int> us6(a, a + 5);
-  mystl::unordered_multiset<int> us7(a, a + 5, mystl::hash<int>());
-  mystl::unordered_multiset<int> us8(a, a + 5, mystl::hash<int>(), mystl::equal_to<int>());
+  mystl::unordered_multiset<int> us7(a, a + 5, 100, mystl::hash<int>());
+  mystl::unordered_multiset<int> us8(a, a + 5, 100, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_multiset<int> us9(us5);
   mystl::unordered_multiset<int> us10(std::move(us5));
   mystl::unordered_multiset<int> us11 = us6;

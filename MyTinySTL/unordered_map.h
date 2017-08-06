@@ -14,12 +14,12 @@ namespace mystl
 // 参数一代表键值类型，参数二代表实值类型，参数三代表哈希函数，缺省使用 mystl::hash
 // 参数四代表键值比较方式，缺省使用 mystl::equal_to
 // 使用方法与 map 类似，使用 hashtable 作为底层机制，所以 unordered_map 内的元素不会自动排序
-template <class Key, class T, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
+template <class Key, class T, class Hash = mystl::hash<Key>, class KeyEqual = mystl::equal_to<Key>>
   class unordered_map
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<mystl::pair<const Key, T>, Hash, EqualKey>  rep_type;
+  typedef hashtable<mystl::pair<const Key, T>, Hash, KeyEqual>  rep_type;
   rep_type ht_;
 
 public:
@@ -47,39 +47,72 @@ public:
   allocator_type get_allocator() const { return ht_.get_allocator(); }
 
 public:
-  // 构造、复制、移动函数
-  unordered_map() :ht_(100, hasher(), key_equal()) {}  // 缺省使用大小为 100 的表格
-  explicit unordered_map(size_type n) :ht_(n, hasher(), key_equal()) {}
-  unordered_map(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
-  unordered_map(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
+
+  // 构造、复制、移动、析构函数
+
+  unordered_map()
+    :ht_(100, Hash(), KeyEqual())
+  {
+  }
+
+  explicit unordered_map(size_type bucket_count,
+                         const Hash& hash = Hash(),
+                         const KeyEqual& equal = KeyEqual())
+    :ht_(bucket_count, hash, equal)
+  {
+  }
 
   template <class InputIterator>
   unordered_map(InputIterator first, InputIterator last,
-                const hasher& hf = hasher(),
-                const key_equal& keq = key_equal())
-    : ht_(distance(first, last), hf, keq)
+                const size_type bucket_count = 100,
+                const Hash& hash = Hash(),
+                const KeyEqual& equal = KeyEqual())
+    : ht_(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))), hash, equal)
   {
-    ht_.insert_unique(first, last);
+    for (; first != last; ++first)
+      ht_.insert_unique_noresize(*first);
   }
+
   unordered_map(std::initializer_list<value_type> ilist,
-                const hasher& hf = hasher(),
-                const key_equal& keq = key_equal())
-    :ht_(ilist.size(), hf, keq)
+                const size_type bucket_count = 100,
+                const Hash& hash = Hash(),
+                const KeyEqual& equal = KeyEqual())
+    :ht_(mystl::max(bucket_count, static_cast<size_type>(ilist.size())), hash, equal)
   {
-    ht_.insert_unique(ilist.begin(), ilist.end());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_unique_noresize(*first);
   }
 
-  unordered_map(const unordered_map& rhs) :ht_(rhs.ht_) {}
-  unordered_map(unordered_map&& rhs) :ht_(mystl::move(rhs.ht_)) {}
+  unordered_map(const unordered_map& rhs) 
+    :ht_(rhs.ht_) 
+  {
+  }
+  unordered_map(unordered_map&& rhs) noexcept
+    :ht_(mystl::move(rhs.ht_)) 
+  {
+  }
 
-  unordered_map& operator=(const unordered_map& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_map& operator=(unordered_map&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
+  unordered_map& operator=(const unordered_map& rhs) 
+  { 
+    ht_ = rhs.ht_;
+    return *this; 
+  }
+  unordered_map& operator=(unordered_map&& rhs) 
+  { 
+    ht_ = mystl::move(rhs.ht_);
+    return *this;
+  }
+
   unordered_map& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
-    ht_.insert_unique(ilist.begin(), ilist.end());
+    ht_.reserve(ilist.size());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_unique_noresize(*first);
     return *this;
   }
+
+  ~unordered_map() = default;
 
   // 相关接口
   iterator       begin() { return ht_.begin(); }
@@ -141,27 +174,24 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline bool
-operator==(const unordered_map<Key, T, Hash, EqualKey>& lhs,
-           const unordered_map<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+bool operator==(const unordered_map<Key, T, Hash, KeyEqual>& lhs,
+                const unordered_map<Key, T, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline bool
-operator!=(const unordered_map<Key, T, Hash, EqualKey>& lhs,
-           const unordered_map<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+bool operator!=(const unordered_map<Key, T, Hash, KeyEqual>& lhs,
+                const unordered_map<Key, T, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline void
-swap(unordered_map<Key, T, Hash, EqualKey>& lhs,
-     unordered_map<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+void swap(unordered_map<Key, T, Hash, KeyEqual>& lhs,
+          unordered_map<Key, T, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -170,12 +200,12 @@ swap(unordered_map<Key, T, Hash, EqualKey>& lhs,
 
 // 模板类 unordered_multimap
 // 键值允许重复，其它与 unordered_map 相同
-template <class Key, class T, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
+template <class Key, class T, class Hash = mystl::hash<Key>, class KeyEqual = mystl::equal_to<Key>>
   class unordered_multimap
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<pair<const Key, T>, Hash, EqualKey>  rep_type;
+  typedef hashtable<pair<const Key, T>, Hash, KeyEqual>  rep_type;
   rep_type ht_;
 
 public:
@@ -204,38 +234,70 @@ public:
 
 public:
   // 构造、复制、移动函数
-  unordered_multimap() :ht_(100, hasher(), key_equal()) {}  // 缺省使用大小为 100 的表格
-  explicit unordered_multimap(size_type n) :ht_(n, hasher(), key_equal()) {}
-  unordered_multimap(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
-  unordered_multimap(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
+
+  unordered_multimap() 
+    :ht_(100, Hash(), KeyEqual())
+  {
+  }
+
+  explicit unordered_multimap(size_type bucket_count,
+                              const Hash& hash = Hash(),
+                              const KeyEqual& equal = KeyEqual())
+    :ht_(bucket_count, hash, equal) 
+  {
+  }
 
   template <class InputIterator>
   unordered_multimap(InputIterator first, InputIterator last,
-                     const hasher& hf = hasher(),
-                     const key_equal& keq = key_equal())
-    : ht_(distance(first, last), hf, keq)
+                     const size_type bucket_count = 100,
+                     const Hash& hash = Hash(),
+                     const KeyEqual& equal = KeyEqual())
+    :ht_(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))), hash, equal)
   {
-    ht_.insert_equal(first, last);
+    for (; first != last; ++first)
+      ht_.insert_equal_noresize(*first);
   }
+
   unordered_multimap(std::initializer_list<value_type> ilist,
-                     const hasher& hf = hasher(),
-                     const key_equal& keq = key_equal())
-    :ht_(ilist.size(), hf, keq)
+                     const size_type bucket_count = 100,
+                     const Hash& hash = Hash(),
+                     const KeyEqual& equal = KeyEqual())
+    :ht_(mystl::max(bucket_count, static_cast<size_type>(ilist.size())), hash, equal)
   {
-    ht_.insert_equal(ilist.begin(), ilist.end());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_equal_noresize(*first);
   }
 
-  unordered_multimap(const unordered_multimap& rhs) :ht_(rhs.ht_) {}
-  unordered_multimap(unordered_multimap&& rhs) :ht_(mystl::move(rhs.ht_)) {}
+  unordered_multimap(const unordered_multimap& rhs) 
+    :ht_(rhs.ht_) 
+  {
+  }
+  unordered_multimap(unordered_multimap&& rhs) noexcept
+    :ht_(mystl::move(rhs.ht_))
+  {
+  }
 
-  unordered_multimap& operator=(const unordered_multimap& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_multimap& operator=(unordered_multimap&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
+  unordered_multimap& operator=(const unordered_multimap& rhs)
+  { 
+    ht_ = rhs.ht_; 
+    return *this;
+  }
+  unordered_multimap& operator=(unordered_multimap&& rhs)
+  { 
+    ht_ = mystl::move(rhs.ht_); 
+    return *this;
+  }
+
   unordered_multimap& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
-    ht_.insert_equal(ilist.begin(), ilist.end());
+    ht_.reserve(ilist.size());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_equal_noresize(*first);
     return *this;
   }
+
+  ~unordered_multimap() = default;
 
   // 相关接口
   iterator       begin() { return ht_.begin(); }
@@ -288,27 +350,25 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline bool
-operator==(const unordered_multimap<Key, T, Hash, EqualKey>& lhs,
-           const unordered_multimap<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+bool operator==(const unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
+                const unordered_multimap<Key, T, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline bool
-operator!=(const unordered_multimap<Key, T, Hash, EqualKey>& lhs,
-           const unordered_multimap<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+bool operator!=(const unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
+                const unordered_multimap<Key, T, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class T, class Hash, class EqualKey, class Alloc>
-inline void
-swap(unordered_multimap<Key, T, Hash, EqualKey>& lhs,
-     unordered_multimap<Key, T, Hash, EqualKey>& rhs)
+template <class Key, class T, class Hash, class KeyEqual>
+void
+swap(unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
+     unordered_multimap<Key, T, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }

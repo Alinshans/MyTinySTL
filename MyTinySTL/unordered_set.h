@@ -13,12 +13,12 @@ namespace mystl
 // 模板类 unordered_set
 // 参数一代表键值类型，参数二代表哈希函数，缺省使用 mystl::hash，参数三代表键值比较方式，缺省使用 mystl::equal_to
 // 使用方法与 set 类似，以 hashtable 作为底层机制，所以 unordered_set 中的元素不会自动排序
-template <class Key, class Hash = mystl::hash<Key>, class EqualKey = mystl::equal_to<Key>>
+template <class Key, class Hash = mystl::hash<Key>, class KeyEqual = mystl::equal_to<Key>>
   class unordered_set
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<Key, Hash, EqualKey>  rep_type;
+  typedef hashtable<Key, Hash, KeyEqual>  rep_type;
   rep_type ht_;
 
 public:
@@ -45,38 +45,69 @@ public:
 
 public:
   // 构造、复制、移动函数
-  unordered_set() :ht_(100, hasher(), key_equal()) {}  // 缺省使用大小为 100 的表格
-  explicit unordered_set(size_type n) :ht_(n, hasher(), key_equal()) {}
-  unordered_set(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
-  unordered_set(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
+  unordered_set()
+    :ht_(100, Hash(), KeyEqual())
+  {
+  }
+
+  explicit unordered_set(size_type bucket_count,
+                         const Hash& hash = Hash(),
+                         const KeyEqual& equal = KeyEqual())
+    :ht_(bucket_count, hash, equal)
+  {
+  }
 
   template <class InputIterator>
   unordered_set(InputIterator first, InputIterator last,
-                const hasher& hf = hasher(),
-                const key_equal& keq = key_equal())
-    : ht_(distance(first, last), hf, keq)
+                const size_type bucket_count = 100,
+                const Hash& hash = Hash(),
+                const KeyEqual& equal = KeyEqual())
+    : ht_(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))), hash, equal)
   {
-    ht_.insert_unique(first, last);
+    for (; first != last; ++first)
+      ht_.insert_unique_noresize(*first);
   }
+
   unordered_set(std::initializer_list<value_type> ilist,
-                const hasher& hf = hasher(),
-                const key_equal& keq = key_equal())
-    :ht_(ilist.size(), hf, keq)
+                const size_type bucket_count = 100,
+                const Hash& hash = Hash(),
+                const KeyEqual& equal = KeyEqual())
+    :ht_(mystl::max(bucket_count, static_cast<size_type>(ilist.size())), hash, equal)
   {
-    ht_.insert_unique(ilist.begin(), ilist.end());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_unique_noresize(*first);
   }
 
-  unordered_set(const unordered_set& rhs) :ht_(rhs.ht_) {}
-  unordered_set(unordered_set&& rhs) :ht_(mystl::move(rhs.ht_)) {}
+  unordered_set(const unordered_set& rhs)
+    :ht_(rhs.ht_)
+  {
+  }
+  unordered_set(unordered_set&& rhs) noexcept
+    : ht_(mystl::move(rhs.ht_))
+  {
+  }
 
-  unordered_set& operator=(const unordered_set& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_set& operator=(unordered_set&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
+  unordered_set& operator=(const unordered_set& rhs)
+  {
+    ht_ = rhs.ht_;
+    return *this;
+  }
+  unordered_set& operator=(unordered_set&& rhs)
+  {
+    ht_ = mystl::move(rhs.ht_);
+    return *this;
+  }
+
   unordered_set& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
-    ht_.insert_unique(ilist.begin(), ilist.end());
+    ht_.reserve(ilist.size());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_unique_noresize(*first);
     return *this;
   }
+
+  ~unordered_set() = default;
 
   // 相关接口
   iterator  begin()    const { return ht_.begin(); }
@@ -129,27 +160,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline bool
-operator==(const unordered_set<Key, Hash, EqualKey>& lhs,
-           const unordered_set<Key, Hash, EqualKey>& rhs)
+operator==(const unordered_set<Key, Hash, KeyEqual>& lhs,
+           const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline bool
-operator!=(const unordered_set<Key, Hash, EqualKey>& lhs,
-           const unordered_set<Key, Hash, EqualKey>& rhs)
+operator!=(const unordered_set<Key, Hash, KeyEqual>& lhs,
+           const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline void
-swap(unordered_set<Key, Hash, EqualKey>& lhs,
-     unordered_set<Key, Hash, EqualKey>& rhs)
+swap(unordered_set<Key, Hash, KeyEqual>& lhs,
+     unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -159,12 +190,12 @@ swap(unordered_set<Key, Hash, EqualKey>& lhs,
 // 模板类 unordered_multiset
 // 键值允许重复，其它与 unordered_set 相同
 template <class Key, class Hash = mystl::hash<Key>,
-  class EqualKey = mystl::equal_to<Key>>
+  class KeyEqual = mystl::equal_to<Key>>
   class unordered_multiset
 {
 private:
   // 使用 hashtable 作为底层机制
-  typedef hashtable<Key, Hash, EqualKey>  rep_type;
+  typedef hashtable<Key, Hash, KeyEqual>  rep_type;
   rep_type ht_;
 
 public:
@@ -191,38 +222,71 @@ public:
 
 public:
   // 构造、复制、移动函数
-  unordered_multiset() :ht_(100, hasher(), key_equal()) {}  // 缺省使用大小为 100 的表格
-  explicit unordered_multiset(size_type n) :ht_(n, hasher(), key_equal()) {}
-  unordered_multiset(size_type n, const hasher& hf) :ht_(n, hf, key_equal()) {}
-  unordered_multiset(size_type n, const hasher& hf, const key_equal& keq) :ht_(n, hf, keq) {}
+
+  unordered_multiset()
+    :ht_(100, Hash(), KeyEqual())
+  {
+  }
+
+  explicit unordered_multiset(size_type bucket_count,
+                              const Hash& hash = Hash(),
+                              const KeyEqual& equal = KeyEqual())
+    :ht_(bucket_count, hash, equal)
+  {
+  }
 
   template <class InputIterator>
   unordered_multiset(InputIterator first, InputIterator last,
-                     const hasher& hf = hasher(),
-                     const key_equal& keq = key_equal())
-    : ht_(distance(first, last), hf, keq)
+                     const size_type bucket_count = 100,
+                     const Hash& hash = Hash(),
+                     const KeyEqual& equal = KeyEqual())
+    : ht_(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))), hash, equal)
   {
-    ht_.insert_equal(first, last);
+    for (; first != last; ++first)
+      ht_.insert_equal_noresize(*first);
   }
+
   unordered_multiset(std::initializer_list<value_type> ilist,
-                     const hasher& hf = hasher(),
-                     const key_equal& keq = key_equal())
-    :ht_(ilist.size(), hf, keq)
+                     const size_type bucket_count = 100,
+                     const Hash& hash = Hash(),
+                     const KeyEqual& equal = KeyEqual())
+    :ht_(mystl::max(bucket_count, static_cast<size_type>(ilist.size())), hash, equal)
   {
-    ht_.insert_equal(ilist.begin(), ilist.end());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_equal_noresize(*first);
   }
 
-  unordered_multiset(const unordered_multiset& rhs) :ht_(rhs.ht_) {}
-  unordered_multiset(unordered_multiset&& rhs) :ht_(mystl::move(rhs.ht_)) {}
+  unordered_multiset(const unordered_multiset& rhs)
+    :ht_(rhs.ht_)
+  {
+  }
+  unordered_multiset(unordered_multiset&& rhs) noexcept
+    : ht_(mystl::move(rhs.ht_))
+  {
+  }
 
-  unordered_multiset& operator=(const unordered_multiset& rhs) { ht_ = rhs.ht_; return *this; }
-  unordered_multiset& operator=(unordered_multiset&& rhs) { ht_ = mystl::move(rhs.ht_); return *this; }
+  unordered_multiset& operator=(const unordered_multiset& rhs)
+  {
+    ht_ = rhs.ht_;
+    return *this;
+  }
+  unordered_multiset& operator=(unordered_multiset&& rhs)
+  {
+    ht_ = mystl::move(rhs.ht_);
+    return *this;
+  }
+
   unordered_multiset& operator=(std::initializer_list<value_type> ilist)
   {
     ht_.clear();
-    ht_.insert_equal(ilist.begin(), ilist.end());
+    ht_.reserve(ilist.size());
+    for (auto first = ilist.begin(), last = ilist.end(); first != last; ++first)
+      ht_.insert_equal_noresize(*first);
     return *this;
   }
+
+  ~unordered_multiset() = default;
+
 
   // 相关接口
   iterator  begin()                                   const { return ht_.begin(); }
@@ -264,27 +328,27 @@ public:
 };
 
 // 重载比较操作符
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline bool
-operator==(const unordered_multiset<Key, Hash, EqualKey>& lhs,
-           const unordered_multiset<Key, Hash, EqualKey>& rhs)
+operator==(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline bool
-operator!=(const unordered_multiset<Key, Hash, EqualKey>& lhs,
-           const unordered_multiset<Key, Hash, EqualKey>& rhs)
+operator!=(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
-template <class Key, class Hash, class EqualKey, class Alloc>
+template <class Key, class Hash, class KeyEqual, class Alloc>
 inline void
-swap(unordered_multiset<Key, Hash, EqualKey>& lhs,
-     unordered_multiset<Key, Hash, EqualKey>& rhs)
+swap(unordered_multiset<Key, Hash, KeyEqual>& lhs,
+     unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }

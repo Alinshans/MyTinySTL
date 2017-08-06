@@ -30,8 +30,8 @@ void unordered_map_test()
   mystl::unordered_map<int, int> um4(520, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_map<int, int> um5(v.begin(), v.end());
   mystl::unordered_map<int, int> um6(v.begin(), v.end());
-  mystl::unordered_map<int, int> um7(v.begin(), v.end(), mystl::hash<int>());
-  mystl::unordered_map<int, int> um8(v.begin(), v.end(), mystl::hash<int>(), mystl::equal_to<int>());
+  mystl::unordered_map<int, int> um7(v.begin(), v.end(), 100, mystl::hash<int>());
+  mystl::unordered_map<int, int> um8(v.begin(), v.end(), 100, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_map<int, int> um9(um5);
   mystl::unordered_map<int, int> um10(std::move(um5));
   mystl::unordered_map<int, int> um11 = um6;
@@ -99,8 +99,8 @@ void unordered_multimap_test()
   mystl::unordered_multimap<int, int> um4(520, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_multimap<int, int> um5(v.begin(), v.end());
   mystl::unordered_multimap<int, int> um6(v.begin(), v.end());
-  mystl::unordered_multimap<int, int> um7(v.begin(), v.end(), mystl::hash<int>());
-  mystl::unordered_multimap<int, int> um8(v.begin(), v.end(), mystl::hash<int>(), mystl::equal_to<int>());
+  mystl::unordered_multimap<int, int> um7(v.begin(), v.end(), 100, mystl::hash<int>());
+  mystl::unordered_multimap<int, int> um8(v.begin(), v.end(), 100, mystl::hash<int>(), mystl::equal_to<int>());
   mystl::unordered_multimap<int, int> um9(um5);
   mystl::unordered_multimap<int, int> um10(std::move(um5));
   mystl::unordered_multimap<int, int> um11 = um6;
