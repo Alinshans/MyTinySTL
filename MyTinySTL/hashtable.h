@@ -547,7 +547,7 @@ public:
   hashtable(const hashtable& rhs)
     :hash_(rhs.hash_), equal_(rhs.equal_)
   {
-    __copy_from(rhs);
+    copy_init(rhs);
   }
   hashtable(hashtable&& rhs) noexcept
     : bucket_size_(rhs.bucket_size_), 
@@ -592,10 +592,10 @@ public:
   // emplace / empalce_hint
 
   template <class ...Args>
-  pair<iterator, bool> emplace_unique(Args&& ...args);
+  iterator emplace_multi(Args&& ...args);
 
   template <class ...Args>
-  iterator emplace_multi(Args&& ...args);
+  pair<iterator, bool> emplace_unique(Args&& ...args);
 
   template <class ...Args>
   iterator emplace_multi_use_hint(const_iterator hint, Args&& ...args);
@@ -681,14 +681,10 @@ public:
   // hash policy
 
   float load_factor() const noexcept
-  {
-    return buckets_.size() != 0 ? size_ / buckets_.size() : 0.0f;
-  }
+  { return buckets_.size() != 0 ? size_ / buckets_.size() : 0.0f; }
 
   float max_load_factor() const noexcept
-  {
-    return mlf_;
-  }
+  { return mlf_; }
   void max_load_factor(float ml)
   {
     THROW_OUT_OF_RANGE_IF(ml != ml || ml < 0,
@@ -706,16 +702,21 @@ private:
 
   void      init(size_type n);
 
-  node_ptr  create_node(const value_type& value);
+  template  <class ...Args>
+  node_ptr  create_node(Args ...args);
   void      destroy_node(node_ptr n);
 
-  size_type __next_size(size_type n) const;
+  size_type next_size(size_type n) const;
   size_type hash(const key_type& key, size_type n) const;
   size_type hash(const key_type& key) const;
+
+  pair<iterator, bool> insert_node_unique(node_ptr np);
+  iterator insert_node_multi(node_ptr np);
+
   void      replace_bucket(size_type bucket_count);
   void      __erase_bucket(const size_type n, node_ptr first, node_ptr last);
   void      __erase_bucket(const size_type n, node_ptr last);
-  void      __copy_from(const hashtable& ht);
+  void      copy_init(const hashtable& ht);
 };
 
 /*****************************************************************************************/
@@ -817,7 +818,18 @@ typename hashtable<T, Hash, KeyEqual>::iterator
 hashtable<T, Hash, KeyEqual>::
 emplace_multi(Args&& ...args)
 {
-  return iterator();
+  auto np = create_node(mystl::forward<Args>(args)...);
+  try
+  {
+    if ((float)(size_ + 1) > (float)bucket_count() * max_load_factor())
+      rehash(size_ + 1);
+  }
+  catch (...)
+  {
+    destroy_node(np);
+    throw;
+  }
+  return insert_node_multi(np);
 }
 
 template <class T, class Hash, class KeyEqual>
@@ -826,7 +838,18 @@ pair<typename hashtable<T, Hash, KeyEqual>::iterator, bool>
 hashtable<T, Hash, KeyEqual>::
 emplace_unique(Args&& ...args)
 {
-  return pair<iterator, bool>();
+  auto np = create_node(mystl::forward<Args>(args)...);
+  try
+  {
+    if ((float)(size_ + 1) > (float)bucket_count() * max_load_factor())
+      rehash(size_ + 1);
+  }
+  catch (...)
+  {
+    destroy_node(np);
+    throw;
+  }
+  return insert_node_unique(np);
 }
 
 template <class T, class Hash, class KeyEqual>
@@ -835,7 +858,34 @@ typename hashtable<T, Hash, KeyEqual>::iterator
 hashtable<T, Hash, KeyEqual>::
 emplace_multi_use_hint(const_iterator hint, Args&& ...args)
 {
-  return iterator();
+  auto np = create_node(mystl::forward<Args>(args)...);
+  if ((float)(size_ + 1) < (float)bucket_count() * max_load_factor())
+  {
+    for (auto cur = iterator(hint); cur; cur = cur->next)
+    {
+      if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(np->value)))
+      {
+        np->next = cur->next;
+        cur->next = np;
+        ++size_;
+        return iterator(np, this);
+      }
+    }
+    np->next = buckets_[n];
+    buckets_[n] = np;
+    ++size_;
+    return iterator(np, this);
+  }
+  try
+  {
+      rehash(size_ + 1);
+  }
+  catch (...)
+  {
+    destroy_node(np);
+    throw;
+  }
+  return insert_node_multi(np);
 }
 
 template <class T, class Hash, class KeyEqual>
@@ -844,7 +894,31 @@ typename hashtable<T, Hash, KeyEqual>::iterator
 hashtable<T, Hash, KeyEqual>::
 emplace_unique_use_hint(const_iterator hint, Args&& ...args)
 {
-  return iterator();
+  auto np = create_node(mystl::forward<Args>(args)...);
+  if ((float)(size_ + 1) < (float)bucket_count() * max_load_factor())
+  {
+    for (auto cur = iterator(hint); cur; cur = cur->next)
+    {
+      if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(np->value)))
+      {
+        return iterator(cur, this);
+      }
+    }
+    np->next = buckets_[n];
+    buckets_[n] = np;
+    ++size_;
+    return iterator(np, this);
+  }
+  try
+  {
+    rehash(size_ + 1);
+  }
+  catch (...)
+  {
+    destroy_node(np);
+    throw;
+  }
+  return insert_node_unique(np);
 }
 
 // insert_unique 的 input_iterator_tag 版本
@@ -1206,18 +1280,20 @@ swap(hashtable& rhs)
   if (this != &rhs)
   {
     buckets_.swap(rhs.buckets_);
+    mystl::swap(bucket_size_, rhs.bucket_size_);
     mystl::swap(size_, rhs.size_);
+    mystl::swap(mlf_, rhs.mlf_);
     mystl::swap(hash_, rhs.hash_);
     mystl::swap(equal_, rhs.equal_);
   }
 }
 
-// __next_size 函数
+// next_size 函数
 template <class T, class Hash, class KeyEqual>
 typename hashtable<T, Hash, KeyEqual>::size_type
-hashtable<T, Hash, KeyEqual>::__next_size(size_type n) const
+hashtable<T, Hash, KeyEqual>::next_size(size_type n) const
 {
-  return ht_next_prime(static_cast<unsigned long>(n));
+  return ht_next_prime(n);
 }
 
 // init 函数
@@ -1225,7 +1301,7 @@ template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
 init(size_type n)
 {
-  const auto bucket_nums = __next_size(n);
+  const auto bucket_nums = next_size(n);
   buckets_.reserve(bucket_nums);
   buckets_.assign(bucket_nums, static_cast<node_ptr>(nullptr));
   bucket_size_ = buckets_.size();
@@ -1246,6 +1322,61 @@ hashtable<T, Hash, KeyEqual>::
 hash(const key_type& key) const
 {
   return hash(key, buckets_.size());
+}
+
+template <class T, class Hash, class KeyEqual>
+pair<typename hashtable<T, Hash, KeyEqual>::iterator, bool>
+hashtable<T, Hash, KeyEqual>::
+insert_node_unique(node_ptr np)
+{
+  const auto n = hash(value_traits::get_key(np->value));
+  auto cur = buckets_[n];
+  if (cur == nullptr)
+  {
+    buckets_[n] = np;
+    ++size_;
+    return mystl::make_pair(iterator(np, this), true);
+  }
+  for (; cur; cur = cur->next)
+  {
+    if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(np->value)))
+    {
+      return mystl::make_pair(iterator(cur, this), false);
+    }
+  }
+  np->next = buckets_[n];
+  buckets_[n] = np;
+  ++size_;
+  return mystl::make_pair(iterator(np, this), true);
+}
+
+template <class T, class Hash, class KeyEqual>
+typename hashtable<T, Hash, KeyEqual>::iterator
+hashtable<T, Hash, KeyEqual>::
+insert_node_multi(node_ptr np)
+{
+  const auto n = hash(value_traits::get_key(np->value));
+  auto cur = buckets_[n];
+  if (cur == nullptr)
+  {
+    buckets_[n] = np;
+    ++size_;
+    return iterator(np, this);
+  }
+  for (; cur; cur = cur->next)
+  {
+    if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(np->value)))
+    {
+      np->next = cur->next;
+      cur->next = np;
+      ++size_;
+      return iterator(np, this);
+    }
+  }
+  np->next = buckets_[n];
+  buckets_[n] = np;
+  ++size_;
+  return iterator(np, this);
 }
 
 template <class T, class Hash, class KeyEqual>
@@ -1281,14 +1412,15 @@ replace_bucket(size_type bucket_count)
 
 // create_node 函数
 template <class T, class Hash, class KeyEqual>
+template <class ...Args>
 typename hashtable<T, Hash, KeyEqual>::node_ptr
 hashtable<T, Hash, KeyEqual>::
-create_node(const value_type& value)
+create_node(Args ...args)
 {
   node_ptr tmp = node_allocator::allocate(1);
   try
   {
-    data_allocator::construct(mystl::address_of(tmp->value), value);
+    data_allocator::construct(mystl::address_of(tmp->value), mystl::forward<Args>(args)...);
     tmp->next = nullptr;
   }
   catch (...)
@@ -1347,10 +1479,10 @@ __erase_bucket(const size_type n, node_ptr last)
   }
 }
 
-// __copy_from 函数
+// copy_init 函数
 template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
-__copy_from(const hashtable& ht)
+copy_init(const hashtable& ht)
 {
   buckets_.clear();
   buckets_.reserve(ht.buckets_.size());
