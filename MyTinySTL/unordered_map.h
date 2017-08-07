@@ -114,16 +114,27 @@ public:
 
   ~unordered_map() = default;
 
-  // 相关接口
-  iterator       begin() { return ht_.begin(); }
-  const_iterator begin()    const { return ht_.begin(); }
-  iterator       end() { return ht_.end(); }
-  const_iterator end()      const { return ht_.end(); }
+  // 迭代器相关
+  iterator       begin()        noexcept
+  { return ht_.begin(); }
+  const_iterator begin()  const noexcept
+  { return ht_.begin(); }
+  iterator       end()          noexcept
+  { return ht_.end(); }
+  const_iterator end()    const noexcept
+  { return ht_.end(); }
 
-  bool           empty()    const { return ht_.empty(); }
-  size_type      size()     const { return ht_.size(); }
-  size_type      max_size() const { return ht_.max_size(); }
+  const_iterator cbegin() const noexcept
+  { return ht_.cbegin(); }
+  const_iterator cend()   const noexcept
+  { return ht_.cend(); }
 
+  // 容量相关
+  bool      empty()    const noexcept { return ht_.empty(); }
+  size_type size()     const noexcept { return ht_.size(); }
+  size_type max_size() const noexcept { return ht_.max_size(); }
+
+  // 修改容器操作
   pair<iterator, bool> insert(const value_type& value)
   {
     return ht_.insert_unique(value);
@@ -300,14 +311,24 @@ public:
   ~unordered_multimap() = default;
 
   // 相关接口
-  iterator       begin() { return ht_.begin(); }
-  const_iterator begin()    const { return ht_.begin(); }
-  iterator       end() { return ht_.end(); }
-  const_iterator end()      const { return ht_.end(); }
+  iterator       begin()        noexcept
+  { return ht_.begin(); }
+  const_iterator begin()  const noexcept
+  { return ht_.begin(); }
+  iterator       end()          noexcept
+  { return ht_.end(); }
+  const_iterator end()    const noexcept
+  { return ht_.end(); }
 
-  bool           empty()    const { return ht_.empty(); }
-  size_type      size()     const { return ht_.size(); }
-  size_type      max_size() const { return ht_.max_size(); }
+  const_iterator cbegin() const noexcept
+  { return ht_.cbegin(); }
+  const_iterator cend()   const noexcept
+  { return ht_.cend(); }
+
+  // 容量相关
+  bool      empty()    const noexcept { return ht_.empty(); }
+  size_type size()     const noexcept { return ht_.size(); }
+  size_type max_size() const noexcept { return ht_.max_size(); }
 
   iterator insert(const value_type& value) { return ht_.insert_equal(value); }
   template <class InputIterator>
