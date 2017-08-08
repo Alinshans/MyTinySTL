@@ -140,14 +140,16 @@ public:
   {
     iterator it = lower_bound(key);
     // it->first >= key
-    assert(it != end() && !key_comp()(key, it->first));
+    THROW_OUT_OF_RANGE_IF(it == end() || key_comp()(it->first, key),
+                          "map<Key, T> no such element exists");
     return it->second;
   }
   const mapped_type& at(const key_type& key) const
   {
     const_iterator it = lower_bound(key);
     // it->first >= key
-    assert(it != end() && !key_comp()(key, it->first));
+    THROW_OUT_OF_RANGE_IF(it == end() || key_comp()(it->first, key),
+                          "map<Key, T> no such element exists");
     return it->second;
   }
 
