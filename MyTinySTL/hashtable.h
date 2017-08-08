@@ -110,6 +110,12 @@ struct ht_iterator;
 template <class T, class HashFun, class KeyEqual>
 struct ht_const_iterator;
 
+template <class T>
+struct ht_local_iterator;
+
+template <class T>
+struct ht_const_local_iterator;
+
 // ht_iterator
 
 template <class T, class Hash, class KeyEqual>
@@ -200,7 +206,7 @@ struct ht_iterator :public ht_iterator_base<T, Hash, KeyEqual>
     if (node == nullptr)
     { // 如果下一个位置为空，跳到下一个 bucket 的起始处
       auto index = ht->hash(value_traits::get_key(old->value));
-      while (!node && ++index < ht->buckets_.size())
+      while (!node && ++index < ht->bucket_size_)
         node = ht->buckets_[index];
     }
     return *this;
@@ -277,7 +283,7 @@ struct ht_const_iterator :public ht_iterator_base<T, Hash, KeyEqual>
     if (node == nullptr)
     { // 如果下一个位置为空，跳到下一个 bucket 的起始处
       auto index = ht->hash(value_traits::get_key(old->value));
-      while (!node && ++index < ht->buckets_.size())
+      while (!node && ++index < ht->bucket_size_)
       {
         node = ht->buckets_[index];
       }
@@ -296,18 +302,28 @@ struct ht_const_iterator :public ht_iterator_base<T, Hash, KeyEqual>
 template <class T>
 struct ht_local_iterator :public mystl::iterator<mystl::forward_iterator_tag, T>
 {
-  typedef T                  value_type;
-  typedef value_type*        pointer;
-  typedef value_type&        reference;
-  typedef size_t             size_type;
-  typedef ptrdiff_t          difference_type;
-  typedef hashtable_node<T>* node_ptr;
-  typedef ht_local_iterator  self;
+  typedef T                          value_type;
+  typedef value_type*                pointer;
+  typedef value_type&                reference;
+  typedef size_t                     size_type;
+  typedef ptrdiff_t                  difference_type;
+  typedef hashtable_node<T>*         node_ptr;
 
+  typedef ht_local_iterator<T>       self;
+  typedef ht_local_iterator<T>       local_iterator;
+  typedef ht_const_local_iterator<T> const_local_iterator;
   node_ptr node;
 
   ht_local_iterator(node_ptr n)
     :node(n)
+  {
+  }
+  ht_local_iterator(const local_iterator& rhs)
+    :node(rhs.node)
+  {
+  }
+  ht_local_iterator(const const_local_iterator& rhs)
+    :node(rhs.node)
   {
   }
 
@@ -335,18 +351,29 @@ struct ht_local_iterator :public mystl::iterator<mystl::forward_iterator_tag, T>
 template <class T>
 struct ht_const_local_iterator :public mystl::iterator<mystl::forward_iterator_tag, T>
 {
-  typedef T                        value_type;
-  typedef const value_type*        pointer;
-  typedef const value_type&        reference;
-  typedef size_t                   size_type;
-  typedef ptrdiff_t                difference_type;
-  typedef const hashtable_node<T>* node_ptr;
-  typedef ht_const_local_iterator  self;
+  typedef T                          value_type;
+  typedef const value_type*          pointer;
+  typedef const value_type&          reference;
+  typedef size_t                     size_type;
+  typedef ptrdiff_t                  difference_type;
+  typedef const hashtable_node<T>*   node_ptr;
+
+  typedef ht_const_local_iterator<T> self;
+  typedef ht_local_iterator<T>       local_iterator;
+  typedef ht_const_local_iterator<T> const_local_iterator;
 
   node_ptr node;
 
   ht_const_local_iterator(node_ptr n)
     :node(n)
+  {
+  }
+  ht_const_local_iterator(const local_iterator& rhs)
+    :node(rhs.node)
+  {
+  }
+  ht_const_local_iterator(const const_local_iterator& rhs)
+    :node(rhs.node)
   {
   }
 
@@ -505,7 +532,7 @@ private:
 
   iterator M_begin() noexcept
   {
-    for (size_type n = 0; n < buckets_.size(); ++n)
+    for (size_type n = 0; n < bucket_size_; ++n)
     {
       if (buckets_[n])  // 找到第一个有节点的位置就返回
         return iterator(buckets_[n], this);
@@ -515,7 +542,7 @@ private:
 
   const_iterator M_begin() const noexcept
   {
-    for (size_type n = 0; n < buckets_.size(); ++n)
+    for (size_type n = 0; n < bucket_size_; ++n)
     {
       if (buckets_[n])  // 找到第一个有节点的位置就返回
         return M_cit(buckets_[n]);
@@ -528,7 +555,7 @@ public:
   explicit hashtable(size_type bucket_count,
                      const Hash& hash = Hash(),
                      const KeyEqual& equal = KeyEqual())
-    :size_(0), mlf_(0.75f), hash_(hash), equal_(equal)
+    :size_(0), mlf_(1.0f), hash_(hash), equal_(equal)
   {
     init(bucket_count);
   }
@@ -539,7 +566,7 @@ public:
               size_type bucket_count,
               const Hash& hash = Hash(),
               const KeyEqual& equal = KeyEqual())
-    :size_(mystl::distance(first, last)), mlf_(0.75f), hash_(hash), equal_(equal)
+    :size_(mystl::distance(first, last)), mlf_(1.0f), hash_(hash), equal_(equal)
   {
     init(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))));
   }
@@ -690,7 +717,7 @@ public:
   { return nullptr; }
 
   size_type bucket_count()                 const noexcept
-  { return buckets_.size(); }
+  { return bucket_size_; }
   size_type max_bucket_count()             const noexcept
   { return ht_prime_list[PRIME_NUM - 1]; }
 
@@ -701,7 +728,7 @@ public:
   // hash policy
 
   float load_factor() const noexcept
-  { return buckets_.size() != 0 ? size_ / buckets_.size() : 0.0f; }
+  { return bucket_size_ != 0 ? (float)size_ / bucket_size_ : 0.0f; }
 
   float max_load_factor() const noexcept
   { return mlf_; }
@@ -813,7 +840,7 @@ emplace_multi(Args&& ...args)
   auto np = create_node(mystl::forward<Args>(args)...);
   try
   {
-    if ((float)(size_ + 1) > (float)bucket_count() * max_load_factor())
+    if ((float)(size_ + 1) > (float)bucket_size_ * max_load_factor())
       rehash(size_ + 1);
   }
   catch (...)
@@ -834,7 +861,7 @@ emplace_unique(Args&& ...args)
   auto np = create_node(mystl::forward<Args>(args)...);
   try
   {
-    if ((float)(size_ + 1) > (float)bucket_count() * max_load_factor())
+    if ((float)(size_ + 1) > (float)bucket_size_ * max_load_factor())
       rehash(size_ + 1);
   }
   catch (...)
@@ -939,10 +966,10 @@ erase(const_iterator first, const_iterator last)
     return;
   auto first_bucket = first.node 
     ? hash(value_traits::get_key(first.node->value)) 
-    : buckets_.size();
+    : bucket_size_;
   auto last_bucket = last.node 
     ? hash(value_traits::get_key(last.node->value))
-    : buckets_.size();
+    : bucket_size_;
   if (first_bucket == last_bucket)
   { // 如果在 bucket 在同一个位置
     erase_bucket(first_bucket, first.node, last.node);
@@ -955,7 +982,7 @@ erase(const_iterator first, const_iterator last)
       if(buckets_[n] != nullptr)
         erase_bucket(n, nullptr);
     }
-    if (last_bucket != buckets_.size())
+    if (last_bucket != bucket_size_)
     {
       erase_bucket(last_bucket, last.node);
     }
@@ -1020,7 +1047,7 @@ clear()
 {
   if (size_ != 0)
   {
-    for (size_type i = 0; i < buckets_.size(); ++i)
+    for (size_type i = 0; i < bucket_size_; ++i)
     {
       node_ptr cur = buckets_[i];
       while (cur != nullptr)
@@ -1055,14 +1082,14 @@ void hashtable<T, Hash, KeyEqual>::
 rehash(size_type count)
 {
   auto n = ht_next_prime(count);
-  if (n > bucket_count())
+  if (n > bucket_size_)
   {
     replace_bucket(n);
   }
   else
   {
     if ((float)size_ / (float)n < max_load_factor() - 0.25f &&
-        (float)n < (float)bucket_count() * 0.75)  // worth rehash
+        (float)n < (float)bucket_size_ * 0.75)  // worth rehash
     {
       replace_bucket(n);
     }
@@ -1125,7 +1152,7 @@ equal_range_multi(const key_type& key)
         if (!is_equal(value_traits::get_key(second->value), key))
           return mystl::make_pair(iterator(first, this), iterator(second, this));
       }
-      for (auto m = n + 1; m < buckets_.size(); ++m)
+      for (auto m = n + 1; m < bucket_size_; ++m)
       { // 整个链表都相等，查找下一个链表出现的位置
         if (buckets_[m])
           return mystl::make_pair(iterator(first, this), iterator(buckets_[m], this));
@@ -1152,7 +1179,7 @@ equal_range_multi(const key_type& key) const
         if (!is_equal(value_traits::get_key(second->value), key))
           return mystl::make_pair(M_cit(first), M_cit(second));
       }
-      for (auto m = n + 1; m < buckets_.size(); ++m)
+      for (auto m = n + 1; m < bucket_size_; ++m)
       { // 整个链表都相等，查找下一个链表出现的位置
         if (buckets_[m])
           return mystl::make_pair(M_cit(first), M_cit(buckets_[m]));
@@ -1176,7 +1203,7 @@ equal_range_unique(const key_type& key)
     {
       if (first->next)
         return mystl::make_pair(iterator(first, this), iterator(first->next, this));
-      for (auto m = n + 1; m < buckets_.size(); ++m)
+      for (auto m = n + 1; m < bucket_size_; ++m)
       { // 整个链表都相等，查找下一个链表出现的位置
         if (buckets_[m])
           return mystl::make_pair(iterator(first, this), iterator(buckets_[m], this));
@@ -1200,7 +1227,7 @@ equal_range_unique(const key_type& key) const
     {
       if (first->next)
         return mystl::make_pair(M_cit(first), M_cit(first->next));
-      for (auto m = n + 1; m < buckets_.size(); ++m)
+      for (auto m = n + 1; m < bucket_size_; ++m)
       { // 整个链表都相等，查找下一个链表出现的位置
         if (buckets_[m])
           return mystl::make_pair(M_cit(first), M_cit(buckets_[m]));
@@ -1237,7 +1264,7 @@ init(size_type n)
 {
   const auto bucket_nums = next_size(n);
   buckets_.reserve(bucket_nums);
-  buckets_.assign(bucket_nums, static_cast<node_ptr>(nullptr));
+  buckets_.assign(bucket_nums, nullptr);
   bucket_size_ = buckets_.size();
 }
 
@@ -1247,11 +1274,11 @@ void hashtable<T, Hash, KeyEqual>::
 copy_init(const hashtable& ht)
 {
   buckets_.clear();
-  buckets_.reserve(ht.buckets_.size());
-  buckets_.insert(buckets_.end(), ht.buckets_.size(), static_cast<node_ptr>(nullptr));
+  buckets_.reserve(ht.bucket_size_);
+  buckets_.insert(buckets_.end(), ht.bucket_size_, nullptr);
   try
   {
-    for (size_type i = 0; i < ht.buckets_.size(); ++i)
+    for (size_type i = 0; i < ht.bucket_size_; ++i)
     {
       node_ptr cur = ht.buckets_[i];
       if (cur)
@@ -1327,7 +1354,7 @@ typename hashtable<T, Hash, KeyEqual>::size_type
 hashtable<T, Hash, KeyEqual>::
 hash(const key_type& key) const
 {
-  return hash(key, buckets_.size());
+  return hash(key, bucket_size_);
 }
 
 // rehash_if_need 函数
@@ -1335,7 +1362,7 @@ template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
 rehash_if_need(size_type n)
 {
-  if (static_cast<float>(size_ + n) > (float)bucket_count() * max_load_factor())
+  if (static_cast<float>(size_ + n) > (float)bucket_size_ * max_load_factor())
     rehash(size_ + n);
 }
 
@@ -1444,7 +1471,7 @@ void hashtable<T, Hash, KeyEqual>::
 replace_bucket(size_type bucket_count)
 {
   bucket_type bucket(bucket_count);
-  size_type old_size = buckets_.size();
+  size_type old_size = bucket_size_;
   for (size_type i = 0; i < old_size; ++i)
   {
     auto first = buckets_[i];
@@ -1517,9 +1544,9 @@ template <class T, class Hash, class KeyEqual>
 bool operator==(const hashtable<T, Hash, KeyEqual>& lhs,
                 const hashtable<T, Hash, KeyEqual>& rhs)
 {
-  if (lhs.buckets_.size() != rhs.buckets_.size())
+  if (lhs.bucket_size_ != rhs.bucket_size_)
     return false;
-  for (auto n = 0; n < lhs.buckets_.size(); ++n)
+  for (auto n = 0; n < lhs.bucket_size_; ++n)
   {
     auto cur1 = lhs.buckets_[n];
     auto cur2 = rhs.buckets_[n];

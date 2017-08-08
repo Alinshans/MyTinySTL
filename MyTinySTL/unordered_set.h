@@ -192,14 +192,14 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
+  local_iterator       begin(size_type n)        noexcept
   { return ht_.begin(n); }
   const_local_iterator begin(size_type n)  const noexcept
   { return ht_.begin(n); }
   const_local_iterator cbegin(size_type n) const noexcept
   { return ht_.cbegin(n); }
 
-  local_iterator end(size_type n) noexcept
+  local_iterator       end(size_type n)          noexcept
   { return nullptr; }
   const_local_iterator end(size_type n)    const noexcept
   { return nullptr; }
