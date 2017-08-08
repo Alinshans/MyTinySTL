@@ -17,28 +17,22 @@ int main()
 
   std::cout.sync_with_stdio(false);
 
-  std::unordered_map<int, int> m(10);
-  std::cout << m.size();
-  mystl::unordered_map<int, int> m2(10);
-  std::cout << "\n" << m2.size();
-  // Run all unit test and performance test.
-
-  //RUN_ALL_TESTS();
-  //algorithm_performance_test::algorithm_performance_test();
-  //vector_test::vector_test();
-  //list_test::list_test();
-  //deque_test::deque_test();
-  //queue_test::queue_test();
-  //queue_test::priority_test();
-  //stack_test::stack_test();
-  //map_test::map_test();
-  //map_test::multimap_test();
-  //set_test::set_test();
-  //set_test::multiset_test();
+  RUN_ALL_TESTS();
+  algorithm_performance_test::algorithm_performance_test();
+  vector_test::vector_test();
+  list_test::list_test();
+  deque_test::deque_test();
+  queue_test::queue_test();
+  queue_test::priority_test();
+  stack_test::stack_test();
+  map_test::map_test();
+  map_test::multimap_test();
+  set_test::set_test();
+  set_test::multiset_test();
   unordered_map_test::unordered_map_test();
   unordered_map_test::unordered_multimap_test();
   unordered_set_test::unordered_set_test();
   unordered_set_test::unordered_multiset_test();
-  //string_test::string_test();
+  string_test::string_test();
   
 }

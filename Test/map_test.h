@@ -17,7 +17,7 @@ namespace map_test
 {
 
 // pair 的宏定义
-#define PAIR    mystl::map<int, int>::value_type
+#define PAIR    mystl::pair<int, int>
 
 // map 的遍历输出
 #define MAP_COUT(m) do { \
