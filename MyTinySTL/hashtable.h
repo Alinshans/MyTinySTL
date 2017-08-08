@@ -201,6 +201,7 @@ struct ht_iterator :public ht_iterator_base<T, Hash, KeyEqual>
 
   iterator& operator++()
   {
+    MYSTL_DEBUG(node != nullptr);
     const node_ptr old = node;
     node = node->next;
     if (node == nullptr)
@@ -278,6 +279,7 @@ struct ht_const_iterator :public ht_iterator_base<T, Hash, KeyEqual>
 
   const_iterator& operator++()
   {
+    MYSTL_DEBUG(node != nullptr);
     const node_ptr old = node;
     node = node->next;
     if (node == nullptr)
@@ -627,11 +629,11 @@ public:
   // [note]: hint 对于 hash_table 其实没有意义，因为即使提供了 hint，也要做一次 hash，
   // 来确保 hash_table 的性质，所以选择忽略它
   template <class ...Args>
-  iterator emplace_multi_use_hint(const_iterator hint, Args&& ...args)
+  iterator emplace_multi_use_hint(const_iterator /*hint*/, Args&& ...args)
   { return emplace_multi(mystl::forward<Args>(args)...); }
 
   template <class ...Args>
-  iterator emplace_unique_use_hint(const_iterator hint, Args&& ...args)
+  iterator emplace_unique_use_hint(const_iterator /*hint*/, Args&& ...args)
   { return emplace_unique(mystl::forward<Args>(args)...).first; }
 
   // insert
@@ -657,14 +659,14 @@ public:
   { return emplace_unique(mystl::move(value)); }
 
   // [note]: 同 emplace_hint
-  iterator insert_multi_use_hint(const_iterator hint, const value_type& value)
+  iterator insert_multi_use_hint(const_iterator /*hint*/, const value_type& value)
   { return insert_multi(value); }
-  iterator insert_multi_use_hint(const_iterator hint, value_type&& value)
+  iterator insert_multi_use_hint(const_iterator /*hint*/, value_type&& value)
   { return emplace_multi(mystl::move(value)); }
 
-  iterator insert_unique_use_hint(const_iterator hint, const value_type& value)
+  iterator insert_unique_use_hint(const_iterator /*hint*/, const value_type& value)
   { return insert_unique(value).first; }
-  iterator insert_unique_use_hint(const_iterator hint, value_type&& value)
+  iterator insert_unique_use_hint(const_iterator /*hint*/, value_type&& value)
   { return emplace_unique(mystl::move(value)); }
 
   template <class InputIter>
@@ -831,6 +833,7 @@ operator=(hashtable&& rhs) noexcept
 }
 
 // 就地构造元素，键值允许重复
+// 强异常安全保证
 template <class T, class Hash, class KeyEqual>
 template <class ...Args>
 typename hashtable<T, Hash, KeyEqual>::iterator
@@ -852,6 +855,7 @@ emplace_multi(Args&& ...args)
 }
 
 // 就地构造元素，键值允许重复
+// 强异常安全保证
 template <class T, class Hash, class KeyEqual>
 template <class ...Args>
 pair<typename hashtable<T, Hash, KeyEqual>::iterator, bool> 

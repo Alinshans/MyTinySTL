@@ -256,8 +256,8 @@ public:
   void      rehash(size_type count)                 { ht_.rehash(count); }
   void      reserve(size_type count)                { ht_.reserve(count); }
 
-  hasher    hash_fcn()               const          { return hash_; }
-  key_equal key_eq()                 const          { return equal_; }
+  hasher    hash_fcn()               const          { return ht_.hash_fcn(); }
+  key_equal key_eq()                 const          { return ht_.key_eq(); }
 
 public:
   friend bool operator==(const unordered_map& lhs, const unordered_map& rhs)
@@ -513,8 +513,8 @@ public:
   void      rehash(size_type count)                 { ht_.rehash(count); }
   void      reserve(size_type count)                { ht_.reserve(count); }
 
-  hasher    hash_fcn()               const          { return hash_; }
-  key_equal key_eq()                 const          { return equal_; }
+  hasher    hash_fcn()               const          { return ht_.hash_fcn(); }
+  key_equal key_eq()                 const          { return ht_.key_eq(); }
 
 public:
   friend bool operator==(const unordered_multimap& lhs, const unordered_multimap& rhs)
