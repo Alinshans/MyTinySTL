@@ -1460,7 +1460,7 @@ __create_node(Args&&... args)
   auto tmp = node_allocator::allocate(1);
   try
   {
-    data_allocator::construct(&tmp->value, mystl::forward<Args>(args)...);
+    data_allocator::construct(mystl::address_of(tmp->value), mystl::forward<Args>(args)...);
     tmp->left = nullptr;
     tmp->right = nullptr;
     tmp->parent = nullptr;
