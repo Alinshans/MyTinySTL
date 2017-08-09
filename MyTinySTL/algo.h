@@ -14,6 +14,7 @@
 #include "heap_algo.h"
 #include "iterator.h"
 #include "tempbuf.h"
+#include "functional.h"
 
 namespace mystl
 {
@@ -1592,6 +1593,99 @@ rotate_copy(ForwardIterator first, ForwardIterator middle,
             ForwardIterator last, OutputIterator result)
 {
   return mystl::copy(first, middle, mystl::copy(middle, last, result));
+}
+
+/*****************************************************************************************/
+// is_permutation
+// 判断[first1,last1)是否为[first2, last2]的排列组合
+/*****************************************************************************************/
+template <class ForwardIter1, class ForwardIter2, class BinaryPred>
+bool is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1,
+                        ForwardIter2 first2, ForwardIter2 last2,
+                        BinaryPred pred)
+{
+  constexpr bool is_ra_it = mystl::__is_random_access_iterator<ForwardIter1>::value
+    && mystl::__is_random_access_iterator<ForwardIter2>::value;
+  if (is_ra_it)
+  {
+    auto len1 = last1 - first1;
+    auto len2 = last2 - first2;
+    if (len1 != len2)
+      return false;
+  }
+
+  // 先找出相同的前缀段
+  for (; first1 != last1 && first2 != last2; ++first1, (void) ++first2)
+  {
+    if (!pred(*first1, *first2))
+      break;
+  }
+  if (is_ra_it)
+  {
+    if (first1 == last1)
+      return true;
+  }
+  else
+  {
+    auto len1 = mystl::distance(first1, last1);
+    auto len2 = mystl::distance(first2, last2);
+    if (len1 == 0 && len2 == 0)
+      return true;
+    if (len1 != len2)
+      return false;
+  }
+
+  // 判断剩余部分
+  for (auto i = first1; i != last1; ++i)
+  {
+    for (auto j = first1; j != i; ++j)
+      if (pred(*j, *i))
+        goto next_loop;  // 相同元素已经计算过了
+
+    // 计算 *i 在 [first2, last2) 的数目
+    auto c2 = 0;
+    for (auto j = first2; j != last2; ++j)
+    {
+      if (pred(*i, *j))
+        ++c2;
+    }
+    if (c2 == 0)
+      return false;
+
+    // 计算 *i 在 [first1, last1) 的数目
+    auto c1 = 1;
+    auto j = i;
+    for (++j; j != last1; ++j)
+    {
+      if (pred(*i, *j))
+        ++c1;
+    }
+    if (c1 != c2)
+      return false;
+  next_loop:
+    ;
+  }
+  return true;
+}
+
+template <class ForwardIter1, class ForwardIter2>
+bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
+                    ForwardIter2 first2, ForwardIter2 last2)
+{
+  typedef typename iterator_traits<ForwardIter1>::value_type v1;
+  typedef typename iterator_traits<ForwardIter2>::value_type v2;
+  static_assert(std::is_same<v1, v2>::value, 
+                "the type should be same in mystl::is_permutation");
+  return is_permutation_aux(first1, last1, first2, last2,
+                            mystl::equal_to<v1>());
+}
+
+template <class ForwardIter1, class ForwardIter2, class BinaryPred>
+bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
+                    ForwardIter2 first2, ForwardIter2 last2,
+                    BinaryPred pred)
+{
+  return is_permutation_aux(first1, last1, first2, last2, pred);
 }
 
 /*****************************************************************************************/
