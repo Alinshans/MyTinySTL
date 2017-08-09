@@ -233,36 +233,33 @@ public:
 public:
   friend bool operator==(const unordered_set& lhs, const unordered_set& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_unique(rhs.ht_);
   }
   friend bool operator!=(const unordered_set& lhs, const unordered_set& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_unique(rhs.ht_);
   }
 };
 
 // 重载比较操作符
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator==(const unordered_set<Key, Hash, KeyEqual>& lhs,
-           const unordered_set<Key, Hash, KeyEqual>& rhs)
+bool operator==(const unordered_set<Key, Hash, KeyEqual>& lhs,
+                const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator!=(const unordered_set<Key, Hash, KeyEqual>& lhs,
-           const unordered_set<Key, Hash, KeyEqual>& rhs)
+bool operator!=(const unordered_set<Key, Hash, KeyEqual>& lhs,
+                const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline void
-swap(unordered_set<Key, Hash, KeyEqual>& lhs,
-     unordered_set<Key, Hash, KeyEqual>& rhs)
+void swap(unordered_set<Key, Hash, KeyEqual>& lhs,
+          unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -493,36 +490,33 @@ public:
 public:
   friend bool operator==(const unordered_multiset& lhs, const unordered_multiset& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_multi(rhs.ht_);
   }
   friend bool operator!=(const unordered_multiset& lhs, const unordered_multiset& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_multi(rhs.ht_);
   }
 };
 
 // 重载比较操作符
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator==(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
-           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
+bool operator==(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+                const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator!=(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
-           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
+bool operator!=(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+                const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline void
-swap(unordered_multiset<Key, Hash, KeyEqual>& lhs,
-     unordered_multiset<Key, Hash, KeyEqual>& rhs)
+void swap(unordered_multiset<Key, Hash, KeyEqual>& lhs,
+          unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }
