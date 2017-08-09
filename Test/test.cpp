@@ -17,8 +17,6 @@ int main()
 
   std::cout.sync_with_stdio(false);
 
-  // Run all unit test and performance test.
-
   RUN_ALL_TESTS();
   algorithm_performance_test::algorithm_performance_test();
   vector_test::vector_test();
@@ -36,5 +34,5 @@ int main()
   unordered_set_test::unordered_set_test();
   unordered_set_test::unordered_multiset_test();
   string_test::string_test();
-
+  
 }

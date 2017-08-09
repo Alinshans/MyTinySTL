@@ -1460,7 +1460,7 @@ __create_node(Args&&... args)
   auto tmp = node_allocator::allocate(1);
   try
   {
-    data_allocator::construct(&tmp->value, mystl::forward<Args>(args)...);
+    data_allocator::construct(mystl::address_of(tmp->value), mystl::forward<Args>(args)...);
     tmp->left = nullptr;
     tmp->right = nullptr;
     tmp->parent = nullptr;
@@ -1647,25 +1647,17 @@ __insert_multi_use_hint(iterator hint, Val&& value)
   auto before = hint;
   --before;
   auto bnp = before.node;
-  if (np->left == nullptr &&
+  if (!key_comp_(tree_traits::get_key(value), tree_traits::get_key(bnp)) &&
       !key_comp_(tree_traits::get_key(np), tree_traits::get_key(value)))
-  { // value <= np
-    return __insert_value_at(np, mystl::forward<Val>(value), true);
-  }
-  else if (np->right == nullptr &&
-           !key_comp_(tree_traits::get_key(value), tree_traits::get_key(np)))
-  { // value >= np
-    return __insert_value_at(np, mystl::forward<Val>(value), false);
-  }
-  else if (bnp->left == nullptr &&
-           !key_comp_(tree_traits::get_key(bnp), tree_traits::get_key(value)))
-  { // value <= bnp
-    return __insert_value_at(bnp, mystl::forward<Val>(value), true);
-  }
-  else if (bnp->right == nullptr &&
-           !key_comp_(tree_traits::get_key(value), tree_traits::get_key(bnp)))
-  { // value >= bnp
-    return __insert_value_at(bnp, mystl::forward<Val>(value), false);
+  { // before <= value <= hint
+    if (bnp->right == nullptr)
+    {
+      return __insert_value_at(bnp, mystl::forward<Val>(value), false);
+    }
+    else if (np->left == nullptr)
+    {
+      return __insert_value_at(np, mystl::forward<Val>(value), true);
+    }
   }
   return insert_multi(tree_traits::get_value(value));
 }
@@ -1682,25 +1674,17 @@ __insert_unique_use_hint(iterator hint, Val&& value)
   auto before = hint;
   --before;
   auto bnp = before.node;
-  if (np->left == nullptr &&
+  if (key_comp_(tree_traits::get_key(bnp), tree_traits::get_key(value)) &&
       key_comp_(tree_traits::get_key(value), tree_traits::get_key(np)))
-  { // value < np
-    return __insert_value_at(np, mystl::forward<Val>(value), true);
-  }
-  else if (np->right == nullptr &&
-           key_comp_(tree_traits::get_key(np), tree_traits::get_key(value)))
-  { // value > np
-    return __insert_value_at(np, mystl::forward<Val>(value), false);
-  }
-  else if (bnp->left == nullptr &&
-           key_comp_(tree_traits::get_key(value), tree_traits::get_key(bnp)))
-  { // value < bnp
-    return __insert_value_at(bnp, mystl::forward<Val>(value), true);
-  }
-  else if (bnp->right == nullptr &&
-           key_comp_(tree_traits::get_key(bnp), tree_traits::get_key(value)))
-  { // value > bnp
-    return __insert_value_at(bnp, mystl::forward<Val>(value), false);
+  { // before < value < hint
+    if (bnp->right == nullptr)
+    {
+      return __insert_value_at(bnp, mystl::forward<Val>(value), false);
+    }
+    else if (np->left == nullptr)
+    {
+      return __insert_value_at(np, mystl::forward<Val>(value), true);
+    }
   }
   return insert_unique(tree_traits::get_value(value)).first;
 }
