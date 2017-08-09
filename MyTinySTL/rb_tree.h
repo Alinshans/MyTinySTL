@@ -40,8 +40,6 @@ struct __rb_tree_value_traits_imp
   typedef T mapped_type;
   typedef T value_type;
 
-  static constexpr bool __is_map = false;
-
   template <class Ty>
   static const key_type& get_key(const Ty& value)
   {
@@ -62,8 +60,6 @@ struct __rb_tree_value_traits_imp<T, true>
   typedef typename T::second_type                               mapped_type;
   typedef T                                                     value_type;
 
-  static constexpr bool __is_map = true;
-
   template <class Ty>
   static const key_type& get_key(const Ty& value)
   {
@@ -80,9 +76,9 @@ struct __rb_tree_value_traits_imp<T, true>
 template <class T>
 struct __rb_tree_value_traits
 {
-  static constexpr bool __is_map = mystl::__is_pair<T>::value;
+  static constexpr bool is_map = mystl::is_pair<T>::value;
 
-  typedef __rb_tree_value_traits_imp<T, __is_map> value_traits_type;
+  typedef __rb_tree_value_traits_imp<T, is_map> value_traits_type;
 
   typedef typename value_traits_type::key_type    key_type;
   typedef typename value_traits_type::mapped_type mapped_type;

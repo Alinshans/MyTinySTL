@@ -16,7 +16,7 @@ namespace mystl
 // 模板类 basic_string
 // 参数一代表字符类型，参数二代表萃取字符类型的方式，缺省使用 mystl 的 __char_type
 // 参数三代表空间配置器，缺省使用 mystl 的 alloc
-template<class CharType, class CharTraits = mystl::__char_type<CharType>,
+template<class CharType, class CharTraits = mystl::char_traits<CharType>,
   class Alloc = mystl::alloc>
   class basic_string
 {

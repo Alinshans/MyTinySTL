@@ -32,21 +32,21 @@ template <class Category, class T, class Distance = ptrdiff_t,
 // iterator traits
 
 template <class T>
-struct __has_iterator_cat
+struct has_iterator_cat
 {
 private:
-  struct __two { char a; char b; };
-  template <class U> static __two test(...);
+  struct two { char a; char b; };
+  template <class U> static two test(...);
   template <class U> static char test(typename U::iterator_category* = 0);
 public:
   static const bool value = sizeof(test<T>(0)) == sizeof(char);
 };
 
 template <class Iterator, bool>
-struct __iterator_traits_impl {};
+struct iterator_traits_impl {};
 
 template <class Iterator>
-struct __iterator_traits_impl<Iterator, true>
+struct iterator_traits_impl<Iterator, true>
 {
   typedef typename Iterator::iterator_category iterator_category;
   typedef typename Iterator::value_type        value_type;
@@ -56,11 +56,11 @@ struct __iterator_traits_impl<Iterator, true>
 };
 
 template <class Iterator, bool>
-struct __iterator_traits {};
+struct iterator_traits_helper {};
 
 template <class Iterator>
-struct __iterator_traits<Iterator, true>
-  : public __iterator_traits_impl<Iterator,
+struct iterator_traits_helper<Iterator, true>
+  : public iterator_traits_impl<Iterator,
   std::is_convertible<typename Iterator::iterator_category, input_iterator_tag>::value ||
   std::is_convertible<typename Iterator::iterator_category, output_iterator_tag>::value>
 {
@@ -69,7 +69,7 @@ struct __iterator_traits<Iterator, true>
 // 萃取迭代器的特性
 template <class Iterator>
 struct iterator_traits 
-  : public __iterator_traits<Iterator, __has_iterator_cat<Iterator>::value> {};
+  : public iterator_traits_helper<Iterator, has_iterator_cat<Iterator>::value> {};
 
 // 针对原生指针的偏特化版本
 template <class T>
@@ -92,39 +92,38 @@ struct iterator_traits<const T*>
   typedef ptrdiff_t                            difference_type;
 };
 
-template <class T, class U, bool = __has_iterator_cat<iterator_traits<T>>::value>
-struct __has_iterator_cat_of
-  : public __bool_constant<std::is_convertible<
+template <class T, class U, bool = has_iterator_cat<iterator_traits<T>>::value>
+struct has_iterator_cat_of
+  : public m_bool_constant<std::is_convertible<
   typename iterator_traits<T>::iterator_category, U>::value>
 {
 };
 
 // 萃取某种迭代器
 template <class T, class U>
-struct __has_iterator_cat_of<T, U, false> : public __false_type {};
+struct has_iterator_cat_of<T, U, false> : public m_false_type {};
 
 template <class Iter>
-struct __is_input_iterator : public __has_iterator_cat_of<Iter, input_iterator_tag> {};
+struct is_input_iterator : public has_iterator_cat_of<Iter, input_iterator_tag> {};
 
 template <class Iter>
-struct __is_output_iterator : public __has_iterator_cat_of<Iter, output_iterator_tag> {};
+struct is_output_iterator : public has_iterator_cat_of<Iter, output_iterator_tag> {};
 
 template <class Iter>
-struct __is_forward_iterator : public __has_iterator_cat_of<Iter, forward_iterator_tag> {};
+struct is_forward_iterator : public has_iterator_cat_of<Iter, forward_iterator_tag> {};
 
 template <class Iter>
-struct __is_bidirectional_iterator : public __has_iterator_cat_of<Iter, bidirectional_iterator_tag> {};
+struct is_bidirectional_iterator : public has_iterator_cat_of<Iter, bidirectional_iterator_tag> {};
 
 template <class Iter>
-struct __is_random_access_iterator : public __has_iterator_cat_of<Iter, random_access_iterator_tag> {};
+struct is_random_access_iterator : public has_iterator_cat_of<Iter, random_access_iterator_tag> {};
 
 template <class Iterator>
-struct __is_iterator :
-  public __bool_constant<__is_input_iterator<Iterator>::value ||
-  __is_output_iterator<Iterator>::value>
+struct is_iterator :
+  public m_bool_constant<is_input_iterator<Iterator>::value ||
+    is_output_iterator<Iterator>::value>
 {
 };
-
 
 // 萃取某个迭代器的 category
 template <class Iterator>

@@ -241,7 +241,7 @@ public:
   { __fill_initialize(n, value); }
 
   template <class IIter, typename std::enable_if<
-    mystl::__is_input_iterator<IIter>::value, int>::type = 0>
+    mystl::is_input_iterator<IIter>::value, int>::type = 0>
   deque(IIter first, IIter last)
   { __range_initialize(first, last, iterator_category(first)); }
 
@@ -378,7 +378,7 @@ public:
   { __fill_assign(n, value); }
 
   template <class IIter, typename std::enable_if<
-    mystl::__is_input_iterator<IIter>::value, int>::type = 0>
+    mystl::is_input_iterator<IIter>::value, int>::type = 0>
   void     assign(IIter first, IIter last)
   { __copy_assign(first, last, iterator_category(first)); }
 
@@ -413,7 +413,7 @@ public:
   iterator insert(iterator position, value_type&& value);
   void     insert(iterator position, size_type n, const value_type& value);
   template <class IIter, typename std::enable_if<
-    mystl::__is_input_iterator<IIter>::value, int>::type = 0>
+    mystl::is_input_iterator<IIter>::value, int>::type = 0>
   void     insert(iterator position, IIter first, IIter last)
   { __insert_dispatch(position, first, last, iterator_category(first)); }
 
