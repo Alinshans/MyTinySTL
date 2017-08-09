@@ -200,11 +200,11 @@ public:
   { return ht_.cbegin(n); }
 
   local_iterator       end(size_type n)          noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
@@ -233,36 +233,33 @@ public:
 public:
   friend bool operator==(const unordered_set& lhs, const unordered_set& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_unique(rhs.ht_);
   }
   friend bool operator!=(const unordered_set& lhs, const unordered_set& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_unique(rhs.ht_);
   }
 };
 
 // 重载比较操作符
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator==(const unordered_set<Key, Hash, KeyEqual>& lhs,
-           const unordered_set<Key, Hash, KeyEqual>& rhs)
+bool operator==(const unordered_set<Key, Hash, KeyEqual>& lhs,
+                const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator!=(const unordered_set<Key, Hash, KeyEqual>& lhs,
-           const unordered_set<Key, Hash, KeyEqual>& rhs)
+bool operator!=(const unordered_set<Key, Hash, KeyEqual>& lhs,
+                const unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline void
-swap(unordered_set<Key, Hash, KeyEqual>& lhs,
-     unordered_set<Key, Hash, KeyEqual>& rhs)
+void swap(unordered_set<Key, Hash, KeyEqual>& lhs,
+          unordered_set<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }
@@ -453,19 +450,19 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
+  local_iterator       begin(size_type n)        noexcept
   { return ht_.begin(n); }
   const_local_iterator begin(size_type n)  const noexcept
   { return ht_.begin(n); }
   const_local_iterator cbegin(size_type n) const noexcept
   { return ht_.cbegin(n); }
 
-  local_iterator end(size_type n) noexcept
-  { return nullptr; }
+  local_iterator       end(size_type n)          noexcept
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
@@ -493,36 +490,33 @@ public:
 public:
   friend bool operator==(const unordered_multiset& lhs, const unordered_multiset& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_multi(rhs.ht_);
   }
   friend bool operator!=(const unordered_multiset& lhs, const unordered_multiset& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_multi(rhs.ht_);
   }
 };
 
 // 重载比较操作符
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator==(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
-           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
+bool operator==(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+                const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs == rhs;
 }
 
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline bool
-operator!=(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
-           const unordered_multiset<Key, Hash, KeyEqual>& rhs)
+bool operator!=(const unordered_multiset<Key, Hash, KeyEqual>& lhs,
+                const unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   return lhs != rhs;
 }
 
 // 重载 mystl 的 swap
 template <class Key, class Hash, class KeyEqual, class Alloc>
-inline void
-swap(unordered_multiset<Key, Hash, KeyEqual>& lhs,
-     unordered_multiset<Key, Hash, KeyEqual>& rhs)
+void swap(unordered_multiset<Key, Hash, KeyEqual>& lhs,
+          unordered_multiset<Key, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }

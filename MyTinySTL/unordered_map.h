@@ -230,11 +230,11 @@ public:
   { return ht_.cbegin(n); }
 
   local_iterator       end(size_type n)          noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
@@ -262,11 +262,11 @@ public:
 public:
   friend bool operator==(const unordered_map& lhs, const unordered_map& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_unique(rhs.ht_);
   }
   friend bool operator!=(const unordered_map& lhs, const unordered_map& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_unique(rhs.ht_);
   }
 };
 
@@ -479,19 +479,19 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
+  local_iterator       begin(size_type n)        noexcept
   { return ht_.begin(n); }
   const_local_iterator begin(size_type n)  const noexcept
   { return ht_.begin(n); }
   const_local_iterator cbegin(size_type n) const noexcept
   { return ht_.cbegin(n); }
 
-  local_iterator end(size_type n) noexcept
-  { return nullptr; }
+  local_iterator       end(size_type n)          noexcept
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
@@ -519,11 +519,11 @@ public:
 public:
   friend bool operator==(const unordered_multimap& lhs, const unordered_multimap& rhs)
   {
-    return lhs.ht_ == rhs.ht_;
+    return lhs.ht_.equal_range_multi(rhs.ht_);
   }
   friend bool operator!=(const unordered_multimap& lhs, const unordered_multimap& rhs)
   {
-    return lhs.ht_ != rhs.ht_;
+    return !lhs.ht_.equal_range_multi(rhs.ht_);
   }
 };
 
@@ -544,9 +544,8 @@ bool operator!=(const unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
 
 // 重载 mystl 的 swap
 template <class Key, class T, class Hash, class KeyEqual>
-void
-swap(unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
-     unordered_multimap<Key, T, Hash, KeyEqual>& rhs)
+void swap(unordered_multimap<Key, T, Hash, KeyEqual>& lhs,
+          unordered_multimap<Key, T, Hash, KeyEqual>& rhs)
 {
   lhs.swap(rhs);
 }

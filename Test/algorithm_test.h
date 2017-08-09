@@ -48,7 +48,8 @@ bool cmp(const int& a, const int& b) { return b < a; }
 int  unary_op(const int& x) { return x + 1; }
 int  binary_op(const int& x, const int& y) { return x + y; }
 
-// 以下为 79 个函数的简单测试
+// 以下为 80 个函数的简单测试
+
 // algobase test:
 TEST(copy_test)
 {
@@ -711,6 +712,22 @@ TEST(min_elememt_test)
                 mystl::max_element(arr1, arr1 + 9));
   EXPECT_PTR_EQ(std::max_element(arr2, arr2 + 6, std::less<double>()),
                 mystl::max_element(arr2, arr2 + 6, std::less<double>()));
+}
+
+TEST(is_permutation_test)
+{
+  int arr1[] = { 1,2,3,4,5 };
+  int arr2[] = { 3,4,5,2,1 };
+  int arr3[] = { 1,2,3,4,6 };
+  // 因为提供的是 C++11 的支持，std::is_permutation 可能没有 C++14 的接口
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr2),
+            mystl::is_permutation(arr1, arr1 + 5, arr2, arr2 + 5));
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr3),
+            mystl::is_permutation(arr1, arr1 + 5, arr3, arr3 + 5));
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr2, std::equal_to<int>()),
+            mystl::is_permutation(arr1, arr1 + 5, arr2, arr2 + 5, std::equal_to<int>()));
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr3, std::equal_to<int>()),
+            mystl::is_permutation(arr1, arr1 + 5, arr3, arr3 + 5, std::equal_to<int>()));
 }
 
 TEST(next_permutation_test)

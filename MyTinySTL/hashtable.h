@@ -687,7 +687,7 @@ public:
 
   void      clear();
 
-  void      swap(hashtable& rhs);
+  void      swap(hashtable& rhs) noexcept;
 
   // 查找相关操作
 
@@ -704,19 +704,37 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
-  { return buckets_[n]; }
+  local_iterator       begin(size_type n)        noexcept
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
   const_local_iterator begin(size_type n)  const noexcept
-  { return buckets_[n]; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
   const_local_iterator cbegin(size_type n) const noexcept
-  { return buckets_[n]; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
 
-  local_iterator end(size_type n) noexcept
-  { return nullptr; }
+  local_iterator       end(size_type n)          noexcept
+  { 
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  {
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
 
   size_type bucket_count()                 const noexcept
   { return bucket_size_; }
@@ -784,6 +802,10 @@ private:
   void replace_bucket(size_type bucket_count);
   void erase_bucket(size_type n, node_ptr first, node_ptr last);
   void erase_bucket(size_type n, node_ptr last);
+
+  // comparision
+  bool equal_to_multi(const hashtable& other);
+  bool equal_to_unique(const hashtable& other);
 };
 
 /*****************************************************************************************/
@@ -1245,7 +1267,7 @@ equal_range_unique(const key_type& key) const
 // 交换 hashtable
 template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
-swap(hashtable& rhs)
+swap(hashtable& rhs) noexcept
 {
   if (this != &rhs)
   {
@@ -1267,8 +1289,16 @@ void hashtable<T, Hash, KeyEqual>::
 init(size_type n)
 {
   const auto bucket_nums = next_size(n);
-  buckets_.reserve(bucket_nums);
-  buckets_.assign(bucket_nums, nullptr);
+  try
+  {
+    buckets_.reserve(bucket_nums);
+    buckets_.assign(bucket_nums, nullptr);
+  }
+  catch (...)
+  {
+    size_ = 0;
+    throw;
+  }
   bucket_size_ = buckets_.size();
 }
 
@@ -1277,16 +1307,15 @@ template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
 copy_init(const hashtable& ht)
 {
-  buckets_.clear();
   buckets_.reserve(ht.bucket_size_);
-  buckets_.insert(buckets_.end(), ht.bucket_size_, nullptr);
+  buckets_.assign(ht.bucket_size_, nullptr);
   try
   {
     for (size_type i = 0; i < ht.bucket_size_; ++i)
     {
       node_ptr cur = ht.buckets_[i];
       if (cur)
-      {  // 如果某 bucket 存在链表
+      { // 如果某 bucket 存在链表
         auto copy = create_node(cur->value);
         buckets_[i] = copy;
         for (auto next = cur->next; next; cur = next, next = cur->next)
@@ -1475,26 +1504,32 @@ void hashtable<T, Hash, KeyEqual>::
 replace_bucket(size_type bucket_count)
 {
   bucket_type bucket(bucket_count);
-  size_type old_size = bucket_size_;
-  for (size_type i = 0; i < old_size; ++i)
+  if (size_ != 0)
   {
-    auto first = buckets_[i];
-    if (first)
+    for (size_type i = 0; i < bucket_size_; ++i)
     {
-      const auto n = hash(value_traits::get_key(first->value), bucket_count);
-      auto f = bucket[n];
-      auto tmp = create_node(first->value);
-      for (auto cur = f; cur; cur = cur->next)
+      for (auto first = buckets_[i]; first; first = first->next)
       {
-        if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(first->value)))
+        auto tmp = create_node(first->value);
+        const auto n = hash(value_traits::get_key(first->value), bucket_count);
+        auto f = bucket[n];
+        bool isInserted = false;
+        for (auto cur = f; cur; cur = cur->next)
         {
-          tmp->next = cur->next;
-          cur->next = tmp;
-          continue;
+          if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(first->value)))
+          {
+            tmp->next = cur->next;
+            cur->next = tmp;
+            isInserted = true;
+            break;
+          }
+        }
+        if (!isInserted)
+        {
+          tmp->next = f;
+          bucket[n] = tmp;
         }
       }
-      tmp->next = f;
-      bucket[n] = tmp;
     }
   }
   buckets_.swap(bucket);
@@ -1543,32 +1578,36 @@ erase_bucket(size_type n, node_ptr last)
   buckets_[n] = last;
 }
 
-// 重载比较操作符
+// equal_to 函数
 template <class T, class Hash, class KeyEqual>
-bool operator==(const hashtable<T, Hash, KeyEqual>& lhs,
-                const hashtable<T, Hash, KeyEqual>& rhs)
+bool hashtable<T, Hash, KeyEqual>::equal_to_multi(const hashtable& other)
 {
-  if (lhs.bucket_size_ != rhs.bucket_size_)
+  if (size_ != other.size_)
     return false;
-  for (auto n = 0; n < lhs.bucket_size_; ++n)
+  for (auto f = begin(), l = end(); f != l;)
   {
-    auto cur1 = lhs.buckets_[n];
-    auto cur2 = rhs.buckets_[n];
-    for (; cur1 && cur2 && cur1->value == cur2->value;
-         cur1 = cur1->next, cur2 = cur2->next)
-    {
-    }
-    if (cur1 || cur2)  // cur1 或 cur2 还有元素
+    auto p1 = equal_range_multi(value_traits::get_key(*f));
+    auto p2 = other.equal_range_multi(value_traits::get_key(*f));
+    if (mystl::distance(p1.first, p1.last) != mystl::distance(p2.first, p2.last) ||
+        !mystl::is_permutation(p1.first, p2.last, p2.first, p2.last))
       return false;
+    f = p1.last;
   }
   return true;
 }
 
 template <class T, class Hash, class KeyEqual>
-bool operator!=(const hashtable<T, Hash, KeyEqual>& lhs,
-                const hashtable<T, Hash, KeyEqual>& rhs)
+bool hashtable<T, Hash, KeyEqual>::equal_to_unique(const hashtable& other)
 {
-  return !(lhs == rhs);
+  if (size_ != other.size_)
+    return false;
+  for (auto f = begin(), l = end(); f != l; ++f)
+  {
+    auto res = other.find(value_traits::get_key(*f));
+    if (res.node == nullptr || *res != *f)
+      return false;
+  }
+  return true;
 }
 
 // 重载 mystl 的 swap
