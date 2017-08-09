@@ -1638,32 +1638,39 @@ bool is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1,
   // 判断剩余部分
   for (auto i = first1; i != last1; ++i)
   {
+    bool is_repeated = false;
     for (auto j = first1; j != i; ++j)
+    {
       if (pred(*j, *i))
-        goto next_loop;  // 相同元素已经计算过了
-
-    // 计算 *i 在 [first2, last2) 的数目
-    auto c2 = 0;
-    for (auto j = first2; j != last2; ++j)
-    {
-      if (pred(*i, *j))
-        ++c2;
+      {
+        is_repeated = true;
+        break;
+      }
     }
-    if (c2 == 0)
-      return false;
 
-    // 计算 *i 在 [first1, last1) 的数目
-    auto c1 = 1;
-    auto j = i;
-    for (++j; j != last1; ++j)
+    if (!is_repeated)
     {
-      if (pred(*i, *j))
-        ++c1;
+      // 计算 *i 在 [first2, last2) 的数目
+      auto c2 = 0;
+      for (auto j = first2; j != last2; ++j)
+      {
+        if (pred(*i, *j))
+          ++c2;
+      }
+      if (c2 == 0)
+        return false;
+
+      // 计算 *i 在 [first1, last1) 的数目
+      auto c1 = 1;
+      auto j = i;
+      for (++j; j != last1; ++j)
+      {
+        if (pred(*i, *j))
+          ++c1;
+      }
+      if (c1 != c2)
+        return false;
     }
-    if (c1 != c2)
-      return false;
-  next_loop:
-    ;
   }
   return true;
 }

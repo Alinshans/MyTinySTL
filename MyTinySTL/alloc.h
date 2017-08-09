@@ -6,6 +6,7 @@
 #include <new>
 
 #include <cstddef>
+#include <cstdio>
 
 namespace mystl
 {

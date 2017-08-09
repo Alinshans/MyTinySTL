@@ -704,19 +704,37 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
-  { return buckets_[n]; }
+  local_iterator       begin(size_type n)        noexcept
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
   const_local_iterator begin(size_type n)  const noexcept
-  { return buckets_[n]; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
   const_local_iterator cbegin(size_type n) const noexcept
-  { return buckets_[n]; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return buckets_[n];
+  }
 
-  local_iterator end(size_type n) noexcept
-  { return nullptr; }
+  local_iterator       end(size_type n)          noexcept
+  { 
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { 
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  {
+    MYSTL_DEBUG(n < size_);
+    return nullptr; 
+  }
 
   size_type bucket_count()                 const noexcept
   { return bucket_size_; }
@@ -1567,14 +1585,14 @@ bool hashtable<T, Hash, KeyEqual>::equal_to_multi(const hashtable& other)
 {
   if (size_ != other.size_)
     return false;
-  for (auto begin = begin(), end = end(); begin != end;)
+  for (auto f = begin(), l = end(); f != l;)
   {
-    auto p1 = equal_range_multi(value_traits::get_key(*begin));
-    auto p2 = other.equal_range_multi(value_traits::get_key(*begin));
+    auto p1 = equal_range_multi(value_traits::get_key(*f));
+    auto p2 = other.equal_range_multi(value_traits::get_key(*f));
     if (mystl::distance(p1.first, p1.last) != mystl::distance(p2.first, p2.last) ||
         !mystl::is_permutation(p1.first, p2.last, p2.first, p2.last))
       return false;
-    begin = p1.last;
+    f = p1.last;
   }
   return true;
 }
@@ -1584,10 +1602,10 @@ bool hashtable<T, Hash, KeyEqual>::equal_to_unique(const hashtable& other)
 {
   if (size_ != other.size_)
     return false;
-  for (auto begin = begin(), end = end(); begin != end; ++begin)
+  for (auto f = begin(), l = end(); f != l; ++f)
   {
-    auto res = other.find(value_traits::get_key(*begin));
-    if (res.node == nullptr || *res != *begin)
+    auto res = other.find(value_traits::get_key(*f));
+    if (res.node == nullptr || *res != *f)
       return false;
   }
   return true;

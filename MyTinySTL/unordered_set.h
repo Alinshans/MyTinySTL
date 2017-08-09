@@ -200,11 +200,11 @@ public:
   { return ht_.cbegin(n); }
 
   local_iterator       end(size_type n)          noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
@@ -450,19 +450,19 @@ public:
 
   // bucket interface
 
-  local_iterator begin(size_type n)              noexcept
+  local_iterator       begin(size_type n)        noexcept
   { return ht_.begin(n); }
   const_local_iterator begin(size_type n)  const noexcept
   { return ht_.begin(n); }
   const_local_iterator cbegin(size_type n) const noexcept
   { return ht_.cbegin(n); }
 
-  local_iterator end(size_type n) noexcept
-  { return nullptr; }
+  local_iterator       end(size_type n)          noexcept
+  { return ht_.end(n); }
   const_local_iterator end(size_type n)    const noexcept
-  { return nullptr; }
+  { return ht_.end(n); }
   const_local_iterator cend(size_type n)   const noexcept
-  { return nullptr; }
+  { return ht_.cend(n); }
 
   size_type bucket_count()                 const noexcept
   { return ht_.bucket_count(); }
