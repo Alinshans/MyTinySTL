@@ -1597,7 +1597,7 @@ rotate_copy(ForwardIterator first, ForwardIterator middle,
 
 /*****************************************************************************************/
 // is_permutation
-// 判断[first1,last1)是否为[first2, last2]的排列组合
+// 判断[first1,last1)是否为[first2, last2)的排列组合
 /*****************************************************************************************/
 template <class ForwardIter1, class ForwardIter2, class BinaryPred>
 bool is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1,
@@ -1675,6 +1675,14 @@ bool is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1,
   return true;
 }
 
+template <class ForwardIter1, class ForwardIter2, class BinaryPred>
+bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
+                    ForwardIter2 first2, ForwardIter2 last2,
+                    BinaryPred pred)
+{
+  return is_permutation_aux(first1, last1, first2, last2, pred);
+}
+
 template <class ForwardIter1, class ForwardIter2>
 bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
                     ForwardIter2 first2, ForwardIter2 last2)
@@ -1685,14 +1693,6 @@ bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
                 "the type should be same in mystl::is_permutation");
   return is_permutation_aux(first1, last1, first2, last2,
                             mystl::equal_to<v1>());
-}
-
-template <class ForwardIter1, class ForwardIter2, class BinaryPred>
-bool is_permutation(ForwardIter1 first1, ForwardIter1 last1,
-                    ForwardIter2 first2, ForwardIter2 last2,
-                    BinaryPred pred)
-{
-  return is_permutation_aux(first1, last1, first2, last2, pred);
 }
 
 /*****************************************************************************************/

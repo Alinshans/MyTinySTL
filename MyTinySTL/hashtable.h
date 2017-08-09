@@ -1508,7 +1508,6 @@ replace_bucket(size_type bucket_count)
   {
     for (size_type i = 0; i < bucket_size_; ++i)
     {
-      auto first = buckets_[i];
       for (auto first = buckets_[i]; first; first = first->next)
       {
         auto tmp = create_node(first->value);
