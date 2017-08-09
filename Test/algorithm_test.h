@@ -724,10 +724,10 @@ TEST(is_permutation_test)
             mystl::is_permutation(arr1, arr1 + 5, arr2, arr2 + 5));
   EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr3),
             mystl::is_permutation(arr1, arr1 + 5, arr3, arr3 + 5));
-  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr2, std::equal_to<>()),
-            mystl::is_permutation(arr1, arr1 + 5, arr2, arr2 + 5, std::equal_to<>()));
-  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr3, std::equal_to<>()),
-            mystl::is_permutation(arr1, arr1 + 5, arr3, arr3 + 5, std::equal_to<>()));
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr2, std::equal_to<int>()),
+            mystl::is_permutation(arr1, arr1 + 5, arr2, arr2 + 5, std::equal_to<int>()));
+  EXPECT_EQ(std::is_permutation(arr1, arr1 + 5, arr3, std::equal_to<int>()),
+            mystl::is_permutation(arr1, arr1 + 5, arr3, arr3 + 5, std::equal_to<int>()));
 }
 
 TEST(next_permutation_test)
