@@ -187,7 +187,6 @@
     <ClInclude Include="set_algo.h" />
     <ClInclude Include="stack.h" />
     <ClInclude Include="astring.h" />
-    <ClInclude Include="tempbuf.h" />
     <ClInclude Include="type_traits.h" />
     <ClInclude Include="uninitialized.h" />
     <ClInclude Include="util.h" />

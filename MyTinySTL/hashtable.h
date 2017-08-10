@@ -77,9 +77,9 @@ struct ht_value_traits_imp<T, true>
 template <class T>
 struct ht_value_traits
 {
-  static constexpr bool __is_map = mystl::__is_pair<T>::value;
+  static constexpr bool is_map = mystl::is_pair<T>::value;
 
-  typedef ht_value_traits_imp<T, __is_map> value_traits_type;
+  typedef ht_value_traits_imp<T, is_map> value_traits_type;
 
   typedef typename value_traits_type::key_type    key_type;
   typedef typename value_traits_type::mapped_type mapped_type;
@@ -563,7 +563,7 @@ public:
   }
 
   template <class Iter, typename std::enable_if<
-    mystl::__is_input_iterator<Iter>::value, int>::type = 0>
+    mystl::is_input_iterator<Iter>::value, int>::type = 0>
     hashtable(Iter first, Iter last,
               size_type bucket_count,
               const Hash& hash = Hash(),

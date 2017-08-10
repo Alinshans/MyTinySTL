@@ -10,6 +10,11 @@
 #include "type_traits.h"
 #include "iterator.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4100)  // unused parameter
+#endif // _MSC_VER
+
 namespace mystl
 {
 
@@ -59,5 +64,10 @@ void destroy(ForwardIter first, ForwardIter last)
 }
 
 } // namespace mystl
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
 #endif // !MYTINYSTL_CONSTRUCT_H_
 

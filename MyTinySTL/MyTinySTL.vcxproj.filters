@@ -63,9 +63,6 @@
     <ClInclude Include="memory.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="tempbuf.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="list.h">
       <Filter>include</Filter>
     </ClInclude>

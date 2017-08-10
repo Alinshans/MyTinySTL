@@ -11,9 +11,8 @@
 #include <ctime>
 
 #include "algobase.h"
+#include "memory.h"
 #include "heap_algo.h"
-#include "iterator.h"
-#include "tempbuf.h"
 #include "functional.h"
 
 namespace mystl
@@ -1604,8 +1603,8 @@ bool is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1,
                         ForwardIter2 first2, ForwardIter2 last2,
                         BinaryPred pred)
 {
-  constexpr bool is_ra_it = mystl::__is_random_access_iterator<ForwardIter1>::value
-    && mystl::__is_random_access_iterator<ForwardIter2>::value;
+  constexpr bool is_ra_it = mystl::is_random_access_iterator<ForwardIter1>::value
+    && mystl::is_random_access_iterator<ForwardIter2>::value;
   if (is_ra_it)
   {
     auto len1 = last1 - first1;
