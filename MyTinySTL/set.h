@@ -2,18 +2,16 @@
 #define MYTINYSTL_SET_H_
 
 // 这个头文件包含两个模板类 set 和 multiset
-// set      : 集合，键值即实值，键值不允许重复，集合内元素会自动排序
-// multiset : 键值允许重复的 set
+// set      : 集合，键值即实值，集合内元素会自动排序，键值不允许重复
+// multiset : 集合，键值即实值，集合内元素会自动排序，键值允许重复
 
 #include "rb_tree.h"
-#include "util.h"
 
 namespace mystl
 {
 
-// 模板类 set
+// 模板类 set，键值不允许重复
 // 参数一代表键值类型，参数二代表键值比较方式，缺省使用 mystl::less 
-// 键值不允许重复，元素会根据键值比较方式自动排序
 template <class Key, class Compare = mystl::less<Key>>
 class set
 {
@@ -24,24 +22,24 @@ public:
   typedef Compare    value_compare;
 
 private:
-  // 以 mystl::_rb_tree 作为底层机制
-  typedef mystl::_rb_tree<value_type, key_compare>  base_type;
+  // 以 mystl::rb_tree 作为底层机制
+  typedef mystl::rb_tree<value_type, key_compare>  base_type;
   base_type tree_;
 
 public:
   // 使用 rb_tree 定义的型别
-  typedef typename base_type::node_type                 node_type;
-  typedef typename base_type::const_pointer             pointer;
-  typedef typename base_type::const_pointer             const_pointer;
-  typedef typename base_type::const_reference           reference;
-  typedef typename base_type::const_reference           const_reference;
-  typedef typename base_type::const_iterator            iterator;
-  typedef typename base_type::const_iterator            const_iterator;
-  typedef typename base_type::const_reverse_iterator    reverse_iterator;
-  typedef typename base_type::const_reverse_iterator    const_reverse_iterator;
-  typedef typename base_type::size_type                 size_type;
-  typedef typename base_type::difference_type           difference_type;
-  typedef typename base_type::allocator_type            allocator_type;
+  typedef typename base_type::node_type              node_type;
+  typedef typename base_type::const_pointer          pointer;
+  typedef typename base_type::const_pointer          const_pointer;
+  typedef typename base_type::const_reference        reference;
+  typedef typename base_type::const_reference        const_reference;
+  typedef typename base_type::const_iterator         iterator;
+  typedef typename base_type::const_iterator         const_iterator;
+  typedef typename base_type::const_reverse_iterator reverse_iterator;
+  typedef typename base_type::const_reverse_iterator const_reverse_iterator;
+  typedef typename base_type::size_type              size_type;
+  typedef typename base_type::difference_type        difference_type;
+  typedef typename base_type::allocator_type         allocator_type;
 
 public:
   // 构造、复制、移动函数
@@ -49,14 +47,20 @@ public:
 
   template <class InputIterator>
   set(InputIterator first, InputIterator last) 
-    :tree_() { tree_.insert_unique(first, last); }
+    :tree_() 
+  { tree_.insert_unique(first, last); }
   set(std::initializer_list<value_type> ilist)
-    :tree_() { tree_.insert_unique(ilist.begin(), ilist.end()); }
+    :tree_()
+  { tree_.insert_unique(ilist.begin(), ilist.end()); }
 
   set(const set& rhs) 
-    :tree_(rhs.tree_) {}
-  set(set&& rhs) 
-    :tree_(mystl::move(rhs.tree_)) {}
+    :tree_(rhs.tree_)
+  {
+  }
+  set(set&& rhs) noexcept
+    :tree_(mystl::move(rhs.tree_))
+  {
+  }
 
   set& operator=(const set& rhs)
   {
@@ -180,7 +184,8 @@ public:
     equal_range(const key_type& key) const
   { return tree_.equal_range_unique(key); }
 
-  void swap(set& rhs) { tree_.swap(rhs.tree_); }
+  void swap(set& rhs) noexcept
+  { tree_.swap(rhs.tree_); }
 
 public:
   friend bool operator==(const set& lhs, const set& rhs) { return lhs.tree_ == rhs.tree_; }
@@ -226,16 +231,15 @@ bool operator>=(const set<Key, Compare>& lhs, const set<Key, Compare>& rhs)
 
 // 重载 mystl 的 swap
 template <class Key, class Compare>
-void swap(set<Key, Compare>& lhs, set<Key, Compare>& rhs)
+void swap(set<Key, Compare>& lhs, set<Key, Compare>& rhs) noexcept
 {
   lhs.swap(rhs);
 }
 
 /*****************************************************************************************/
 
-// 模板类 multiset
+// 模板类 multiset，键值允许重复
 // 参数一代表键值类型，参数二代表键值比较方式，缺省使用 mystl::less 
-// 键值允许重复，元素会根据键值比较方式自动排序
 template <class Key, class Compare = mystl::less<Key>>
 class multiset
 {
@@ -246,24 +250,24 @@ public:
   typedef Compare    value_compare;
 
 private:
-  // 以 mystl::_rb_tree 作为底层机制
-  typedef mystl::_rb_tree<value_type, key_compare>  base_type;
+  // 以 mystl::rb_tree 作为底层机制
+  typedef mystl::rb_tree<value_type, key_compare>  base_type;
   base_type tree_;  // 以 rb_tree 表现 multiset
 
 public:
   // 使用 rb_tree 定义的型别
-  typedef typename base_type::node_type                 node_type;
-  typedef typename base_type::const_pointer             pointer;
-  typedef typename base_type::const_pointer             const_pointer;
-  typedef typename base_type::const_reference           reference;
-  typedef typename base_type::const_reference           const_reference;
-  typedef typename base_type::const_iterator            iterator;
-  typedef typename base_type::const_iterator            const_iterator;
-  typedef typename base_type::const_reverse_iterator    reverse_iterator;
-  typedef typename base_type::const_reverse_iterator    const_reverse_iterator;
-  typedef typename base_type::size_type                 size_type;
-  typedef typename base_type::difference_type           difference_type;
-  typedef typename base_type::allocator_type            allocator_type;
+  typedef typename base_type::node_type              node_type;
+  typedef typename base_type::const_pointer          pointer;
+  typedef typename base_type::const_pointer          const_pointer;
+  typedef typename base_type::const_reference        reference;
+  typedef typename base_type::const_reference        const_reference;
+  typedef typename base_type::const_iterator         iterator;
+  typedef typename base_type::const_iterator         const_iterator;
+  typedef typename base_type::const_reverse_iterator reverse_iterator;
+  typedef typename base_type::const_reverse_iterator const_reverse_iterator;
+  typedef typename base_type::size_type              size_type;
+  typedef typename base_type::difference_type        difference_type;
+  typedef typename base_type::allocator_type         allocator_type;
 
 public:
   // 构造、复制、移动函数
@@ -271,14 +275,20 @@ public:
 
   template <class InputIterator>
   multiset(InputIterator first, InputIterator last) 
-    :tree_() { tree_.insert_multi(first, last); }
+    :tree_() 
+  { tree_.insert_multi(first, last); }
   multiset(std::initializer_list<value_type> ilist)
-    :tree_() { tree_.insert_multi(ilist.begin(), ilist.end()); }
+    :tree_() 
+  { tree_.insert_multi(ilist.begin(), ilist.end()); }
 
   multiset(const multiset& rhs)
-    :tree_(rhs.tree_) {}
-  multiset(multiset&& rhs)
-    :tree_(mystl::move(rhs.tree_)) {}
+    :tree_(rhs.tree_)
+  {
+  }
+  multiset(multiset&& rhs) noexcept
+    :tree_(mystl::move(rhs.tree_))
+  {
+  }
 
   multiset& operator=(const multiset& rhs) 
   { 
@@ -402,7 +412,8 @@ public:
     equal_range(const key_type& key) const
   { return tree_.equal_range_multi(key); }
 
-  void swap(multiset& rhs) { tree_.swap(rhs.tree_); }
+  void swap(multiset& rhs) noexcept
+  { tree_.swap(rhs.tree_); }
 
 public:
   friend bool operator==(const multiset& lhs, const multiset& rhs) { return lhs.tree_ == rhs.tree_; }
@@ -448,7 +459,7 @@ bool operator>=(const multiset<Key, Compare>& lhs, const multiset<Key, Compare>&
 
 // 重载 mystl 的 swap
 template <class Key, class Compare>
-void swap(multiset<Key, Compare>& lhs, multiset<Key, Compare>& rhs)
+void swap(multiset<Key, Compare>& lhs, multiset<Key, Compare>& rhs) noexcept
 {
   lhs.swap(rhs);
 }
