@@ -46,7 +46,7 @@ void swap(Tp& lhs, Tp& rhs)
 template <class ForwardIter1, class ForwardIter2>
 ForwardIter2 swap_range(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2)
 {
-  for (; first1 != last1; ++first, (void) ++first2)
+  for (; first1 != last1; ++first1, (void) ++first2)
     mystl::swap(*first1, *first2);
   return first2;
 }
