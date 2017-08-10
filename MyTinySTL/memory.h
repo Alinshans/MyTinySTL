@@ -88,8 +88,8 @@ public:
 
 private:
   void allocate_buffer();
-  void initialize_buffer(const T&, m_true_type) {}
-  void initialize_buffer(const T& value, m_false_type)
+  void initialize_buffer(const T&, std::true_type) {}
+  void initialize_buffer(const T& value, std::false_type)
   { mystl::uninitialized_fill_n(buffer, len, value); }
 
 private:
@@ -102,14 +102,13 @@ template <class ForwardIterator, class T>
 temporary_buffer<ForwardIterator, T>::
 temporary_buffer(ForwardIterator first, ForwardIterator last)
 {
-  typedef typename type_traits<T>::has_trivial_default_constructor Trivial;
   try
   {
     len = mystl::distance(first, last);
     allocate_buffer();
     if (len > 0)
     {
-      initialize_buffer(*first, Trivial());
+      initialize_buffer(*first, std::is_trivially_default_constructible<T>());
     }
   }
   catch (...)

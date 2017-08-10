@@ -744,7 +744,7 @@ typename basic_string<CharType, CharTraits, Alloc>::size_type
 basic_string<CharType, CharTraits, Alloc>::
 __get_strlen(const_pointer str) const
 {
-  typedef typename CharTraits::value_type Type;
+  typedef typename CharTraits::type Type;
   return __get_strlen(str, Type());
 }
 
