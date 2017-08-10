@@ -846,7 +846,9 @@ public:
   template <class InputIterator>
   void      insert_multi(InputIterator first, InputIterator last)
   {
-    for (; first != last; ++first)
+    size_type n = mystl::distance(first, last);
+    THROW_LENGTH_ERROR_IF(node_count_ > max_size() - n, "rb_tree<T, Comp>'s size too big");
+    for (; n > 0; --n, ++first)
       insert_multi(end(), *first);
   }
 
@@ -868,7 +870,9 @@ public:
   template <class InputIterator>
   void      insert_unique(InputIterator first, InputIterator last)
   {
-    for (; first != last; ++first)
+    size_type n = mystl::distance(first, last);
+    THROW_LENGTH_ERROR_IF(node_count_ > max_size() - n, "rb_tree<T, Comp>'s size too big");
+    for (; n > 0; --n, ++first)
       insert_unique(end(), *first);
   }
 
@@ -1041,6 +1045,7 @@ typename rb_tree<T, Compare>::iterator
 rb_tree<T, Compare>::
 emplace_multi(Args&& ...args)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   node_ptr np = create_node(mystl::forward<Args>(args)...);
   auto res = get_insert_multi_pos(value_traits::get_key(np->value));
   return insert_node_at(res.first, np, res.second);
@@ -1053,6 +1058,7 @@ mystl::pair<typename rb_tree<T, Compare>::iterator, bool>
 rb_tree<T, Compare>::
 emplace_unique(Args&& ...args)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   node_ptr np = create_node(mystl::forward<Args>(args)...);
   auto res = get_insert_unique_pos(value_traits::get_key(np->value));
   if (res.second)
@@ -1070,6 +1076,7 @@ typename rb_tree<T, Compare>::iterator
 rb_tree<T, Compare>::
 emplace_multi_use_hint(iterator hint, Args&& ...args)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   node_ptr np = create_node(mystl::forward<Args>(args)...);
   if (node_count_ == 0)
   {
@@ -1110,6 +1117,7 @@ typename rb_tree<T, Compare>::iterator
 rb_tree<T, Compare>::
 emplace_unique_use_hint(iterator hint, Args&& ...args)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   node_ptr np = create_node(mystl::forward<Args>(args)...);
   if (node_count_ == 0)
   {
@@ -1159,6 +1167,7 @@ typename rb_tree<T, Compare>::iterator
 rb_tree<T, Compare>::
 insert_multi(const value_type& value)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   auto res = get_insert_multi_pos(value_traits::get_key(value));
   return insert_value_at(res.first, value, res.second);
 }
@@ -1169,6 +1178,7 @@ mystl::pair<typename rb_tree<T, Compare>::iterator, bool>
 rb_tree<T, Compare>::
 insert_unique(const value_type& value)
 {
+  THROW_LENGTH_ERROR_IF(node_count_ > max_size() - 1, "rb_tree<T, Comp>'s size too big");
   auto res = get_insert_unique_pos(value_traits::get_key(value));
   if (res.second)
   { // 插入成功
