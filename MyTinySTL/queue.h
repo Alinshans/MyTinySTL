@@ -6,10 +6,9 @@
 // priority_queue : 优先队列
 
 #include "deque.h"
+#include "vector.h"
 #include "functional.h"
 #include "heap_algo.h"
-#include "vector.h"
-#include "util.h"
 
 namespace mystl
 {
@@ -26,29 +25,71 @@ public:
   typedef typename Container::size_type       size_type;
   typedef typename Container::reference       reference;
   typedef typename Container::const_reference const_reference;
+
   static_assert(std::is_same<T, value_type>::value,
-                "the value_type of Container should be same with T.");
+                "the value_type of Container should be same with T");
 private:
   container_type c_;  // 用底层容器表现 queue
 
 public:
   // 构造、复制、移动函数
-  queue() :c_() {}
-  explicit queue(size_type n) :c_(n) {}
-  queue(size_type n, const value_type& value) :c_(n, value) {}
+
+  queue() = default;
+
+  explicit queue(size_type n) 
+    :c_(n) 
+  {
+  }
+  queue(size_type n, const value_type& value)
+    :c_(n, value)
+  {
+  }
+
   template <class IIter>
-  queue(IIter first, IIter last) : c_(first, last) {}
-  queue(std::initializer_list<T> ilist) :c_(ilist.begin(), ilist.end()) {}
+  queue(IIter first, IIter last)
+    :c_(first, last) 
+  {
+  }
 
-  queue(const Container& c) :c_(c) {}
-  queue(Container&& c) :c_(mystl::move(c)) {}
+  queue(std::initializer_list<T> ilist)
+    :c_(ilist.begin(), ilist.end()) 
+  {
+  }
 
-  queue(const queue& rhs) :c_(rhs.c_) {}
-  queue(queue&& rhs) :c_(mystl::move(rhs.c_)) {}
+  queue(const Container& c) 
+    :c_(c) 
+  {
+  }
+  queue(Container&& c) noexcept(std::is_nothrow_move_constructible<Container>::value)
+    :c_(mystl::move(c)) 
+  {
+  }
 
-  queue& operator=(const queue& rhs) { c_ = rhs.c_; return *this; }
-  queue& operator=(queue&& rhs) { c_ = mystl::move(rhs.c_); return *this; }
-  queue& operator=(std::initializer_list<T> ilist) { c_ = ilist; return *this; }
+  queue(const queue& rhs) 
+    :c_(rhs.c_) 
+  {
+  }
+  queue(queue&& rhs) noexcept(std::is_nothrow_move_constructible<Container>::value)
+    :c_(mystl::move(rhs.c_)) 
+  {
+  }
+
+  queue& operator=(const queue& rhs) 
+  {
+    c_ = rhs.c_; 
+    return *this; 
+  }
+  queue& operator=(queue&& rhs) noexcept(std::is_nothrow_move_assignable<Container>::value)
+  { 
+    c_ = mystl::move(rhs.c_);
+    return *this;
+  }
+
+  queue& operator=(std::initializer_list<T> ilist)
+  { 
+    c_ = ilist; 
+    return *this; 
+  }
 
   ~queue() = default;
 
@@ -59,22 +100,30 @@ public:
   const_reference back()  const { return c_.back(); }
 
   // 容量相关操作
-  bool      empty() const { return c_.empty(); }
-  size_type size()  const { return c_.size(); }
+  bool      empty() const noexcept { return c_.empty(); }
+  size_type size()  const noexcept { return c_.size(); }
 
   // 修改容器相关操作
-  void push(const value_type& value) { c_.push_back(value); }
-  void push(value_type&& value)      { c_.push_back(mystl::move(value)); }
-  void pop()                         { c_.pop_front(); }
-
-  template <class... Args>
+  template <class ...Args>
   void emplace(Args&& ...args)
-  {
-    c_.emplace_back(mystl::forward<Args>(args)...);
+  { c_.emplace_back(mystl::forward<Args>(args)...); }
+
+  void push(const value_type& value) 
+  { c_.push_back(value); }
+  void push(value_type&& value)      
+  { c_.emplace_back(mystl::move(value)); }
+
+  void pop()                         
+  { c_.pop_front(); }
+
+  void clear()         
+  { 
+    while (!empty())
+      pop(); 
   }
 
-  void clear()          { while (!empty()) pop(); }
-  void swap(queue& rhs) { mystl::swap(c_, rhs.c_); }
+  void swap(queue& rhs) noexcept(noexcept(mystl::swap(c_, rhs.c_)))
+  { mystl::swap(c_, rhs.c_); }
 
 public:
   friend bool operator==(const queue& lhs, const queue& rhs) { return lhs.c_ == rhs.c_; }
@@ -120,7 +169,7 @@ bool operator>=(const queue<T, Container>& lhs, const queue<T, Container>& rhs)
 
 // 重载 mystl 的 swap
 template <class T, class Container>
-void swap(queue<T, Container>& lhs, queue<T, Container>& rhs)
+void swap(queue<T, Container>& lhs, queue<T, Container>& rhs) noexcept(noexcept(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }
@@ -142,8 +191,9 @@ public:
   typedef typename Container::size_type       size_type;
   typedef typename Container::reference       reference;
   typedef typename Container::const_reference const_reference;
+
   static_assert(std::is_same<T, value_type>::value,
-                "the value_type of Container should be same with T.");
+                "the value_type of Container should be same with T");
 
 private:
   container_type c_;     // 用底层容器来表现 priority_queue
@@ -151,43 +201,55 @@ private:
 
 public:
   // 构造、复制、移动函数
-  priority_queue() :c_(), comp_() {}
-  priority_queue(const Compare& c) :c_(), comp_(c) {}
+  priority_queue() = default;
 
-  explicit priority_queue(size_type n) :c_(n)
+  priority_queue(const Compare& c) 
+    :c_(), comp_(c) 
+  {
+  }
+
+  explicit priority_queue(size_type n)
+    :c_(n)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
-  priority_queue(size_type n, const value_type& value) :c_(n, value)
+  priority_queue(size_type n, const value_type& value) 
+    :c_(n, value)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
 
   template <class IIter>
-  priority_queue(IIter first, IIter last) : c_(first, last)
+  priority_queue(IIter first, IIter last) 
+    :c_(first, last)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
 
-  priority_queue(std::initializer_list<T> ilist) :c_(ilist)
+  priority_queue(std::initializer_list<T> ilist)
+    :c_(ilist)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
 
-  priority_queue(const Container& s) :c_(s)
+  priority_queue(const Container& s)
+    :c_(s)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
-  priority_queue(Container&& s) :c_(mystl::move(s))
+  priority_queue(Container&& s) 
+    :c_(mystl::move(s))
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
 
-  priority_queue(const priority_queue& rhs) :c_(rhs.c_), comp_(rhs.comp_)
+  priority_queue(const priority_queue& rhs)
+    :c_(rhs.c_), comp_(rhs.comp_)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
-  priority_queue(priority_queue&& rhs) :c_(mystl::move(rhs.c_)), comp_(rhs.comp_)
+  priority_queue(priority_queue&& rhs) 
+    :c_(mystl::move(rhs.c_)), comp_(rhs.comp_)
   {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
@@ -219,14 +281,20 @@ public:
 public:
 
   // 访问元素相关操作
-  const_reference top()   const { return c_.front(); }
+  const_reference top() const { return c_.front(); }
 
   // 容量相关操作
-  bool            empty() const { return c_.empty(); }
-  size_type       size()  const { return c_.size(); }
+  bool      empty() const noexcept { return c_.empty(); }
+  size_type size()  const noexcept { return c_.size(); }
 
-  
   // 修改容器相关操作
+  template <class... Args>
+  void emplace(Args&& ...args)
+  {
+    c_.emplace_back(mystl::forward<Args>(args)...);
+    mystl::push_heap(c_.begin(), c_.end(), comp_);
+  }
+
   void push(const value_type& value)
   {
     c_.push_back(value);
@@ -235,13 +303,6 @@ public:
   void push(value_type&& value)
   {
     c_.push_back(mystl::move(value));
-    mystl::push_heap(c_.begin(), c_.end(), comp_);
-  }
-
-  template <class... Args>
-  void emplace(Args&& ...args)
-  {
-    c_.emplace_back(mystl::forward<Args>(args)...);
     mystl::push_heap(c_.begin(), c_.end(), comp_);
   }
 
@@ -257,7 +318,8 @@ public:
       pop();
   }
 
-  void swap(priority_queue& rhs)
+  void swap(priority_queue& rhs) noexcept(noexcept(mystl::swap(c_, rhs.c_)) &&
+                                          noexcept(mystl::swap(comp_, rhs.comp_)))
   {
     mystl::swap(c_, rhs.c_);
     mystl::swap(comp_, rhs.comp_);
@@ -292,7 +354,7 @@ bool operator!=(priority_queue<T, Container, Compare>& lhs,
 // 重载 mystl 的 swap
 template <class T, class Container, class Compare>
 void swap(priority_queue<T, Container, Compare>& lhs, 
-          priority_queue<T, Container, Compare>& rhs)
+          priority_queue<T, Container, Compare>& rhs) noexcept(noexcept(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }

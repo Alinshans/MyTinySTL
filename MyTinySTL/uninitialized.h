@@ -3,8 +3,6 @@
 
 // 这个头文件用于对未初始化空间构造元素
 
-#include <cstring>
-
 #include "algobase.h"
 #include "construct.h"
 #include "iterator.h"
