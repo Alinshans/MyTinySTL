@@ -14,14 +14,15 @@
 namespace mystl
 {
 
-#ifdef _MSC_VER
 #ifdef max
+#pragma message("#undefing marco max")
 #undef max
 #endif // max
+
 #ifdef min
+#pragma message("#undefing marco min")
 #undef min
 #endif // min
-#endif // Undef max, min in MSVC
 
 // deque map 初始化的大小
 #ifndef DEQUE_MAP_INIT_SIZE
