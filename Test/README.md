@@ -5,12 +5,10 @@
   
   Tests were built and run directly on `Tracis CI` and `AppVeyor` and had been tested in the following environments:
 
-  * linux, g++-5
-  * linux, g++-6
-  * linux, g++-7
-  * osx, g++-5
-  * osx, clang++
-  * windows, msvc 14.0 (VS2015)
+  * linux, ubuntu 14.04, gcc5/6/7
+  * osx, gcc5
+  * osx, xcode5/6/7/8
+  * windows, VS2015/VS2017, x64
   
 ## 测试框架 (Test frame)
   在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个类实现了一个简单的测试框架，并定义了大量宏来封装测试过程。</br>
