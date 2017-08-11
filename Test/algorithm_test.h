@@ -16,17 +16,15 @@ namespace mystl
 namespace test
 {
 
-#ifdef _MSC_VER
 #ifdef max
+#pragma message("#undefing marco max")
 #undef max
 #endif // max
+
 #ifdef min
+#pragma message("#undefing marco min")
 #undef min
 #endif // min
-#ifdef __transfer
-#undef __transfer
-#endif // __transfer
-#endif // _MSC_VER
 
 #ifdef _MSC_VER
 #pragma warning(push)

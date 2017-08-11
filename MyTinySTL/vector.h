@@ -26,14 +26,15 @@
 namespace mystl
 {
 
-#ifdef _MSC_VER
 #ifdef max
+#pragma message("#undefing marco max")
 #undef max
 #endif // max
+
 #ifdef min
+#pragma message("#undefing marco min")
 #undef min
 #endif // min
-#endif // Undef max, min in MSVC
 
 // 模板类: vector 
 // 模板参数 T 代表类型
