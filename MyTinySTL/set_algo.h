@@ -14,9 +14,10 @@ namespace mystl
 // set_union
 // 计算 S1∪S2 的结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
 /*****************************************************************************************/
-template <class InputIterator1, class InputIterator2, class OutputIterator>
-OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
-                         InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_union(InputIter1 first1, InputIter1 last1,
+                     InputIter2 first2, InputIter2 last2, 
+                     OutputIter result)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -43,9 +44,10 @@ OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
-OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
-                         InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+template <class InputIter1, class InputIter2, class OutputIter, class Compared>
+OutputIter set_union(InputIter1 first1, InputIter1 last1,
+                     InputIter2 first2, InputIter2 last2, 
+                     OutputIter result, Compared comp)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -75,9 +77,10 @@ OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
 // set_intersection
 // 计算 S1∩S2 的结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
 /*****************************************************************************************/
-template <class InputIterator1, class InputIterator2, class OutputIterator>
-OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
-                                InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_intersection(InputIter1 first1, InputIter1 last1,
+                            InputIter2 first2, InputIter2 last2, 
+                            OutputIter result)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -101,9 +104,10 @@ OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
-OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
-                                InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+template <class InputIter1, class InputIter2, class OutputIter, class Compared>
+OutputIter set_intersection(InputIter1 first1, InputIter1 last1,
+                            InputIter2 first2, InputIter2 last2,
+                            OutputIter result, Compared comp)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -130,9 +134,10 @@ OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
 // set_difference
 // 计算 S1-S2 的结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
 /*****************************************************************************************/
-template <class InputIterator1, class InputIterator2, class OutputIterator>
-OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
-                              InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1,
+                          InputIter2 first2, InputIter2 last2,
+                          OutputIter result)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -156,9 +161,10 @@ OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
-OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
-                              InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+template <class InputIter1, class InputIter2, class OutputIter, class Compared>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1,
+                          InputIter2 first2, InputIter2 last2, 
+                          OutputIter result, Compared comp)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -185,9 +191,10 @@ OutputIterator set_difference(InputIterator1 first1, InputIterator1 last1,
 // set_symmetric_difference
 // 计算 (S1-S2)∪(S2-S1) 的结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
 /*****************************************************************************************/
-template <class InputIterator1, class InputIterator2, class OutputIterator>
-OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-                                        InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_symmetric_difference(InputIter1 first1, InputIter1 last1,
+                                    InputIter2 first2, InputIter2 last2, 
+                                    OutputIter result)
 {
   while (first1 != last1 && first2 != last2)
   {
@@ -213,9 +220,10 @@ OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 la
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class InputIterator1, class InputIterator2, class OutputIterator, class Compared>
-OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
-                                        InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compared comp)
+template <class InputIter1, class InputIter2, class OutputIter, class Compared>
+OutputIter set_symmetric_difference(InputIter1 first1, InputIter1 last1,
+                                    InputIter2 first2, InputIter2 last2,
+                                    OutputIter result, Compared comp)
 {
   while (first1 != last1 && first2 != last2)
   {

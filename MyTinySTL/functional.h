@@ -188,7 +188,7 @@ template <class Key>
 struct hash {};
 
 // 针对 char* 和 const char* 的特化版本
-size_t __hash_string(const char* s)
+size_t hash_string(const char* s)
 {
   size_t h = 0;
   for (; *s; ++s)
@@ -198,18 +198,18 @@ size_t __hash_string(const char* s)
 
 template <> struct hash<char*>
 {
-  size_t operator()(const char* s) const { return __hash_string(s); }
+  size_t operator()(const char* s) const { return hash_string(s); }
 };
 
 template <> struct hash<const char*>
 {
-  size_t operator()(const char* s) const { return __hash_string(s); }
+  size_t operator()(const char* s) const { return hash_string(s); }
 };
 
 // 针对 mystl::string 的特化版本
 template <> struct hash<mystl::string>
 {
-  size_t operator()(const mystl::string& str) const { return __hash_string(str.data()); }
+  size_t operator()(const mystl::string& str) const { return hash_string(str.data()); }
 };
 
 // 针对 char，int，long 等整数型别，只是返回原值

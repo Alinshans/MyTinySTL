@@ -12,9 +12,8 @@ namespace mystl
 // push_heap
 // 该函数接受两个迭代器，表示一个 heap 容器的首尾，并且新元素已经插入到底部容器的最尾端，调整 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator, class Distance, class T>
-void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
-                     Distance topIndex, T value)
+template <class RandomIter, class Distance, class T>
+void push_heap_aux(RandomIter first, Distance holeIndex, Distance topIndex, T value)
 {
   auto parent = (holeIndex - 1) / 2;
   while (holeIndex > topIndex && *(first + parent) < value)
@@ -27,25 +26,22 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
   *(first + holeIndex) = value;
 }
 
-template <class RandomAccessIterator, class Distance>
-void
-__push_heap(RandomAccessIterator first, RandomAccessIterator last, Distance*)
+template <class RandomIter, class Distance>
+void push_heap_d(RandomIter first, RandomIter last, Distance*)
 {
-  mystl::__push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
+  mystl::push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
 }
 
-template <class RandomAccessIterator>
-void
-push_heap(RandomAccessIterator first, RandomAccessIterator last)
-{
-  // 新元素应该已置于底部容器的最尾端
-  mystl::__push_heap(first, last, distance_type(first));
+template <class RandomIter>
+void push_heap(RandomIter first, RandomIter last)
+{ // 新元素应该已置于底部容器的最尾端
+  mystl::push_heap_d(first, last, distance_type(first));
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Distance, class T, class Compared>
-void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
-                     Distance topIndex, T value, Compared comp)
+template <class RandomIter, class Distance, class T, class Compared>
+void push_heap_aux(RandomIter first, Distance holeIndex, Distance topIndex, T value,
+                   Compared comp)
 {
   auto parent = (holeIndex - 1) / 2;
   while (holeIndex > topIndex && comp(*(first + parent), value))
@@ -57,28 +53,25 @@ void __push_heap_aux(RandomAccessIterator first, Distance holeIndex,
   *(first + holeIndex) = value;
 }
 
-template <class RandomAccessIterator, class Compared, class Distance>
-void
-__push_heap(RandomAccessIterator first, RandomAccessIterator last,
-            Distance*, Compared comp)
+template <class RandomIter, class Compared, class Distance>
+void push_heap_d(RandomIter first, RandomIter last, Distance*, Compared comp)
 {
-  mystl::__push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0),
-                         *(last - 1), comp);
+  mystl::push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0),
+                       *(last - 1), comp);
 }
 
-template <class RandomAccessIterator, class Compared>
-void
-push_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
+template <class RandomIter, class Compared>
+void push_heap(RandomIter first, RandomIter last, Compared comp)
 {
-  mystl::__push_heap(first, last, distance_type(first), comp);
+  mystl::push_heap_d(first, last, distance_type(first), comp);
 }
 
 /*****************************************************************************************/
 // pop_heap
 // 该函数接受两个迭代器，表示 heap 容器的首尾，将 heap 的根节点取出放到容器尾部，调整 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator, class T, class Distance>
-void __adjust_heap(RandomAccessIterator first, Distance holeIndex, Distance len, T value)
+template <class RandomIter, class T, class Distance>
+void adjust_heap(RandomIter first, Distance holeIndex, Distance len, T value)
 {
   // 先进行下溯(percolate down)过程
   auto topIndex = holeIndex;
@@ -97,30 +90,28 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex, Distance len,
     holeIndex = rchild - 1;
   }
   // 再执行一次上溯(percolate up)过程
-  mystl::__push_heap_aux(first, holeIndex, topIndex, value);
+  mystl::push_heap_aux(first, holeIndex, topIndex, value);
 }
 
-template <class RandomAccessIterator, class T, class Distance>
-void
-__pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-           RandomAccessIterator result, T value, Distance*)
+template <class RandomIter, class T, class Distance>
+void pop_heap_aux(RandomIter first, RandomIter last, RandomIter result, T value,
+                  Distance*)
 {
   // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
   *result = *first;
-  mystl::__adjust_heap(first, static_cast<Distance>(0), last - first, value);
+  mystl::adjust_heap(first, static_cast<Distance>(0), last - first, value);
 }
 
-template <class RandomAccessIterator>
-void
-pop_heap(RandomAccessIterator first, RandomAccessIterator last)
+template <class RandomIter>
+void pop_heap(RandomIter first, RandomIter last)
 {
-  mystl::__pop_heap(first, last - 1, last - 1, *(last - 1), distance_type(first));
+  mystl::pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first));
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class T, class Distance, class Compared>
-void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
-                   Distance len, T value, Compared comp)
+template <class RandomIter, class T, class Distance, class Compared>
+void adjust_heap(RandomIter first, Distance holeIndex, Distance len, T value,
+                 Compared comp)
 {
   // 先进行下溯(percolate down)过程
   auto topIndex = holeIndex;
@@ -138,32 +129,30 @@ void __adjust_heap(RandomAccessIterator first, Distance holeIndex,
     holeIndex = rchild - 1;
   }
   // 再执行一次上溯(percolate up)过程
-  mystl::__push_heap_aux(first, holeIndex, topIndex, value, comp);
+  mystl::push_heap_aux(first, holeIndex, topIndex, value, comp);
 }
 
-template <class RandomAccessIterator, class T, class Distance, class Compared>
-void
-__pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-           RandomAccessIterator result, T value, Distance*, Compared comp)
+template <class RandomIter, class T, class Distance, class Compared>
+void pop_heap_aux(RandomIter first, RandomIter last, RandomIter result, 
+                  T value, Distance*, Compared comp)
 {
   *result = *first;  // 先将尾指设置成首值，即尾指为欲求结果
-  mystl::__adjust_heap(first, static_cast<Distance>(0), last - first, value, comp);
+  mystl::adjust_heap(first, static_cast<Distance>(0), last - first, value, comp);
 }
 
-template <class RandomAccessIterator, class Compared>
-void
-pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
+template <class RandomIter, class Compared>
+void pop_heap(RandomIter first, RandomIter last, Compared comp)
 {
-  mystl::__pop_heap(first, last - 1, last - 1, *(last - 1),
-                    distance_type(first), comp);
+  mystl::pop_heap_aux(first, last - 1, last - 1, *(last - 1),
+                      distance_type(first), comp);
 }
 
 /*****************************************************************************************/
 // sort_heap
 // 该函数接受两个迭代器，表示 heap 容器的首尾，不断执行 pop_heap 操作，直到首尾最多相差1
 /*****************************************************************************************/
-template <class RandomAccessIterator>
-void sort_heap(RandomAccessIterator first, RandomAccessIterator last)
+template <class RandomIter>
+void sort_heap(RandomIter first, RandomIter last)
 {
   // 每执行一次 pop_heap，最大的元素都被放到尾部，直到容器最多只有一个元素，完成排序
   while (last - first > 1)
@@ -173,8 +162,8 @@ void sort_heap(RandomAccessIterator first, RandomAccessIterator last)
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Compared>
-void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
+template <class RandomIter, class Compared>
+void sort_heap(RandomIter first, RandomIter last, Compared comp)
 {
   while (last - first > 1)
   {
@@ -186,8 +175,8 @@ void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compared c
 // make_heap
 // 该函数接受两个迭代器，表示 heap 容器的首尾，把容器内的数据变为一个 heap
 /*****************************************************************************************/
-template <class RandomAccessIterator, class Distance>
-void __make_heap(RandomAccessIterator first, RandomAccessIterator last, Distance*)
+template <class RandomIter, class Distance>
+void make_heap_aux(RandomIter first, RandomIter last, Distance*)
 {
   if (last - first < 2)
     return;
@@ -196,24 +185,22 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last, Distance
   while (true)
   {
     // 重排以 holeIndex 为首的子树
-    mystl::__adjust_heap(first, holeIndex, len, *(first + holeIndex));
+    mystl::adjust_heap(first, holeIndex, len, *(first + holeIndex));
     if (holeIndex == 0)
       return;
     holeIndex--;
   }
 }
 
-template <class RandomAccessIterator>
-void
-make_heap(RandomAccessIterator first, RandomAccessIterator last)
+template <class RandomIter>
+void make_heap(RandomIter first, RandomIter last)
 {
-  mystl::__make_heap(first, last, distance_type(first));;
+  mystl::make_heap_aux(first, last, distance_type(first));;
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-template <class RandomAccessIterator, class Distance, class Compared>
-void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
-                 Distance*, Compared comp)
+template <class RandomIter, class Distance, class Compared>
+void make_heap_aux(RandomIter first, RandomIter last, Distance*, Compared comp)
 {
   if (last - first < 2)
     return;
@@ -222,18 +209,17 @@ void __make_heap(RandomAccessIterator first, RandomAccessIterator last,
   while (true)
   {
     // 重排以 holeIndex 为首的子树
-    mystl::__adjust_heap(first, holeIndex, len, *(first + holeIndex), comp);
+    mystl::adjust_heap(first, holeIndex, len, *(first + holeIndex), comp);
     if (holeIndex == 0)
       return;
     holeIndex--;
   }
 }
 
-template <class RandomAccessIterator, class Compared>
-void
-make_heap(RandomAccessIterator first, RandomAccessIterator last, Compared comp)
+template <class RandomIter, class Compared>
+void make_heap(RandomIter first, RandomIter last, Compared comp)
 {
-  mystl::__make_heap(first, last, distance_type(first), comp);
+  mystl::make_heap_aux(first, last, distance_type(first), comp);
 }
 
 } // namespace mystl

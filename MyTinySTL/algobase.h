@@ -69,11 +69,11 @@ void iter_swap(FIter1 lhs, FIter2 rhs)
 // copy
 // 把 [first, last)区间内的元素拷贝到 [result, result + (last - first))内
 /*****************************************************************************************/
+// input_iterator_tag 版本
 template <class InputIter, class OutputIter>
-OutputIter unchecked_copy_cat(InputIter first, 
-                              InputIter last,
-                              OutputIter result, 
-                              mystl::input_iterator_tag)
+OutputIter 
+unchecked_copy_cat(InputIter first, InputIter last, OutputIter result, 
+                   mystl::input_iterator_tag)
 {
   for (; first != last; ++first, ++result)
   {
@@ -82,11 +82,11 @@ OutputIter unchecked_copy_cat(InputIter first,
   return result;
 }
 
+// ramdom_access_iterator_tag 版本
 template <class RandomIter, class OutputIter>
-OutputIter unchecked_copy_cat(RandomIter first,
-                              RandomIter last,
-                              OutputIter result,
-                              mystl::random_access_iterator_tag)
+OutputIter 
+unchecked_copy_cat(RandomIter first, RandomIter last, OutputIter result,
+                   mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n, ++first, ++result)
   {
@@ -96,11 +96,13 @@ OutputIter unchecked_copy_cat(RandomIter first,
 }
 
 template <class InputIter, class OutputIter>
-OutputIter unchecked_copy(InputIter first, InputIter last, OutputIter result)
+OutputIter 
+unchecked_copy(InputIter first, InputIter last, OutputIter result)
 {
   return unchecked_copy_cat(first, last, result, iterator_category(first));
 }
 
+// 为 trivially_copy_assignable 类型提供特化版本
 template <class Tp, class Up>
 typename std::enable_if<
   std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
@@ -127,10 +129,8 @@ OutputIter copy(InputIter first, InputIter last, OutputIter result)
 // unchecked_copy_backward_cat 的 bidirectional_iterator_tag 版本
 template <class BidirectionalIter1, class BidirectionalIter2>
 BidirectionalIter2 
-unchecked_copy_backward_cat(BidirectionalIter1 first,
-                            BidirectionalIter1 last,
-                            BidirectionalIter2 result,
-                            mystl::bidirectional_iterator_tag)
+unchecked_copy_backward_cat(BidirectionalIter1 first, BidirectionalIter1 last,
+                            BidirectionalIter2 result, mystl::bidirectional_iterator_tag)
 {
   while (first != last)
     *--result = *--last;
@@ -140,10 +140,8 @@ unchecked_copy_backward_cat(BidirectionalIter1 first,
 // unchecked_copy_backward_cat 的 random_access_iterator_tag 版本
 template <class BidirectionalIter1, class BidirectionalIter2>
 BidirectionalIter2 
-unchecked_copy_backward_cat(BidirectionalIter1 first,
-                            BidirectionalIter1 last,
-                            BidirectionalIter2 result,
-                            mystl::random_access_iterator_tag)
+unchecked_copy_backward_cat(BidirectionalIter1 first, BidirectionalIter1 last,
+                            BidirectionalIter2 result, mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n)
     *--result = *--last;
@@ -152,14 +150,14 @@ unchecked_copy_backward_cat(BidirectionalIter1 first,
 
 template <class BidirectionalIter1, class BidirectionalIter2>
 BidirectionalIter2 
-unchecked_copy_backward(BidirectionalIter1 first, 
-                        BidirectionalIter1 last,
+unchecked_copy_backward(BidirectionalIter1 first, BidirectionalIter1 last,
                         BidirectionalIter2 result)
 {
   return unchecked_copy_backward_cat(first, last, result,
                                      iterator_category(first));
 }
 
+// 为 trivially_copy_assignable 类型提供特化版本
 template <class Tp, class Up>
 typename std::enable_if<
   std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
@@ -188,7 +186,8 @@ copy_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIt
 // 把[first, last)内满足一元操作 unary_pred 的元素拷贝到以 result 为起始的位置上
 /*****************************************************************************************/
 template <class InputIter, class OutputIter, class UnaryPredicate>
-OutputIter copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred)
+OutputIter 
+copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred)
 {
   for (; first != last; ++first)
   {
@@ -216,7 +215,8 @@ unchecked_copy_n(InputIter first, Size n, OutputIter result, mystl::input_iterat
 
 template <class RandomIter, class Size, class OutputIter>
 mystl::pair<RandomIter, OutputIter>
-unchecked_copy_n(RandomIter first, Size n, OutputIter result, mystl::random_access_iterator_tag)
+unchecked_copy_n(RandomIter first, Size n, OutputIter result, 
+                 mystl::random_access_iterator_tag)
 {
   auto last = first + n;
   return mystl::pair<RandomIter, OutputIter>(last, mystl::copy(first, last, result));
@@ -249,11 +249,11 @@ copy_n(const wchar_t* first, size_t n, wchar_t* result)
 // move
 // 把 [first, last)区间内的元素移动到 [result, result + (last - first))内
 /*****************************************************************************************/
+// input_iterator_tag 版本
 template <class InputIter, class OutputIter>
-OutputIter unchecked_move_cat(InputIter first,
-                              InputIter last,
-                              OutputIter result,
-                              mystl::input_iterator_tag)
+OutputIter 
+unchecked_move_cat(InputIter first, InputIter last, OutputIter result,
+                   mystl::input_iterator_tag)
 {
   for (; first != last; ++first, ++result)
   {
@@ -262,11 +262,11 @@ OutputIter unchecked_move_cat(InputIter first,
   return result;
 }
 
+// ramdom_access_iterator_tag 版本
 template <class RandomIter, class OutputIter>
-OutputIter unchecked_move_cat(RandomIter first,
-                              RandomIter last,
-                              OutputIter result,
-                              mystl::random_access_iterator_tag)
+OutputIter 
+unchecked_move_cat(RandomIter first, RandomIter last, OutputIter result,
+                   mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n, ++first, ++result)
   {
@@ -276,17 +276,19 @@ OutputIter unchecked_move_cat(RandomIter first,
 }
 
 template <class InputIter, class OutputIter>
-OutputIter unchecked_move(InputIter first, InputIter last, OutputIter result)
+OutputIter 
+unchecked_move(InputIter first, InputIter last, OutputIter result)
 {
   return unchecked_move_cat(first, last, result, iterator_category(first));
 }
 
+// 为 trivially_copy_assignable 类型提供特化版本
 template <class Tp, class Up>
 typename std::enable_if<
   std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
   std::is_trivially_move_assignable<Up>::value,
   Up*>::type
-  unchecked_move(Tp* first, Tp* last, Up* result)
+unchecked_move(Tp* first, Tp* last, Up* result)
 {
   const size_t n = static_cast<size_t>(last - first);
   if (n != 0)
@@ -304,24 +306,22 @@ OutputIter move(InputIter first, InputIter last, OutputIter result)
 // move_backward
 // 将 [first, last)区间内的元素移动到 [result - (last - first), result)内
 /*****************************************************************************************/
+// bidirectional_iterator_tag 版本
 template <class BidirectionalIter1, class BidirectionalIter2>
 BidirectionalIter2
-unchecked_move_backward_cat(BidirectionalIter1 first,
-                            BidirectionalIter1 last,
-                            BidirectionalIter2 result,
-                            mystl::bidirectional_iterator_tag)
+unchecked_move_backward_cat(BidirectionalIter1 first, BidirectionalIter1 last,
+                            BidirectionalIter2 result, mystl::bidirectional_iterator_tag)
 {
   while (first != last)
     *--result = mystl::move(*--last);
   return result;
 }
 
-template <class BidirectionalIter1, class BidirectionalIter2>
-BidirectionalIter2
-unchecked_move_backward_cat(BidirectionalIter1 first,
-                            BidirectionalIter1 last,
-                            BidirectionalIter2 result,
-                            mystl::random_access_iterator_tag)
+// random_access_iterator_tag 版本
+template <class RandomIter1, class RandomIter2>
+RandomIter2
+unchecked_move_backward_cat(RandomIter1 first, RandomIter1 last,
+                            RandomIter2 result, mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n)
     *--result = mystl::move(*--last);
@@ -330,14 +330,14 @@ unchecked_move_backward_cat(BidirectionalIter1 first,
 
 template <class BidirectionalIter1, class BidirectionalIter2>
 BidirectionalIter2
-unchecked_move_backward(BidirectionalIter1 first,
-                        BidirectionalIter1 last,
+unchecked_move_backward(BidirectionalIter1 first, BidirectionalIter1 last, 
                         BidirectionalIter2 result)
 {
   return unchecked_move_backward_cat(first, last, result,
                                      iterator_category(first));
 }
 
+// 为 trivially_copy_assignable 类型提供特化版本
 template <class Tp, class Up>
 typename std::enable_if<
   std::is_same<typename std::remove_const<Tp>::type, Up>::value &&

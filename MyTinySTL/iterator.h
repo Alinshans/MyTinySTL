@@ -167,9 +167,9 @@ distance_dispatch(InputIterator first, InputIterator last, input_iterator_tag)
 }
 
 // distance 的 random_access_iterator_tag 的版本
-template <class RandomAccessIterator>
-typename iterator_traits<RandomAccessIterator>::difference_type
-distance_dispatch(RandomAccessIterator first, RandomAccessIterator last,
+template <class RandomIter>
+typename iterator_traits<RandomIter>::difference_type
+distance_dispatch(RandomIter first, RandomIter last,
                   random_access_iterator_tag)
 {
   return last - first;
@@ -203,8 +203,8 @@ void advance_dispatch(BidirectionalIterator& i, Distance n, bidirectional_iterat
 }
 
 // advance 的 random_access_iterator_tag 的版本
-template <class RandomAccessIterator, class Distance>
-void advance_dispatch(RandomAccessIterator& i, Distance n, random_access_iterator_tag)
+template <class RandomIter, class Distance>
+void advance_dispatch(RandomIter& i, Distance n, random_access_iterator_tag)
 {
   i += n;
 }
