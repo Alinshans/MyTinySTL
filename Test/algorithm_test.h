@@ -1,7 +1,7 @@
 ﻿#ifndef MYTINYSTL_ALGORITHM_TEST_H_
 #define MYTINYSTL_ALGORITHM_TEST_H_
 
-// 算法测试: 包含了 mystl 的 79 个算法测试
+// 算法测试: 包含了 mystl 的 81 个算法测试
 
 #include <algorithm>
 #include <functional>
@@ -96,6 +96,28 @@ TEST(copy_n_test)
   std::copy_n(arr1 + 5, 5, exp);
   mystl::copy_n(arr1 + 5, 5, act);
   EXPECT_CON_EQ(exp, act);
+}
+
+TEST(move_test)
+{
+  int arr1[] = { 1,2,3,4,5 };
+  int arr2[] = { 1,2,3,4,5 };
+  int exp[5], act[5];
+  std::move(arr1, arr1 + 5, exp);
+  mystl::move(arr2, arr2 + 5, act);
+  EXPECT_CON_EQ(exp, act);
+  EXPECT_CON_EQ(arr1, arr2);
+}
+
+TEST(move_backward_test)
+{
+  int arr1[] = { 1,2,3,4,5 };
+  int arr2[] = { 1,2,3,4,5 };
+  int exp[5], act[5];
+  std::move_backward(arr1, arr1 + 5, exp + 5);
+  mystl::move_backward(arr2, arr2 + 5, act + 5);
+  EXPECT_CON_EQ(exp, act);
+  EXPECT_CON_EQ(arr1, arr2);
 }
 
 TEST(equal_test)
@@ -210,25 +232,6 @@ TEST(mismatch_test)
   EXPECT_EQ(p3.second, p4.second);
   EXPECT_EQ(p5.first, p6.first);
   EXPECT_EQ(p5.second, p6.second);
-}
-
-TEST(swap_test)
-{
-  int int_a1 = 1, int_b1 = 2, int_a2 = 1, int_b2 = 2;
-  double double_a1 = 1.1, double_b1 = 2.2, double_a2 = 1.1, double_b2 = 2.2;
-  std::string str_a1 = "a", str_b1 = "b", str_a2 = "a", str_b2 = "b";
-  std::swap(int_a1, int_b1);
-  mystl::swap(int_a2, int_b2);
-  std::swap(double_a1, double_b1);
-  mystl::swap(double_a2, double_b2);
-  std::swap(str_a1, str_b1);
-  mystl::swap(str_a2, str_b2);
-  EXPECT_EQ(int_a1, int_a2);
-  EXPECT_EQ(int_b1, int_b2);
-  EXPECT_EQ(double_a1, double_a2);
-  EXPECT_EQ(double_b1, double_b2);
-  EXPECT_EQ(str_a1, str_a2);
-  EXPECT_EQ(str_b1, str_b2);
 }
 
 // heap_algo test
