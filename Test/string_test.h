@@ -188,9 +188,9 @@ void string_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|        append       |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P1(string, append, "s", LEN1 _L, LEN2 _L, LEN3 _L);
+  CON_TEST_P1(string, append, "s", LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
-  CON_TEST_P1(string, append, "s", LEN1 _M, LEN2 _M, LEN3 _M);
+  CON_TEST_P1(string, append, "s", LEN1 _L, LEN2 _L, LEN3 _L);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
