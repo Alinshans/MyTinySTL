@@ -1,11 +1,9 @@
 ﻿#ifndef MYTINYSTL_FUNCTIONAL_H_
 #define MYTINYSTL_FUNCTIONAL_H_
 
-// 这个头文件包含了 mystl 的函数对象
+// 这个头文件包含了 mystl 的函数对象与哈希函数
 
 #include <cstddef>
-
-#include "astring.h"
 
 namespace mystl
 {
@@ -181,82 +179,105 @@ struct projectsecond :public binary_function<Arg1, Arg2, Arg1>
   Arg2 operator()(const Arg1&, const Arg2& y) const { return y; }
 };
 
+/*****************************************************************************************/
 // 哈希函数对象
 
 // 对于大部分类型，hash function 什么都不做
 template <class Key>
 struct hash {};
 
-// 针对 char* 和 const char* 的特化版本
-size_t hash_string(const char* s)
+// 针对指针的偏特化版本
+template <class T>
+struct hash<T*>
 {
-  size_t h = 0;
-  for (; *s; ++s)
-    h = 3 * h + static_cast<size_t>(*s);
-  return h;
+  size_t operator()(T* p) const noexcept
+  { return reinterpret_cast<size_t>(p); }
+};
+
+// 对于整型类型，只是返回原值
+#define MYSTL_TRIVIAL_HASH_FCN(Type)         \
+template <> struct hash<Type>                \
+{                                            \
+  size_t operator()(Type val) const noexcept \
+  { return static_cast<size_t>(val); }       \
+};
+
+MYSTL_TRIVIAL_HASH_FCN(bool)
+
+MYSTL_TRIVIAL_HASH_FCN(char)
+
+MYSTL_TRIVIAL_HASH_FCN(signed char)
+
+MYSTL_TRIVIAL_HASH_FCN(unsigned char)
+
+MYSTL_TRIVIAL_HASH_FCN(wchar_t)
+
+MYSTL_TRIVIAL_HASH_FCN(char16_t)
+
+MYSTL_TRIVIAL_HASH_FCN(char32_t)
+
+MYSTL_TRIVIAL_HASH_FCN(short)
+
+MYSTL_TRIVIAL_HASH_FCN(unsigned short)
+
+MYSTL_TRIVIAL_HASH_FCN(int)
+
+MYSTL_TRIVIAL_HASH_FCN(unsigned int)
+
+MYSTL_TRIVIAL_HASH_FCN(long)
+
+MYSTL_TRIVIAL_HASH_FCN(unsigned long)
+
+MYSTL_TRIVIAL_HASH_FCN(long long)
+
+MYSTL_TRIVIAL_HASH_FCN(unsigned long long)
+
+#undef MYSTL_TRIVIAL_HASH_FCN
+
+// 对于浮点数，逐位哈希
+inline size_t bitwise_hash(const unsigned char* first, size_t count)
+{
+#if (_MSC_VER && _WIN64) || ((__GNUC__ || __clang__) &&__SIZEOF_POINTER__ == 8)
+  const size_t fnv_offset = 14695981039346656037ull;
+  const size_t fnv_prime = 1099511628211ull;
+#else
+  const size_t fnv_offset = 2166136261u;
+  const size_t fnv_prime = 16777619u;
+#endif
+  size_t result = fnv_offset;
+  for (size_t i = 0; i < count; ++i)
+  {
+    result ^= (size_t)first[i];
+    result *= fnv_prime;
+  }
+  return result;
 }
 
-template <> struct hash<char*>
+template <>
+struct hash<float>
 {
-  size_t operator()(const char* s) const { return hash_string(s); }
+  size_t operator()(const float& val)
+  { 
+    return val == 0.0f ? 0 : bitwise_hash((const unsigned char*)&val, sizeof(float));
+  }
 };
 
-template <> struct hash<const char*>
+template <>
+struct hash<double>
 {
-  size_t operator()(const char* s) const { return hash_string(s); }
+  size_t operator()(const double& val)
+  {
+    return val == 0.0f ? 0 : bitwise_hash((const unsigned char*)&val, sizeof(double));
+  }
 };
 
-// 针对 mystl::string 的特化版本
-template <> struct hash<mystl::string>
+template <>
+struct hash<long double>
 {
-  size_t operator()(const mystl::string& str) const { return hash_string(str.data()); }
-};
-
-// 针对 char，int，long 等整数型别，只是返回原值
-
-template <> struct hash<char>
-{
-  size_t operator()(char x) const { return x; }
-};
-
-template <> struct hash<unsigned char>
-{
-  size_t operator()(unsigned char x) const { return x; }
-};
-
-template <> struct hash<signed char>
-{
-  size_t operator()(unsigned char x) const { return x; }
-};
-
-template <> struct hash<short>
-{
-  size_t operator()(short x) const { return x; }
-};
-
-template <> struct hash<unsigned short>
-{
-  size_t operator()(unsigned short x) const { return x; }
-};
-
-template <> struct hash<int>
-{
-  size_t operator()(int x) const { return x; }
-};
-
-template <> struct hash<unsigned int>
-{
-  size_t operator()(unsigned int x) const { return x; }
-};
-
-template <> struct hash<long>
-{
-  size_t operator()(long x) const { return x; }
-};
-
-template <> struct hash<unsigned long>
-{
-  size_t operator()(unsigned long x) const { return x; }
+  size_t operator()(const long double& val)
+  {
+    return val == 0.0f ? 0 : bitwise_hash((const unsigned char*)&val, sizeof(long double));
+  }
 };
 
 } // namespace mystl

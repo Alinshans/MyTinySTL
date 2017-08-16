@@ -8,6 +8,7 @@
 
 #include "iterator.h"
 #include "memory.h"
+#include "functional.h"
 #include "exceptdef.h"
 
 namespace mystl
@@ -2016,6 +2017,17 @@ void swap(basic_string<CharType, CharTraits>& lhs,
 {
   lhs.swap(rhs);
 }
+
+// 特化 mystl::hash
+template <class CharType, class CharTraits>
+struct hash<basic_string<CharType, CharTraits>>
+{
+  size_t operator()(const basic_string<CharType, CharTraits>& str)
+  {
+    return bitwise_hash((const unsigned char*)str.c_str(),
+                        str.size() * sizeof(CharType));
+  }
+};
 
 } // namespace mystl
 #endif // !MYTINYSTL_BASIC_STRING_H_
