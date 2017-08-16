@@ -24,29 +24,6 @@ typedef m_bool_constant<true>  m_true_type;
 typedef m_bool_constant<false> m_false_type;
 
 /*****************************************************************************************/
-// char_type
-// 字符型型别萃取
-
-struct char_type {};
-struct wchar_type {};
-
-template <class Type>
-struct char_traits
-{
-  typedef m_false_type type;
-};
-
-template<> struct char_traits<char>
-{
-  typedef char_type    type;
-};
-
-template<> struct char_traits<wchar_t>
-{
-  typedef wchar_type   type;
-};
-
-/*****************************************************************************************/
 // type traits
 
 // is_pair
