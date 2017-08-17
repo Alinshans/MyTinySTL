@@ -87,11 +87,11 @@ void unordered_set_test()
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
-  std::cout << "|       insert        |";
+  std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P1(unordered_set<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P1(unordered_set<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
 #else
-  CON_TEST_P1(unordered_set<int>, insert, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  CON_TEST_P1(unordered_set<int>, emplace, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -171,11 +171,11 @@ void unordered_multiset_test()
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
-  std::cout << "|       insert        |";
+  std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P1(unordered_multiset<int>, insert, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
 #else
-  CON_TEST_P1(unordered_multiset<int>, insert, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
