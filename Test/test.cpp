@@ -1,4 +1,8 @@
-﻿#include "algorithm_performance_test.h"
+﻿#ifdef _MSC_VER
+#define _SCL_SECURE_NO_WARNINGS
+#endif // _MSC_VER
+
+#include "algorithm_performance_test.h"
 #include "algorithm_test.h"
 #include "vector_test.h"
 #include "list_test.h"
