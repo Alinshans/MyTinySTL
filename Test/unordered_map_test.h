@@ -94,11 +94,11 @@ void unordered_map_test()
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
-  std::cout << "|       insert        |";
+  std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  MAP_INSERT_TEST(unordered_map, LEN1 _M, LEN2 _M, LEN3 _M);
+  MAP_EMPLACE_TEST(unordered_map, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  MAP_INSERT_TEST(unordered_map, LEN1 _S, LEN2 _S, LEN3 _S);
+  MAP_EMPLACE_TEST(unordered_map, LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -183,11 +183,11 @@ void unordered_multimap_test()
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
-  std::cout << "|       insert        |";
+  std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  MAP_INSERT_TEST(unordered_multimap, LEN1 _S, LEN2 _S, LEN3 _S);
+  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _S, LEN2 _S, LEN3 _S);
 #else
-  MAP_INSERT_TEST(unordered_multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

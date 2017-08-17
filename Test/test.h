@@ -631,14 +631,14 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
   std::cout << std::setw(WIDE) << t;                         \
 } while(0)
 
-#define MAP_INSERT_DO_TEST(mode, con, count) do {            \
+#define MAP_EMPLACE_DO_TEST(mode, con, count) do {           \
   srand((int)time(0));                                       \
   clock_t start, end;                                        \
   mode::con<int, int> c;                                     \
   char buf[10];                                              \
   start = clock();                                           \
   for (size_t i = 0; i < count; ++i)                         \
-    c.insert(mode::pair<int, int>(rand(), rand()));          \
+    c.emplace(mode::make_pair(rand(), rand()));              \
   end = clock();                                             \
   int n = static_cast<int>(static_cast<double>(end - start)  \
       / CLOCKS_PER_SEC * 1000);                              \
@@ -671,16 +671,16 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
   FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len2);       \
   FUN_TEST_FORMAT2(mystl::con, fun, arg1, arg2, len3);    
 
-#define MAP_INSERT_TEST(con, len1, len2, len3)               \
+#define MAP_EMPLACE_TEST(con, len1, len2, len3)              \
   TEST_LEN(len1, len2, len3, WIDE);                          \
   std::cout << "|         std         |";                    \
-  MAP_INSERT_DO_TEST(std, con, len1);                        \
-  MAP_INSERT_DO_TEST(std, con, len2);                        \
-  MAP_INSERT_DO_TEST(std, con, len3);                        \
+  MAP_EMPLACE_DO_TEST(std, con, len1);                       \
+  MAP_EMPLACE_DO_TEST(std, con, len2);                       \
+  MAP_EMPLACE_DO_TEST(std, con, len3);                       \
   std::cout << "\n|        mystl        |";                  \
-  MAP_INSERT_DO_TEST(mystl, con, len1);                      \
-  MAP_INSERT_DO_TEST(mystl, con, len2);                      \
-  MAP_INSERT_DO_TEST(mystl, con, len3);
+  MAP_EMPLACE_DO_TEST(mystl, con, len1);                     \
+  MAP_EMPLACE_DO_TEST(mystl, con, len2);                     \
+  MAP_EMPLACE_DO_TEST(mystl, con, len3);
 
 #define LIST_SORT_TEST(len1, len2, len3)                     \
   TEST_LEN(len1, len2, len3, WIDE);                          \
@@ -707,7 +707,7 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
 #endif // !PERFORMANCE_TEST_ON
 
 // 电脑内存是否够大
-// 不要随便开启这个选项，除非你确保你的内存有 16G/32G 这么大，并且可用内存还很多
+// 如果你的内存只有 8G 或以下，就不要开启这个选项
 #ifndef MEMORY_IS_ENOUGH
 #define MEMORY_IS_ENOUGH 0
 #endif // !MEMORY_IS_ENOUGH

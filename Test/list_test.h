@@ -101,9 +101,9 @@ void list_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         sort        |";
 #if MEMORY_IS_ENOUGH
-  LIST_SORT_TEST(LEN1 _M, LEN2 _M, LEN3 _M);
-#else
   LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
+#else
+  LIST_SORT_TEST(LEN1 _SS, LEN2 _SS, LEN3 _SS);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
