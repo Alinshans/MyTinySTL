@@ -21,7 +21,7 @@ struct char_traits
 {
   typedef CharType char_type;
   
-  static const size_t length(const char_type* str)
+  static size_t length(const char_type* str)
   {
     size_t len = 0;
     for (; *str != char_type(0); ++str)
@@ -81,10 +81,10 @@ struct char_traits<char>
 {
   typedef char char_type;
 
-  static const size_t length(const char_type* str) noexcept
+  static size_t length(const char_type* str) noexcept
   { return std::strlen(str); }
 
-  static const int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
+  static int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
   { return std::memcmp(s1, s2, n); }
 
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
@@ -113,12 +113,12 @@ struct char_traits<wchar_t>
 {
   typedef wchar_t char_type;
 
-  static const size_t length(const char_type* str) noexcept
+  static size_t length(const char_type* str) noexcept
   {
     return std::wcslen(str);
   }
 
-  static const int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
+  static int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
   {
     return std::wmemcmp(s1, s2, n);
   }
@@ -149,7 +149,7 @@ struct char_traits<char16_t>
 {
   typedef char16_t char_type;
 
-  static const size_t length(const char_type* str) noexcept
+  static size_t length(const char_type* str) noexcept
   {
     size_t len = 0;
     for (; *str != char_type(0); ++str)
@@ -209,7 +209,7 @@ struct char_traits<char32_t>
 {
   typedef char32_t char_type;
 
-  static const size_t length(const char_type* str) noexcept
+  static size_t length(const char_type* str) noexcept
   {
     size_t len = 0;
     for (; *str != char_type(0); ++str)
