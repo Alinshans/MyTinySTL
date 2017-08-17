@@ -1,7 +1,7 @@
 language: cpp
 
 # ubuntu 14.04 version
-sudo: false
+sudo: required
 dist: trusty
 
 matrix:
