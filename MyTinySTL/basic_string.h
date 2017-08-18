@@ -420,7 +420,7 @@ public:
   { return static_cast<size_type>(-1); }
 
   void      reserve(size_type n);
-  void      shrink_to_fit() noexcept;
+  void      shrink_to_fit();
 
   // 访问元素相关操作
   reference       operator[](size_type n) 
@@ -698,6 +698,9 @@ private:
   // get raw pointer
   const_pointer to_raw_pointer() const;
 
+  // shrink_to_fit
+  void          reinsert(size_type size);
+
   // append
   template <class Iter>
   basic_string& append_range(Iter first, Iter last);
@@ -769,12 +772,11 @@ reserve(size_type n)
 // 减少不用的空间
 template <class CharType, class CharTraits>
 void basic_string<CharType, CharTraits>::
-shrink_to_fit() noexcept
+shrink_to_fit()
 {
   if (size_ != cap_)
   {
-    data_allocator::deallocate(buffer_ + size_, cap_ - size_);
-    cap_ = size_;
+    reinsert(size_);
   }
 }
 
@@ -1676,6 +1678,25 @@ to_raw_pointer() const
 {
   *(buffer_ + size_) = value_type();
   return buffer_;
+}
+
+// reinsert 函数
+template <class CharType, class CharTraits>
+void basic_string<CharType, CharTraits>::
+reinsert(size_type size)
+{
+  auto new_buffer = data_allocator::allocate(size);
+  try
+  {
+    char_traits::move(new_buffer, buffer_, size);
+  }
+  catch (...)
+  {
+    data_allocator::deallocate(new_buffer);
+  }
+  buffer_ = new_buffer;
+  size_ = size;
+  cap_ = size;
 }
 
 // append_range，末尾追加一段 [first, last) 内的字符

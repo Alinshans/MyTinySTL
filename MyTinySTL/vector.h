@@ -69,10 +69,8 @@ private:
 
 public:
   // 构造、复制、移动、析构函数
-  vector()
-  {
-    init_space(0, 16);
-  }
+  vector() noexcept
+  { try_init(); }
 
   explicit vector(size_type n)
   { fill_init(n, value_type()); }
@@ -164,7 +162,7 @@ public:
   size_type capacity() const noexcept
   { return static_cast<size_type>(cap_ - begin_); }
   void      reserve(size_type n);
-  void      shrink_to_fit()  noexcept;
+  void      shrink_to_fit();
 
   // 访问元素相关操作
   reference operator[](size_type n)
@@ -284,6 +282,7 @@ private:
   // helper functions
 
   // initialize / destroy
+  void      try_init() noexcept;
 
   void      init_space(size_type size, size_type cap);
 
@@ -318,6 +317,9 @@ private:
   template <class IIter>
   void      copy_insert(iterator pos, IIter first, IIter last);
 
+  // shrink_to_fit
+
+  void      reinsert(size_type size);
 };
 
 /*****************************************************************************************/
@@ -367,21 +369,6 @@ vector<T>& vector<T>::operator=(vector&& rhs) noexcept
   return *this;
 }
 
-// 放弃多余的容量
-template <class T>
-void vector<T>::shrink_to_fit() noexcept
-{
-  if (end_ < cap_)
-  {
-    try
-    {
-      data_allocator::deallocate(end_ + 1, cap_ - end_);
-      cap_ = end_;
-    }
-    catch (...) {}
-  }
-}
-
 // 预留空间大小，当原容量小于要求大小时，才会重新分配
 template <class T>
 void vector<T>::reserve(size_type n)
@@ -397,6 +384,16 @@ void vector<T>::reserve(size_type n)
     begin_ = tmp;
     end_ = tmp + old_size;
     cap_ = begin_ + n;
+  }
+}
+
+// 放弃多余的容量
+template <class T>
+void vector<T>::shrink_to_fit()
+{
+  if (end_ < cap_)
+  {
+    reinsert(size());
   }
 }
 
@@ -553,6 +550,25 @@ void vector<T>::swap(vector<T>& rhs) noexcept
 /*****************************************************************************************/
 // helper function
 
+// try_init 函数，若分配失败则忽略，不抛出异常
+template <class T>
+void vector<T>::try_init() noexcept
+{
+  try
+  {
+    begin_ = data_allocator::allocate(16);
+    end_ = begin_;
+    cap_ = begin_ + 16;
+  }
+  catch (...)
+  {
+    begin_ = nullptr;
+    end_ = nullptr;
+    cap_ = nullptr;
+  }
+}
+
+// init_space 函数
 template <class T>
 void vector<T>::init_space(size_type size, size_type cap)
 {
@@ -846,6 +862,25 @@ copy_insert(iterator pos, IIter first, IIter last)
     end_ = new_end;
     cap_ = begin_ + new_size;
   }
+}
+
+// reinsert 函数
+template <class T>
+void vector<T>::reinsert(size_type size)
+{
+  auto new_begin = data_allocator::allocate(size);
+  try
+  {
+    mystl::uninitialized_move(begin_, end_, new_begin);
+  }
+  catch (...)
+  {
+    data_allocator::deallocate(new_begin, size);
+    throw;
+  }
+  begin_ = new_begin;
+  end_ = begin_ + size;
+  cap_ = begin_ + size;
 }
 
 /*****************************************************************************************/
