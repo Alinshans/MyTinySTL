@@ -91,7 +91,7 @@ void unordered_map_test()
   MAP_FUN_AFTER(um1, um1.max_load_factor(1.5f));
   FUN_VALUE(um1.max_load_factor());
   PASSED;
-#if PERFORMANCE_TEST_ON
+#if PERFORMANCE_TEST_ON == 0
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";

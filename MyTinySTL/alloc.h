@@ -1,7 +1,9 @@
 ﻿#ifndef MYTINYSTL_ALLOC_H_
 #define MYTINYSTL_ALLOC_H_
 
-// 这个头文件包含一个类 alloc，用于分配和回收内存，是 mystl 的空间配置器
+// 这个头文件包含一个类 alloc，用于分配和回收内存，以内存池的方式实现
+//
+// 从 v2.0.0 版本开始，将不再使用内存池，这个文件将被弃用，但暂时保留
 
 #include <new>
 
@@ -45,7 +47,7 @@ private:
   static char*  start_free;                      // 内存池起始位置
   static char*  end_free;                        // 内存池结束位置
   static size_t heap_size;                       // 申请 heap 空间附加值大小
-
+  
   static FreeList* free_list[EFreeListsNumber];  // 自由链表
 
 public:
@@ -57,7 +59,6 @@ private:
   static size_t M_align(size_t bytes);
   static size_t M_round_up(size_t bytes);
   static size_t M_freelist_index(size_t bytes);
-  static size_t M_get_blocks(size_t bytes);
   static void*  M_refill(size_t n);
   static char*  M_chunk_alloc(size_t size, size_t &nobj);
 };
@@ -157,22 +158,10 @@ inline size_t alloc::M_freelist_index(size_t bytes)
     : (47 + (bytes + EAlign4096 - 2049) / EAlign4096);
 }
 
-// 根据大小获取区块数目
-inline size_t alloc::M_get_blocks(size_t bytes)
-{
-  if (bytes <= 512)
-  {
-    return bytes <= 256
-      ? bytes <= 128 ? 8 : 4
-      : 2;
-  }
-  return bytes <= 1024 ? 2 : 1;
-}
-
 // 重新填充 free list
 void* alloc::M_refill(size_t n)
 {
-  size_t nblock = M_get_blocks(n);
+  size_t nblock = 10;
   char* c = M_chunk_alloc(n, nblock);
   FreeList* my_free_list;
   FreeList* result, *cur, *next;
