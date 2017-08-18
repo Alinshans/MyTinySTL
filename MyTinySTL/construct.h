@@ -40,6 +40,18 @@ void construct(Ty* ptr, Args&&... args)
 
 // destroy 将对象析构
 
+template <class Ty>
+void destroy_one(Ty*, std::true_type) {}
+
+template <class Ty>
+void destroy_one(Ty* pointer, std::false_type)
+{
+  if (pointer != nullptr)
+  {
+    pointer->~Ty();
+  }
+}
+
 template <class ForwardIter>
 void destroy_cat(ForwardIter , ForwardIter , std::true_type) {}
 
@@ -53,7 +65,7 @@ void destroy_cat(ForwardIter first, ForwardIter last, std::false_type)
 template <class Ty>
 void destroy(Ty* pointer)
 {
-  pointer->~Ty();
+  destroy_one(pointer, std::is_trivially_destructible<Ty>{});
 }
 
 template <class ForwardIter>
