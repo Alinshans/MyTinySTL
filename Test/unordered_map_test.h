@@ -91,14 +91,14 @@ void unordered_map_test()
   MAP_FUN_AFTER(um1, um1.max_load_factor(1.5f));
   FUN_VALUE(um1.max_load_factor());
   PASSED;
-#if PERFORMANCE_TEST_ON == 0
+#if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
   MAP_EMPLACE_TEST(unordered_map, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  MAP_EMPLACE_TEST(unordered_map, LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  MAP_EMPLACE_TEST(unordered_map, LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -185,9 +185,9 @@ void unordered_multimap_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _S, LEN2 _S, LEN3 _S);
+  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  MAP_EMPLACE_TEST(unordered_multimap, LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

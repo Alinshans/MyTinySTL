@@ -84,7 +84,11 @@ void stack_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-  CON_TEST_P1(stack<int>, push, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if MEMORY_IS_ENOUGH
+  CON_TEST_P1(stack<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(stack<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;

@@ -76,9 +76,9 @@ void set_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P1(set<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P1(set<int>, emplace, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
 #else
-  CON_TEST_P1(set<int>, emplace, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  CON_TEST_P1(set<int>, emplace, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -148,9 +148,9 @@ void multiset_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P1(multiset<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P1(multiset<int>, emplace, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  CON_TEST_P1(multiset<int>, emplace, rand(), LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  CON_TEST_P1(multiset<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

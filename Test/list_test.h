@@ -92,17 +92,17 @@ void list_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       insert        |";
 #if MEMORY_IS_ENOUGH
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
 #else
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         sort        |";
 #if MEMORY_IS_ENOUGH
-  LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
+  LIST_SORT_TEST(LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  LIST_SORT_TEST(LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

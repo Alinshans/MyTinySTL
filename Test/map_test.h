@@ -108,9 +108,9 @@ void map_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  MAP_EMPLACE_TEST(map, LEN1 _M, LEN2 _M, LEN3 _M);
+  MAP_EMPLACE_TEST(map, LEN1 _L, LEN2 _L, LEN3 _L);
 #else
-  MAP_EMPLACE_TEST(map, LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  MAP_EMPLACE_TEST(map, LEN1 _M, LEN2 _M, LEN3 _M);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -184,9 +184,9 @@ void multimap_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if MEMORY_IS_ENOUGH
-  MAP_EMPLACE_TEST(multimap, LEN1 _S, LEN2 _S, LEN3 _S);
+  MAP_EMPLACE_TEST(multimap, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  MAP_EMPLACE_TEST(multimap, LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  MAP_EMPLACE_TEST(multimap, LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
