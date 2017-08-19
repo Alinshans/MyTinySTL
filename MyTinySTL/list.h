@@ -265,18 +265,12 @@ public:
     return *this;
   }
 
-  list& operator=(list&& rhs)
+  list& operator=(list&& rhs) noexcept
   {
     if (this != &rhs)
     {
-      clear();
-      base_allocator::deallocate(node_);
-
-      node_ = rhs.node_;
-      size_ = rhs.size_;
-
-      rhs.node_ = nullptr;
-      rhs.size_ = 0;
+      list tmp(mystl::move(rhs));
+      swap(tmp);
     }
     return *this;
   }
@@ -284,7 +278,7 @@ public:
   list& operator=(std::initializer_list<T> ilist)
   {
     list tmp(ilist.begin(), ilist.end());
-    *this = mystl::move(tmp);
+    swap(tmp);
     return *this;
   }
 
@@ -501,7 +495,11 @@ public:
   void     resize(size_type new_size) { resize(new_size, value_type()); }
   void     resize(size_type new_size, const value_type& value);
 
-  void     swap(list& rhs) { mystl::swap(node_, rhs.node_); }
+  void     swap(list& rhs) noexcept
+  {
+    mystl::swap(node_, rhs.node_);
+    mystl::swap(size_, rhs.size_);
+  }
 
   // list 相关操作
 
@@ -607,15 +605,16 @@ list<T>::erase(const_iterator first, const_iterator last)
 template <class T>
 void list<T>::clear()
 {
-  if (node_ == nullptr || node_->next == nullptr)
-    return;
-  auto cur = node_->next;
-  for (base_ptr next = cur->next; cur != node_; cur = next, next = cur->next)
+  if (size_ != 0)
   {
-    destroy_node(cur->as_node());
+    auto cur = node_->next;
+    for (base_ptr next = cur->next; cur != node_; cur = next, next = cur->next)
+    {
+      destroy_node(cur->as_node());
+    }
+    node_->unlink();
+    size_ = 0;
   }
-  node_->unlink();
-  size_ = 0;
 }
 
 // 重置容器大小
@@ -1193,7 +1192,7 @@ bool operator>=(const list<T>& lhs, const list<T>& rhs)
 
 // 重载 mystl 的 swap
 template <class T>
-void swap(list<T>& lhs, list<T>& rhs)
+void swap(list<T>& lhs, list<T>& rhs) noexcept
 {
   lhs.swap(rhs);
 }

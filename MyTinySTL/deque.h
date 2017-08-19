@@ -110,8 +110,8 @@ struct deque_iterator : public iterator<random_access_iterator_tag, T>
 
   difference_type operator-(const self& x) const
   {
-    return static_cast<difference_type>(buffer_size) * (node - x.node - 1)
-      + (cur - first) + (x.last - x.cur);
+    return static_cast<difference_type>(buffer_size) * (node - x.node)
+      + (cur - first) - (x.cur - x.first);
   }
 
   self& operator++()
@@ -119,7 +119,7 @@ struct deque_iterator : public iterator<random_access_iterator_tag, T>
     ++cur;
     if (cur == last)
     { // 如果到达缓冲区的尾
-      set_node(node + 1);  // 跳到下一个缓冲区
+      set_node(node + 1);
       cur = first;
     }
     return *this;
@@ -135,7 +135,7 @@ struct deque_iterator : public iterator<random_access_iterator_tag, T>
   {
     if (cur == first)
     { // 如果到达缓冲区的头
-      set_node(node - 1);  // 跳到前一个缓冲区
+      set_node(node - 1);
       cur = last;
     }
     --cur;

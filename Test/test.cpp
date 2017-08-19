@@ -1,6 +1,12 @@
 ﻿#ifdef _MSC_VER
 #define _SCL_SECURE_NO_WARNINGS
-#endif // _MSC_VER
+#endif
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC 
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif // check memory leaks
 
 #include "algorithm_performance_test.h"
 #include "algorithm_test.h"
@@ -38,5 +44,9 @@ int main()
   unordered_set_test::unordered_set_test();
   unordered_set_test::unordered_multiset_test();
   string_test::string_test();
-  
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+  _CrtDumpMemoryLeaks();
+#endif // check memory leaks
+
 }

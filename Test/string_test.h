@@ -38,7 +38,6 @@ void string_test()
   str11 = "123";
   mystl::string str12;
   str12 = 'A';
-  str12.~basic_string();
 
   STR_FUN_AFTER(str, str = 'a');
   STR_FUN_AFTER(str, str = "string");
@@ -59,6 +58,8 @@ void string_test()
   FUN_VALUE(str.length());
   FUN_VALUE(str.capacity());
   FUN_VALUE(str.max_size());
+  STR_FUN_AFTER(str, str.shrink_to_fit());
+  FUN_VALUE(str.capacity());
 
   STR_FUN_AFTER(str, str.insert(str.begin(), 'a'));
   STR_FUN_AFTER(str, str.insert(str.end(), 3, 'x'));
@@ -187,7 +188,7 @@ void string_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|        append       |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P1(string, append, "s", LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
   CON_TEST_P1(string, append, "s", LEN1 _L, LEN2 _L, LEN3 _L);

@@ -61,7 +61,6 @@ void stack_test()
   mystl::stack<int> s11{ 1,2,3,4,5 };
   mystl::stack<int> s12;
   s12 = { 1,2,3,4,5 };
-  s12.~stack();
 
   STACK_FUN_AFTER(s1, s1.push(1));
   STACK_FUN_AFTER(s1, s1.push(2));
@@ -85,7 +84,11 @@ void stack_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-  CON_TEST_P1(stack<int>, push, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P1(stack<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(stack<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;

@@ -818,14 +818,8 @@ operator=(const hashtable& rhs)
 {
   if (this != &rhs)
   {
-    clear();
-
-    buckets_ = rhs.buckets_;
-    bucket_size_ = rhs.bucket_size_;
-    size_ = rhs.size_;
-    mlf_ = rhs.mlf_;
-    hash_ = rhs.hash_;
-    equal_ = rhs.equal_;
+    hashtable tmp(rhs);
+    swap(tmp);
   }
   return *this;
 }
@@ -838,18 +832,8 @@ operator=(hashtable&& rhs) noexcept
 {
   if (this != &rhs)
   {
-    clear();
-
-    buckets_ = mystl::move(rhs.buckets_);
-    bucket_size_ = rhs.bucket_size_;
-    size_ = rhs.size_;
-    mlf_ = rhs.mlf_;
-    hash_ = rhs.hash_;
-    equal_ = rhs.equal_;
-
-    rhs.bucket_size_ = 0;
-    rhs.size_ = 0;
-    rhs.mlf_ = 0.0f;
+    hashtable tmp(mystl::move(rhs));
+    swap(tmp);
   }
   return *this;
 }
@@ -1296,6 +1280,7 @@ init(size_type n)
   }
   catch (...)
   {
+    bucket_size_ = 0;
     size_ = 0;
     throw;
   }
@@ -1307,6 +1292,7 @@ template <class T, class Hash, class KeyEqual>
 void hashtable<T, Hash, KeyEqual>::
 copy_init(const hashtable& ht)
 {
+  bucket_size_ = 0;
   buckets_.reserve(ht.bucket_size_);
   buckets_.assign(ht.bucket_size_, nullptr);
   try
@@ -1323,6 +1309,7 @@ copy_init(const hashtable& ht)
           copy->next = create_node(next->value);
           copy = copy->next;
         }
+        copy->next = nullptr;
       }
     }
     bucket_size_ = ht.bucket_size_;
@@ -1363,6 +1350,7 @@ destroy_node(node_ptr node)
 {
   data_allocator::destroy(mystl::address_of(node->value));
   node_allocator::deallocate(node);
+  node = nullptr;
 }
 
 // next_size 函数
@@ -1387,7 +1375,7 @@ typename hashtable<T, Hash, KeyEqual>::size_type
 hashtable<T, Hash, KeyEqual>::
 hash(const key_type& key) const
 {
-  return hash(key, bucket_size_);
+  return hash_(key) % bucket_size_;
 }
 
 // rehash_if_need 函数
@@ -1472,6 +1460,7 @@ insert_node_multi(node_ptr np)
   return iterator(np, this);
 }
 
+// insert_node_unique 函数
 template <class T, class Hash, class KeyEqual>
 pair<typename hashtable<T, Hash, KeyEqual>::iterator, bool>
 hashtable<T, Hash, KeyEqual>::
@@ -1513,18 +1502,18 @@ replace_bucket(size_type bucket_count)
         auto tmp = create_node(first->value);
         const auto n = hash(value_traits::get_key(first->value), bucket_count);
         auto f = bucket[n];
-        bool isInserted = false;
+        bool is_inserted = false;
         for (auto cur = f; cur; cur = cur->next)
         {
           if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(first->value)))
           {
             tmp->next = cur->next;
             cur->next = tmp;
-            isInserted = true;
+            is_inserted = true;
             break;
           }
         }
-        if (!isInserted)
+        if (!is_inserted)
         {
           tmp->next = f;
           bucket[n] = tmp;
@@ -1613,7 +1602,7 @@ bool hashtable<T, Hash, KeyEqual>::equal_to_unique(const hashtable& other)
 // 重载 mystl 的 swap
 template <class T, class Hash, class KeyEqual>
 void swap(hashtable<T, Hash, KeyEqual>& lhs,
-          hashtable<T, Hash, KeyEqual>& rhs)
+          hashtable<T, Hash, KeyEqual>& rhs) noexcept
 {
   lhs.swap(rhs);
 }

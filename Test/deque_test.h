@@ -34,7 +34,6 @@ void deque_test()
   mystl::deque<int> d9{ 1,2,3,4,5,6,7,8,9 };
   mystl::deque<int> d10;
   d10 = { 1,2,3,4,5,6,7,8,9 };
-  d10.~deque();
 
   FUN_AFTER(d1, d1.assign(5, 1));
   FUN_AFTER(d1, d1.assign(8, 8));
@@ -76,11 +75,19 @@ void deque_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|     push_front      |";
-  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|     push_back       |";
-  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;

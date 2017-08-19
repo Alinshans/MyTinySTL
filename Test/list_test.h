@@ -37,7 +37,6 @@ void list_test()
   l9 = std::move(l3);
   mystl::list<int> l10;
   l10 = { 1, 2, 2, 3, 5, 6, 7, 8, 9 };
-  l10.~list();
 
   FUN_AFTER(l1, l1.assign(8, 8));
   FUN_AFTER(l1, l1.assign(a, a + 5));
@@ -92,18 +91,18 @@ void list_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       insert        |";
-#if MEMORY_IS_ENOUGH
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
 #else
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         sort        |";
-#if MEMORY_IS_ENOUGH
-  LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
+#if LARGER_TEST_DATA_ON
+  LIST_SORT_TEST(LEN1 _M, LEN2 _M, LEN3 _M);
 #else
-  LIST_SORT_TEST(LEN1 _SS, LEN2 _SS, LEN3 _SS);
+  LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

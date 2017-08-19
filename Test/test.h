@@ -706,11 +706,10 @@ void test_len(size_t len1, size_t len2, size_t len3, size_t wide)
 #define PERFORMANCE_TEST_ON 1
 #endif // !PERFORMANCE_TEST_ON
 
-// 电脑内存是否够大
-// 如果你的内存只有 8G 或以下，就不要开启这个选项
-#ifndef MEMORY_IS_ENOUGH
-#define MEMORY_IS_ENOUGH 0
-#endif // !MEMORY_IS_ENOUGH
+// 是否开启大数据量测试
+#ifndef LARGER_TEST_DATA_ON
+#define LARGER_TEST_DATA_ON 0
+#endif // !LARGER_TEST_DATA_ON
 
 }    // namespace test
 }    // namespace mystl

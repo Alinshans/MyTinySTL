@@ -1,4 +1,4 @@
-version: 1.1.{build}
+version: 2.0.0{build}
 
 branches:
   only:
@@ -17,4 +17,6 @@ test_script:
   - cmd: cd .\x64\Release\
   - cmd: MyTinySTL.exe
   
+notifications:
+  email: false
 

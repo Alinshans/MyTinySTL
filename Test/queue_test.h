@@ -85,7 +85,6 @@ void queue_test()
   mystl::queue<int> q11{ 1,2,3,4,5 };
   mystl::queue<int> q12;
   q12 = { 1,2,3,4,5 };
-  q12.~queue();
 
   QUEUE_FUN_AFTER(q1, q1.push(1));
   QUEUE_FUN_AFTER(q1, q1.push(2));
@@ -110,7 +109,11 @@ void queue_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-  CON_TEST_P1(queue<int>, push, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P1(queue<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(queue<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;
@@ -164,7 +167,11 @@ void priority_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-  CON_TEST_P1(priority_queue<int>, push, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+#if LARGER_TEST_DATA_ON
+  CON_TEST_P1(priority_queue<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+#else
+  CON_TEST_P1(priority_queue<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+#endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   PASSED;
