@@ -362,18 +362,8 @@ public:
   basic_string& operator=(const basic_string& rhs);
   basic_string& operator=(basic_string&& rhs) noexcept;
 
-  basic_string& operator=(const_pointer str)
-  {
-    basic_string tmp(str);
-    *this = std::move(tmp);
-    return *this;
-  }
-  basic_string& operator=(value_type ch)
-  {
-    basic_string tmp(1, ch);
-    *this = std::move(tmp);
-    return *this;
-  }
+  basic_string& operator=(const_pointer str);
+  basic_string& operator=(value_type ch);
 
   ~basic_string() { destroy_buffer(); }
 
@@ -425,12 +415,16 @@ public:
   // 访问元素相关操作
   reference       operator[](size_type n) 
   {
-    MYSTL_DEBUG(n < size_);
+    MYSTL_DEBUG(n <= size_);
+    if (n == size_)
+      *(buffer_ + n) = value_type();
     return *(buffer_ + n); 
   }
   const_reference operator[](size_type n) const
   { 
-    MYSTL_DEBUG(n < size_);
+    MYSTL_DEBUG(n <= size_);
+    if (n == size_)
+      *(buffer_ + n) = value_type();
     return *(buffer_ + n);
   }
 
@@ -727,7 +721,8 @@ operator=(const basic_string& rhs)
 {
   if (this != &rhs)
   {
-    init_from(rhs.buffer_, 0, rhs.size_);
+    basic_string tmp(rhs);
+    swap(tmp);
   }
   return *this;
 }
@@ -750,6 +745,43 @@ operator=(basic_string&& rhs) noexcept
     rhs.size_ = 0;
     rhs.cap_ = 0;
   }
+  return *this;
+}
+
+// 用一个字符串赋值
+template <class CharType, class CharTraits>
+basic_string<CharType, CharTraits>&
+basic_string<CharType, CharTraits>::
+operator=(const_pointer str)
+{
+  const size_type len = char_traits::length(str);
+  if (cap_ < len)
+  {
+    auto new_buffer = data_allocator::allocate(len + 1);
+    data_allocator::deallocate(buffer_);
+    buffer_ = new_buffer;
+    cap_ = len + 1;
+  }
+  char_traits::copy(buffer_, str, len);
+  size_ = len;
+  return *this;
+}
+
+// 用一个字符赋值
+template <class CharType, class CharTraits>
+basic_string<CharType, CharTraits>&
+basic_string<CharType, CharTraits>::
+operator=(value_type ch)
+{
+  if (cap_ < 1)
+  {
+    auto new_buffer = data_allocator::allocate(2);
+    data_allocator::deallocate(buffer_);
+    buffer_ = new_buffer;
+    cap_ = 2;
+  }
+  *buffer_ = ch;
+  size_ = 1;
   return *this;
 }
 
@@ -1589,7 +1621,7 @@ template <class CharType, class CharTraits>
 void basic_string<CharType, CharTraits>::
 fill_init(size_type n, value_type ch)
 {
-  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n);
+  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n + 1);
   buffer_ = data_allocator::allocate(init_size);
   char_traits::fill(buffer_, ch, n);
   size_ = n;
@@ -1603,7 +1635,7 @@ void basic_string<CharType, CharTraits>::
 copy_init(Iter first, Iter last, mystl::input_iterator_tag)
 {
   size_type n = mystl::distance(first, last);
-  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n);
+  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n + 1);
   try
   {
     buffer_ = data_allocator::allocate(init_size);
@@ -1627,7 +1659,7 @@ void basic_string<CharType, CharTraits>::
 copy_init(Iter first, Iter last, mystl::forward_iterator_tag)
 {
   const size_type n = mystl::distance(first, last);
-  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n);
+  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), n + 1);
   try
   {
     buffer_ = data_allocator::allocate(init_size);
@@ -1649,7 +1681,7 @@ template <class CharType, class CharTraits>
 void basic_string<CharType, CharTraits>::
 init_from(const_pointer src, size_type pos, size_type count)
 {
-  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), count);
+  const auto init_size = mystl::max(static_cast<size_type>(STRING_INIT_SIZE), count + 1);
   buffer_ = data_allocator::allocate(init_size);
   char_traits::copy(buffer_, src + pos, count);
   size_ = count;
@@ -1827,6 +1859,7 @@ reallocate(size_type need)
   const auto new_cap = mystl::max(cap_ + need, cap_ + (cap_ >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
   char_traits::move(new_buffer, buffer_, size_);
+  data_allocator::deallocate(buffer_);
   buffer_ = new_buffer;
   cap_ = new_cap;
 }
@@ -1838,12 +1871,12 @@ basic_string<CharType, CharTraits>::
 reallocate_and_fill(iterator pos, size_type n, value_type ch)
 {
   const auto r = pos - buffer_;
-  const auto old_cap = capacity();
+  const auto old_cap = cap_;
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
   auto e1 = char_traits::move(new_buffer, buffer_, r);
   auto e2 = char_traits::fill(e1, ch, n);
-  char_traits::move(e2, buffer_ + r, size() - r);
+  char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
   size_ += n;
@@ -1858,13 +1891,13 @@ basic_string<CharType, CharTraits>::
 reallocate_and_copy(iterator pos, const_iterator first, const_iterator last)
 {
   const auto r = pos - buffer_;
-  const auto old_cap = size();
+  const auto old_cap = cap_;
   const size_type n = mystl::distance(first, last);
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
   auto e1 = char_traits::move(new_buffer, buffer_, r);
   auto e2 = mystl::uninitialized_copy_n(first, n, e1);
-  char_traits::move(e2, buffer_ + r, size() - r);
+  char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
   size_ += n;

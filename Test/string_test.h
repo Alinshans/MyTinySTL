@@ -58,6 +58,8 @@ void string_test()
   FUN_VALUE(str.length());
   FUN_VALUE(str.capacity());
   FUN_VALUE(str.max_size());
+  STR_FUN_AFTER(str, str.shrink_to_fit());
+  FUN_VALUE(str.capacity());
 
   STR_FUN_AFTER(str, str.insert(str.begin(), 'a'));
   STR_FUN_AFTER(str, str.insert(str.end(), 3, 'x'));
