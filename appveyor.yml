@@ -11,7 +11,7 @@ configuration:
 
 build:
   parallel: true
-  project: MSVC\MyTinySTL.sln
+  project: MSVC\MyTinySTL_VS2015.sln
   
 test_script:
   - cmd: cd .\x64\Release\
