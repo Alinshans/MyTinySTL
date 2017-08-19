@@ -32,7 +32,6 @@ void vector_test()
   v8 = v3;
   v9 = std::move(v3);
   v10 = { 1,2,3,4,5,6,7,8,9 };
-  v10.~vector();
 
   FUN_AFTER(v1, v1.assign(8, 8));
   FUN_AFTER(v1, v1.assign(a, a + 5));

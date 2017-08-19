@@ -37,7 +37,6 @@ void list_test()
   l9 = std::move(l3);
   mystl::list<int> l10;
   l10 = { 1, 2, 2, 3, 5, 6, 7, 8, 9 };
-  l10.~list();
 
   FUN_AFTER(l1, l1.assign(8, 8));
   FUN_AFTER(l1, l1.assign(a, a + 5));

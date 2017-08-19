@@ -38,7 +38,6 @@ void string_test()
   str11 = "123";
   mystl::string str12;
   str12 = 'A';
-  str12.~basic_string();
 
   STR_FUN_AFTER(str, str = 'a');
   STR_FUN_AFTER(str, str = "string");

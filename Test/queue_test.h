@@ -85,7 +85,6 @@ void queue_test()
   mystl::queue<int> q11{ 1,2,3,4,5 };
   mystl::queue<int> q12;
   q12 = { 1,2,3,4,5 };
-  q12.~queue();
 
   QUEUE_FUN_AFTER(q1, q1.push(1));
   QUEUE_FUN_AFTER(q1, q1.push(2));

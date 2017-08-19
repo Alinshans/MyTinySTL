@@ -34,7 +34,6 @@ void deque_test()
   mystl::deque<int> d9{ 1,2,3,4,5,6,7,8,9 };
   mystl::deque<int> d10;
   d10 = { 1,2,3,4,5,6,7,8,9 };
-  d10.~deque();
 
   FUN_AFTER(d1, d1.assign(5, 1));
   FUN_AFTER(d1, d1.assign(8, 8));

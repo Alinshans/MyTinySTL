@@ -61,7 +61,6 @@ void stack_test()
   mystl::stack<int> s11{ 1,2,3,4,5 };
   mystl::stack<int> s12;
   s12 = { 1,2,3,4,5 };
-  s12.~stack();
 
   STACK_FUN_AFTER(s1, s1.push(1));
   STACK_FUN_AFTER(s1, s1.push(2));
