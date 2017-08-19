@@ -95,7 +95,7 @@ void unordered_map_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   MAP_EMPLACE_TEST(unordered_map, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
   MAP_EMPLACE_TEST(unordered_map, LEN1 _S, LEN2 _S, LEN3 _S);
@@ -184,7 +184,7 @@ void unordered_multimap_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   MAP_EMPLACE_TEST(unordered_multimap, LEN1 _M, LEN2 _M, LEN3 _M);
 #else
   MAP_EMPLACE_TEST(unordered_multimap, LEN1 _S, LEN2 _S, LEN3 _S);

@@ -109,7 +109,7 @@ void queue_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P1(queue<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
   CON_TEST_P1(queue<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
@@ -167,7 +167,7 @@ void priority_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         push        |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P1(priority_queue<int>, push, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
   CON_TEST_P1(priority_queue<int>, push, rand(), LEN1 _L, LEN2 _L, LEN3 _L);

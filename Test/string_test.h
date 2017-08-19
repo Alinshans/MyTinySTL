@@ -188,7 +188,7 @@ void string_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|        append       |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P1(string, append, "s", LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
   CON_TEST_P1(string, append, "s", LEN1 _L, LEN2 _L, LEN3 _L);

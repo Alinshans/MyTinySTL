@@ -95,7 +95,7 @@ void vector_test()
   std::cout << "[--------------------- Performance Testing ---------------------]\n";
   std::cout << "|---------------------|-------------|-------------|-------------|\n";
   std::cout << "|      push_back      |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P1(vector<int>, push_back, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
 #else
   CON_TEST_P1(vector<int>, push_back, rand(), LEN1 _L, LEN2 _L, LEN3 _L);

@@ -91,7 +91,7 @@ void list_test()
   std::cout << "[--------------------- Performance Testing ---------------------]" << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       insert        |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
 #else
   CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
@@ -99,7 +99,7 @@ void list_test()
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         sort        |";
-#if MEMORY_IS_ENOUGH
+#if LARGER_TEST_DATA_ON
   LIST_SORT_TEST(LEN1 _M, LEN2 _M, LEN3 _M);
 #else
   LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
