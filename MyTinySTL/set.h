@@ -5,6 +5,14 @@
 // set      : 集合，键值即实值，集合内元素会自动排序，键值不允许重复
 // multiset : 集合，键值即实值，集合内元素会自动排序，键值允许重复
 
+// notes:
+//
+// 异常保证：
+// mystl::set<Key> / mystl::multiset<Key> 满足基本异常保证，对以下等函数做强异常安全保证：
+//   * emplace
+//   * emplace_hint
+//   * insert
+
 #include "rb_tree.h"
 
 namespace mystl

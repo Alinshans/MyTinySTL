@@ -4,6 +4,17 @@
 // 这个头文件包含了一个模板类 list
 // list : 双向链表
 
+// notes:
+//
+// 异常保证：
+// mystl::list<T> 满足基本异常保证，部分函数无异常保证，并对以下等函数做强异常安全保证：
+//   * emplace_front
+//   * emplace_back
+//   * emplace
+//   * push_front
+//   * push_back
+//   * insert
+
 #include <initializer_list>
 
 #include "iterator.h"
