@@ -14,7 +14,7 @@ build:
   project: MSVC\MyTinySTL_VS2015.sln
   
 test_script:
-  - cmd: cd .\x64\Release\
+  - cmd: cd .\MSVC\x64\Release\
   - cmd: MyTinySTL.exe
   
 notifications:
