@@ -8,15 +8,15 @@
   * linux, ubuntu 14.04, gcc5/6/7
   * osx, gcc5
   * osx, xcode5/6/7/8
-  * windows, VS2015/VS2017, x64
+  * windows, VS2015/VS2017, [x64|x86], [Release|Debug]
   
 ## 测试框架 (Test frame)
   在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中，用了两个类实现了一个简单的测试框架，并定义了大量宏来封装测试过程。</br>
   In this file [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h), I used two class to implement a simple test framework, and defined a lot of macros to package testing process.
   
 ## 测试内容 (Test content)
-  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON` 和 `MEMORY_IS_ENOUGH`。`PERFORMANCE_TEST_ON` 宏定义为 `1`，开启性能测试，`MEMORY_IS_ENOUGH` 宏定义为 `1`，增大测试数据（更多内存消耗）。默认 `PERFORMANCE_TEST_ON` 为 `1`， `MEMORY_IS_ENOUGH` 为 `0`。**建议电脑内存大小在 8G 及以上时，才运行默认的测试，否则应该为每个 test 的性能测试部分手动调小 1 ~ 2 个数量级，比如将 `_M` 的后缀修改为 `_S`，详情见 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义的宏。**<br>
-  In this file [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h), I defined two marcos: `PERFORMANCE_TEST_ON` and `MEMORY_IS_ENOUGH`. If `PERFORMANCE_TEST_ON` is defined as `1`, it will run the performance test, if `MEMORY_IS_ENOUGH` is defined as `1`, it will take larger test data(which will consume more memory). By default, `PERFORMANCE_TEST_ON` is `1` and `MEMORY_IS_ENOUGH` is `0`. **It is recommended that you should run the default test when the memory size of your computer is larger or equal to 8GiB, otherwise, you should adjust the amount of test data for each test, e.g., change the `_M` suffix to `_S`, see macros defined in [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) for details.**
+  在 [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h) 中定义了两个宏，`PERFORMANCE_TEST_ON` 和 `LARGER_TEST_DATA_ON`。`PERFORMANCE_TEST_ON` 代表开启性能测试，默认定义为 `1`。`LARGER_TEST_DATA_ON` 代表增大测试数据，默认定义为 `0`。**如果你想把 `LARGER_TEST_DATA_ON` 设置为 `1`，建议电脑配置为：处理器 i5 或以上，内存 8G 以上。**<br>
+  In this file [test.h](https://github.com/Alinshans/MyTinySTL/blob/master/MyTinySTL/Test/test.h), I defined two marcos: `PERFORMANCE_TEST_ON` and `LARGER_TEST_DATA_ON`. `PERFORMANCE_TEST_ON` means to run performance test, the default is defined as `1`. `LARGER_TEST_DATA_ON` means to increase the test data, the default is defined as `0`. **If you want to set `LARGER_TEST_DATA_ON` to `1`, the proposed computer configuration is: CPU i5 or above, memory 8G or more.**
 
   测试案例如下：<br>
   The test cases are as follows:
