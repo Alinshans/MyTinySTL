@@ -110,7 +110,7 @@ typename std::enable_if<
   Up*>::type
 unchecked_copy(Tp* first, Tp* last, Up* result)
 {
-  const size_t n = static_cast<size_t>(last - first);
+  const auto n = static_cast<size_t>(last - first);
   if (n != 0)
     std::memmove(result, first, n * sizeof(Up));
   return result + n;
@@ -165,7 +165,7 @@ typename std::enable_if<
   Up*>::type
 unchecked_copy_backward(Tp* first, Tp* last, Up* result)
 {
-  const size_t n = static_cast<size_t>(last - first);
+  const auto n = static_cast<size_t>(last - first);
   if (n != 0)
   {
     result -= n;
@@ -227,22 +227,6 @@ mystl::pair<InputIter, OutputIter>
 copy_n(InputIter first, Size n, OutputIter result)
 {
   return unchecked_copy_n(first, n, result, iterator_category(first));
-}
-
-// char* 的特化版本
-mystl::pair<const char*, char*>
-copy_n(const char* first, size_t n, char* result)
-{
-  std::memmove(result, first, n);
-  return mystl::make_pair(first + n, result + n);
-}
-
-// wchar_t* 的特化版本
-mystl::pair<const wchar_t*, wchar_t*>
-copy_n(const wchar_t* first, size_t n, wchar_t* result)
-{
-  std::memmove(result, first, sizeof(wchar_t) * n);
-  return mystl::make_pair(first + n, result + n);
 }
 
 /*****************************************************************************************/
@@ -389,11 +373,48 @@ bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compared comp
 }
 
 /*****************************************************************************************/
+// fill_n
+// 从 first 位置开始填充 n 个值
+/*****************************************************************************************/
+template <class OutputIter, class Size, class T>
+OutputIter unchecked_fill_n(OutputIter first, Size n, const T& value)
+{
+  for (; n > 0; --n, ++first)
+  {
+    *first = value;
+  }
+  return first;
+}
+
+// 为 one-byte 类型提供特化版本
+template <class Tp, class Size, class Up>
+typename std::enable_if<
+  std::is_integral<Tp>::value && sizeof(Tp) == 1 &&
+  !std::is_same<Tp, bool>::value &&
+  std::is_integral<Up>::value && sizeof(Up) == 1,
+  Tp*>::type
+unchecked_fill_n(Tp* first, Size n, Up value)
+{
+  if (n > 0)
+  {
+    std::memset(first, (unsigned char)value, (size_t)(n));
+  }
+  return first + n;
+}
+
+template <class OutputIter, class Size, class T>
+OutputIter fill_n(OutputIter first, Size n, const T& value)
+{
+  return unchecked_fill_n(first, n, value);
+}
+
+/*****************************************************************************************/
 // fill
 // 为 [first, last)区间内的所有元素填充新值
 /*****************************************************************************************/
-template <class FIter, class T>
-void fill(FIter first, FIter last, const T& value)
+template <class ForwardIter, class T>
+void fill_cat(ForwardIter first, ForwardIter last, const T& value,
+              mystl::forward_iterator_tag)
 {
   for (; first != last; ++first)
   {
@@ -401,37 +422,17 @@ void fill(FIter first, FIter last, const T& value)
   }
 }
 
-// 为 one-byte 类型提供特化版本
-void fill(unsigned char* first, unsigned char* last, const unsigned char& c)
+template <class RandomIter, class T>
+void fill_cat(RandomIter first, RandomIter last, const T& value,
+              mystl::random_access_iterator_tag)
 {
-  unsigned char tmp = c;
-  std::memset(first, tmp, last - first);
+  fill_n(first, last - first, value);
 }
 
-void fill(signed char* first, signed char* last, const signed char& c)
+template <class ForwardIter, class T>
+void fill(ForwardIter first, ForwardIter last, const T& value)
 {
-  signed char tmp = c;
-  std::memset(first, static_cast<unsigned char>(tmp), last - first);
-}
-
-void fill(char* first, char* last, const char& c)
-{
-  char tmp = c;
-  std::memset(first, static_cast<unsigned char>(tmp), last - first);
-}
-
-/*****************************************************************************************/
-// fill_n
-// 从 first 位置开始填充 n 个新值
-/*****************************************************************************************/
-template <class OutputIter, class Size, class T>
-OutputIter fill_n(OutputIter first, Size n, const T& value)
-{
-  for (; n > 0; --n, ++first)
-  {
-    *first = value;
-  }
-  return first;
+  fill_cat(first, last, value, iterator_category(first));
 }
 
 /*****************************************************************************************/
