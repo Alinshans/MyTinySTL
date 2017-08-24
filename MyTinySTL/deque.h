@@ -264,8 +264,7 @@ public:
 
   deque(const deque& rhs)
   {
-    map_init(rhs.size());
-    mystl::uninitialized_copy(rhs.begin_, rhs.end_, begin_);
+    copy_init(rhs.begin(), rhs.end(), mystl::forward_iterator_tag());
   }
   deque(deque&& rhs) noexcept
     :begin_(mystl::move(rhs.begin_)),
