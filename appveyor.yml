@@ -4,8 +4,10 @@ branches:
   only:
     - master
   
-image: Visual Studio 2015
-
+image: 
+  - Visual Studio 2015
+  - Visual Studio 2017
+  
 configuration: 
   - Release
 
@@ -16,7 +18,4 @@ build:
 test_script:
   - cmd: cd .\MSVC\x64\Release\
   - cmd: MyTinySTL.exe
-  
-notifications:
-  email: false
 
