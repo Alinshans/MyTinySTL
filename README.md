@@ -3,7 +3,7 @@ MyTinySTL
 [![Build Status](https://travis-ci.org/Alinshans/MyTinySTL.svg?branch=master)](https://travis-ci.org/Alinshans/MyTinySTL) [![Build Status](https://ci.appveyor.com/api/projects/status/github/Alinshans/MyTinySTL?branch=master&svg=true)](https://ci.appveyor.com/project/Alinshans/mytinystl) [![Release](https://img.shields.io/github/release/Alinshans/MyTinySTL.svg)](https://github.com/Alinshans/MyTinySTL/releases) [![License](https://img.shields.io/badge/License-MIT%20License-blue.svg)](https://opensource.org/licenses/MIT) [![Chat](https://img.shields.io/badge/chat-on%20gitter-FF6EB4.svg)](https://gitter.im/alinshans/MyTinySTL)
 
 ## 简介
-   基于 `C++11` 的 `tinySTL`，这是我的第一个项目，使用了中文文档与中文注释，有不规范或不当的地方还请海涵。刚开始是作为新手练习用途，直到现在已经发布了 `2.0.0` 版本。实现了大部分 STL 中的容器与函数，但仍存在许多不足与 bug 。从 `2.x.x` 版本开始，本项目会进入长期维护的阶段，即基本不会增加新的内容，只修复发现的 bug。如发现错误，还请在 [`Issues`](https://github.com/Alinshans/MyTinySTL/issues) 中指出，欢迎 `Fork` 和 [`Pull requests`](https://github.com/Alinshans/MyTinySTL/pulls) 改善代码，谢谢！
+   基于 `C++11` 的 `tinySTL`，这是我的第一个项目，使用了中文文档与中文注释，有不规范或不当的地方还请海涵。刚开始是作为新手练习用途，直到现在已经发布了 `2.x.x` 版本。实现了大部分 STL 中的容器与函数，但仍存在许多不足与 bug 。从 `2.x.x` 版本开始，本项目会进入长期维护的阶段，即基本不会增加新的内容，只修复发现的 bug。如发现错误，还请在 [`Issues`](https://github.com/Alinshans/MyTinySTL/issues) 中指出，欢迎 `Fork` 和 [`Pull requests`](https://github.com/Alinshans/MyTinySTL/pulls) 改善代码，谢谢！
 
 ## 支持
 
@@ -17,7 +17,7 @@ MyTinySTL
   * msvc 14.0 或以上
 
 ## 需要
-  * cmake 2.8 (使用g++/clang++编译)
+  * 使用 cmake 2.8 来构建项目（**可选**）
 
 ## 运行
 
@@ -66,7 +66,7 @@ This is a `tinySTL` based on `C++11`, which is my first project for practice. I 
 
 ## Required
 
-* cmake 2.8 (if you build with g++/clang++)
+* Use cmake 2.8 to build this project (**Optional**)
 
 ## Run test
 
