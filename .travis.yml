@@ -21,7 +21,6 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-6']
-
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
@@ -31,15 +30,9 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-7']
-
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
-    
     - os: osx
       osx_image: xcode5
       env:
@@ -62,6 +55,7 @@ matrix:
         
         
 before_script:
+  - eval "${MATRIX_EVAL}"
   - $CXX --version
   
 script:

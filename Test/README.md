@@ -6,7 +6,6 @@
   Tests were built and run directly on `Tracis CI` and `AppVeyor` and had been tested in the following environments:
 
   * linux, ubuntu 14.04, gcc5/6/7
-  * osx, gcc5
   * osx, xcode5/6/7/8
   * windows, VS2015/VS2017, [x64|x86], [Release|Debug]
   
