@@ -62,7 +62,6 @@ matrix:
         
         
 before_script:
-  - eval "${MATRIX_EVAL}"
   - $CXX --version
   
 script:

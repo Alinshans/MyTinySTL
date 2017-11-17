@@ -1025,16 +1025,11 @@ rb_tree<T, Compare>&
 rb_tree<T, Compare>::
 operator=(rb_tree&& rhs)
 {
-  if (this != &rhs)
-  {
-    clear();
-
-    header_ = mystl::move(rhs.header_);
-    node_count_ = rhs.node_count_;
-    key_comp_ = rhs.key_comp_;
-
-    rhs.reset();
-  }
+  clear();
+  header_ = mystl::move(rhs.header_);
+  node_count_ = rhs.node_count_;
+  key_comp_ = rhs.key_comp_;
+  rhs.reset();
   return *this;
 }
 
