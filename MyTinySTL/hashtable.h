@@ -830,11 +830,8 @@ hashtable<T, Hash, KeyEqual>&
 hashtable<T, Hash, KeyEqual>::
 operator=(hashtable&& rhs) noexcept
 {
-  if (this != &rhs)
-  {
-    hashtable tmp(mystl::move(rhs));
-    swap(tmp);
-  }
+  hashtable tmp(mystl::move(rhs));
+  swap(tmp);
   return *this;
 }
 

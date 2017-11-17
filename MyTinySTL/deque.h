@@ -506,18 +506,13 @@ deque<T>& deque<T>::operator=(const deque& rhs)
 template <class T>
 deque<T>& deque<T>::operator=(deque&& rhs)
 {
-  if (this != &rhs)
-  {
-    clear();
-
-    begin_ = mystl::move(rhs.begin_);
-    end_ = mystl::move(rhs.end_);
-    map_ = rhs.map_;
-    map_size_ = rhs.map_size_;
-
-    rhs.map_ = nullptr;
-    rhs.map_size_ = 0;
-  }
+  clear();
+  begin_ = mystl::move(rhs.begin_);
+  end_ = mystl::move(rhs.end_);
+  map_ = rhs.map_;
+  map_size_ = rhs.map_size_;
+  rhs.map_ = nullptr;
+  rhs.map_size_ = 0;
   return *this;
 }
 

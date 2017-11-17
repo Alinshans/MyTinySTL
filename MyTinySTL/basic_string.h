@@ -733,18 +733,13 @@ basic_string<CharType, CharTraits>&
 basic_string<CharType, CharTraits>::
 operator=(basic_string&& rhs) noexcept
 {
-  if (this != &rhs)
-  {
-    destroy_buffer();
-
-    buffer_ = rhs.buffer_;
-    size_ = rhs.size_;
-    cap_ = rhs.cap_;
-
-    rhs.buffer_ = nullptr;
-    rhs.size_ = 0;
-    rhs.cap_ = 0;
-  }
+  destroy_buffer();
+  buffer_ = rhs.buffer_;
+  size_ = rhs.size_;
+  cap_ = rhs.cap_;
+  rhs.buffer_ = nullptr;
+  rhs.size_ = 0;
+  rhs.cap_ = 0;
   return *this;
 }
 

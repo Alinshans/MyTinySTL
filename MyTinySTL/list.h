@@ -278,11 +278,13 @@ public:
 
   list& operator=(list&& rhs) noexcept
   {
-    if (this != &rhs)
-    {
-      list tmp(mystl::move(rhs));
-      swap(tmp);
-    }
+    clear();
+    splice(end(), rhs);
+    //if (this != &rhs)
+    //{
+    //  list tmp(mystl::move(rhs));
+    //  swap(tmp);
+    //}
     return *this;
   }
 

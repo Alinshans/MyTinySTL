@@ -356,16 +356,13 @@ vector<T>& vector<T>::operator=(const vector& rhs)
 template <class T>
 vector<T>& vector<T>::operator=(vector&& rhs) noexcept
 {
-  if (this != &rhs)
-  {
-    destroy_and_recover(begin_, end_, cap_ - begin_);
-    begin_ = rhs.begin_;
-    end_ = rhs.end_;
-    cap_ = rhs.cap_;
-    rhs.begin_ = nullptr;
-    rhs.end_ = nullptr;
-    rhs.cap_ = nullptr;
-  }
+  destroy_and_recover(begin_, end_, cap_ - begin_);
+  begin_ = rhs.begin_;
+  end_ = rhs.end_;
+  cap_ = rhs.cap_;
+  rhs.begin_ = nullptr;
+  rhs.end_ = nullptr;
+  rhs.cap_ = nullptr;
   return *this;
 }
 

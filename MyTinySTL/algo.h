@@ -2592,16 +2592,13 @@ void nth_element(RandomIter first, RandomIter nth,
     return;
   while (last - first > 3)
   {
-    auto cut = mystl::unchecked_partition(first, last,
-                                          mystl::median(*first, *(first + (last - first) / 2), *(last - 1)));
-    if (cut <= nth)
-    {  // 如果 nth 位于右段
+    auto cut = mystl::unchecked_partition(first, last, mystl::median(*first,
+										  *(first + (last - first) / 2),
+										  *(last - 1)));
+    if (cut <= nth)  // 如果 nth 位于右段
       first = cut;   // 对右段进行分割
-    }
     else
-    {
       last = cut;    // 对左段进行分割
-    }
   }
   mystl::insertion_sort(first, last);
 }
@@ -2615,12 +2612,13 @@ void nth_element(RandomIter first, RandomIter nth,
     return;
   while (last - first > 3)
   {
-    auto cut = mystl::unchecked_partition(first, last,
-                                          mystl::median(*first, *(first + (last - first) / 2), *(last - 1)), comp);
-    if (cut <= nth)   // 如果 nth 位于右段
-      first = cut;  // 对右段进行分割
+    auto cut = mystl::unchecked_partition(first, last, mystl::median(*first, 
+										  *(first + (last - first) / 2),
+										  *(last - 1)), comp);
+    if (cut <= nth)  // 如果 nth 位于右段
+      first = cut;   // 对右段进行分割
     else
-      last = cut;   // 对左段进行分割
+      last = cut;    // 对左段进行分割
   }
   mystl::insertion_sort(first, last, comp);
 }
