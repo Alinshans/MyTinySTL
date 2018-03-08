@@ -220,8 +220,8 @@ struct rb_tree_iterator_base :public mystl::iterator<mystl::bidirectional_iterat
   // 使迭代器后退
   void dec()
   {
-    if (node->color == rb_tree_red && node->parent->parent == node)
-    {  // 如果 node 为 header
+    if (node->parent->parent == node && rb_tree_is_red(node))
+    { // 如果 node 为 header
       node = node->right;  // 指向整棵树的 max 节点
     }
     else if (node->left != nullptr)
@@ -477,11 +477,11 @@ void rb_tree_rotate_right(NodePtr x, NodePtr& root) noexcept
 // case 1: 新增节点位于根节点，令新增节点为黑
 // case 2: 新增节点的父节点为黑，没有破坏平衡，直接返回
 // case 3: 父节点和叔叔节点都为红，令父节点和叔叔节点为黑，祖父节点为红，
-//         然后令当前节点为祖父节点，继续处理
-// case 4: 父节点为左（右）孩子，父节点为红，叔叔节点为 NIL 或黑色，新增节点为右（左）孩子，
-//         让新增节点的父节点成为当前节点，以当前节点为支点左（右）旋
-// case 5: 父节点为左（右）孩子，父节点为红，叔叔节点为 NIL 或黑色，新增节点为左（右）孩子，
-//         父节点变为黑色，祖父节点变为红色，以祖父节点为支点右（左）旋
+//         然后令祖父节点为当前节点，继续处理
+// case 4: 父节点为红，叔叔节点为 NIL 或黑色，父节点为左（右）孩子，当前节点为右（左）孩子，
+//         让父节点成为当前节点，再以当前节点为支点左（右）旋
+// case 5: 父节点为红，叔叔节点为 NIL 或黑色，父节点为左（右）孩子，当前节点为左（右）孩子，
+//         让父节点变为黑色，祖父节点变为红色，以祖父节点为支点右（左）旋
 //
 // 参考博客: http://blog.csdn.net/v_JULY_v/article/details/6105630
 //          http://blog.csdn.net/v_JULY_v/article/details/6109153
@@ -489,9 +489,6 @@ template <class NodePtr>
 void rb_tree_insert_rebalance(NodePtr x, NodePtr& root) noexcept
 {
   rb_tree_set_red(x);  // 新增节点为红色
-
-  // case 1, case 2 直接返回
-
   while (x != root && rb_tree_is_red(x->parent))
   {
     if (rb_tree_is_lchild(x->parent))
@@ -503,7 +500,6 @@ void rb_tree_insert_rebalance(NodePtr x, NodePtr& root) noexcept
         rb_tree_set_black(uncle);
         x = x->parent->parent;
         rb_tree_set_red(x);
-        // 此时祖父节点为红，可能会破坏红黑树的性质，令当前节点为祖父节点，继续处理
       }
       else
       { // 无叔叔节点或叔叔节点为黑
