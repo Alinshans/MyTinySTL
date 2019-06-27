@@ -44,14 +44,15 @@ struct char_traits
   static char_type* copy(char_type* dst, const char_type* src, size_t n)
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n)
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -69,9 +70,10 @@ struct char_traits
 
   static char_type* fill(char_type* dst, char_type ch, size_t count)
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -90,20 +92,17 @@ struct char_traits<char>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
-    std::memcpy(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::memcpy(dst, src, n));
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    std::memmove(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::memmove(dst, src, n));
   }
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   { 
-    std::memset(dst, ch, count); 
-    return dst + count;
+    return static_cast<char_type*>(std::memset(dst, ch, count));
   }
 };
 
@@ -126,20 +125,17 @@ struct char_traits<wchar_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
-    std::wmemcpy(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::wmemcpy(dst, src, n));
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    std::wmemmove(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::wmemmove(dst, src, n));
   }
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   { 
-    std::wmemset(dst, ch, count);
-    return dst + count;
+    return static_cast<char_type*>(std::wmemset(dst, ch, count));
   }
 };
 
@@ -172,14 +168,15 @@ struct char_traits<char16_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -197,9 +194,10 @@ struct char_traits<char16_t>
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -232,14 +230,15 @@ struct char_traits<char32_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -257,9 +256,10 @@ struct char_traits<char32_t>
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -1869,8 +1869,8 @@ reallocate_and_fill(iterator pos, size_type n, value_type ch)
   const auto old_cap = cap_;
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
-  auto e1 = char_traits::move(new_buffer, buffer_, r);
-  auto e2 = char_traits::fill(e1, ch, n);
+  auto e1 = char_traits::move(new_buffer, buffer_, r) + r;
+  auto e2 = char_traits::fill(e1, ch, n) + n;
   char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
@@ -1890,8 +1890,8 @@ reallocate_and_copy(iterator pos, const_iterator first, const_iterator last)
   const size_type n = mystl::distance(first, last);
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
-  auto e1 = char_traits::move(new_buffer, buffer_, r);
-  auto e2 = mystl::uninitialized_copy_n(first, n, e1);
+  auto e1 = char_traits::move(new_buffer, buffer_, r) + r;
+  auto e2 = mystl::uninitialized_copy_n(first, n, e1) + n;
   char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
@@ -2021,14 +2021,14 @@ template <class CharType, class CharTraits>
 bool operator==(const basic_string<CharType, CharTraits>& lhs,
                 const basic_string<CharType, CharTraits>& rhs)
 {
-  return lhs.compare(rhs) == 0;
+  return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
 }
 
 template <class CharType, class CharTraits>
 bool operator!=(const basic_string<CharType, CharTraits>& lhs,
                 const basic_string<CharType, CharTraits>& rhs)
 {
-  return lhs.compare(rhs) != 0;
+  return lhs.size() != rhs.size() || lhs.compare(rhs) != 0;
 }
 
 template <class CharType, class CharTraits>
