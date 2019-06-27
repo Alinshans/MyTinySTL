@@ -875,6 +875,7 @@ void vector<T>::reinsert(size_type size)
     data_allocator::deallocate(new_begin, size);
     throw;
   }
+  data_allocator::deallocate(begin_, cap_ - begin_);
   begin_ = new_begin;
   end_ = begin_ + size;
   cap_ = begin_ + size;
