@@ -699,6 +699,9 @@ private:
   template <class Iter>
   basic_string& append_range(Iter first, Iter last);
 
+  // compare
+  int compare_cstr(const_pointer s1, size_type n1, const_pointer s2, size_type n2) const;
+
   // replace
   basic_string& replace_cstr(const_iterator first, size_type count1, const_pointer str, size_type count2);
   basic_string& replace_fill(const_iterator first, size_type count1, size_type count2, value_type ch);
@@ -980,11 +983,7 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(const basic_string& other) const
 {
-  if (size_ != other.size_)
-  {
-    return size_ < other.size_ ? -1 : 1;
-  }
-  return char_traits::compare(buffer_, other.buffer_, size_);
+  return compare_cstr(buffer_, size_, other.buffer_, other.size_);
 }
 
 // 从 pos1 下标开始的 count1 个字符跟另一个 basic_string 比较
@@ -992,11 +991,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const basic_string& other) const
 {
-  if (count1 != other.size_)
-  {
-    return count1 < other.size_ ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, other.buffer_, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  return compare_cstr(buffer_ + pos1, n1, other.buffer_, other.size_);
 }
 
 // 从 pos1 下标开始的 count1 个字符跟另一个 basic_string 下标 pos2 开始的 count2 个字符比较
@@ -1005,15 +1001,9 @@ int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const basic_string& other,
         size_type pos2, size_type count2) const
 {
-  if (count2 == npos)
-  {
-    count2 = other.size_ - pos2;
-  }
-  if (count1 != count2)
-  {
-    return count1 < count2 ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, other.buffer_ + pos2, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  auto n2 = mystl::min(count2, other.size_ - pos2);
+  return compare_cstr(buffer_, n1, other.buffer_, n2);
 }
 
 // 跟一个字符串比较
@@ -1021,12 +1011,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(const_pointer s) const
 {
-  const size_type size = char_traits::length(s);
-  if (size_ != size)
-  {
-    return size_ < size ? -1 : 1;
-  }
-  return char_traits::compare(buffer_, s, size_);
+  auto n2 = char_traits::length(s);
+  return compare_cstr(buffer_, size_, s, n2);
 }
 
 // 从下标 pos1 开始的 count1 个字符跟另一个字符串比较
@@ -1034,12 +1020,9 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const_pointer s) const
 {
-  const size_type size = char_traits::length(s);
-  if (count1 != size)
-  {
-    return count1 < size ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, s, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  auto n2 = char_traits::length(s);
+  return compare_cstr(buffer_, n1, s, n2);
 }
 
 // 从下标 pos1 开始的 count1 个字符跟另一个字符串的前 count2 个字符比较
@@ -1047,11 +1030,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const_pointer s, size_type count2) const
 {
-  if (count1 != count2)
-  {
-    return count1 < count2 ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, s, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  return compare_cstr(buffer_, n1, s, count2);
 }
 
 // 反转 basic_string
@@ -1743,6 +1723,18 @@ append_range(Iter first, Iter last)
   mystl::uninitialized_copy_n(first, n, buffer_ + size_);
   size_ += n;
   return *this;
+}
+
+template <class CharType, class CharTraits>
+int basic_string<CharType, CharTraits>::
+compare_cstr(const_pointer s1, size_type n1, const_pointer s2, size_type n2) const
+{
+  auto rlen = mystl::min(n1, n2);
+  auto res = char_traits::compare(s1, s2, rlen);
+  if (res != 0) return res;
+  if (n1 < n2) return -1;
+  if (n1 > n2) return 1;
+  return 0;
 }
 
 // 把 first 开始的 count1 个字符替换成 str 开始的 count2 个字符
