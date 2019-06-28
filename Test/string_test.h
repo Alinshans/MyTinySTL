@@ -88,11 +88,12 @@ void string_test()
   FUN_VALUE(str.compare(str3));
   FUN_VALUE(str.compare(0, 6, str3));
   FUN_VALUE(str.compare(0, 6, str3, 1, 6));
-  FUN_VALUE(str.compare("strin"));
-  FUN_VALUE(str.compare("strinf"));
-  FUN_VALUE(str.compare("strinh"));
+  FUN_VALUE(str.compare("atringgg"));
+  FUN_VALUE(str.compare("zzz"));
   FUN_VALUE(str.compare(0, 3, "str"));
   FUN_VALUE(str.compare(0, 3, "stri", 4));
+  FUN_VALUE(str.compare(0, 3, "s", 3));
+  FUN_VALUE(str.compare(0, 9, "stringabc", 9));
   FUN_VALUE(str.substr(0));
   FUN_VALUE(str.substr(3));
   FUN_VALUE(str.substr(0, 3));

@@ -44,14 +44,15 @@ struct char_traits
   static char_type* copy(char_type* dst, const char_type* src, size_t n)
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n)
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -69,9 +70,10 @@ struct char_traits
 
   static char_type* fill(char_type* dst, char_type ch, size_t count)
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -90,20 +92,17 @@ struct char_traits<char>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
-    std::memcpy(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::memcpy(dst, src, n));
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    std::memmove(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::memmove(dst, src, n));
   }
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   { 
-    std::memset(dst, ch, count); 
-    return dst + count;
+    return static_cast<char_type*>(std::memset(dst, ch, count));
   }
 };
 
@@ -126,20 +125,17 @@ struct char_traits<wchar_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
-    std::wmemcpy(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::wmemcpy(dst, src, n));
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    std::wmemmove(dst, src, n);
-    return dst + n;
+    return static_cast<char_type*>(std::wmemmove(dst, src, n));
   }
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   { 
-    std::wmemset(dst, ch, count);
-    return dst + count;
+    return static_cast<char_type*>(std::wmemset(dst, ch, count));
   }
 };
 
@@ -172,14 +168,15 @@ struct char_traits<char16_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -197,9 +194,10 @@ struct char_traits<char16_t>
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -232,14 +230,15 @@ struct char_traits<char32_t>
   static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept
   {
     MYSTL_DEBUG(src + n <= dst || dst + n <= src);
+    char_type* r = dst;
     for (; n != 0; --n, ++dst, ++src)
       *dst = *src;
-    return dst;
+    return r;
   }
 
   static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept
   {
-    char_type* r = dst + n;
+    char_type* r = dst;
     if (dst < src)
     {
       for (; n != 0; --n, ++dst, ++src)
@@ -257,9 +256,10 @@ struct char_traits<char32_t>
 
   static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept
   {
+    char_type* r = dst;
     for (; count > 0; --count, ++dst)
       *dst = ch;
-    return dst;
+    return r;
   }
 };
 
@@ -699,6 +699,9 @@ private:
   template <class Iter>
   basic_string& append_range(Iter first, Iter last);
 
+  // compare
+  int compare_cstr(const_pointer s1, size_type n1, const_pointer s2, size_type n2) const;
+
   // replace
   basic_string& replace_cstr(const_iterator first, size_type count1, const_pointer str, size_type count2);
   basic_string& replace_fill(const_iterator first, size_type count1, size_type count2, value_type ch);
@@ -980,11 +983,7 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(const basic_string& other) const
 {
-  if (size_ != other.size_)
-  {
-    return size_ < other.size_ ? -1 : 1;
-  }
-  return char_traits::compare(buffer_, other.buffer_, size_);
+  return compare_cstr(buffer_, size_, other.buffer_, other.size_);
 }
 
 // 从 pos1 下标开始的 count1 个字符跟另一个 basic_string 比较
@@ -992,11 +991,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const basic_string& other) const
 {
-  if (count1 != other.size_)
-  {
-    return count1 < other.size_ ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, other.buffer_, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  return compare_cstr(buffer_ + pos1, n1, other.buffer_, other.size_);
 }
 
 // 从 pos1 下标开始的 count1 个字符跟另一个 basic_string 下标 pos2 开始的 count2 个字符比较
@@ -1005,15 +1001,9 @@ int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const basic_string& other,
         size_type pos2, size_type count2) const
 {
-  if (count2 == npos)
-  {
-    count2 = other.size_ - pos2;
-  }
-  if (count1 != count2)
-  {
-    return count1 < count2 ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, other.buffer_ + pos2, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  auto n2 = mystl::min(count2, other.size_ - pos2);
+  return compare_cstr(buffer_, n1, other.buffer_, n2);
 }
 
 // 跟一个字符串比较
@@ -1021,12 +1011,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(const_pointer s) const
 {
-  const size_type size = char_traits::length(s);
-  if (size_ != size)
-  {
-    return size_ < size ? -1 : 1;
-  }
-  return char_traits::compare(buffer_, s, size_);
+  auto n2 = char_traits::length(s);
+  return compare_cstr(buffer_, size_, s, n2);
 }
 
 // 从下标 pos1 开始的 count1 个字符跟另一个字符串比较
@@ -1034,12 +1020,9 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const_pointer s) const
 {
-  const size_type size = char_traits::length(s);
-  if (count1 != size)
-  {
-    return count1 < size ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, s, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  auto n2 = char_traits::length(s);
+  return compare_cstr(buffer_, n1, s, n2);
 }
 
 // 从下标 pos1 开始的 count1 个字符跟另一个字符串的前 count2 个字符比较
@@ -1047,11 +1030,8 @@ template <class CharType, class CharTraits>
 int basic_string<CharType, CharTraits>::
 compare(size_type pos1, size_type count1, const_pointer s, size_type count2) const
 {
-  if (count1 != count2)
-  {
-    return count1 < count2 ? -1 : 1;
-  }
-  return char_traits::compare(buffer_ + pos1, s, count1);
+  auto n1 = mystl::min(count1, size_ - pos1);
+  return compare_cstr(buffer_, n1, s, count2);
 }
 
 // 反转 basic_string
@@ -1745,6 +1725,18 @@ append_range(Iter first, Iter last)
   return *this;
 }
 
+template <class CharType, class CharTraits>
+int basic_string<CharType, CharTraits>::
+compare_cstr(const_pointer s1, size_type n1, const_pointer s2, size_type n2) const
+{
+  auto rlen = mystl::min(n1, n2);
+  auto res = char_traits::compare(s1, s2, rlen);
+  if (res != 0) return res;
+  if (n1 < n2) return -1;
+  if (n1 > n2) return 1;
+  return 0;
+}
+
 // 把 first 开始的 count1 个字符替换成 str 开始的 count2 个字符
 template <class CharType, class CharTraits>
 basic_string<CharType, CharTraits>& 
@@ -1869,8 +1861,8 @@ reallocate_and_fill(iterator pos, size_type n, value_type ch)
   const auto old_cap = cap_;
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
-  auto e1 = char_traits::move(new_buffer, buffer_, r);
-  auto e2 = char_traits::fill(e1, ch, n);
+  auto e1 = char_traits::move(new_buffer, buffer_, r) + r;
+  auto e2 = char_traits::fill(e1, ch, n) + n;
   char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
@@ -1890,8 +1882,8 @@ reallocate_and_copy(iterator pos, const_iterator first, const_iterator last)
   const size_type n = mystl::distance(first, last);
   const auto new_cap = mystl::max(old_cap + n, old_cap + (old_cap >> 1));
   auto new_buffer = data_allocator::allocate(new_cap);
-  auto e1 = char_traits::move(new_buffer, buffer_, r);
-  auto e2 = mystl::uninitialized_copy_n(first, n, e1);
+  auto e1 = char_traits::move(new_buffer, buffer_, r) + r;
+  auto e2 = mystl::uninitialized_copy_n(first, n, e1) + n;
   char_traits::move(e2, buffer_ + r, size_ - r);
   data_allocator::deallocate(buffer_, old_cap);
   buffer_ = new_buffer;
@@ -2021,14 +2013,14 @@ template <class CharType, class CharTraits>
 bool operator==(const basic_string<CharType, CharTraits>& lhs,
                 const basic_string<CharType, CharTraits>& rhs)
 {
-  return lhs.compare(rhs) == 0;
+  return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
 }
 
 template <class CharType, class CharTraits>
 bool operator!=(const basic_string<CharType, CharTraits>& lhs,
                 const basic_string<CharType, CharTraits>& rhs)
 {
-  return lhs.compare(rhs) != 0;
+  return lhs.size() != rhs.size() || lhs.compare(rhs) != 0;
 }
 
 template <class CharType, class CharTraits>
