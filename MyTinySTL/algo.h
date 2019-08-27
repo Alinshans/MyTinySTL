@@ -517,7 +517,7 @@ ForwardIter adjacent_find(ForwardIter first, ForwardIter last, Compared comp)
 
 /*****************************************************************************************/
 // lower_bound
-// 在[first, last)中查找第一个不小于 value 的元素的位置
+// 在[first, last)中查找第一个大于等于 value 的元素的位置
 // 返回一个迭代器，指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的第一个位置
 /*****************************************************************************************/
 // lbound_dispatch 的 forward_iterator_tag 版本
@@ -645,7 +645,7 @@ lower_bound(ForwardIter first, ForwardIter last, const T& value, Compared comp)
 
 /*****************************************************************************************/
 // upper_bound
-// 在[first, last)中查找最后一个不小于 value 的元素的位置
+// 在[first, last)中查找第一个大于value 的元素的位置
 // 返回一个迭代器，它指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的最后一个位置
 /*****************************************************************************************/
 // ubound_dispatch 的 forward_iterator_tag 版本
