@@ -517,8 +517,7 @@ ForwardIter adjacent_find(ForwardIter first, ForwardIter last, Compared comp)
 
 /*****************************************************************************************/
 // lower_bound
-// 在[first, last)中查找第一个大于等于 value 的元素的位置
-// 返回一个迭代器，指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的第一个位置
+// 在[first, last)中查找第一个不小于 value 的元素，并返回指向它的迭代器，若没有则返回 last
 /*****************************************************************************************/
 // lbound_dispatch 的 forward_iterator_tag 版本
 template <class ForwardIter, class T>
@@ -645,8 +644,7 @@ lower_bound(ForwardIter first, ForwardIter last, const T& value, Compared comp)
 
 /*****************************************************************************************/
 // upper_bound
-// 在[first, last)中查找第一个大于value 的元素的位置
-// 返回一个迭代器，它指向在范围内的有序序列中可以插入指定值而不破坏容器顺序的最后一个位置
+// 在[first, last)中查找第一个大于value 的元素，并返回指向它的迭代器，若没有则返回 last
 /*****************************************************************************************/
 // ubound_dispatch 的 forward_iterator_tag 版本
 template <class ForwardIter, class T>
@@ -793,6 +791,7 @@ bool binary_search(ForwardIter first, ForwardIter last, const T& value, Compared
 /*****************************************************************************************/
 // equal_range
 // 查找[first,last)区间中与 value 相等的元素所形成的区间，返回一对迭代器指向区间首尾
+// 第一个迭代器指向第一个不小于 value 的元素，第二个迭代器指向第一个大于 value 的元素
 /*****************************************************************************************/
 // erange_dispatch 的 forward_iterator_tag 版本
 template <class ForwardIter, class T>
@@ -826,7 +825,7 @@ erange_dispatch(ForwardIter first, ForwardIter last,
       return mystl::pair<ForwardIter, ForwardIter>(left, right);
     }
   }
-  return mystl::pair<ForwardIter, ForwardIter>(first, first);
+  return mystl::pair<ForwardIter, ForwardIter>(last, last);
 }
 
 // erange_dispatch 的 random_access_iterator_tag 版本
@@ -858,7 +857,7 @@ erange_dispatch(RandomIter first, RandomIter last,
       return mystl::pair<RandomIter, RandomIter>(left, right);
     }
   }
-  return mystl::pair<RandomIter, RandomIter>(first, first);
+  return mystl::pair<RandomIter, RandomIter>(last, last);
 }
 
 template <class ForwardIter, class T>
@@ -901,7 +900,7 @@ erange_dispatch(ForwardIter first, ForwardIter last,
       return mystl::pair<ForwardIter, ForwardIter>(left, right);
     }
   }
-  return mystl::pair<ForwardIter, ForwardIter>(first, first);
+  return mystl::pair<ForwardIter, ForwardIter>(last, last);
 }
 
 // erange_dispatch 的 random access iterator 版本
@@ -933,7 +932,7 @@ erange_dispatch(RandomIter first, RandomIter last,
       return mystl::pair<RandomIter, RandomIter>(left, right);
     }
   }
-  return mystl::pair<RandomIter, RandomIter>(first, first);
+  return mystl::pair<RandomIter, RandomIter>(last, last);
 }
 
 template <class ForwardIter, class T, class Compared>
