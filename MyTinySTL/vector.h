@@ -484,6 +484,7 @@ vector<T>::insert(const_iterator pos, const value_type& value)
     auto value_copy = value;  // 避免元素因以下复制操作而被改变
     mystl::copy_backward(xpos, end_ - 1, end_);
     *xpos = mystl::move(value_copy);
+    end_ = new_end;
   }
   else
   {
