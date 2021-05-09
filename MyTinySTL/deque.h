@@ -605,7 +605,7 @@ typename deque<T>::iterator deque<T>::emplace(iterator pos, Args&& ...args)
   else if (pos.cur == end_.cur)
   {
     emplace_back(mystl::forward<Args>(args)...);
-    return end_;
+    return end_ - 1;
   }
   return insert_aux(pos, mystl::forward<Args>(args)...);
 }

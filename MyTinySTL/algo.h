@@ -970,7 +970,7 @@ void generate_n(ForwardIter first, Size n, Generator gen)
 
 /*****************************************************************************************/
 // includes
-// 判断序列一 S1 传入的元素是否小于序列二 S2 传入的元素
+// 判断序列一S1 是否包含序列二S2
 /*****************************************************************************************/
 template <class InputIter1, class InputIter2>
 bool includes(InputIter1 first1, InputIter1 last1,
@@ -1531,7 +1531,7 @@ rotate_dispatch(RandomIter first, RandomIter middle,
   auto result = first + (last - middle);
   if (l == r)
   {
-    mystl::swap_ranges(first, middle, last);
+    mystl::swap_ranges(first, middle, middle);
     return result;
   }
   auto cycle_times = rgcd(n, l);
