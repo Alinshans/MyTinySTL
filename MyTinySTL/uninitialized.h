@@ -37,8 +37,8 @@ unchecked_uninit_copy(InputIter first, InputIter last, ForwardIter result, std::
   }
   catch (...)
   {
-    for (; result != cur; ++result)
-      mystl::destroy(&*result);
+    for (; result != cur; --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
@@ -77,8 +77,8 @@ unchecked_uninit_copy_n(InputIter first, Size n, ForwardIter result, std::false_
   }
   catch (...)
   {
-    for (; result != cur; ++result)
-      mystl::destroy(&*result);
+    for (; result != cur; --cur)
+      mystl::destroy(&*cur);
   }
   return cur;
 }
