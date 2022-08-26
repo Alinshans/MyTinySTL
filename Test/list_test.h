@@ -92,17 +92,17 @@ void list_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       insert        |";
 #if LARGER_TEST_DATA_ON
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+  CON_TEST_P2(list<int>, insert, end, rand(), SCALE_L(LEN1), SCALE_L(LEN2), SCALE_L(LEN3));
 #else
-  CON_TEST_P2(list<int>, insert, end, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  CON_TEST_P2(list<int>, insert, end, rand(), SCALE_M(LEN1), SCALE_M(LEN2), SCALE_M(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|         sort        |";
 #if LARGER_TEST_DATA_ON
-  LIST_SORT_TEST(LEN1 _M, LEN2 _M, LEN3 _M);
+  LIST_SORT_TEST(SCALE_M(LEN1), SCALE_M(LEN2), SCALE_M(LEN3));
 #else
-  LIST_SORT_TEST(LEN1 _S, LEN2 _S, LEN3 _S);
+  LIST_SORT_TEST(SCALE_S(LEN1), SCALE_S(LEN2), SCALE_S(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

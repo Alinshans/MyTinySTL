@@ -89,9 +89,9 @@ void unordered_set_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if LARGER_TEST_DATA_ON
-  CON_TEST_P1(unordered_set<int>, emplace, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+  CON_TEST_P1(unordered_set<int>, emplace, rand(), SCALE_L(LEN1), SCALE_L(LEN2), SCALE_L(LEN3));
 #else
-  CON_TEST_P1(unordered_set<int>, emplace, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  CON_TEST_P1(unordered_set<int>, emplace, rand(), SCALE_M(LEN1), SCALE_M(LEN2), SCALE_M(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
@@ -173,9 +173,9 @@ void unordered_multiset_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|       emplace       |";
 #if LARGER_TEST_DATA_ON
-  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), LEN1 _M, LEN2 _M, LEN3 _M);
+  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), SCALE_M(LEN1), SCALE_M(LEN2), SCALE_M(LEN3));
 #else
-  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), LEN1 _S, LEN2 _S, LEN3 _S);
+  CON_TEST_P1(unordered_multiset<int>, emplace, rand(), SCALE_S(LEN1), SCALE_S(LEN2), SCALE_S(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

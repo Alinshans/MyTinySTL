@@ -76,17 +76,17 @@ void deque_test()
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|     push_front      |";
 #if LARGER_TEST_DATA_ON
-  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+  CON_TEST_P1(deque<int>, push_front, rand(), SCALE_LL(LEN1), SCALE_LL(LEN2), SCALE_LL(LEN3));
 #else
-  CON_TEST_P1(deque<int>, push_front, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+  CON_TEST_P1(deque<int>, push_front, rand(), SCALE_L(LEN1), SCALE_L(LEN2), SCALE_L(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;
   std::cout << "|     push_back       |";
 #if LARGER_TEST_DATA_ON
-  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _LL, LEN2 _LL, LEN3 _LL);
+  CON_TEST_P1(deque<int>, push_back, rand(), SCALE_LL(LEN1), SCALE_LL(LEN2), SCALE_LL(LEN3));
 #else
-  CON_TEST_P1(deque<int>, push_back, rand(), LEN1 _L, LEN2 _L, LEN3 _L);
+  CON_TEST_P1(deque<int>, push_back, rand(), SCALE_L(LEN1), SCALE_L(LEN2), SCALE_L(LEN3));
 #endif
   std::cout << std::endl;
   std::cout << "|---------------------|-------------|-------------|-------------|" << std::endl;

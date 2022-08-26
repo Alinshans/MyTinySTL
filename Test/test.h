@@ -512,13 +512,13 @@ EXPECT_CON_EQ(v1, v3)   ok
 #define LEN3    10000000
 #endif
 
-#define _LLL * 20
-#define _LL  * 10
-#define _L   * 5
-#define _M
-#define _S   / 5
-#define _SS  / 10
-#define _SSS / 20
+#define SCALE_LLL(N) (N * 20)
+#define SCALE_LL(N)  (N * 10)
+#define SCALE_L(N)   (N * 5)
+#define SCALE_M(N)   (N)
+#define SCALE_S(N)   (N / 5)
+#define SCALE_SS(N)  (N / 10)
+#define SCALE_SSS(N) (N / 20)
 
 #define WIDE    14
 
