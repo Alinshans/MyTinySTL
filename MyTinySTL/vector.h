@@ -416,6 +416,7 @@ vector<T>::emplace(const_iterator pos, Args&& ...args)
     ++new_end;
     mystl::copy_backward(xpos, end_ - 1, end_);
     *xpos = value_type(mystl::forward<Args>(args)...);
+    end_ = new_end;
   }
   else
   {
