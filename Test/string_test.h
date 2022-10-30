@@ -92,7 +92,7 @@ void string_test()
   FUN_VALUE(str.compare("zzz"));
   FUN_VALUE(str.compare(0, 3, "str"));
   FUN_VALUE(str.compare(0, 3, "stri", 4));
-  FUN_VALUE(str.compare(0, 3, "s", 3));
+  FUN_VALUE(str.compare(0, 3, "s", 2));
   FUN_VALUE(str.compare(0, 9, "stringabc", 9));
   FUN_VALUE(str.substr(0));
   FUN_VALUE(str.substr(3));
@@ -205,4 +205,3 @@ void string_test()
 } // namespace test
 } // namespace mystl
 #endif // !MYTINYSTL_STRING_TEST_H_
-
