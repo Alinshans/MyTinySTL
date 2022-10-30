@@ -1,4 +1,4 @@
-﻿#ifndef MYTINYSTL_ALGORITHM_TEST_H_
+#ifndef MYTINYSTL_ALGORITHM_TEST_H_
 #define MYTINYSTL_ALGORITHM_TEST_H_
 
 // 算法测试: 包含了 mystl 的 81 个算法测试
@@ -790,7 +790,6 @@ TEST(nth_element_test)
   for (int i = 0; i < 9; ++i)
   {
     if (i < 8 && arr3[i] > arr3[8])    arr3_left_less = false;
-    else if (i > 8 && arr3[i] < arr3[8])    arr3_right_greater = false;
   }
   for (int i = 0; i < 16; ++i)
   {
