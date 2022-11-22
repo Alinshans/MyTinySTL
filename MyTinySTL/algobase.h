@@ -138,9 +138,9 @@ unchecked_copy_backward_cat(BidirectionalIter1 first, BidirectionalIter1 last,
 }
 
 // unchecked_copy_backward_cat 的 random_access_iterator_tag 版本
-template <class BidirectionalIter1, class BidirectionalIter2>
+template <class RandomIter1, class BidirectionalIter2>
 BidirectionalIter2 
-unchecked_copy_backward_cat(BidirectionalIter1 first, BidirectionalIter1 last,
+unchecked_copy_backward_cat(RandomIter1 first, RandomIter1 last,
                             BidirectionalIter2 result, mystl::random_access_iterator_tag)
 {
   for (auto n = last - first; n > 0; --n)
