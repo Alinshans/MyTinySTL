@@ -897,7 +897,7 @@ bool operator==(const vector<T>& lhs, const vector<T>& rhs)
 template <class T>
 bool operator<(const vector<T>& lhs, const vector<T>& rhs)
 {
-  return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), lhs.end());
+  return mystl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <class T>
