@@ -1136,7 +1136,7 @@ TEST(unique_test)
   std::unique(arr1, arr1 + 10);
   mystl::unique(arr2, arr2 + 10);
   std::unique(arr3, arr3 + 9, std::equal_to<int>());
-  std::unique(arr4, arr4 + 9, std::equal_to<int>());
+  mystl::unique(arr4, arr4 + 9, std::equal_to<int>());
   EXPECT_CON_EQ(arr1, arr2);
   EXPECT_CON_EQ(arr3, arr4);
 }
