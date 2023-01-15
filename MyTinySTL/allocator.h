@@ -89,11 +89,17 @@ template <class T>
   mystl::construct(ptr, mystl::move(value));
 }
 
-template <class T>
-template <class ...Args>
- void allocator<T>::construct(T* ptr, Args&& ...args)
-{
-  mystl::construct(ptr, mystl::forward<Args>(args)...);
+// template <class T>
+// template <class ...Args>
+//  void allocator<T>::construct(T* ptr, Args&& ...args)
+// {
+//   mystl::construct(ptr, mystl::forward<Args>(args)...);
+// }
+ 
+template<class T>
+template<typename Other,typename ... Args>
+void allocator<T>::construct(Other* p,Args && ... args){
+	::new ((void*)p) Other(mstl::forward<Args>(args)...);
 }
 
 template <class T>
