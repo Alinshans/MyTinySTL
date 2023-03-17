@@ -123,7 +123,7 @@ void UnitTest::Run()
 #define TESTCASE_NAME(testcase_name) \
     testcase_name##_TEST
 
-// 使用宏定义掩盖复杂的测试样例封装过程，把 TEXT 中的测试案例放到单元测试中
+// 使用宏定义掩盖复杂的测试样例封装过程，把 TEST 中的测试案例放到单元测试中
 #define MYTINYSTL_TEST_(testcase_name)                        \
 class TESTCASE_NAME(testcase_name) : public TestCase {        \
 public:                                                       \
