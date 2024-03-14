@@ -36,16 +36,14 @@ constexpr Tp* address_of(Tp& value) noexcept
 }
 #else
 // 对于对象类型和函数类型分别使用不同的策略
-template <class Tp, typename std::enable_if<std::is_object<
-    typename std::remove_reference<Tp>::type>::value, int>::type = 0>
+template <class Tp, typename std::enable_if<std::is_object<Tp>::value, int>::type = 0>
 Tp* address_of(Tp& value) noexcept
 {
   return const_cast<Tp*>(reinterpret_cast<const volatile Tp*>(
     &reinterpret_cast<const volatile unsigned char&>(value)));
 }
 
-template <class Tp, typename std::enable_if<!std::is_object<
-    typename std::remove_reference<Tp>::type>::value, int>::type = 0>
+template <class Tp, typename std::enable_if<!std::is_object<Tp>::value, int>::type = 0>
 constexpr Tp* address_of(Tp& value) noexcept
 {
   return &value;
