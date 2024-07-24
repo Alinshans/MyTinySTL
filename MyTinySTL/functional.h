@@ -139,10 +139,10 @@ struct logical_not :public unarg_function<T, bool>
 };
 
 // 证同函数：不会改变元素，返回本身
-template <class T>
-struct identity :public unarg_function<T, bool>
+struct identity
 {
-  const T& operator()(const T& x) const { return x; }
+  template <class T>
+  constexpr T&& operator()(T&& x) const noexcept { return static_cast<T&&>(x); }
 };
 
 // 选择函数：接受一个 pair，返回第一个元素
