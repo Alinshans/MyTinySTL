@@ -1245,10 +1245,9 @@ insert_dispatch(iterator position, IIter first, IIter last, input_iterator_tag)
     require_capacity(n, false);
   }
   position = begin_ + elems_before;
-  auto cur = --last;
-  for (size_type i = 0; i < n; ++i, --cur)
+  for (; first != last; ++first, ++position)
   {
-    insert(position, *cur);
+    insert(position, *first);
   }
 }
 
