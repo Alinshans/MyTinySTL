@@ -80,7 +80,17 @@ public:
   { fill_init(n, value); }
 
   template <class Iter, typename std::enable_if<
-    mystl::is_input_iterator<Iter>::value, int>::type = 0>
+    mystl::is_exactly_input_iterator<Iter>::value, int>::type = 0>
+  vector(Iter first, Iter last) 
+  {
+    try_init();
+    for (; first != last; ++first) {
+        emplace_back(*first);
+    }
+  }
+
+  template <class Iter, typename std::enable_if<
+    mystl::is_forward_iterator<Iter>::value, int>::type = 0>
   vector(Iter first, Iter last)
   {
     MYSTL_DEBUG(!(last < first));

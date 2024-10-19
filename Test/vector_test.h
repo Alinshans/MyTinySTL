@@ -3,10 +3,11 @@
 
 // vector test : 测试 vector 的接口与 push_back 的性能
 
-#include <vector>
+#include <vector> 
 
 #include "../MyTinySTL/vector.h"
 #include "test.h"
+#include "stream_iterator.h"  // 用于测试 input_iterator 迭代器版构造函数
 
 namespace mystl
 {
@@ -32,7 +33,6 @@ void vector_test()
   v8 = v3;
   v9 = std::move(v3);
   v10 = { 1,2,3,4,5,6,7,8,9 };
-
   FUN_AFTER(v1, v1.assign(8, 8));
   FUN_AFTER(v1, v1.assign(a, a + 5));
   FUN_AFTER(v1, v1.emplace(v1.begin(), 0));
@@ -90,6 +90,12 @@ void vector_test()
   FUN_AFTER(v1, v1.shrink_to_fit());
   FUN_VALUE(v1.size());
   FUN_VALUE(v1.capacity());
+
+  std::istringstream is("1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9");
+  mystl::istream_iterator<int> beg{is}, end; 
+  mystl::vector<int> v11{beg, end};
+  COUT(v11);
+
   PASSED;
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]\n";
