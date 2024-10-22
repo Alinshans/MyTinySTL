@@ -104,6 +104,10 @@ template <class T, class U>
 struct has_iterator_cat_of<T, U, false> : public m_false_type {};
 
 template <class Iter>
+struct is_exactly_input_iterator : public m_bool_constant<has_iterator_cat_of<Iter, input_iterator_tag>::value && 
+    !has_iterator_cat_of<Iter, forward_iterator_tag>::value> {};
+
+template <class Iter>
 struct is_input_iterator : public has_iterator_cat_of<Iter, input_iterator_tag> {};
 
 template <class Iter>

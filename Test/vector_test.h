@@ -7,6 +7,10 @@
 
 #include "../MyTinySTL/vector.h"
 #include "test.h"
+#include "../MyTinySTL/stream_iterator.h"
+#include <iostream>
+#include <iterator>
+#include <sstream>
 
 namespace mystl
 {
@@ -33,7 +37,19 @@ void vector_test()
   v9 = std::move(v3);
   v10 = { 1,2,3,4,5,6,7,8,9 };
 
-  FUN_AFTER(v1, v1.assign(8, 8));
+  //输入迭代器测试
+  std::istringstream inputStream("6 2 3 4 5 5 7");
+  mystl::istream_iterator<int> beg(inputStream), end;
+  mystl::vector<int> v11({9,8,7,6,5,4});
+  v11.assign(beg, end);
+  int count = 0;
+  for(beg; beg!=end; ++beg)
+    std::cout<<*beg;
+  std::cout << std::endl;
+  std::cout << *beg << std::endl;
+  std::cout << *beg << std::endl;
+  COUT(v11);
+  
   FUN_AFTER(v1, v1.assign(a, a + 5));
   FUN_AFTER(v1, v1.emplace(v1.begin(), 0));
   FUN_AFTER(v1, v1.emplace_back(6));
