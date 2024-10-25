@@ -20,6 +20,7 @@
 #include "unordered_map_test.h"
 #include "unordered_set_test.h"
 #include "string_test.h"
+#include "iterator_test.h"
 
 int main()
 {
@@ -29,6 +30,7 @@ int main()
 
   RUN_ALL_TESTS();
   algorithm_performance_test::algorithm_performance_test();
+  iterator_test::stream_iterator_test();
   vector_test::vector_test();
   list_test::list_test();
   deque_test::deque_test();
