@@ -17,11 +17,43 @@ namespace mystl
 {
 
 // 获取对象地址
+//   尽可能使用支持 constexpr 的 __builtin_addressof
+#ifdef __has_builtin
+#define MYTINYSTL_HAS_BUITIN_ADDRESSOF __has_builtin(__builtin_addressof)
+#elif __GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ >=70000
+#define MYTINYSTL_HAS_BUITIN_ADDRESSOF 1
+#elif _MSC_VER >= 1910
+#define MYTINYSTL_HAS_BUITIN_ADDRESSOF 1
+#else 
+#define MYTINYSTL_HAS_BUITIN_ADDRESSOF 0
+#endif
+
+#if MYTINYSTL_HAS_BUITIN_ADDRESSOF
 template <class Tp>
+constexpr Tp* address_of(Tp& value) noexcept
+{
+  return __builtin_addressof(value);
+}
+#else
+// 对于对象类型和函数类型分别使用不同的策略
+template <class Tp, typename std::enable_if<std::is_object<Tp>::value, int>::type = 0>
+Tp* address_of(Tp& value) noexcept
+{
+  return const_cast<Tp*>(reinterpret_cast<const volatile Tp*>(
+    &reinterpret_cast<const volatile unsigned char&>(value)));
+}
+
+template <class Tp, typename std::enable_if<!std::is_object<Tp>::value, int>::type = 0>
 constexpr Tp* address_of(Tp& value) noexcept
 {
   return &value;
 }
+#endif
+
+#undef MYTINYSTL_HAS_BUITIN_ADDRESSOF
+
+template <class Tp>
+void address_of(const Tp&&) = delete; // 避免对临时对象取地址
 
 // 获取 / 释放 临时缓冲区
 
