@@ -7,6 +7,7 @@
 
 #include "../MyTinySTL/vector.h"
 #include "test.h"
+#include "stream_iterator.h"
 
 namespace mystl
 {
@@ -90,6 +91,13 @@ void vector_test()
   FUN_AFTER(v1, v1.shrink_to_fit());
   FUN_VALUE(v1.size());
   FUN_VALUE(v1.capacity());
+
+  std::istringstream is1("0 0 0 0");
+  std::istringstream is2("1 2 3 4 5 6 7 8 9"); 
+  v1.assign(mystl::istream_iterator<int>(is1), mystl::istream_iterator<int>());
+  COUT(v1);
+  v1.insert(v1.begin() + 2, mystl::istream_iterator<int>(is2), mystl::istream_iterator<int>());
+  COUT(v1);
   PASSED;
 #if PERFORMANCE_TEST_ON
   std::cout << "[--------------------- Performance Testing ---------------------]\n";
