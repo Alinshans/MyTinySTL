@@ -78,16 +78,9 @@ public:
 
   vector(size_type n, const value_type& value)
   { fill_init(n, value); }
-
+  
   template <class Iter, typename std::enable_if<
-    mystl::is_exactly_input_iterator<Iter>::value, int>::type = 0>
-  vector(Iter first, Iter last) 
-  {
-    range_init(first, last, mystl::input_iterator_tag{});
-  }
-
-  template <class Iter, typename std::enable_if<
-    mystl::is_forward_iterator<Iter>::value, int>::type = 0>
+    mystl::is_input_iterator<Iter>::value, int>::type = 0>
   vector(Iter first, Iter last)
   {
     MYSTL_DEBUG(!(last < first));
