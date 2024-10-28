@@ -78,18 +78,18 @@ public:
 
   vector(size_type n, const value_type& value)
   { fill_init(n, value); }
-
+  
   template <class Iter, typename std::enable_if<
     mystl::is_input_iterator<Iter>::value, int>::type = 0>
   vector(Iter first, Iter last)
   {
     MYSTL_DEBUG(!(last < first));
-    range_init(first, last);
+    range_init(first, last, iterator_category(first));
   }
 
   vector(const vector& rhs)
   {
-    range_init(rhs.begin_, rhs.end_);
+    range_init(rhs.begin_, rhs.end_, mystl::forward_iterator_tag{});
   }
 
   vector(vector&& rhs) noexcept
@@ -104,7 +104,7 @@ public:
 
   vector(std::initializer_list<value_type> ilist)
   {
-    range_init(ilist.begin(), ilist.end());
+    range_init(ilist.begin(), ilist.end(), mystl::forward_iterator_tag{});
   }
 
   vector& operator=(const vector& rhs);
@@ -288,8 +288,12 @@ private:
   void      init_space(size_type size, size_type cap);
 
   void      fill_init(size_type n, const value_type& value);
+
   template <class Iter>
-  void      range_init(Iter first, Iter last);
+  void      range_init(Iter first, Iter last, input_iterator_tag);
+
+  template <class Iter>
+  void      range_init(Iter first, Iter last, forward_iterator_tag);
 
   void      destroy_and_recover(iterator first, iterator last, size_type n);
 
@@ -601,12 +605,23 @@ fill_init(size_type n, const value_type& value)
 template <class T>
 template <class Iter>
 void vector<T>::
-range_init(Iter first, Iter last)
+range_init(Iter first, Iter last, mystl::forward_iterator_tag)
 {
   const size_type len = mystl::distance(first, last);
   const size_type init_size = mystl::max(len, static_cast<size_type>(16));
   init_space(len, init_size);
   mystl::uninitialized_copy(first, last, begin_);
+}
+
+template <class T>
+template <class Iter>
+void vector<T>::
+range_init(Iter first, Iter last, mystl::input_iterator_tag)
+{
+  try_init();
+  for (; first != last; ++first) {
+    emplace_back(*first);
+  }
 }
 
 // destroy_and_recover 函数
