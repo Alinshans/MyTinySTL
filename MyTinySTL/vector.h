@@ -17,6 +17,7 @@
 //   * insert
 
 #include <initializer_list>
+#include <algorithm>
 
 #include "iterator.h"
 #include "memory.h"
@@ -227,7 +228,7 @@ public:
   }
 
   void assign(std::initializer_list<value_type> il)
-  { copy_assign(il.begin(), il.end(), mystl::forward_iterator_tag{}); }
+  { copy_assign(il.begin(), il.end(), forward_iterator_tag{}); }
 
   // emplace / emplace_back
 
@@ -262,7 +263,7 @@ public:
   void     insert(const_iterator pos, Iter first, Iter last)
   {
     MYSTL_DEBUG(pos >= begin() && pos <= end() && !(last < first));
-    copy_insert(const_cast<iterator>(pos), first, last);
+    copy_insert(const_cast<iterator>(pos), first, last, iterator_category(first));
   }
 
   // erase / clear
@@ -315,8 +316,12 @@ private:
   // insert
 
   iterator  fill_insert(iterator pos, size_type n, const value_type& value);
+
   template <class IIter>
-  void      copy_insert(iterator pos, IIter first, IIter last);
+  void      copy_insert(iterator pos, IIter first, IIter last, forward_iterator_tag);
+
+  template <class IIter>
+  void      copy_insert(iterator pos, IIter first, IIter last, input_iterator_tag);
 
   // shrink_to_fit
 
@@ -676,6 +681,7 @@ copy_assign(IIter first, IIter last, input_iterator_tag)
   }
   else
   {
+    std::cout << "=======\n";
     insert(end_, first, last);
   }
 }
@@ -817,7 +823,7 @@ fill_insert(iterator pos, size_type n, const value_type& value)
 template <class T>
 template <class IIter>
 void vector<T>::
-copy_insert(iterator pos, IIter first, IIter last)
+copy_insert(iterator pos, IIter first, IIter last, forward_iterator_tag)
 {
   if (first == last)
     return;
@@ -862,6 +868,18 @@ copy_insert(iterator pos, IIter first, IIter last)
     end_ = new_end;
     cap_ = begin_ + new_size;
   }
+}
+
+template <class T>
+template <class IIter>
+void vector<T>::
+copy_insert(iterator pos, IIter first, IIter last, input_iterator_tag) {
+  auto off = pos - begin();
+  auto old_size = size();
+  for (; first != last; ++first) {
+    push_back(*first);
+  }
+  std::rotate(begin() + off, begin() + old_size, end());
 }
 
 // reinsert 函数
